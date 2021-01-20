@@ -16,7 +16,7 @@ header-includes:
 
 In this lab, we will introduce the basic functionality of R, together with some simple plotting functions. We will be using the following files for these examples:
 
-- A dataset of morphological measurements of three species of penguin *penguins.csv*
+- A dataset of morphological measurements of three species of penguin  from the file *penguins.csv*
 
 More information about this dataset can be found here: [https://allisonhorst.github.io/palmerpenguins/index.html](https://allisonhorst.github.io/palmerpenguins/index.html)
 
@@ -73,7 +73,7 @@ For this class, the labs will assume that you have your files organized accordin
 |   +-- lab15
 ```
 
-To do this, go to your `Documents` folder, and create a new folder called `geog6000`. In this now create two new folders, one called `datafiles` (where we will store all the data used across all labs and one called `lab01`, which we will use for today's lab. 
+To do this, go to your `Documents` folder, and create a new folder called `geog6160`. In this now create two new folders, one called `datafiles` (where we will store all the data used across all labs and one called `lab01`, which we will use for today's lab. 
 
 Once you have created these folders, we need to change R's working directory so that it is pointing to `lab01`. The easiest way to do this is by going to the [Session] menu in RStudio, then [Change working directory]. This will open a file browser that you can use to browse through your computer and find the folder. (If you are using the base version of R, go to [File] $>$ [Change dir...] in Windows, or [Misc] $>$ [Change Working Directory] in Mac.)
 
@@ -113,13 +113,13 @@ Note that the slashes are forward slashes and don't forget the quotations.  R is
 getwd()
 ```
 
-You can also use relative paths. If your current working directory is `geog6000` and you want to change to `lab01`, enter the following code (where the `./` changes the directory to a level higher than the current one).
+You can also use relative paths. If your current working directory is `geog6160` and you want to change to `lab01`, enter the following code (where the `./` changes the directory to a level higher than the current one).
 
 ```{r eval=FALSE}
 setwd("./lab01")
 ```
 
-If your current working directory is `lab01` and you want to change to `geog6000`, enter the following code (where the `../` changes the directory to a level below the current one).
+If your current working directory is `lab01` and you want to change to `geog6160`, enter the following code (where the `../` changes the directory to a level below the current one).
 
 ```{r eval=FALSE}
 setwd("../")
@@ -155,7 +155,7 @@ sqrt(2)
 # Working with variables in R
 
 R can use many different file types, but csv files are recommended as the easiest way to transfer between R and Excel.
-Start by changing your working directory to the directory holding the two files listed above. Then get a list of files as follows (note the use of the pattern parameter to get only certain files):
+Start by changing your working directory to the directory holding the two file listed above. Then get a list of files as follows (note the use of the pattern parameter to get only certain files):
 
 ```{r}
 list.files(pattern=".csv")
@@ -178,7 +178,7 @@ names(penguin)
 str(penguin)
 ```
 
-The variable `penguin` here represents the whole data frame. If you want to access subsets of the data frame or individual values, you will need to understand indexes in R. There are two main method to access parts of a data frame, the `$` notation, and row/column indexes. The `$` notation allows you to access individual columns:
+The variable `penguin` here represents the whole data frame. If you want to access subsets of the data frame or individual values, you will need to understand indexes in R. There are two main methods to access parts of a data frame, the `$` notation, and row/column indexes. The `$` notation allows you to access individual columns:
 
 ```{r results='hide'}
 penguin$bill_length_mm  	# Extract single column
@@ -215,13 +215,13 @@ penguin$bill_length_mm[1:10]   # First 10 elements
 
 Logical operators $<, <=, >, >=, ==, !=$ can be used to select parts of the data set by value. This is very useful if you only want to analyze part of your dataset
 ```{r results='hide'}
-penguin$bill_length_mm[penguin$bill_length_mm > 40]	# All over 40 mm
-penguin[penguin$bill_length_mm > 40, ]	# All columns with sepal length over 5 
+penguin$bill_length_mm[penguin$bill_length_mm > 40]	# All bill lengths over 40 mm
+penguin[penguin$bill_length_mm > 40, ]	# All columns with bill length length over 40 
 penguin$bill_length_mm[(penguin$species == 'Adelie')] 	# All "Adelie" penguins
 penguin[(penguin$species == 'Adelie'), ] 	# All columns for "Adelie" penguins
 ```
 
-These operators can be combined, so to get all instances of "setosa" species with sepal lengths greater than 5:
+These operators can be combined, so to get all instances of "Adelie" species with bill lengths greater than 40:
 
 ```{r results='hide'}
 penguin[(penguin$species == 'Adelie') & (penguin$bill_length_mm > 40), ]
@@ -249,7 +249,7 @@ If we now check the first 10 values, you will see some additional information sh
 penguin$species[1:10]
 ```
 
-R automatically sets the levels in alphabetical order, irrespective of the order in the vector. The first level is considered to be the reference level, which has some uses in regression model as we will see later. You can change the order of the levels using the `factor()` function. The following sets the species `virginica` as the reference:
+R automatically sets the levels in alphabetical order, irrespective of the order in the vector. The first level is considered to be the reference level, which has some uses in regression model as we will see later. You can change the order of the levels using the `factor()` function. The following sets the species `Gentoo` as the reference:
 
 ```{r eval=FALSE}
 factor(penguin$species, levels = c("Gentoo", "Chinstrap", "Adelie"))
@@ -331,7 +331,7 @@ sum(bl, na.rm = TRUE)
 summary(bl)
 ```
 
-Note that we do not need to tell R to exclude `NA`s for the `summary()` function. This provides a set of summary statistics *and* let's you know how many values are missing. 
+Note that we do not need to tell R to exclude `NA`s for the `summary()` function. This provides a set of summary statistics *and* lets you know how many values are missing. 
 
 Some specific functions for categorical data
 ```{r results='hide'}
@@ -348,7 +348,7 @@ summary(penguin) ## Summary of data frame
 
 ### The `tapply()` function
 
-R has a set of `*apply` functions designed to help to do repetitive tasks. We will look at one of the simplest of these today, the `table` apply function. This *applies* a function (e.g. mean) to a vector, but calculates the function on subgroups defined by categories in a second vector. For example, to calculate the average sepal length per species of penguin, we can do the following:
+R has a set of `*apply` functions designed to help to do repetitive tasks. We will look at one of the simplest of these today, the `table` apply function. This *applies* a function (e.g. mean) to a vector, but calculates the function on subgroups defined by categories in a second vector. For example, to calculate the average bill length per species of penguin, we can do the following:
 ```{r}
 tapply(penguin$bill_length_mm, penguin$species, mean, na.rm = TRUE)
 ```
@@ -466,7 +466,7 @@ As the boxplot does not automatically label the y-axis, we add this with the `yl
 
 ## Graphic output
 
-By default, R plots graphics to the screen, but has the ability to save figures in most of the standard graphic formats. In order to do this, you first need to open a file (a graphics *device*), then run the plotting functions, then close the device. Remember that you need to plot all the layers of a figure before closing the file. The following example plots the penguin petal data to a pdf file. Alternatives include: png, jpeg, svg, etc.; type `help(Devices)` for more details. 
+By default, R plots graphics to the screen, but has the ability to save figures in most of the standard graphic formats. In order to do this, you first need to open a file (a graphics *device*), then run the plotting functions, then close the device. Remember that you need to plot all the layers of a figure before closing the file. The following example plots the penguin bill length data to a pdf file. Alternatives include: png, jpeg, svg, etc.; type `help(Devices)` for more details. 
 
 ```{r results='hide', eval=FALSE}
 
