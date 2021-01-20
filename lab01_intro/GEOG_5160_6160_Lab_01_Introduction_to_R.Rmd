@@ -1,10 +1,10 @@
 ---
-title: "GEOG 6000 01 Introduction to R Lab"
+title: "GEOG 5160/6160: 01 Introduction to R Lab"
 author: | 
   | Simon Brewer
   | Geography Department
   | University of Utah
-date: "August 11, 2020"
+date: "January 20, 2021"
 output:
   html_document:
     toc: true
@@ -79,8 +79,8 @@ Once you have created these folders, we need to change R's working directory so 
 
 You can also change the working directory manually using the `setwd()` function in the console. To do this, you may need to know the full path to the folder on your computer. If you followed the instructions given above, this should be:
 
-- On a Windows system: `C:/Users/username/Documents/geog6000/lab01`
-- On a Mac OSX system: `/Users/username/Documents/geog6000/lab01`
+- On a Windows system: `C:/Users/username/Documents/geog6160/lab01`
+- On a Mac OSX system: `/Users/username/Documents/geog6160/lab01`
 
 Where `username` is your name on the computer. You can also find this path by 
 
@@ -104,7 +104,7 @@ setwd("")
 And paste your directory. The code should look something like this:
 
 ```{r eval=FALSE}
-setwd("C:/Users/username/Documents/geog6000/lab01")
+setwd("C:/Users/username/Documents/geog6160/lab01")
 ```
 
 Note that the slashes are forward slashes and don't forget the quotations.  R is case sensitive, so make sure you write capitals where necessary. To check that you have correctly changed directory, enter the following command, which will show you the current working directory:
