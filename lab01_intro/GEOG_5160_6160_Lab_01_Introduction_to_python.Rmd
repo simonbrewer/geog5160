@@ -153,14 +153,15 @@ conda create -n geog5160
 conda activate geog5160
 ```
 
-Now we'll install the `pandas` package to help with data manipulation and the `matplot` package for making simple plots:
+Now we'll install the `pandas` package to help with data manipulation and the `matplot` and `seaborn` packages for making simple plots:
 
 ```
 conda install pandas
 conda install matplotlib
+conda install seaborn
 ```
 
-Both of these will ask you to install some supplementary packages; just press [y] to continue and install these. 
+You will likely be prompted to install some supplementary packages; just press [y] to continue and install these. 
 
 ### jupyter notebooks
 
