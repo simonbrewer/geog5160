@@ -1644,17 +1644,17 @@ University of Utah</div></h4>
 <pre><code>conda deactivate</code></pre>
 <p>And environments can be deleted as follows:</p>
 <pre><code>conda env remove -n new-env</code></pre>
+<p>Now create an environment for class work (called <code>geog5160</code>)</p>
+<pre><code>conda create -n geog5160
+conda activate geog5160</code></pre>
 <div id="installing-packages" class="section level3">
 <h3>Installing packages</h3>
-<p>The <code>conda</code> command can also be used to install packages. To demonstrate this, we’ll start by installing the Jupyter Noteback package. This provides an interactive framework for testing and running python code through your browser. As this is a widely used package, we’ll install it in the <code>base</code> environment. Go to your terminal and enter the following code:</p>
+<p>The <code>conda</code> command can also be used to install packages. To demonstrate this, we’ll start by installing the Jupyter Noteback package. This provides an interactive framework for testing and running python code through your browser. Go to your terminal and enter the following code:</p>
 <pre><code>conda install -c conda-forge notebook</code></pre>
 <p>This will install <code>notebook</code> from the <code>conda-forge</code> repository. There are several repositories that host these packages, and <code>conda</code> uses anaconda.com by default. If your package is hosted elsewhere you need to specify this with the <code>-c</code> argument. The best way to find out where a particular package is held is by googling <code>conda install packagename</code> and following the links. Once you run this command, conda will check your local environment against the remote one, and download the necessary files to install the notebook (this includes any dependencies). Once you see the following three lines, the installation is complete:</p>
 <pre><code>  Preparing transaction: done
   Verifying transaction: done
   Executing transaction: done</code></pre>
-<p>We’ll now add a couple more packages, but first we’ll create a new environment for class work (called <code>geog5160</code>)</p>
-<pre><code>conda create -n geog5160
-conda activate geog5160</code></pre>
 <p>Now we’ll install the <code>pandas</code> package to help with data manipulation and the <code>matplot</code> and <code>seaborn</code> packages for making simple plots:</p>
 <pre><code>conda install pandas
 conda install matplotlib

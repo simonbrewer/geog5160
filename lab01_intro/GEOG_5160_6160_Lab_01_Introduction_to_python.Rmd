@@ -130,9 +130,16 @@ And environments can be deleted as follows:
 conda env remove -n new-env
 ```
 
+Now create an environment for class work (called `geog5160`)
+
+```
+conda create -n geog5160
+conda activate geog5160
+```
+
 ### Installing packages
 
-The `conda` command can also be used to install packages. To demonstrate this, we'll start by installing the Jupyter Noteback package. This provides an interactive framework for testing and running python code through your browser. As this is a widely used package, we'll install it in the `base` environment. Go to your terminal and enter the following code:
+The `conda` command can also be used to install packages. To demonstrate this, we'll start by installing the Jupyter Noteback package. This provides an interactive framework for testing and running python code through your browser. Go to your terminal and enter the following code:
 
 ```
 conda install -c conda-forge notebook
@@ -144,13 +151,6 @@ This will install `notebook` from the `conda-forge` repository. There are severa
   Preparing transaction: done
   Verifying transaction: done
   Executing transaction: done
-```
-
-We'll now add a couple more packages, but first we'll create a new environment for class work (called `geog5160`)
-
-```
-conda create -n geog5160
-conda activate geog5160
 ```
 
 Now we'll install the `pandas` package to help with data manipulation and the `matplot` and `seaborn` packages for making simple plots:
