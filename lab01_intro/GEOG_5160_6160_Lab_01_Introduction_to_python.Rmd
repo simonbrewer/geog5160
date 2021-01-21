@@ -17,8 +17,9 @@ header-includes:
 In this lab, we will introduce the basic functionality of python, together with some simple plotting functions. We will be using the following files for these examples:
 
 - A dataset of morphological measurements of three species of penguin *penguins.csv*
+- A jupyter notebook showing some basic python commands for working with data files: *geog_5160_6160_lab01.ipynb*
 
-More information about this dataset can be found here: [https://allisonhorst.github.io/palmerpenguins/index.html](https://allisonhorst.github.io/palmerpenguins/index.html)
+More information about the dataset can be found here: [https://allisonhorst.github.io/palmerpenguins/index.html](https://allisonhorst.github.io/palmerpenguins/index.html)
 
 
 # Introduction to python
@@ -43,7 +44,8 @@ For this class, the labs will assume that you have your files organized accordin
 
 To do this, go to your `Documents` folder, and create a new folder called `geog6000`. In this now create two new folders, one called `datafiles` (where we will store all the data used across all labs and one called `lab01`, which we will use for today's lab. 
 
-Now download the *penguins.csv* file from Canvas and move this to the `datafiles` subfolder. 
+Now download the *penguins.csv* file from Canvas and move this to the `datafiles` subfolder. Download the notebook and move this to your `lab01` folder. 
+
 # Installing python
 
 There are two commonly used versions of Python: 2.7 and 3. Version 3 was released in 2008 and there has been a gradual transition to only using 3 (support for 2.x was stopped in 2020). In this class, we will only use Python 3. There are several [packaged distributions][distID] of python that come with additional utilities. I would recommend using miniconda (these labs were written using this). Instructions for installing miniconda can be found [here][mcID]. 
@@ -72,9 +74,31 @@ Open any terminal. If conda has been correctly installed, you should see the fol
 (base) username:
 ```
 
+## Changing directories
+
+In order to access the files, you'll need to change directory in your terminal to the `lab01` folder you made earlier using the `cd` command. If you know the full path to the folder, then simply enter:
+
+```
+cd /full/path/to/folder
+```
+
+Once you've successfully changed directories, check that the notebook file is in your folder you have changed to by type `ls` to list the files. 
+
+### Windows
+
+Finding this path can be challenging on Windows, but the easiest was is to find the folder in Windows Explorer, right click on it and go to 'Properties'. If you've created this in your Documents folder, the path will be something like `C:/Users/username/Documents/geog5160/lab01`. 
+
+### Max OSX
+
+On a Mac, you can find the path to a folder in the Finder window, by clicking on [View] > [Show Path Bar]. If you've created this in your Documents folder, the path will be something like `/Users/username/Documents/geog5160/lab01`. 
+
+### Linux
+
+On a Linux system, the folder will be somewhere in your home directory. If you've created this in your Documents folder, the path will be something like `/home/username/Documents/geog5160/lab01`. 
+
 ## conda environments
 
-One of the key features of conda is the use of environments. Each environment represents an isolated python session, and so can be set up differently. This can help to avoid conflicts between add-on packages; you can create an environment for a particular type of analysis or data processing and only install the packages that you actually need. If conflicts arise, it is then easy to delete the environment and try to set it up again, all wthout impacting the base install of python. The default environment is `base` (hence the `(base)` shown before the prompt). In general, you should only install packages here if you are likely to use them a lot. Packages that are specific to a given project should only be installed in that environment. 
+One of the key features of conda is the use of environments. Each environment represents an isolated python session, and so can be set up differently. This can help to avoid conflicts between add-on packages; you can create an environment for a particular type of analysis or data processing and only install the packages that you actually need. If conflicts arise, it is then easy to delete the environment and try to set it up again, all without impacting the base install of python. The default environment is `base` (hence the `(base)` shown before the prompt). In general, you should only install packages here if you are likely to use them a lot. Packages that are specific to a given project should only be installed in that environment. 
 
 To create a new environment, simply type
 
@@ -82,7 +106,7 @@ To create a new environment, simply type
 conda create -n new-env
 ```
 
-Python may ask you about the installation location for this environment, just accept the default. The environment will be set up then made available for use. Note that this onyl creates the environment, but you are still in the `base` environment. To change to `new-env`, type
+Python may ask you about the installation location for this environment, just accept the default. The environment will be set up then made available for use. Note that this only creates the environment, but you are still in the `base` environment. To change to `new-env`, type
 
 ```
 conda activate new-env
@@ -114,7 +138,7 @@ The `conda` command can also be used to install packages. To demonstrate this, w
 conda install -c conda-forge notebook
 ```
 
-This will install `notebook` from the `conda-forge` repository. There are several repositories that host these packages, and `conda` uses anaconda.com by default. If your package is hosted elsewherem you need to specify this with the `-c` argument. The best way to find out where a particular package is held is by googling `conda install packagename` and following the links. Once you run this command, conda will check your local environment against the remote one, and download the necessary files to make the notebook work (this includes any dependencies). Once you see the following three lines, the note book is installed. 
+This will install `notebook` from the `conda-forge` repository. There are several repositories that host these packages, and `conda` uses anaconda.com by default. If your package is hosted elsewhere you need to specify this with the `-c` argument. The best way to find out where a particular package is held is by googling `conda install packagename` and following the links. Once you run this command, conda will check your local environment against the remote one, and download the necessary files to install the notebook (this includes any dependencies). Once you see the following three lines, the installation is complete:
 
 ```
   Preparing transaction: done
@@ -122,9 +146,43 @@ This will install `notebook` from the `conda-forge` repository. There are severa
   Executing transaction: done
 ```
 
+We'll now add a couple more packages, but first we'll create a new environment for class work (called `geog5160`)
+
+```
+conda create -n geog5160
+conda activate geog5160
+```
+
+Now we'll install the `pandas` package to help with data manipulation and the `matplot` package for making simple plots:
+
+```
+conda install pandas
+conda install matplotlib
+```
+
+Both of these will ask you to install some supplementary packages; just press [y] to continue and install these. 
+
 ### jupyter notebooks
 
+For the labs in the class, the python code will be provided as jupyter notebooks. These are interactive html pages, that contain code and the output from that code, and are a convenient way to keep your python work organized and test new ideas. To open one of these, you first need to start the notebook server:
 
+```
+jupyter notebook
+```
+
+This will launch a new page in your web browser with a list of the files that are available in your current directory. 
+
+![notebook Interface](./images/notebook01.png)
+
+Clicking on any of these will then open the notebook on a new browser page. Or you can open a new notebook by clicking on the [New] button in the top right. A notebook consists of a set of *cells*, blocks of code or text. Each cell has a set type: generally either code or markdown. Markdown cells are used for descriptive text, and can be formatted using basic markdown tags. Code cells are where you enter your python code. Once you have entered your code, you can then click the [Run] button to run it, and any output will appear below the cell:
+
+![Code cells](./images/notebook02.png)
+
+At the top of the page there are a set of menus and actions buttons. The arrows allow you to move through the available cells, and the [+] button adds a new cell below your current position. The [Cell] menu has a lot of options for changing the cell type and for running different parts of the notebook (e.g. run all the cells above your current position). 
+
+![Menu bar](./images/notebook03.png)
+
+If you've got this far, we'll switch to the jupyter notebook for the remainder of this lab. If you haven't used these notebooks before, it's probably worth spending a little time working a new one at some point to get used to navigating through them. 
 
 [pydlID]: https://www.python.org/downloads/
 [distID]: https://wiki.python.org/moin/PythonDistributions
