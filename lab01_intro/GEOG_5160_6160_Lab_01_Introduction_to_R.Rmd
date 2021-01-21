@@ -64,7 +64,7 @@ R defines the working directory as the folder in which it is currently working. 
 For this class, the labs will assume that you have your files organized according to the following structure:
 
 ```
-+-- geog6000
++-- geog6160
 |   +-- datafiles
 |   +-- lab01
 |   +-- lab02
