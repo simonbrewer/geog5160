@@ -1,5 +1,5 @@
 ---
-title: "GEOG 6000 01 Introduction to python lab"
+title: "GEOG 6000 01 Introduction to Python lab"
 author: | 
   | Simon Brewer
   | Geography Department
@@ -14,17 +14,17 @@ header-includes:
    - \usepackage{tabularx}
 ---
 
-In this lab, we will introduce the basic functionality of python, together with some simple plotting functions. We will be using the following files for these examples:
+In this lab, we will introduce the basic functionality of Python, together with some simple plotting functions. We will be using the following files for these examples:
 
 - A dataset of morphological measurements of three species of penguin *penguins.csv*
-- A jupyter notebook showing some basic python commands for working with data files: *geog_5160_6160_lab01.ipynb*
+- A jupyter notebook showing some basic Python commands for working with data files: *geog_5160_6160_lab01.ipynb*
 
 More information about the dataset can be found here: [https://allisonhorst.github.io/palmerpenguins/index.html](https://allisonhorst.github.io/palmerpenguins/index.html)
 
 
-# Introduction to python
+# Introduction to Python
 
-Python is a high level programming language, designed for handling data (rather than software development). It is an interpreted language, which allows you to write relatively straightforward code that is then compiled in order to be run. This means that the code you write can be easily transferred between computers and operating systems, and you can just let the python interpreter on the computer do all the work for you. In contrast to other programming languages it is dynamically typed, so you don't need to track and declare all your variables, which generally means that it is easier to set up and run python code than most low-level languages (e.g. c++), but with a higher risk of encountering problems with the variables you use (although these are pretty rare). 
+Python is a high level programming language, designed for handling data (rather than software development). It is an interpreted language, which allows you to write relatively straightforward code that is then compiled in order to be run. This means that the code you write can be easily transferred between computers and operating systems, and you can just let the Python interpreter on the computer do all the work for you. In contrast to other programming languages it is dynamically typed, so you don't need to track and declare all your variables, which generally means that it is easier to set up and run Python code than most low-level languages (e.g. c++), but with a higher risk of encountering problems with the variables you use (although these are pretty rare). 
 
 Python also has a large number of add-on [packages][packID] that extend the basic function, and we'll be using several of these for machine learning. Today, we'll just use a couple of these for data manipulation and plotting. 
 
@@ -46,13 +46,13 @@ To do this, go to your `Documents` folder, and create a new folder called `geog6
 
 Now download the *penguins.csv* file from Canvas and move this to the `datafiles` subfolder. Download the notebook and move this to your `lab01` folder. 
 
-# Installing python
+# Installing Python
 
-There are two commonly used versions of Python: 2.7 and 3. Version 3 was released in 2008 and there has been a gradual transition to only using 3 (support for 2.x was stopped in 2020). In this class, we will only use Python 3. There are several [packaged distributions][distID] of python that come with additional utilities. I would recommend using miniconda (these labs were written using this). Instructions for installing miniconda can be found [here][mcID]. 
+There are two commonly used versions of Python: 2.7 and 3. Version 3 was released in 2008 and there has been a gradual transition to only using 3 (support for 2.x was stopped in 2020). In this class, we will only use Python 3. There are several [packaged distributions][distID] of Python that come with additional utilities. I would recommend using miniconda (these labs were written using this). Instructions for installing miniconda can be found [here][mcID]. 
 
 # Using conda
 
-## Starting python
+## Starting Python
 
 ### Windows
 
@@ -98,7 +98,7 @@ On a Linux system, the folder will be somewhere in your home directory. If you'v
 
 ## conda environments
 
-One of the key features of conda is the use of environments. Each environment represents an isolated python session, and so can be set up differently. This can help to avoid conflicts between add-on packages; you can create an environment for a particular type of analysis or data processing and only install the packages that you actually need. If conflicts arise, it is then easy to delete the environment and try to set it up again, all without impacting the base install of python. The default environment is `base` (hence the `(base)` shown before the prompt). In general, you should only install packages here if you are likely to use them a lot. Packages that are specific to a given project should only be installed in that environment. 
+One of the key features of conda is the use of environments. Each environment represents an isolated Python session, and so can be set up differently. This can help to avoid conflicts between add-on packages; you can create an environment for a particular type of analysis or data processing and only install the packages that you actually need. If conflicts arise, it is then easy to delete the environment and try to set it up again, all without impacting the base install of Python. The default environment is `base` (hence the `(base)` shown before the prompt). In general, you should only install packages here if you are likely to use them a lot. Packages that are specific to a given project should only be installed in that environment. 
 
 To create a new environment, simply type
 
@@ -139,7 +139,7 @@ conda activate geog5160
 
 ### Installing packages
 
-The `conda` command can also be used to install packages. To demonstrate this, we'll start by installing the Jupyter Noteback package. This provides an interactive framework for testing and running python code through your browser. Go to your terminal and enter the following code:
+The `conda` command can also be used to install packages. To demonstrate this, we'll start by installing the Jupyter Noteback package. This provides an interactive framework for testing and running Python code through your browser. Go to your terminal and enter the following code:
 
 ```
 conda install -c conda-forge notebook
@@ -165,7 +165,7 @@ You will likely be prompted to install some supplementary packages; just press [
 
 ### jupyter notebooks
 
-For the labs in the class, the python code will be provided as jupyter notebooks. These are interactive html pages, that contain code and the output from that code, and are a convenient way to keep your python work organized and test new ideas. To open one of these, you first need to start the notebook server:
+For the labs in the class, the Python code will be provided as jupyter notebooks. These are interactive html pages, that contain code and the output from that code, and are a convenient way to keep your Python work organized and test new ideas. To open one of these, you first need to start the notebook server:
 
 ```
 jupyter notebook
@@ -175,7 +175,7 @@ This will launch a new page in your web browser with a list of the files that ar
 
 ![notebook Interface](./images/notebook01.png)
 
-Clicking on any of these will then open the notebook on a new browser page. Or you can open a new notebook by clicking on the [New] button in the top right. A notebook consists of a set of *cells*, blocks of code or text. Each cell has a set type: generally either code or markdown. Markdown cells are used for descriptive text, and can be formatted using basic markdown tags. Code cells are where you enter your python code. Once you have entered your code, you can then click the [Run] button to run it, and any output will appear below the cell:
+Clicking on any of these will then open the notebook on a new browser page. Or you can open a new notebook by clicking on the [New] button in the top right. A notebook consists of a set of *cells*, blocks of code or text. Each cell has a set type: generally either code or markdown. Markdown cells are used for descriptive text, and can be formatted using basic markdown tags. Code cells are where you enter your Python code. Once you have entered your code, you can then click the [Run] button to run it, and any output will appear below the cell:
 
 ![Code cells](./images/notebook02.png)
 
@@ -185,7 +185,7 @@ At the top of the page there are a set of menus and actions buttons. The arrows 
 
 If you've got this far, we'll switch to the jupyter notebook for the remainder of this lab. If you haven't used these notebooks before, it's probably worth spending a little time working a new one at some point to get used to navigating through them. 
 
-[pydlID]: https://www.python.org/downloads/
-[distID]: https://wiki.python.org/moin/PythonDistributions
+[pydlID]: https://www.Python.org/downloads/
+[distID]: https://wiki.Python.org/moin/PythonDistributions
 [mcID]: https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html#
-[packID]: https://wiki.python.org/moin/UsefulModules
+[packID]: https://wiki.Python.org/moin/UsefulModules
