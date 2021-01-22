@@ -1592,7 +1592,7 @@ University of Utah</div></h4>
 </div>
 <div id="installing-python" class="section level1">
 <h1>Installing Python</h1>
-<p>There are two commonly used versions of Python: 2.7 and 3. Version 3 was released in 2008 and there has been a gradual transition to only using 3 (support for 2.x was stopped in 2020). In this class, we will only use Python 3. There are several <a href="https://wiki.Python.org/moin/PythonDistributions">packaged distributions</a> of Python that come with additional utilities. I would recommend using miniconda (these labs were written using this). Instructions for installing miniconda can be found <a href="https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html#">here</a>.</p>
+<p>There are two commonly used versions of Python: 2.7 and 3. Version 3 was released in 2008 and there has been a gradual transition to only using 3 (support for 2.x was stopped in 2020). In this class, we will only use Python 3. There are several <a href="https://wiki.Python.org/moin/PythonDistributions">packaged distributions</a> of Python that come with additional utilities. I would recommend using miniconda (these labs were written using this). Instructions for installing miniconda can be found <a href="https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html#">here</a>. Make sure you install version 3.8 (or higher) and that you are installing the 64bit version.</p>
 </div>
 <div id="using-conda" class="section level1">
 <h1>Using conda</h1>
@@ -1600,7 +1600,8 @@ University of Utah</div></h4>
 <h2>Starting Python</h2>
 <div id="windows" class="section level3">
 <h3>Windows</h3>
-<p>Open terminal???</p>
+<p>In windows, you can run the conda version of Python by going to the [Start Menu] &gt; [Anaconda (64-bit)] &gt; [Anaconda prompt]. This will launch a new terminal window, and if conda has been correctly installed you should see the following prompt:</p>
+<pre><code>(base) C:\Users\username&gt;</code></pre>
 </div>
 <div id="mac-osx" class="section level3">
 <h3>Mac OSX</h3>
@@ -1638,7 +1639,7 @@ University of Utah</div></h4>
 <pre><code>conda create -n new-env</code></pre>
 <p>Python may ask you about the installation location for this environment, just accept the default. The environment will be set up then made available for use. Note that this only creates the environment, but you are still in the <code>base</code> environment. To change to <code>new-env</code>, type</p>
 <pre><code>conda activate new-env</code></pre>
-<p>Any you should see the prompt change from <code>(base)</code> to <code>(new-env)</code>. If you want to see a list of all the available environments:</p>
+<p>Any you should see the prompt change from <code>(base)</code> to <code>(new-env)</code>. If you want to see a list of all the available environments (the current one will be listed with a <code>*</code>):</p>
 <pre><code>conda env list</code></pre>
 <p>You can stop your current environment return to the <code>base</code> environment:</p>
 <pre><code>conda deactivate</code></pre>
@@ -1651,7 +1652,7 @@ conda activate geog5160</code></pre>
 <h3>Installing packages</h3>
 <p>The <code>conda</code> command can also be used to install packages. To demonstrate this, we’ll start by installing the Jupyter Noteback package. This provides an interactive framework for testing and running Python code through your browser. Go to your terminal and enter the following code:</p>
 <pre><code>conda install -c conda-forge notebook</code></pre>
-<p>This will install <code>notebook</code> from the <code>conda-forge</code> repository. There are several repositories that host these packages, and <code>conda</code> uses anaconda.com by default. If your package is hosted elsewhere you need to specify this with the <code>-c</code> argument. The best way to find out where a particular package is held is by googling <code>conda install packagename</code> and following the links. Once you run this command, conda will check your local environment against the remote one, and download the necessary files to install the notebook (this includes any dependencies). Once you see the following three lines, the installation is complete:</p>
+<p>And press [y] to install all the supplementary packages. This will install <code>notebook</code> from the <code>conda-forge</code> repository or channel. There are several channels that host these packages, and <code>conda</code> uses anaconda.com by default. If your package is hosted elsewhere you need to specify this with the <code>-c</code> argument. The best way to find out where a particular package is held is by googling <code>conda install packagename</code> and following the links. Once you run this command, conda will check your local environment against the remote one, and download the necessary files to install the notebook (this includes any dependencies). Once you see the following three lines, the installation is complete:</p>
 <pre><code>  Preparing transaction: done
   Verifying transaction: done
   Executing transaction: done</code></pre>

@@ -48,7 +48,7 @@ Now download the *penguins.csv* file from Canvas and move this to the `datafiles
 
 # Installing Python
 
-There are two commonly used versions of Python: 2.7 and 3. Version 3 was released in 2008 and there has been a gradual transition to only using 3 (support for 2.x was stopped in 2020). In this class, we will only use Python 3. There are several [packaged distributions][distID] of Python that come with additional utilities. I would recommend using miniconda (these labs were written using this). Instructions for installing miniconda can be found [here][mcID]. 
+There are two commonly used versions of Python: 2.7 and 3. Version 3 was released in 2008 and there has been a gradual transition to only using 3 (support for 2.x was stopped in 2020). In this class, we will only use Python 3. There are several [packaged distributions][distID] of Python that come with additional utilities. I would recommend using miniconda (these labs were written using this). Instructions for installing miniconda can be found [here][mcID]. Make sure you install version 3.8 (or higher) and that you are installing the 64bit version. 
 
 # Using conda
 
@@ -56,7 +56,11 @@ There are two commonly used versions of Python: 2.7 and 3. Version 3 was release
 
 ### Windows
 
-Open terminal???
+In windows, you can run the conda version of Python by going to the [Start Menu] > [Anaconda (64-bit)] > [Anaconda prompt]. This will launch a new terminal window, and if conda has been correctly installed you should see the following prompt: 
+
+```
+(base) C:\Users\username>
+```
 
 ### Mac OSX
 
@@ -112,7 +116,7 @@ Python may ask you about the installation location for this environment, just ac
 conda activate new-env
 ```
 
-Any you should see the prompt change from `(base)` to `(new-env)`. If you want to see a list of all the available environments:
+Any you should see the prompt change from `(base)` to `(new-env)`. If you want to see a list of all the available environments (the current one will be listed with a `*`):
 
 ```
 conda env list
@@ -145,7 +149,7 @@ The `conda` command can also be used to install packages. To demonstrate this, w
 conda install -c conda-forge notebook
 ```
 
-This will install `notebook` from the `conda-forge` repository. There are several repositories that host these packages, and `conda` uses anaconda.com by default. If your package is hosted elsewhere you need to specify this with the `-c` argument. The best way to find out where a particular package is held is by googling `conda install packagename` and following the links. Once you run this command, conda will check your local environment against the remote one, and download the necessary files to install the notebook (this includes any dependencies). Once you see the following three lines, the installation is complete:
+And press [y] to install all the supplementary packages. This will install `notebook` from the `conda-forge` repository or channel. There are several channels that host these packages, and `conda` uses anaconda.com by default. If your package is hosted elsewhere you need to specify this with the `-c` argument. The best way to find out where a particular package is held is by googling `conda install packagename` and following the links. Once you run this command, conda will check your local environment against the remote one, and download the necessary files to install the notebook (this includes any dependencies). Once you see the following three lines, the installation is complete:
 
 ```
   Preparing transaction: done
