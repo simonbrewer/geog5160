@@ -40,7 +40,7 @@ More details about the **mlr3** package and the associated project can be found 
 You should also install the following packages to help in managing data and visualizing your results. We will not need all of these today, but will later on. 
 
 - **dplyr**
-- **rgdal**
+- **sf**
 - **raster**
 - **tmap**
 
@@ -144,16 +144,18 @@ hist(housing2$median_income,
 
 Now try making additional histograms for the other variables in the `housing2` data frame. The R function `names()` will give you a list of the column names if you have forgotten. 
 
-Next, we'll make a quick map of the median house values using the **tmap** package. 
+Next, we'll make a quick map of the median house values: 
 
 ```{r}
-library(rgdal)
-ca.sp = readOGR("ca/ca.shp")
+library(sf)
+ca_sf = st_read("ca/ca.shp")
+st_crs(ca_sf) <- 4326
 
-coordinates(housing) <- ~longitude+latitude
-proj4string(housing) <- CRS("+init=EPSG:4326")
+housing2 <- st_as_sf(housing, coords = c(longitude, latitude))
+st_crs(housing2) <- 4326
 
-spplot(housing, "median_house_value", sp.layout = list(ca.sp))
+plot(st_geometry(ca_sf))
+plot(housing2["median_house_value"], add = TRUE, pch = 16, alpha = 0.25)
 ```
 
 And you should be able to clearly see the areas with high values around Los Angeles and the Bay Area. 
@@ -359,7 +361,7 @@ predict_cal$score(measure)
 
 ### Resampling
 
-So far, we have built and tested our model on a single split of the data (the hold-out method). However, if the training and testing datasets are not well set up, the estimates of modelr performance can be biased. There are several more exhaustive resampling strategies that can be used instead, and we will implment one of these now. To see the list of available strategies, type:
+So far, we have built and tested our model on a single split of the data (the hold-out method). However, if the training and testing datasets are not well set up, the estimates of modelr performance can be biased. There are several more exhaustive resampling strategies that can be used instead, and we will implement one of these now. To see the list of available strategies, type:
 
 ```{r}
 mlr_resamplings
@@ -437,20 +439,43 @@ for (i in 1:5) {
 }
 ```
 
+## Exercise
+
+Use a word document to record your answers and output. Assignments, to include both the word document and R script file, should be submitted to Canvas before class on Monday, XXXXXX XX. Ensure your assignment has been saved using the following naming convention: Lab06_lastname_script and Lab06_lastname_report.
+
+As we noted during the lab, the output from the linear model showed some odd effects. These arise from correlations between some of the variables, due to the fact that they are recording very similar information. The two most likely problems are:
+
+- `avg_rooms` and `avg_bedrooms`: houses with a greater number of rooms are also likely to have a greater number of bedrooms
+- `population` and `households`: districts with higher population will have a larger number of households 
+
+To avoid these problems, we'll remove `avg_rooms` and `households` from the dataset and remake the model. 
+
+```{r results='hide'}
+housing3 <- housing2 %>%
+  select(-avg_rooms, -households)
+```
+
+For the exercise, you need to 
+
+1. Remake the basic linear model with this dataset. Provide the output from the `summary()` function (either as a screenshot or copy-paste) [1]
+2. Make a new task for machine learning this new dataset [1]
+3. Repeat the resampling strategy with the new task, but with a 10-fold cross validation (i.e. `folds = 10`). Provide the set of 10 RMSE values and the aggregate RMSE [2]
+4. Comment on whether you think this reduced model is better or worse at predictions than the mode you built in lab [1]
+
 ## Appendix: The **tmap** package
 
 The **tmap** package is an add-on to R that makes thematic maps, which are generally a little nicer looking than the default `spplot()` maps. This works by using a series of layers (not unlike making a GIS map). First, we specify a spatial object that we want to plot with `tm_shape()`, then add a geometry to this (e.g. `tm_fill()`, `tm_symbols()`, etc. Here we make a 'bubble' plot, with the size of the symbols representing the `median_house_value`:
 
 ```{r}
 library(tmap)
-tm_shape(ca.sp) + tm_borders() +
+tm_shape(ca_sf) + tm_borders() +
   tm_shape(housing) + tm_symbols("median_house_value")
 ```
 
 Here, we do the same, but specify a color palette to use shading rather than size to represent value. We also specify `alpha` to make the points a little transparent.
 
 ```{r eval=FALSE}
-tm_shape(ca.sp) + tm_borders() +
+tm_shape(ca_sf) + tm_borders() +
   tm_shape(housing) + tm_symbols("median_house_value", palette = "Reds", 
                                     alpha = 0.75, size = 0.2, border.lwd = NA)
 ```
@@ -458,7 +483,7 @@ tm_shape(ca.sp) + tm_borders() +
 Here we remake the same map, but add a title and some background colors.
 
 ```{r eval=FALSE}
-tm_shape(ca.sp) + tm_borders() + tm_fill(col = "lightyellow") +
+tm_shape(ca_sf) + tm_borders() + tm_fill(col = "lightyellow") +
   tm_shape(housing) + tm_symbols("median_house_value", palette = "Reds", 
                                     alpha = 0.75, size = 0.2, border.lwd = NA) +
   tm_layout(bg = "grey85", legend.bg.color = "white", 
