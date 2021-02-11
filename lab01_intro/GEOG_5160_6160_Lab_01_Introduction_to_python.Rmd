@@ -187,7 +187,7 @@ At the top of the page there are a set of menus and actions buttons. The arrows 
 
 ![Menu bar](./images/notebook03.png)
 
-If you've got this far, we'll switch to the jupyter notebook for the remainder of this lab. If you haven't used these notebooks before, it's probably worth spending a little time working a new one at some point to get used to navigating through them. 
+If you've got this far, we'll switch to the jupyter notebook for the remainder of this lab. If you haven't used these notebooks before, it's probably worth spending a little time working with a new one at some point to get used to navigating through them. 
 
 [pydlID]: https://www.Python.org/downloads/
 [distID]: https://wiki.Python.org/moin/PythonDistributions
