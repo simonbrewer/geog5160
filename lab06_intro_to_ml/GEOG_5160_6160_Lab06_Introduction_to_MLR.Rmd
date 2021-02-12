@@ -119,15 +119,66 @@ housing$avg_rooms = housing$total_rooms / housing$households
 housing$avg_bedrooms = housing$total_bedrooms / housing$households
 ```
 
+Next, we'll make a quick map of the median house values. For this we first convert to an `sf` or [simple features][sfID] object. (The `crs` parameter defines the coordinate reference system or projection using an EPSG numeric code (4326 = WGS 84). For more detail on these codes, go [here][epsgID].)
+
+```{r}
+library(sf)
+ca_sf = st_read("ca/ca.shp")
+st_crs(ca_sf) <- 4326
+
+housing <- st_as_sf(housing, 
+                    coords = c("longitude", "latitude"),
+                    crs = 4326)
+```
+
+You can map these values using R's `plot()` function as follows. First we map the geometry of the California border, then add symbols for the `median_house_value` variable.
+
+```{r}
+
+plot(st_geometry(ca_sf))
+plot(housing2["median_house_value"], add = TRUE, pch = 16, alpha = 0.25)
+```
+
+And you should be able to clearly see the areas with high values around Los Angeles and the Bay Area. 
+
+### The **tmap** package
+
+The **tmap** package is an add-on to R that makes thematic maps, which are generally a little nicer looking than the default `spplot()` maps. This works by using a series of layers (not unlike making a GIS map). First, we specify a spatial object that we want to plot with `tm_shape()`, then add a geometry to this (e.g. `tm_fill()`, `tm_symbols()`, etc. Here we make a 'bubble' plot, with the size of the symbols representing the `median_house_value`:
+
+```{r}
+library(tmap)
+tm_shape(ca_sf) + tm_borders() +
+  tm_shape(housing) + tm_symbols("median_house_value")
+```
+
+Here, we do the same, but specify a color palette to use shading rather than size to represent value. We also specify `alpha` to make the points a little transparent.
+
+```{r eval=FALSE}
+tm_shape(ca_sf) + tm_borders() +
+  tm_shape(housing) + tm_symbols("median_house_value", palette = "Reds", 
+                                    alpha = 0.75, size = 0.2, border.lwd = NA)
+```
+
+Here we remake the same map, but add a title and some background colors.
+
+```{r eval=TRUE}
+tm_shape(ca_sf) + tm_borders() + tm_fill(col = "lightyellow") +
+  tm_shape(housing) + tm_symbols("median_house_value", palette = "Reds", 
+                                    alpha = 0.75, size = 0.2, border.lwd = NA) +
+  tm_layout(bg = "grey85", legend.bg.color = "white", 
+            main.title = "CA Housing Data")
+```
+
 Finally, we'll make a new dataset containing only the data we want to use. For this, we use the `select()` function. Using a column name preceded by `-` will remove that column. 
 
 ```{r}
 housing2 = housing %>%
-  select(-longitude, -latitude, -total_rooms, -total_bedrooms, -ocean_proximity)
+  st_set_geometry(NULL) %>%
+  select(-total_rooms, -total_bedrooms, -ocean_proximity)
 names(housing2)
 ```
 
-## Data visualization
+### Data visualization
 
 We'll make a few figures to visualize the data before starting. First, a histogram of `median_house_value`:
 
@@ -144,22 +195,6 @@ hist(housing2$median_income,
 
 Now try making additional histograms for the other variables in the `housing2` data frame. The R function `names()` will give you a list of the column names if you have forgotten. 
 
-Next, we'll make a quick map of the median house values: 
-
-```{r}
-library(sf)
-ca_sf = st_read("ca/ca.shp")
-st_crs(ca_sf) <- 4326
-
-housing2 <- st_as_sf(housing, coords = c(longitude, latitude))
-st_crs(housing2) <- 4326
-
-plot(st_geometry(ca_sf))
-plot(housing2["median_house_value"], add = TRUE, pch = 16, alpha = 0.25)
-```
-
-And you should be able to clearly see the areas with high values around Los Angeles and the Bay Area. 
-
 ## Building a linear model
 
 We'll start by simply building a linear regression model between the median house values and all other variables. The base R function for a linear model is `lm()`, which runs OLS regression. In general, models in R use the tilde (`~`) notation to distinguish between the outcome variable (placed on the left hand side) and the independent variables or features (on the right hand side). For a model using all the variables, we would write it as follows:
@@ -169,7 +204,7 @@ fit1 = lm(median_house_value ~ housing_median_age + population + households +
             median_income + avg_rooms + avg_bedrooms, data = housing2)
 ```
 
-Of course, this gets pretty tedious, especially when you have a lot of independent variables. Fortunately, R has a shorthand for this, the `.` operator. The following code builds a model of `median_house_value` using *all other* variables in the `housing2` data frame. 
+Of course, this gets pretty tedious, especially when you have a lot of independent variables. Fortunately, R has a shorthand for this, the `.` operator. The following code builds a model of `median_house_value` using *all other* variables in the `housing2` data frame (this is why we removed the extraneous variables in a previous step). 
 
 ```{r}
 fit1 = lm(median_house_value ~ ., data = housing2)
@@ -229,8 +264,9 @@ task_housing$ncol
 task_housing$data()
 # retrieve data for rows with ids 1, 51, and 101
 task_housing$data(rows = c(1, 51, 101))
-## Names of features and targets
+## Names of features 
 task_housing$feature_names
+## Name of target variable
 task_housing$target_names
 ```
 
@@ -248,19 +284,20 @@ To see the list of available learners, type:
 mlr_learners
 ```
 
-Note that this package does contain the algorithms, but acts to link a diverse range of R packages that include the machine learning methods. To get a better idea how this works, let's select a classification algorithm (a classification tree):
+Note that this package does not contain the algorithms, but acts to link a diverse range of R packages that include the machine learning methods. To get a better idea of how this works, let's select a classification algorithm (a classification tree):
 
 ```{r}
 learner = mlr_learners$get("classif.rpart")
 print(learner)
 ```
-The output of the `print()` function describes this particular algorithm. You should see that the functions used are from the **rpart** package, as well as information about the type of predictions that can be made and the type of features that can be included. One important part. When a learner os created, these are set to default values:
+
+The output of the `print()` function describes this particular algorithm. You should see that the functions used are from the **rpart** package, as well as information about the type of predictions that can be made and the type of features that can be included. This also lists the current set of parameters (or hyper-parameters) for that particular algorithm. When a learner is created, these are set to default values, and you can see the full list of these by typing:
 
 ```{r}
 learner$param_set
 ```
 
-The linear models that we are using today do not have any parameters, but we will look at optimizing or tuning these for more complex methods in a later lab. Now create a learner for OLS regression (`regr.lm`) as follows:
+The linear models that we are using today do not have any parameters that we want to adjust, but we will look at optimizing or tuning these for more complex methods in a later lab. Now create a learner for OLS regression (`regr.lm`) as follows:
 
 ```{r}
 learner = mlr_learners$get("regr.lm")
@@ -270,11 +307,13 @@ learner$param_set
 
 ### Training and testing data
 
-Next we'll create a training and testing dataset. For this first iteration of our model, we'll split the data manually into two sections, with 80% of the observations in the training set and 20% in the testing. In the following code, we 
+Next we'll create a training and testing dataset. For this first iteration of our model, we'll split the data manually into two sections, with 80% of the observations in the training set and 20% in the testing. In the following code, we: 
 
 - Set the random seed to allow for reproducibility
 - Create a set of indices for the training data using the `sample()` function. The first argument `task_housing$nrow` gives the range of numbers to randomly sample (between 1 and the number of observations). The second argument `0.8 * task_housing$nrow` gives the number of random samples to take
 - Create a set of indices for the testing data as the indices *not* used in the training set
+
+The `set.seed()` function just re-initializes R's random number generator to the same value. This should ensure that you always get the same random split. You can skip this line if you'd like to see how much the results might vary if you have a different split into training and testing datasets. 
 
 ```{r}
 set.seed(1234)
@@ -337,7 +376,7 @@ THis plot allows us to visualize how well the model has predicted for the test d
 mlr_measures
 ```
 
-Note that most methods either begin with `classif.` or `regr.`, indicating what type of task they are suitable for. We create a selected measure with `msr()`, then use the `$score()` method to calculate this based on our prediction. The standard measure for regression methods is the roomt mean squared error (RMSE), so let's calculate this now:
+Note that most methods either begin with `classif.` or `regr.`, indicating what type of task they are suitable for. We create a selected measure with `msr()`, then use the `$score()` method to calculate this based on our prediction. The standard measure for regression methods is the root mean squared error (RMSE), so let's calculate this now:
 
 ```{r}
 measure = msr("regr.rmse")
@@ -361,7 +400,7 @@ predict_cal$score(measure)
 
 ### Resampling
 
-So far, we have built and tested our model on a single split of the data (the hold-out method). However, if the training and testing datasets are not well set up, the estimates of modelr performance can be biased. There are several more exhaustive resampling strategies that can be used instead, and we will implement one of these now. To see the list of available strategies, type:
+So far, we have built and tested our model on a single split of the data (the hold-out method). However, if the training and testing datasets are not well set up, the estimates of model performance can be biased. There are several more exhaustive resampling strategies that can be used instead, and we will implement one of these now. To see the list of available strategies, type:
 
 ```{r}
 mlr_resamplings
@@ -382,7 +421,7 @@ Note that we could have created the hold-out method used above, by setting the r
 rsmp("holdout", ratio = 0.8)
 ```
 
-We now run the resampling strategy. To do this, we need to provide a task, so that the dataset can be divided up appropriately. This is carried out by calling the `$instantiate()` method, and the resulting indices for training and testing for the different folds are stored in the Resampling object:
+We now run the resampling strategy. To do this, we need to provide a task, so that the dataset can be divided up appropriately. This is carried out by calling the `$instantiate()` method, and the resulting indices for training and testing for the different folds are stored in the `resampling` object:
 
 ```{r}
 resampling$instantiate(task_housing)
@@ -405,7 +444,7 @@ print(rr)
 
 The output tells us that the resampler ran well, with no errors or warnings. If errors or warnings occur, you can examine them using the appropriate method:
 
-```{r}
+```{r results='hide'}
 rr$errors
 rr$warnings
 ```
@@ -462,32 +501,8 @@ For the exercise, you need to
 3. Repeat the resampling strategy with the new task, but with a 10-fold cross validation (i.e. `folds = 10`). Provide the set of 10 RMSE values and the aggregate RMSE [2]
 4. Comment on whether you think this reduced model is better or worse at predictions than the mode you built in lab [1]
 
-## Appendix: The **tmap** package
 
-The **tmap** package is an add-on to R that makes thematic maps, which are generally a little nicer looking than the default `spplot()` maps. This works by using a series of layers (not unlike making a GIS map). First, we specify a spatial object that we want to plot with `tm_shape()`, then add a geometry to this (e.g. `tm_fill()`, `tm_symbols()`, etc. Here we make a 'bubble' plot, with the size of the symbols representing the `median_house_value`:
-
-```{r}
-library(tmap)
-tm_shape(ca_sf) + tm_borders() +
-  tm_shape(housing) + tm_symbols("median_house_value")
-```
-
-Here, we do the same, but specify a color palette to use shading rather than size to represent value. We also specify `alpha` to make the points a little transparent.
-
-```{r eval=FALSE}
-tm_shape(ca_sf) + tm_borders() +
-  tm_shape(housing) + tm_symbols("median_house_value", palette = "Reds", 
-                                    alpha = 0.75, size = 0.2, border.lwd = NA)
-```
-
-Here we remake the same map, but add a title and some background colors.
-
-```{r eval=FALSE}
-tm_shape(ca_sf) + tm_borders() + tm_fill(col = "lightyellow") +
-  tm_shape(housing) + tm_symbols("median_house_value", palette = "Reds", 
-                                    alpha = 0.75, size = 0.2, border.lwd = NA) +
-  tm_layout(bg = "grey85", legend.bg.color = "white", 
-            main.title = "CA Housing Data")
-```
 
 [mlr3]: https://mlr3.mlr-org.com/reference/mlr3-package.html
+[sfID]: https://r-spatial.github.io/sf/articles/sf1.html
+[epsgID]: https://spatialreference.org/ref/epsg/
