@@ -134,9 +134,8 @@ housing <- st_as_sf(housing,
 You can map these values using R's `plot()` function as follows. First we map the geometry of the California border, then add symbols for the `median_house_value` variable.
 
 ```{r}
-
 plot(st_geometry(ca_sf))
-plot(housing2["median_house_value"], add = TRUE, pch = 16, alpha = 0.25)
+plot(housing["median_house_value"], add = TRUE, pch = 16, alpha = 0.25)
 ```
 
 And you should be able to clearly see the areas with high values around Los Angeles and the Bay Area. 
