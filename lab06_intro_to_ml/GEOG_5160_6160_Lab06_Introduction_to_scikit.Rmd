@@ -1,0 +1,54 @@
+---
+title: "GEOG 5160/6160 Lab 06 Introduction to scikit-learn in Python"
+author: | 
+  | Simon Brewer
+  | Geography Department
+  | University of Utah
+date: "February 12, 2021"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    fig_caption: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(png)
+library(grid)
+```
+
+
+## Introduction
+
+In this lab, we will introduce `scikit-learn`, a toolkit for machine learning in Python. This provides a standard interface managing a machine learning workflow, including setting up training and testing data, running different algorithms and evaluating the models. Full details on the package as well as a large number of examples can be found [here][scikit].
+
+If you are using Anaconda and Miniconda, it is likely that `scikit-learn` was installed as part of the overall package. To test this, simply start Python in a terminal and run the following command import sklearn. If you see no errors, then `scikit` is installed. If you get an error No module named 'sklearn', then you will need to install it. Simply run the following command in a terminal to do so: `conda install -c conda-forge scikit-learn`.
+
+In the lab, we will repeat the example shown in class in which a linear regression model was built to predict housing prices for a set of locations in California. Before starting the lab, you will need to set up a new folder for your working directory. If you have previously made a class folder (e.g. `geog5160`), go to this now and create a new folder for today's class called `lab06`. Now download the data and notebook for this lab. Go to the Canvas page and get the following files:
+
+- `housing.csv`: a csv file with information about house prices and characteristics in California districts
+- `ca.zip`: a shapefile with the California border
+- `GEOG_5160_6160_lab06.ipynb`: a Jupyter notebook with the code for today's examples. 
+
+This (and subsequent labs) will assume that you are using the folder layout intrduced in the first intro lab as follows:
+
+```
++-- geog5160
+|   +-- datafiles
+|   +-- lab01
+|   +-- lab02
+|   +-- lab03
+...
+|   +-- lab11
+```
+
+Move the csv and zip files to the datafiles folder and unzip and extract files from `ca.zip`. Move the notebook to your `lab06` folder. Now open a new terminal (in Windows go to the [Start Menu] > [Anaconda (64-bit)] > [Anaconda prompt]). Once opened, change directory to the folder you just made (e.g. `cd /Users/username/Documents/geog5160/lab06`). Once there, activate your conda environment (`conda activate geog5160`). Finally, start the Jupyter Notebook server:
+
+```
+jupyter notebook
+```
+
+And open the notebook for today's class. 
+
+[scikit]: https://scikit-learn.org/stable/
