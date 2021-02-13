@@ -21,9 +21,9 @@ library(grid)
 
 ## Introduction
 
-In this lab, we will introduce the basics of machine learning in R. We will repeat the example shown in class in which a linear regression model was built to predict housing prices for a set of locations in California. R has a large number of packages for individual machine learning algorithms, but also has a couple of packages that are designed to manage a machine learning workflow. These packages take care of setting up training and testing data, as well as evaluating the models. We will see in later labs that these can also be used to optimize the set up of the model.
+In this lab, we will introduce the basics of machine learning in R. We will repeat the example shown in class in which a linear regression model was built to predict housing prices for a set of locations in California. Before starting the lab, you will need to set up a new folder for your working directory. Go to your `geog5160` folder now and create a new folder for today's class called `lab06`. Now use `setwd()` to make this folder your working directory.  
 
-The package we will use is called **mlr3**, which is a new version of an older package and under active development. You will need to install this, as well as a set of extensions:
+R has a large number of packages for individual machine learning algorithms, but also has a couple of packages that are designed to manage a machine learning workflow. These packages take care of setting up training and testing data, as well as evaluating the models. We will see in later labs that these can also be used to optimize the set up of the model. The package we will use is called **mlr3**, which is a new version of an older package and under active development. You will need to install this, as well as a set of extensions:
 
 - **mlr3viz**
 - **mlr3learners**
@@ -54,20 +54,20 @@ You should also install the following packages to help in managing data and visu
 
 ### Data
 
-For today's lab, we will use a data set of California house prices from the file *housing.csv*, which is available through Canvas. The data are taken from a paper by Kelley and Barry ("Sparse spatial autoregressions." Statistics & Probability Letters 33.3 (1997): 291-297), and is a classic dataset used in machine learning examples. You should also download the zipped file *ca.zip*. This contains a shapefile of California's border. 
+For today's lab, we will use a data set of California house prices from the file *housing.csv*, which is available through Canvas. The data are taken from a paper by Kelley and Barry ("Sparse spatial autoregressions." Statistics & Probability Letters 33.3 (1997): 291-297), and is a classic dataset used in machine learning examples. You should also download the zipped file *ca.zip*. This contains a shapefile of California's border. Move both of these to your `datafiles` directory and unzip and extract the files from *ca.zip*.
 
 The csv file contains the following columns most of which should be self-explanatory), with values for each California district taken from the 1990 census:
 
-- longitude
-- latitude
-- housing_median_age
-- total_rooms: total number of rooms in the district
-- total_bedrooms: total number of bedrooms in the district
-- population
-- households: total number of households in the district
-- median_income
-- median_house_value
-- ocean_proximity: a categorical value giving the position of the district relative to the ocean
+- `longitude`
+- `latitude`
+- `housing_median_age`
+- `total_rooms`: total number of rooms in the district
+- `total_bedrooms`: total number of bedrooms in the district
+- `population`
+- `households`: total number of households in the district
+- `median_income`
+- `median_house_value`
+- `ocean_proximity`: a categorical value giving the position of the district relative to the ocean
 
 The goal will be to build a model that can predict the median house value based on the other variables (or features). 
 
@@ -76,13 +76,13 @@ The goal will be to build a model that can predict the median house value based 
 Start by creating a working directory for today's lab (e.g. called 'lab06'), and move the *housing.csv* and *ca.zip* files there. Unzip *ca.zip*. Next start RStudio (or R), and change your working directory to this directory. Check that you are in the correct place by typing the following in the console window:
 
 ```{r eval=FALSE}
-list.files()
+list.files("../datafiles")
 ```
 
 And make sure that you see *housing.csv* listed. Now load the file into R:
 
 ```{r}
-housing <- read.csv("housing.csv")
+housing <- read.csv("../datafiles/housing.csv")
 ```
 
 ## Data pre-processing
@@ -123,7 +123,7 @@ Next, we'll make a quick map of the median house values. For this we first conve
 
 ```{r}
 library(sf)
-ca_sf = st_read("ca/ca.shp")
+ca_sf = st_read("../datafiles/ca/ca.shp")
 st_crs(ca_sf) <- 4326
 
 housing <- st_as_sf(housing, 

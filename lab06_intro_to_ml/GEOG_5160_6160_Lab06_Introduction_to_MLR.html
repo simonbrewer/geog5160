@@ -1568,8 +1568,8 @@ University of Utah</div></h4>
 
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
-<p>In this lab, we will introduce the basics of machine learning in R. We will repeat the example shown in class in which a linear regression model was built to predict housing prices for a set of locations in California. R has a large number of packages for individual machine learning algorithms, but also has a couple of packages that are designed to manage a machine learning workflow. These packages take care of setting up training and testing data, as well as evaluating the models. We will see in later labs that these can also be used to optimize the set up of the model.</p>
-<p>The package we will use is called <strong>mlr3</strong>, which is a new version of an older package and under active development. You will need to install this, as well as a set of extensions:</p>
+<p>In this lab, we will introduce the basics of machine learning in R. We will repeat the example shown in class in which a linear regression model was built to predict housing prices for a set of locations in California. Before starting the lab, you will need to set up a new folder for your working directory. Go to your <code>geog5160</code> folder now and create a new folder for today’s class called <code>lab06</code>. Now use <code>setwd()</code> to make this folder your working directory.</p>
+<p>R has a large number of packages for individual machine learning algorithms, but also has a couple of packages that are designed to manage a machine learning workflow. These packages take care of setting up training and testing data, as well as evaluating the models. We will see in later labs that these can also be used to optimize the set up of the model. The package we will use is called <strong>mlr3</strong>, which is a new version of an older package and under active development. You will need to install this, as well as a set of extensions:</p>
 <ul>
 <li><strong>mlr3viz</strong></li>
 <li><strong>mlr3learners</strong></li>
@@ -1596,28 +1596,28 @@ University of Utah</div></h4>
 </div>
 <div id="data" class="section level3">
 <h3>Data</h3>
-<p>For today’s lab, we will use a data set of California house prices from the file <em>housing.csv</em>, which is available through Canvas. The data are taken from a paper by Kelley and Barry (“Sparse spatial autoregressions.” Statistics &amp; Probability Letters 33.3 (1997): 291-297), and is a classic dataset used in machine learning examples. You should also download the zipped file <em>ca.zip</em>. This contains a shapefile of California’s border.</p>
+<p>For today’s lab, we will use a data set of California house prices from the file <em>housing.csv</em>, which is available through Canvas. The data are taken from a paper by Kelley and Barry (“Sparse spatial autoregressions.” Statistics &amp; Probability Letters 33.3 (1997): 291-297), and is a classic dataset used in machine learning examples. You should also download the zipped file <em>ca.zip</em>. This contains a shapefile of California’s border. Move both of these to your <code>datafiles</code> directory and unzip and extract the files from <em>ca.zip</em>.</p>
 <p>The csv file contains the following columns most of which should be self-explanatory), with values for each California district taken from the 1990 census:</p>
 <ul>
-<li>longitude</li>
-<li>latitude</li>
-<li>housing_median_age</li>
-<li>total_rooms: total number of rooms in the district</li>
-<li>total_bedrooms: total number of bedrooms in the district</li>
-<li>population</li>
-<li>households: total number of households in the district</li>
-<li>median_income</li>
-<li>median_house_value</li>
-<li>ocean_proximity: a categorical value giving the position of the district relative to the ocean</li>
+<li><code>longitude</code></li>
+<li><code>latitude</code></li>
+<li><code>housing_median_age</code></li>
+<li><code>total_rooms</code>: total number of rooms in the district</li>
+<li><code>total_bedrooms</code>: total number of bedrooms in the district</li>
+<li><code>population</code></li>
+<li><code>households</code>: total number of households in the district</li>
+<li><code>median_income</code></li>
+<li><code>median_house_value</code></li>
+<li><code>ocean_proximity</code>: a categorical value giving the position of the district relative to the ocean</li>
 </ul>
 <p>The goal will be to build a model that can predict the median house value based on the other variables (or features).</p>
 </div>
 <div id="setting-up-your-project" class="section level3">
 <h3>Setting up your project</h3>
 <p>Start by creating a working directory for today’s lab (e.g. called ‘lab06’), and move the <em>housing.csv</em> and <em>ca.zip</em> files there. Unzip <em>ca.zip</em>. Next start RStudio (or R), and change your working directory to this directory. Check that you are in the correct place by typing the following in the console window:</p>
-<pre class="r"><code>list.files()</code></pre>
+<pre class="r"><code>list.files(&quot;../datafiles&quot;)</code></pre>
 <p>And make sure that you see <em>housing.csv</em> listed. Now load the file into R:</p>
-<pre class="r"><code>housing &lt;- read.csv(&quot;housing.csv&quot;)</code></pre>
+<pre class="r"><code>housing &lt;- read.csv(&quot;../datafiles/housing.csv&quot;)</code></pre>
 </div>
 </div>
 <div id="data-pre-processing" class="section level2">
@@ -1647,8 +1647,8 @@ housing$avg_bedrooms = housing$total_bedrooms / housing$households</code></pre>
 <p>Next, we’ll make a quick map of the median house values. For this we first convert to an <code>sf</code> or <a href="https://r-spatial.github.io/sf/articles/sf1.html">simple features</a> object. (The <code>crs</code> parameter defines the coordinate reference system or projection using an EPSG numeric code (4326 = WGS 84). For more detail on these codes, go <a href="https://spatialreference.org/ref/epsg/">here</a>.)</p>
 <pre class="r"><code>library(sf)</code></pre>
 <pre><code>## Linking to GEOS 3.8.1, GDAL 3.1.1, PROJ 6.3.1</code></pre>
-<pre class="r"><code>ca_sf = st_read(&quot;ca/ca.shp&quot;)</code></pre>
-<pre><code>## Reading layer `ca&#39; from data source `/Users/u0784726/Dropbox/Data/devtools/geog5160/lab06_intro_to_ml/ca/ca.shp&#39; using driver `ESRI Shapefile&#39;
+<pre class="r"><code>ca_sf = st_read(&quot;../datafiles/ca/ca.shp&quot;)</code></pre>
+<pre><code>## Reading layer `ca&#39; from data source `/Users/u0784726/Dropbox/Data/devtools/geog5160/datafiles/ca/ca.shp&#39; using driver `ESRI Shapefile&#39;
 ## Simple feature collection with 1 feature and 14 fields
 ## geometry type:  MULTIPOLYGON
 ## dimension:      XY
@@ -1970,11 +1970,11 @@ resampling$iters</code></pre>
 resampling$test_set(1)</code></pre>
 <p>Now with a task, a learner and a resampling object, we can call <code>resample()</code>, which calibrates the model using the training sets from the resampling strategy, and predicts for the test sets. The argument <code>store_models = TRUE</code> tells the function to save each individual model as it is built.</p>
 <pre class="r"><code>rr = resample(task_housing, learner, resampling, store_models = TRUE)</code></pre>
-<pre><code>## INFO  [10:38:08.520] Applying learner &#39;regr.lm&#39; on task &#39;housing&#39; (iter 1/5) 
-## INFO  [10:38:08.568] Applying learner &#39;regr.lm&#39; on task &#39;housing&#39; (iter 2/5) 
-## INFO  [10:38:08.610] Applying learner &#39;regr.lm&#39; on task &#39;housing&#39; (iter 3/5) 
-## INFO  [10:38:08.633] Applying learner &#39;regr.lm&#39; on task &#39;housing&#39; (iter 4/5) 
-## INFO  [10:38:08.660] Applying learner &#39;regr.lm&#39; on task &#39;housing&#39; (iter 5/5)</code></pre>
+<pre><code>## INFO  [17:38:09.167] Applying learner &#39;regr.lm&#39; on task &#39;housing&#39; (iter 1/5) 
+## INFO  [17:38:09.216] Applying learner &#39;regr.lm&#39; on task &#39;housing&#39; (iter 2/5) 
+## INFO  [17:38:09.251] Applying learner &#39;regr.lm&#39; on task &#39;housing&#39; (iter 3/5) 
+## INFO  [17:38:09.274] Applying learner &#39;regr.lm&#39; on task &#39;housing&#39; (iter 4/5) 
+## INFO  [17:38:09.300] Applying learner &#39;regr.lm&#39; on task &#39;housing&#39; (iter 5/5)</code></pre>
 <pre class="r"><code>print(rr)</code></pre>
 <pre><code>## &lt;ResampleResult&gt; of 5 iterations
 ## * Task: housing
