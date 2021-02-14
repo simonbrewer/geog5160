@@ -112,7 +112,7 @@ housing <- housing %>%
   filter(!is.na(total_bedrooms))
 ```
 
-Next, we'll transform two variables: `total_rooms` and `total_bedrooms`. These are the total number of rooms *per district*, but as the number of households vary among districts, we can't use them directly. Instead, we'll convert these to the averager room number per house as follows:
+Next, we'll transform two variables: `total_rooms` and `total_bedrooms`. These are the total number of rooms *per district*, but as the number of households vary among districts, we can't use them directly. Instead, we'll convert these to the average room number per house as follows:
 
 ```{r}
 housing$avg_rooms = housing$total_rooms / housing$households
