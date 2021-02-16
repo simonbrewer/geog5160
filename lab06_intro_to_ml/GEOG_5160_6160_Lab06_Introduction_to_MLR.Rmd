@@ -105,21 +105,44 @@ Now let's check to see which of the features contain missing values. The followi
 colSums(is.na(housing))
 ```
 
-This tells us that the only column with missing values is `total_bedrooms`, with 207. We'll now remove these using the `filter()` function to remove the missing values. As the name might suggest, this function filters a dataset by one or more conditions (here if the `total_bedroom` value is not a missing value `na`):
+This tells us that the only column with missing values is `total_bedrooms`, with 207. We'll now remove these using the `filter()` function to remove the missing values. As the name might suggest, this function filters a dataset by one or more conditions (here if the `total_bedroom` value is not a missing value `na`). We're using **dplyr**'s `filter` function to select observations. The `%>%` operator acts as a pipe, and forwards data from the `housing` dataframe to the `filter` function:
 
 ```{r}
 housing <- housing %>%
   filter(!is.na(total_bedrooms))
 ```
 
-Next, we'll transform two variables: `total_rooms` and `total_bedrooms`. These are the total number of rooms *per district*, but as the number of households vary among districts, we can't use them directly. Instead, we'll convert these to the average room number per house as follows:
+### Data visualization
+
+We'll make a few figures to visualize the data before starting. First, a histogram of `median_house_value`:
+
+```{r}
+hist(housing$median_house_value, 
+     xlab = "Median House Value", main = "CA Housing Data")
+```
+
+Note that the house value data is capped at $500,000. Next, the same for `median_income`:
+```{r}
+hist(housing$median_income, 
+     xlab = "Median Income", main = "CA Housing Data")
+```
+
+Now try making additional histograms for the other variables in the `housing2` data frame. The R function `names()` will give you a list of the column names if you have forgotten. 
+
+A few things to note here. 
+
+- The `median_house_value` and `housing_median_age` are both clearly capped at an upper limit (about 50,000 and 50 respectively). We may want to remove observations at these values (or ideally find the correct values)
+- The data are on a variety of different scales 
+- Several of the variables are right-skewed, and may need transforming to improve our models
+
+The variables `total_rooms` and `total_bedrooms` represent the total number of rooms *per district*, but as the number of households vary among districts, we can't use them directly. Instead, we'll use these to create the average number of rooms per house, and the ratio of bedrooms to rooms. 
 
 ```{r}
 housing$avg_rooms = housing$total_rooms / housing$households
-housing$avg_bedrooms = housing$total_bedrooms / housing$households
+housing$bedroom_ratio = housing$total_bedrooms / housing$total_rooms
 ```
 
-Next, we'll make a quick map of the median house values. For this we first convert to an `sf` or [simple features][sfID] object. (The `crs` parameter defines the coordinate reference system or projection using an EPSG numeric code (4326 = WGS 84). For more detail on these codes, go [here][epsgID].)
+Next, we'll visualize some of the data, starting with a quick map of the median house values. For this we first convert to an `sf` or [simple features][sfID] object. (The `crs` parameter defines the coordinate reference system or projection using an EPSG numeric code (4326 = WGS 84). For more detail on these codes, go [here][epsgID].)
 
 ```{r}
 library(sf)
@@ -140,7 +163,7 @@ plot(housing["median_house_value"], add = TRUE, pch = 16, alpha = 0.25)
 
 And you should be able to clearly see the areas with high values around Los Angeles and the Bay Area. 
 
-### The **tmap** package
+#### The **tmap** package
 
 The **tmap** package is an add-on to R that makes thematic maps, which are generally a little nicer looking than the default `spplot()` maps. This works by using a series of layers (not unlike making a GIS map). First, we specify a spatial object that we want to plot with `tm_shape()`, then add a geometry to this (e.g. `tm_fill()`, `tm_symbols()`, etc. Here we make a 'bubble' plot, with the size of the symbols representing the `median_house_value`:
 
@@ -168,39 +191,28 @@ tm_shape(ca_sf) + tm_borders() + tm_fill(col = "lightyellow") +
             main.title = "CA Housing Data")
 ```
 
-Finally, we'll make a new dataset containing only the data we want to use. For this, we use the `select()` function. Using a column name preceded by `-` will remove that column. 
+For our first model, we're only going to use a subset of the variables representing building characteristics (average number of rooms, bedroom ratio and age). There are several steps here:
+
+- The `geometry` column contains the coordinates for each district, and this can be removed by setting it to `NULL`
+- We use `filter` to remove all districts where the value is above $500K. As the data is capped here, using these districts would bias our model at high values
+- We use the `select()` function to choose the columns that we want to include 
 
 ```{r}
+names(housing)
 housing2 = housing %>%
   st_set_geometry(NULL) %>%
-  select(-total_rooms, -total_bedrooms, -ocean_proximity)
+  filter(median_house_value <= 500000) %>%
+  select(median_house_value, avg_rooms, bedroom_ratio, housing_median_age)
 names(housing2)
 ```
-
-### Data visualization
-
-We'll make a few figures to visualize the data before starting. First, a histogram of `median_house_value`:
-
-```{r}
-hist(housing2$median_house_value, 
-     xlab = "Median House Value", main = "CA Housing Data")
-```
-
-Note that the house value data is capped at $500,000. Next, the same for `median_income`:
-```{r}
-hist(housing2$median_income, 
-     xlab = "Median Income", main = "CA Housing Data")
-```
-
-Now try making additional histograms for the other variables in the `housing2` data frame. The R function `names()` will give you a list of the column names if you have forgotten. 
 
 ## Building a linear model
 
 We'll start by simply building a linear regression model between the median house values and all other variables. The base R function for a linear model is `lm()`, which runs OLS regression. In general, models in R use the tilde (`~`) notation to distinguish between the outcome variable (placed on the left hand side) and the independent variables or features (on the right hand side). For a model using all the variables, we would write it as follows:
 
 ```{r}
-fit1 = lm(median_house_value ~ housing_median_age + population + households + 
-            median_income + avg_rooms + avg_bedrooms, data = housing2)
+fit1 = lm(median_house_value ~ housing_median_age + avg_rooms + bedroom_ratio,
+          data = housing2)
 ```
 
 Of course, this gets pretty tedious, especially when you have a lot of independent variables. Fortunately, R has a shorthand for this, the `.` operator. The following code builds a model of `median_house_value` using *all other* variables in the `housing2` data frame (this is why we removed the extraneous variables in a previous step). 
@@ -215,7 +227,7 @@ To see the results of the model, use the `summary()` function:
 summary(fit1)
 ```
 
-This output gives the coefficients (the slope values) for each of the variables used. Most of these are straightforward to interpret (e.g. house price increases with the number of bedrooms), but others are less straightforward (e.g. house price decreases with the number of rooms). You'll get to investigate this a little further in the exercise.
+This output gives the coefficients (the slope values) for each of the variables used. Most of these are straightforward to interpret (e.g. house price increases with the age of the prooerty), but others are less straightforward (e.g. house price decreases with the ratio of bedrooms to total rooms). In addition, the `R-squared` value here is small ($\approx0.06$), which suggests this is not a great model. You'll get to investigate this a little further in the exercise. 
 
 ## The **mlr3** package
 
@@ -308,7 +320,7 @@ learner$param_set
 
 Next we'll create a training and testing dataset. For this first iteration of our model, we'll split the data manually into two sections, with 80% of the observations in the training set and 20% in the testing. In the following code, we: 
 
-- Set the random seed to allow for reproducibility
+- Set the random seed to allow for reproducibility (this is optional)
 - Create a set of indices for the training data using the `sample()` function. The first argument `task_housing$nrow` gives the range of numbers to randomly sample (between 1 and the number of observations). The second argument `0.8 * task_housing$nrow` gives the number of random samples to take
 - Create a set of indices for the testing data as the indices *not* used in the training set
 
@@ -365,7 +377,7 @@ autoplot(predict_val)
 
 Each point represents one observation from the test set. The $x$-axis is the predicted value, and the $y$-axis the observed value. The spread of the cloud gives us some indication about the predictive skill of the learner; wider suggests a poorer performance. 
 
-The thin black line is the 1:1 line. If the model provides an unbiased prediction, then the points should lie along this line. The blue line is a linear model fit to the points - if this matches the thin line, this is also evidence for low bias. The difference here suggests that the model may slightly over-estimate at higher house values. Note the line of observed values at about $500,000 - this is where the original data were capped, and this may affect the model's ability to predict at higher values. 
+The thin black line is the 1:1 line. If the model provides an unbiased prediction, then the points should lie along this line. The blue line is a linear model fit to the points - if this matches the thin line, this is also evidence for low bias. The difference here suggests that the model may slightly over-estimate at higher house values. One thing to note here is that there are several districts where the house prices are predicted to be negative. This is obviously incorrect (unless they are paying people to take a house).  
 
 ### Performance measures
 
@@ -396,6 +408,8 @@ predict_cal = learner$predict(task_housing, row_ids = train_set)
 measure = msr("regr.rmse")
 predict_cal$score(measure)
 ```
+
+The RMSE is a good measure of the *average* error. It's worth noting here that this suggests our error is pretty large, around $95,000 dollars relative the actual price. 
 
 ### Resampling
 
@@ -481,24 +495,23 @@ for (i in 1:5) {
 
 Use a word document to record your answers and output. Assignments, to include both the word document and R script file, should be submitted to Canvas before class on Monday, XXXXXX XX. Ensure your assignment has been saved using the following naming convention: Lab06_lastname_script and Lab06_lastname_report.
 
-As we noted during the lab, the output from the linear model showed some odd effects. These arise from correlations between some of the variables, due to the fact that they are recording very similar information. The two most likely problems are:
-
-- `avg_rooms` and `avg_bedrooms`: houses with a greater number of rooms are also likely to have a greater number of bedrooms
-- `population` and `households`: districts with higher population will have a larger number of households 
-
-To avoid these problems, we'll remove `avg_rooms` and `households` from the dataset and remake the model. 
+As we noted during the lab, our original model some odd effects, and had pretty poor predictive power. We'll try to improve on this by adding in extra features. The following code recreates the `housing2` data frame with a larger set of data. Note that previously we used the `select` function to choose which varaibles to include, here we use it with `-` in from of the variables we wish to *exclude*:
 
 ```{r results='hide'}
-housing3 <- housing2 %>%
-  select(-avg_rooms, -households)
+names(housing)
+housing2 = housing %>%
+  st_set_geometry(NULL) %>%
+  filter(median_house_value <= 500000) %>%
+  select(-total_rooms, -total_bedrooms, -ocean_proximity)
+names(housing2)
 ```
 
 For the exercise, you need to 
 
-1. Remake the basic linear model with this dataset. Provide the output from the `summary()` function (either as a screenshot or copy-paste) [1]
+1. Remake the basic linear model with this new dataset. Provide the output from the `summary()` function (either as a screenshot or copy-paste) [1]
 2. Make a new task for machine learning this new dataset [1]
 3. Repeat the resampling strategy with the new task, but with a 10-fold cross validation (i.e. `folds = 10`). Provide the set of 10 RMSE values and the aggregate RMSE [2]
-4. Comment on whether you think this reduced model is better or worse at predictions than the mode you built in lab [1]
+4. Comment on whether you think this new model is better or worse at predictions than the mode you built in lab [1]
 
 
 
