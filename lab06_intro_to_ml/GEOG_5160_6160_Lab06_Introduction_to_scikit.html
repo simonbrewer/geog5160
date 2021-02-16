@@ -1569,7 +1569,11 @@ University of Utah</div></h4>
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
 <p>In this lab, we will introduce <code>scikit-learn</code>, a toolkit for machine learning in Python. This provides a standard interface managing a machine learning workflow, including setting up training and testing data, running different algorithms and evaluating the models. Full details on the package as well as a large number of examples can be found <a href="https://scikit-learn.org/stable/">here</a>.</p>
-<p>If you are using Anaconda and Miniconda, it is likely that <code>scikit-learn</code> was installed as part of the overall package. To test this, simply start Python in a terminal and run the following command import sklearn. If you see no errors, then <code>scikit</code> is installed. If you get an error No module named ‘sklearn’, then you will need to install it. Simply run the following command in a terminal to do so: <code>conda install -c conda-forge scikit-learn</code>.</p>
+<p>If you are using Anaconda and Miniconda, it is likely that <code>scikit-learn</code> was installed as part of the overall package. To test this, simply start Python in a terminal and run the following command import sklearn. If you see no errors, then <code>scikit</code> is installed. If you get an error No module named ‘sklearn’, then you will need to install it. Simply run the following command in a terminal to do so:</p>
+<pre><code>conda install -c conda-forge scikit-learn</code></pre>
+<p>You’ll also need to install <code>geopandas</code> and <code>descartes</code> if you want to map the dataset values:</p>
+<pre><code>conda install geopandas
+conda install -c conda-forge descartes</code></pre>
 <p>In the lab, we will repeat the example shown in class in which a linear regression model was built to predict housing prices for a set of locations in California. Before starting the lab, you will need to set up a new folder for your working directory. If you have previously made a class folder (e.g. <code>geog5160</code>), go to this now and create a new folder for today’s class called <code>lab06</code>. Now download the data and notebook for this lab. Go to the Canvas page and get the following files:</p>
 <ul>
 <li><code>housing.csv</code>: a csv file with information about house prices and characteristics in California districts</li>
@@ -1584,7 +1588,18 @@ University of Utah</div></h4>
 |   +-- lab03
 ...
 |   +-- lab11</code></pre>
-<p>Move the csv and zip files to the datafiles folder and unzip and extract files from <code>ca.zip</code>. Move the notebook to your <code>lab06</code> folder. Now open a new terminal (in Windows go to the [Start Menu] &gt; [Anaconda (64-bit)] &gt; [Anaconda prompt]). Once opened, change directory to the folder you just made (e.g. <code>cd /Users/username/Documents/geog5160/lab06</code>). Once there, activate your conda environment (<code>conda activate geog5160</code>). Finally, start the Jupyter Notebook server:</p>
+<p>Move the csv and zip files to the datafiles folder and unzip and extract files from <code>ca.zip</code>. Move the notebook to your <code>lab06</code> folder. Now open a new terminal (in Windows go to the [Start Menu] &gt; [Anaconda (64-bit)] &gt; [Anaconda prompt]). Once opened, change directory to the folder you just made:</p>
+<ul>
+<li>Windows</li>
+</ul>
+<pre><code>cd C:/Users/username/Documents/geog5160/lab06</code></pre>
+<ul>
+<li>Mac</li>
+</ul>
+<pre><code>cd /Users/username/Documents/geog5160/lab06</code></pre>
+<p>Once there, activate your conda environment</p>
+<pre><code>conda activate geog5160</code></pre>
+<p>Finally, start the Jupyter Notebook server:</p>
 <pre><code>jupyter notebook</code></pre>
 <p>And open the notebook for today’s class.</p>
 </div>

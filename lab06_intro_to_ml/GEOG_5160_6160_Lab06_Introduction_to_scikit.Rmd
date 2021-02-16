@@ -54,7 +54,25 @@ This (and subsequent labs) will assume that you are using the folder layout intr
 |   +-- lab11
 ```
 
-Move the csv and zip files to the datafiles folder and unzip and extract files from `ca.zip`. Move the notebook to your `lab06` folder. Now open a new terminal (in Windows go to the [Start Menu] > [Anaconda (64-bit)] > [Anaconda prompt]). Once opened, change directory to the folder you just made (e.g. `cd /Users/username/Documents/geog5160/lab06`). Once there, activate your conda environment (`conda activate geog5160`). Finally, start the Jupyter Notebook server:
+Move the csv and zip files to the datafiles folder and unzip and extract files from `ca.zip`. Move the notebook to your `lab06` folder. Now open a new terminal (in Windows go to the [Start Menu] > [Anaconda (64-bit)] > [Anaconda prompt]). Once opened, change directory to the folder you just made:
+
+- Windows
+```
+cd C:/Users/username/Documents/geog5160/lab06
+```
+
+- Mac
+```
+cd /Users/username/Documents/geog5160/lab06
+``` 
+
+Once there, activate your conda environment
+
+```
+conda activate geog5160
+```
+
+Finally, start the Jupyter Notebook server:
 
 ```
 jupyter notebook
