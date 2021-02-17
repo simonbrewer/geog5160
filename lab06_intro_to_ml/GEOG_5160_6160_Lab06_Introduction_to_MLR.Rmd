@@ -351,7 +351,7 @@ Now train the model by calling the `$train()` method of our learner. Note that w
 learner$train(task_housing, row_ids = train_set)
 ```
 
-Now `model` contains the model output (the coefficients from the linear model)
+Now `model` contains the model output (the coefficients from the linear model). 
 
 ```{r}
 learner$model
@@ -377,7 +377,7 @@ autoplot(predict_val)
 
 Each point represents one observation from the test set. The $x$-axis is the predicted value, and the $y$-axis the observed value. The spread of the cloud gives us some indication about the predictive skill of the learner; wider suggests a poorer performance. 
 
-The thin black line is the 1:1 line. If the model provides an unbiased prediction, then the points should lie along this line. The blue line is a linear model fit to the points - if this matches the thin line, this is also evidence for low bias. The difference here suggests that the model may slightly over-estimate at higher house values. One thing to note here is that there are several districts where the house prices are predicted to be negative. This is obviously incorrect (unless they are paying people to take a house).  
+The thin black line is the 1:1 line. If the model provides an unbiased prediction, then the points should lie along this line. The blue line is a linear model fit to the points - if this matches the thin line, this is also evidence for low bias. The difference here suggests that the model may slightly over-estimate at higher house values. One thing to note here is that there are several districts where the house prices are predicted to be negative. This is obviously incorrect (unless they are paying people to take a house).   Transforming the outcome variable (e.g. log transformation) would help avoid this problem. 
 
 ### Performance measures
 
@@ -387,10 +387,17 @@ THis plot allows us to visualize how well the model has predicted for the test d
 mlr_measures
 ```
 
-Note that most methods either begin with `classif.` or `regr.`, indicating what type of task they are suitable for. We create a selected measure with `msr()`, then use the `$score()` method to calculate this based on our prediction. The standard measure for regression methods is the root mean squared error (RMSE), so let's calculate this now:
+Note that most methods either begin with `classif.` or `regr.`, indicating what type of task they are suitable for. We create a selected measure with `msr()`, then use the `$score()` method to calculate this based on our prediction. One standard measure for regression methods is the root mean squared error (RMSE), so let's calculate this now:
 
 ```{r}
 measure = msr("regr.rmse")
+predict_val$score(measure)
+```
+
+Another common measure is the mean absolute error (MAE):
+
+```{r}
+measure = msr("regr.mae")
 predict_val$score(measure)
 ```
 
@@ -409,7 +416,7 @@ measure = msr("regr.rmse")
 predict_cal$score(measure)
 ```
 
-The RMSE is a good measure of the *average* error. It's worth noting here that this suggests our error is pretty large, around $95,000 dollars relative the actual price. 
+The RMSE is a good measure of the *average* error. It's worth noting here that this suggests our error is pretty large, over $90,000 dollars relative the actual price. 
 
 ### Resampling
 
@@ -491,6 +498,40 @@ for (i in 1:5) {
 }
 ```
 
+## Changing model
+
+We're going to be looking a wide range of different algorithms for machine learning over the next few weeks. This section is just designed to show how easy it is to switch out the method you are using to try a different approach. Here, we'll try using a penalized linear model, the Lasso. To test this, we simply need to define a new learner using the appropriate function (here: `regr.glmnet`). One small addition here is that we set a couple of model parameters (we'll look more in detail at model parameters in the next lab):
+
+- `alpha`: this is the mixing ratio. `alpha = 1` provides the Lasso algorithm (`= 0` results in ridge regression)
+- `lambda`: this the penalty weight
+
+```{r results='hide'}
+mlr_learners
+learner2 = mlr_learners$get("regr.glmnet")
+print(learner)
+learner2$param_set
+learner2$param_set$values = list(alpha = 1, lambda = 1e-3)
+learner$param_set$values
+```
+
+```{r echo=FALSE}
+learner$param_set$values
+```
+
+Now we've set this up, let's train it (using the previous training set)
+```{r}
+learner2$train(task_housing, row_ids = train_set)
+```
+
+To cross-validate, we can simply reuse the resampler we defined earlier:
+```{r}
+rr = resample(task_housing, learner2, resampling, store_models = TRUE)
+print(rr)
+rr$aggregate(measure)
+```
+
+In this case, there is little improvement with this new algorithm, but hopefully this demonstrates how easy it is to test a set of ML approaches through the API.
+
 ## Exercise
 
 Use a word document to record your answers and output. Assignments, to include both the word document and R script file, should be submitted to Canvas before class on Monday, XXXXXX XX. Ensure your assignment has been saved using the following naming convention: Lab06_lastname_script and Lab06_lastname_report.
@@ -511,9 +552,7 @@ For the exercise, you need to
 1. Remake the basic linear model with this new dataset. Provide the output from the `summary()` function (either as a screenshot or copy-paste) [1]
 2. Make a new task for machine learning this new dataset [1]
 3. Repeat the resampling strategy with the new task, but with a 10-fold cross validation (i.e. `folds = 10`). Provide the set of 10 RMSE values and the aggregate RMSE [2]
-4. Comment on whether you think this new model is better or worse at predictions than the mode you built in lab [1]
-
-
+4. Comment on whether you think this new model is better or worse at predictions than the mode you built in the lab [1]
 
 [mlr3]: https://mlr3.mlr-org.com/reference/mlr3-package.html
 [sfID]: https://r-spatial.github.io/sf/articles/sf1.html
