@@ -1,0 +1,80 @@
+---
+title: "GEOG 5160/6160 Lab 07 Classification methods"
+author: | 
+  | Simon Brewer
+  | Geography Department
+  | University of Utah
+date: "February 28, 2020"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    fig_caption: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(png)
+library(grid)
+```
+
+### Logistic regression in **mlr3**
+
+We will now switch to using the **mlr3** package that we introduced last week. As a quick reminder, this follows the ML workflow, and requires that we set up
+
+- A *task* that defines the data to be used and the outcome variable
+- A *learner* that defines the algorithm to be used
+- A *resampling strategy* to validate the algorithm
+- A *performance measure* to test how well the model fits to the training data and predicts the test data.
+
+Start by loading the necessary packages
+
+```{r}
+banknote = read.csv("banknote_data.csv")
+banknote$forgery = as.factor(banknote$forgery)
+library(mlr3)
+library(mlr3learners)
+```
+
+Now let's define the task. As this is a classification task, we will use `TaskClassif()`. Note that we will be using this same task for all algorithms in this lab, so we only need to do this once:
+
+```{r eval=TRUE}
+task_bn = TaskClassif$new(id = "banknote", backend = banknote, 
+                               target = "forgery")
+```
+
+
+```{r}
+learner = lrn("classif.log_reg",  predict_type = "prob")
+measure = msr("classif.auc")
+resampling = rsmp("cv", folds = 5)
+resampling$instantiate(task_bn)
+rr = resample(task_bn, learner, resampling, store_models = TRUE)
+rr$score(measure)
+rr$aggregate(measure)
+```
+
+## Naive Bayes
+
+```{r}
+learner = lrn("classif.naive_bayes", predict_type = "prob")
+measure = msr("classif.auc")
+resampling = rsmp("cv", folds = 5)
+resampling$instantiate(task_bn)
+rr = resample(task_bn, learner, resampling, store_models = TRUE)
+rr$score(measure)
+rr$aggregate(measure)
+```
+
+## SVM
+
+```{r}
+learner = lrn("classif.svm", kernel = "radial", scale = TRUE, 
+              predict_type = "prob", gamma = 0.01)
+measure = msr("classif.auc")
+resampling = rsmp("cv", folds = 5)
+resampling$instantiate(task_bn)
+rr = resample(task_bn, learner, resampling, store_models = TRUE)
+rr$score(measure)
+rr$aggregate(measure)
+```
