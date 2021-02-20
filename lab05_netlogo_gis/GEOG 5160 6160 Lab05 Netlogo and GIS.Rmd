@@ -53,7 +53,9 @@ Using the GIS extension, Netlogo can load raster data from ESRI ASCII gridfiles,
 It is important to note, however, that Netlogo still considers two different world definitions: the model and the GIS world. The extension acts to project the GIS data into the model world, and so allow comparison or interaction between geographical features and agents.
 
 ## Example 1: Raster data
+
 ### Loading raster data
+
 The GIS extension can load standard ESRI ASCII raster grid data, 
 
 From the File menu in Netlogo, create a new Netlogo program, and use File/Save save this as *elevation.nlogo* in an appropriate folder. If you close Netlogo at any point, you can reopen this model, by finding the model file in this folder, and double-clicking on the icon. 
@@ -144,12 +146,12 @@ img <- readPNG("./images/elevmodel2.png")
 grid.raster(img)
 ```
 
-To redisplay the original dem raster layer, add a new button called ('show-elev') which should be linked to the following procedure in your Netlogo code:
+To redisplay the original dem raster layer, add a new button called ('show-elev') which should be linked to the following procedure in your Netlogo code (the final number sets layer transparency, where 0 = opaque and 255 = fully transparent):
 
 ```
 to show-elev
 	clear-drawing
-	gis:paint elevation 0
+	gis:paint elevation 100
 end
 ```
 
@@ -158,6 +160,7 @@ The show-patches and show-elev buttons will allow you to toggle between the two 
 You'll notice that the default Netlogo world size results in a very coarse elevation layer, when looking at the patches. Try experimenting with changing the number of patches from the [Settings] button on the interface tab. Increase `max-pxcor` and `max-pxcor` to 64, and decrease the `patch size` to 3. Save the model, and re-run the setup, then click [show-patches]. You should see a much smoother representation of elevation in the model world. 
 
 ### Using agents with raster layers
+
 Agents in our model can interact with the raster layer in two ways. The first is by using the patches, and allowing the agents to 'sense' the elevation in a given patch, as we did with the butterfly model. The second method is to allow the agents to sense the raster layer directly, which will be demonstrated next. 
 
 We will add a single turtle (agent) and allow it to move in a straight line across the world. At each step, it will get the elevation from the raster layer, and we can track this to plot an elevation profile representing the turtle's travel. 
@@ -227,6 +230,7 @@ Remember that the turtle is initialized with a random heading, so you will see m
 ### Using spatial information
 
 As a last extension to this model, we will use the elevation information to create a map of vegetation, which could be used, for example, in a fire model. Previous iterations of this model have used a purely random distribution of vegetation, through which a fire spreads. Here, we will use the elevation to control the presence/absence of trees in each patch. We'll assume that these trees occur preferentially at low elevations. To start, we need a function which relates elevation to probability of presence. For this we use the following model:
+
 \[
 P_{veg} = (1-a) + (a / (1+exp(\frac{b-x}{c})))
 \]
@@ -372,14 +376,14 @@ Now create a new procedure to extract the vertices from the vectors:
 
 ```
 to setup-links
-	set-default-shape nodes "circle"
-	foreach gis:feature-list-of roads [
-		foreach gis:vertex-lists-of ? [
-			let n1 makenode first ?
-			let n2 makenode last ?
-			ask n1 [create-link-with n2]
-		]
-	]
+  set-default-shape nodes "circle"
+  foreach gis:feature-list-of roads [ tmp-segment ->
+    foreach gis:vertex-lists-of tmp-segment [ tmp-vertex ->
+      let n1 makenode first tmp-vertex
+      let n2 makenode last tmp-vertex
+      ask n1 [create-link-with n2]
+    ]
+  ]
 end
 ```
 
@@ -387,14 +391,14 @@ Line-by-line:
 
 - Begin the procedure
 - Set the default shape for a node to a circle
-- Loop through all the features in the roads layer
-- Loop through all the vertices for a given feature from the road layer. The features are processed one at a time by the previous loop. The `?` represents the feature that is being processed by this loop.
-- Create a node (`n1`) from the first vertex. The `?` now represents the current set of vertices
-- Create a node (`n2`) from the second (last) vertex
+- Loop through all the features (segments) in the roads layer. Create a temporary variable to hold this feature (`tmp-segment`) 
+- Loop through all the vertices for the current selected feature from the road layer (`tmp-segment`). These correspond to the the ends of each road segment. Create a temporary variable to hold the currently selected vertex (`tmp-vertex`)
+- Create a node (`n1`) the current `tmp-vertex`
+- Create a node (`n2`) the vertex connected to the current `tmp-vertex` 
 - Make a link (a special type of turtle) between the two nodes
 - End the procedure
 
-The question mark is a very useful code shorthand. It is a temporary variable that represents the most recently created value. As we loop through the features, each feature is passed to the next command by the `?`. In the second (inner) loop we go through the sets of vertices, and now the `?` represents the set of vertices associated with the feature selected in the outer loop. 
+The syntax `tmp-var ->` is a new feature of Netlogo 6, called an anonymous procedure. It is used to pass an agent or other object to the following set of code. Here, we're using it to represent the segment or vertex that is being processed at any part of the loop, and passing that object to the commands *within* the loop. As we loop through the features, each road segment is passed to the next command by `tmp-segment`. In the second (inner) loop we go through the sets of vertices, and here `tmp-vertex` represents one of the set of vertices associated with the feature selected in the outer loop. 
 
 The two lines where the nodes are created use a function called `makenode`. This does not exist yet, so we will have to create it as a function. Add the following procedure:
 
