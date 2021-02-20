@@ -29,7 +29,7 @@ As before, we will start by loading and cleaning the dataset for us. There are s
 
 - Remove observations with missing values
 - Create variables containing the average number of bedrooms and rooms per district
-- Create a Boolean (0/1) variable indicating whether a district is high value or not
+- Create a Boolean (0/1) variable indicating whether a district is high value or not. We'll define this as being when the median house value for that district is over $250K
 
 Let's start by by loading the data and using the `head()` function to remind us of the available variables/features
 
@@ -51,12 +51,12 @@ housing = housing %>%
   filter(!is.na(total_bedrooms))
 ```
 
-Next, we'll create the features with the average number of rooms and bedrooms. Here, we use the `mutate()` function to create a new feature 
+Next, we'll create the features with the average number of rooms and bedroom ratio. Here, we use the `mutate()` function to create a new feature 
 
 ```{r}
 housing = housing %>%
   mutate(avg_rooms = total_rooms / households,
-         avg_bedrooms = total_bedrooms / households)
+         bedroom_ratio = total_bedrooms / total_rooms)
 ```
 
 Now, we'll create two more features; one Boolean for the house values and one Boolean for the ocean proximity. This uses the `mutate()` function again, and an `ifelse()` function to create the Boolean values. This can be read as `ifelse(condition, a, b)`, where we assign the value `a` if the condition is TRUE and `b` if FALSE.
@@ -64,7 +64,7 @@ Now, we'll create two more features; one Boolean for the house values and one Bo
 ```{r}
 housing = housing %>%
   mutate(ocean_new = ifelse(ocean_proximity == "INLAND","No", "Yes"),
-  mhv_new = ifelse(median_house_value > 400000, 1, 0))
+  mhv_new = ifelse(median_house_value > 250000, 1, 0))
 ```
 
 Let's check to see what the dataset now contains:
@@ -89,7 +89,7 @@ housing = housing %>%
          population = population - mean(population),
          median_income = median_income - mean(median_income),
          avg_rooms = avg_rooms - mean(avg_rooms),
-         avg_bedrooms = avg_bedrooms - mean(avg_bedrooms))
+         bedroom_ratio = bedroom_ratio - mean(bedroom_ratio))
 ```
 
 Let's do a quick check to see what we now have. The `summary()` function, when used with a data frame, will provide summary statistics on each column or feature. You should verify that the `ocean_new` and `mhv_new` variables are Boolean, and that the centered variables all have a mean of zero. If any of these values does not match what you expect, you will need to reprocess these data. 
@@ -107,7 +107,7 @@ boxplot(housing_median_age ~ mhv_new, housing)
 boxplot(median_income ~ mhv_new, housing)
 ```
 
-Try to make similar plots for `population`, `avg_rooms` and `avg_bedrooms`.
+Try to make similar plots for `population`, `avg_rooms` and `bedroom_ratio`.
 
 ## Logistic regression
 
@@ -131,7 +131,7 @@ As a reminder, this model models the outcome data as *log-odds*, so the coeffici
 exp(coef(housing.glm))
 ```
 
-As we have centered the data, the intercept tells us the odds of an average house being situated in a high value area $0.007 \approx 1/142$. The coefficient for the numerical values then give the *rate* of increase of these odds for every one unit increase in that feature. So if a house has one more bedroom than average, the odds change as follows: $0.007 * 12.34 = 0.086 = 1/11.6$.
+As we have centered the data, the intercept tells us the odds of an average house being situated in a high value area $5.62\times10^{-2} \approx 1/18$. The coefficient for the numerical values then give the *rate* of increase of these odds for every one unit increase in that feature. So if a house has one more room than average, the odds increase by 1.06 or about 6%.
 
 ### Logistic regression in **mlr3**
 
@@ -181,12 +181,48 @@ print(task_mhv)
 
 The task object (`task_mhv`) contains a set of useful summary information about the task, telling us the outcome or *target* variable is `mhv_new`, which is binary (not multi-class). There are five numerical features and one factor, and 20433 total observations. 
 
-We'll also define a training and test set. Later, we'll use a full resampling strategy, so we won't need these, but we can use them now to examine how **mlr3** trains a classification task.
+We'll also define a training and test set. Later, we'll use a full resampling strategy, so we won't need these, but we can use them now to examine how **mlr3** trains a classification task. In the previous lab, we used a simply holdout method, where a proportion of the samples were randomly selected and allocated to the training and test datasets. With categorical outcomes, there is a chance that the dataset might be unbalanced (i.e. more of one class than another), and this can affect resampling, especially if the samples are not recorded in a random order. To check this, let's look at the proportion of low (`0`) and high (`1`) value districts. This line of code
+
+- Extracts the binary labels (`task_mhv$truth()`)
+- Creates a table of counts of each type (low/high value)
+- Calculates the proportion of each
+
+```{r}
+prop.table(table(task_mhv$truth()))
+```
+
+Which shows that there are nearly three times as many low value districts as high value. 
+
+To ensure that resampling keeps these proportions in training and testing datasets, we can add a *stratum* to the task to define a a group for stratification. This is set as one of the *roles* in the task. Currently this is not set:
+
+```{r}
+task_mhv$col_roles$stratum
+```
+
+And we can simply set this to the target variable `mhv_new`. 
+
+```{r}
+task_mhv$col_roles$stratum = "mhv_new"
+```
+
+Note that the variable used for stratification does not necessarily have to be the target class. (In fact, multiple categorical features can be used for stratification to maintain their frequency distribution in each fold.)
+
+We'll now set up a hold out resampler using the `rsmp()` function and instantiate it for the housing task:
 
 ```{r}
 set.seed(1234)
-train_set = sample(task_mhv$nrow, 0.8 * task_mhv$nrow)
-test_set = setdiff(seq_len(task_mhv$nrow), train_set)
+holdout_rsmp <- rsmp("holdout", ratio = 0.8)
+holdout_rsmp$instantiate(task_mhv)
+```
+
+Once the resampler has been instantiated, the row IDs for the training and test set are held under `resampler$instance`. We can extract these, and then use them to calculate the proportion of 0's and 1's in the training and test sets to check that this has stratified correctly"
+
+```{r}
+train_set <- holdout_rsmp$instance$train
+test_set <- holdout_rsmp$instance$test
+
+prop.table(table(task_mhv$truth()[train_set]))
+prop.table(table(task_mhv$truth()[test_set]))
 ```
 
 Next, we will define the learner. Previously, we used `mlr_learners` to define this. Here we'll use a shortcut function `lrn()`, which has the advantage of a) having less characters to type; and b) allowing us to specify various parameters and hyperparameters directly (we'll see this later). 
@@ -243,20 +279,44 @@ library(mlr3viz)
 autoplot(pred_train, type = 'roc')
 ```
 Note  that this is the AUC score for the training data, which gives us an idea of the calibration skill. We can also get the validation AUC to test the predictive skill of the model by making a prediction in the same way for the test set
+
 ```{r}
 pred_test = learner$predict(task_mhv, row_ids = test_set)
 pred_test$score(measure)
 autoplot(pred_test, type = 'roc')
 ```
 
+```{r}
+pred_test = learner$predict(task_mhv, row_ids = test_set)
+pred_test$score(measure)
+```
+
 #### Resampling
 
-We'll now set up a resampling strategy for this task. We'll use a 5-fold cross-validation and the AUC score. We start by setting up the resample with `cv` as the strategy and 5 folds and initialize it with `instantiate`. Finally use the `resample()` function to run the sample, calculate the performance metrics and print them:
+We'll now set up a full resampling strategy for this task. We'll use a 5-fold cross-validation and the AUC score. We start by setting up the resample with `cv` as the strategy and 5 folds and initialize it with `instantiate`. 
 
 ```{r}
-resampling = rsmp("cv", folds = 5)
-resampling$instantiate(task_mhv)
-rr = resample(task_mhv, learner, resampling, store_models = TRUE)
+cv_rsmp = rsmp("cv", folds = 5)
+cv_rsmp$instantiate(task_mhv)
+```
+
+We can get the row indices for the different folds directly from the resampler using `resampler$train_set(i)` and `resampler$test_set(i)`, where `i` is the fold number:
+
+```{r results='hide'}
+cv_rsmp$train_set(1)
+cv_rsmp$test_set(1)
+```
+
+Again, we can check that this has stratified the samples correctly, by calculating the proportion of 0's and 1's:
+```{r}
+prop.table(table(task_mhv$truth(cv_rsmp$train_set(1))))
+prop.table(table(task_mhv$truth(cv_rsmp$test_set(1)))) 
+```
+
+You can check the other folds, by replacing `1` with the fold number. We can now use the `resample()` function to run the sample, calculate the performance metrics and print them:
+
+```{r}
+rr = resample(task_mhv, learner, cv_rsmp, store_models = TRUE)
 rr$score(measure)
 rr$aggregate(measure)
 ```
@@ -301,7 +361,7 @@ The only one that is different is the `ocean_new` parameter, which gives the dir
 We'll now run this through the resampling strategy to get a cross-validated AUC score. As the resampler has already been set up and initialized, we can simply reuse this. Note this will mean that the folds will remain the same, in other words, each of the five divisions of the original dataset will contain the same observations as in the logistic regression example. 
 
 ```{r}
-rr = resample(task_mhv, learner, resampling, store_models = TRUE)
+rr = resample(task_mhv, learner, cv_rsmp, store_models = TRUE)
 rr$score(measure)
 rr$aggregate(measure)
 ```
@@ -310,7 +370,7 @@ rr$aggregate(measure)
 
 The last algorithm we will look at today is a support vector machine (SVM). For classification, these work by projecting the dataset in a parameter space defined by the features, then finding a plane or hyperplane that best discriminates between the classes. We will again use the **mlr3** interface, which will call the `svm()` function from the **e1071** package. 
 
-We'll start by fitting a linear SVM, which is based only on the input features. Again, we can use the predefined task, but simply have to create a new learner. Note that we set the `kernel` to be linear, and set the `scale` argument to `TRUE` - this will rescale all features so that the classification isn't biased by some feature having much larger units than others. 
+We'll start by fitting a linear SVM, which is based only on the input features. Again, we can use the predefined task, but simply have to create a new learner. Note that we set the `kernel` to be linear, and set the `scale` argument to `TRUE` - this will rescale all features so that the classification isn't biased by some features having much larger units than others. 
 
 ```{r}
 housing$ocean_new = ifelse(housing$ocean_new == "Yes", 1, 0)
@@ -340,7 +400,7 @@ Let's know run this through **mlr3**, first with a linear SVM kernel, then using
 #### Linear kernel
 
 ```{r}
-rr = resample(task_mhv, learner, resampling, store_models = FALSE)
+rr = resample(task_mhv, learner, cv_rsmp, store_models = FALSE)
 rr$aggregate(msr("classif.auc"))
 ```
 
@@ -353,7 +413,7 @@ Now let's try running this with a radial basis kernel. This allows for non-linea
 ```{r}
 learner = lrn("classif.svm", kernel = "radial", scale = TRUE, 
               predict_type = "prob")
-rr = resample(task_mhv, learner, resampling, store_models = FALSE)
+rr = resample(task_mhv, learner, cv_rsmp, store_models = FALSE)
 rr$aggregate(msr("classif.auc"))
 ```
 
@@ -362,7 +422,7 @@ Giving us an AUC score of `r round(rr$aggregate(msr("classif.auc")),3)`, which i
 ```{r}
 learner = lrn("classif.svm", kernel = "radial", scale = TRUE, 
               predict_type = "prob", gamma = 0.01)
-rr = resample(task_mhv, learner, resampling, store_models = FALSE)
+rr = resample(task_mhv, learner, cv_rsmp, store_models = FALSE)
 rr$aggregate(msr("classif.auc"))
 ```
 
