@@ -1569,6 +1569,14 @@ University of Utah</div></h4>
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
 <p>In today’s lab we will look at three machine learning algorithms used for classification: logistic regression, Naive Bayes and Support Vector Machines (SVM). We will also take a brief look at using <strong>mlr3</strong> to tune the SVM algorithm. Rather than using lots of different datasets, we will stick with the California housing dataset used last week, as use this to try to model and predict districts with high value housing. This also allows us to treat this as a model comparison exercise, where we look to see which of the three methods has the highest predictive skill with these data.</p>
+<div id="python-users" class="section level3">
+<h3>Python users</h3>
+<p>If you are using Python for today’s lab, you’ll need to download the Jupyter notenook for this lab (<em>GEOG_5160_6160_lab07.ipynb</em>). Make a new folder for the lab (<code>lab07</code>) and move the notebook to this. Now open a new terminal (in Windows go to the [Start Menu] &gt; [Anaconda (64-bit)] &gt; [Anaconda prompt]). Once opened, change directory to the folder you just made, activate your conda environment</p>
+<pre><code>conda activate geog5160</code></pre>
+<p>Start the Jupyter Notebook server:</p>
+<pre><code>jupyter notebook</code></pre>
+<p>And open the notebook for today’s class.</p>
+</div>
 </div>
 <div id="data-processing" class="section level2">
 <h2>Data processing</h2>
@@ -1858,11 +1866,11 @@ cv_rsmp$test_set(1)</code></pre>
 ## 0.7200881 0.2799119</code></pre>
 <p>You can check the other folds, by replacing <code>1</code> with the fold number. We can now use the <code>resample()</code> function to run the sample, calculate the performance metrics and print them:</p>
 <pre class="r"><code>rr &lt;- resample(task_mhv, learner, cv_rsmp, store_models = TRUE)</code></pre>
-<pre><code>## INFO  [17:42:59.758] Applying learner &#39;classif.log_reg&#39; on task &#39;mhv&#39; (iter 1/5) 
-## INFO  [17:42:59.871] Applying learner &#39;classif.log_reg&#39; on task &#39;mhv&#39; (iter 2/5) 
-## INFO  [17:42:59.981] Applying learner &#39;classif.log_reg&#39; on task &#39;mhv&#39; (iter 3/5) 
-## INFO  [17:43:00.086] Applying learner &#39;classif.log_reg&#39; on task &#39;mhv&#39; (iter 4/5) 
-## INFO  [17:43:00.304] Applying learner &#39;classif.log_reg&#39; on task &#39;mhv&#39; (iter 5/5)</code></pre>
+<pre><code>## INFO  [09:57:42.960] Applying learner &#39;classif.log_reg&#39; on task &#39;mhv&#39; (iter 1/5) 
+## INFO  [09:57:43.078] Applying learner &#39;classif.log_reg&#39; on task &#39;mhv&#39; (iter 2/5) 
+## INFO  [09:57:43.189] Applying learner &#39;classif.log_reg&#39; on task &#39;mhv&#39; (iter 3/5) 
+## INFO  [09:57:43.296] Applying learner &#39;classif.log_reg&#39; on task &#39;mhv&#39; (iter 4/5) 
+## INFO  [09:57:43.563] Applying learner &#39;classif.log_reg&#39; on task &#39;mhv&#39; (iter 5/5)</code></pre>
 <pre class="r"><code>rr$score(measure)</code></pre>
 <pre><code>##                 task task_id                    learner      learner_id
 ## 1: &lt;TaskClassif[45]&gt;     mhv &lt;LearnerClassifLogReg[30]&gt; classif.log_reg
@@ -1957,11 +1965,11 @@ learner</code></pre>
 <p>The only one that is different is the <code>ocean_new</code> parameter, which gives the direct conditional probability for each value class in each of the <code>ocean_new</code> classes. We can see here that there the conditional probability of being high value if the district is close to the ocean is approximately 95%.</p>
 <p>We’ll now run this through the resampling strategy to get a cross-validated AUC score. As the resampler has already been set up and initialized, we can simply reuse this. Note this will mean that the folds will remain the same, in other words, each of the five divisions of the original dataset will contain the same observations as in the logistic regression example.</p>
 <pre class="r"><code>rr &lt;- resample(task_mhv, learner, cv_rsmp, store_models = TRUE)</code></pre>
-<pre><code>## INFO  [17:43:00.702] Applying learner &#39;classif.naive_bayes&#39; on task &#39;mhv&#39; (iter 1/5) 
-## INFO  [17:43:01.502] Applying learner &#39;classif.naive_bayes&#39; on task &#39;mhv&#39; (iter 2/5) 
-## INFO  [17:43:02.319] Applying learner &#39;classif.naive_bayes&#39; on task &#39;mhv&#39; (iter 3/5) 
-## INFO  [17:43:03.097] Applying learner &#39;classif.naive_bayes&#39; on task &#39;mhv&#39; (iter 4/5) 
-## INFO  [17:43:03.886] Applying learner &#39;classif.naive_bayes&#39; on task &#39;mhv&#39; (iter 5/5)</code></pre>
+<pre><code>## INFO  [09:57:43.961] Applying learner &#39;classif.naive_bayes&#39; on task &#39;mhv&#39; (iter 1/5) 
+## INFO  [09:57:44.840] Applying learner &#39;classif.naive_bayes&#39; on task &#39;mhv&#39; (iter 2/5) 
+## INFO  [09:57:45.644] Applying learner &#39;classif.naive_bayes&#39; on task &#39;mhv&#39; (iter 3/5) 
+## INFO  [09:57:46.444] Applying learner &#39;classif.naive_bayes&#39; on task &#39;mhv&#39; (iter 4/5) 
+## INFO  [09:57:47.236] Applying learner &#39;classif.naive_bayes&#39; on task &#39;mhv&#39; (iter 5/5)</code></pre>
 <pre class="r"><code>rr$score(measure)</code></pre>
 <pre><code>##                 task task_id                        learner          learner_id
 ## 1: &lt;TaskClassif[45]&gt;     mhv &lt;LearnerClassifNaiveBayes[30]&gt; classif.naive_bayes
@@ -2025,11 +2033,11 @@ learner$model</code></pre>
 <div id="linear-kernel" class="section level4">
 <h4>Linear kernel</h4>
 <pre class="r"><code>rr &lt;- resample(task_mhv, learner, cv_rsmp, store_models = FALSE)</code></pre>
-<pre><code>## INFO  [17:43:23.134] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 1/5) 
-## INFO  [17:43:42.290] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 2/5) 
-## INFO  [17:44:00.685] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 3/5) 
-## INFO  [17:44:19.430] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 4/5) 
-## INFO  [17:44:38.520] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 5/5)</code></pre>
+<pre><code>## INFO  [09:58:07.997] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 1/5) 
+## INFO  [09:58:28.482] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 2/5) 
+## INFO  [09:58:48.423] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 3/5) 
+## INFO  [09:59:08.525] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 4/5) 
+## INFO  [09:59:27.574] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 5/5)</code></pre>
 <pre class="r"><code>rr$aggregate(msr(&quot;classif.auc&quot;))</code></pre>
 <pre><code>## classif.auc 
 ##   0.8898889</code></pre>
@@ -2041,11 +2049,11 @@ learner$model</code></pre>
 <pre class="r"><code>learner &lt;- lrn(&quot;classif.svm&quot;, kernel = &quot;radial&quot;, scale = TRUE, 
               predict_type = &quot;prob&quot;)
 rr &lt;- resample(task_mhv, learner, cv_rsmp, store_models = FALSE)</code></pre>
-<pre><code>## INFO  [17:44:57.591] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 1/5) 
-## INFO  [17:45:21.735] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 2/5) 
-## INFO  [17:45:45.813] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 3/5) 
-## INFO  [17:46:09.613] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 4/5) 
-## INFO  [17:46:33.499] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 5/5)</code></pre>
+<pre><code>## INFO  [09:59:46.264] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 1/5) 
+## INFO  [10:00:09.725] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 2/5) 
+## INFO  [10:00:32.376] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 3/5) 
+## INFO  [10:00:55.188] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 4/5) 
+## INFO  [10:01:17.710] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 5/5)</code></pre>
 <pre class="r"><code>rr$aggregate(msr(&quot;classif.auc&quot;))</code></pre>
 <pre><code>## classif.auc 
 ##    0.878282</code></pre>
@@ -2053,11 +2061,11 @@ rr &lt;- resample(task_mhv, learner, cv_rsmp, store_models = FALSE)</code></pre>
 <pre class="r"><code>learner &lt;- lrn(&quot;classif.svm&quot;, kernel = &quot;radial&quot;, scale = TRUE, 
               predict_type = &quot;prob&quot;, gamma = 0.01)
 rr &lt;- resample(task_mhv, learner, cv_rsmp, store_models = FALSE)</code></pre>
-<pre><code>## INFO  [17:46:57.449] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 1/5) 
-## INFO  [17:47:23.350] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 2/5) 
-## INFO  [17:47:48.459] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 3/5) 
-## INFO  [17:48:13.737] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 4/5) 
-## INFO  [17:48:38.747] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 5/5)</code></pre>
+<pre><code>## INFO  [10:01:40.680] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 1/5) 
+## INFO  [10:02:05.311] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 2/5) 
+## INFO  [10:02:30.621] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 3/5) 
+## INFO  [10:02:55.856] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 4/5) 
+## INFO  [10:03:22.111] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 5/5)</code></pre>
 <pre class="r"><code>rr$aggregate(msr(&quot;classif.auc&quot;))</code></pre>
 <pre><code>## classif.auc 
 ##   0.8931251</code></pre>

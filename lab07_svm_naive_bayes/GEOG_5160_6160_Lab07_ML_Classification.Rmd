@@ -23,6 +23,22 @@ library(grid)
 
 In today's lab we will look at three machine learning algorithms used for classification: logistic regression, Naive Bayes and Support Vector Machines (SVM). We will also take a brief look at using **mlr3** to tune the SVM algorithm. Rather than using lots of different datasets, we will stick with the California housing dataset used last week, as use this to try to model and predict districts with high value housing. This also allows us to treat this as a model comparison exercise, where we look to see which of the three methods has the highest predictive skill with these data. 
 
+### Python users
+
+If you are using Python for today's lab, you'll need to download the Jupyter notenook for this lab (*GEOG_5160_6160_lab07.ipynb*). Make a new folder for the lab (`lab07`) and move the notebook to this. Now open a new terminal (in Windows go to the [Start Menu] > [Anaconda (64-bit)] > [Anaconda prompt]). Once opened, change directory to the folder you just made, activate your conda environment
+
+```
+conda activate geog5160
+```
+
+Start the Jupyter Notebook server:
+
+```
+jupyter notebook
+```
+
+And open the notebook for today's class. 
+
 ## Data processing
 
 As before, we will start by loading and cleaning the dataset for us. There are several steps we need to take here:
