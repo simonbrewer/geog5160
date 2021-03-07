@@ -453,10 +453,10 @@ For the exercise, you need to carry out a comparison of the three methods presen
 
 Your answer should include
 
-- Your R code
-- A list of aggregate AUC scores, one per method
-- A note of any parameter settings you used (e.g. for the SVM method)
-- The recommendation
+- Your R code [2]
+- A list of aggregate AUC scores, one per method [1]
+- A note of any parameter settings you used (e.g. for the SVM method) [1]
+- The recommendation [1]
 
 
 

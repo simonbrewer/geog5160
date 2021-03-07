@@ -1866,11 +1866,11 @@ cv_rsmp$test_set(1)</code></pre>
 ## 0.7200881 0.2799119</code></pre>
 <p>You can check the other folds, by replacing <code>1</code> with the fold number. We can now use the <code>resample()</code> function to run the sample, calculate the performance metrics and print them:</p>
 <pre class="r"><code>rr &lt;- resample(task_mhv, learner, cv_rsmp, store_models = TRUE)</code></pre>
-<pre><code>## INFO  [09:57:42.960] Applying learner &#39;classif.log_reg&#39; on task &#39;mhv&#39; (iter 1/5) 
-## INFO  [09:57:43.078] Applying learner &#39;classif.log_reg&#39; on task &#39;mhv&#39; (iter 2/5) 
-## INFO  [09:57:43.189] Applying learner &#39;classif.log_reg&#39; on task &#39;mhv&#39; (iter 3/5) 
-## INFO  [09:57:43.296] Applying learner &#39;classif.log_reg&#39; on task &#39;mhv&#39; (iter 4/5) 
-## INFO  [09:57:43.563] Applying learner &#39;classif.log_reg&#39; on task &#39;mhv&#39; (iter 5/5)</code></pre>
+<pre><code>## INFO  [14:38:33.253] Applying learner &#39;classif.log_reg&#39; on task &#39;mhv&#39; (iter 1/5) 
+## INFO  [14:38:33.375] Applying learner &#39;classif.log_reg&#39; on task &#39;mhv&#39; (iter 2/5) 
+## INFO  [14:38:33.525] Applying learner &#39;classif.log_reg&#39; on task &#39;mhv&#39; (iter 3/5) 
+## INFO  [14:38:33.675] Applying learner &#39;classif.log_reg&#39; on task &#39;mhv&#39; (iter 4/5) 
+## INFO  [14:38:33.993] Applying learner &#39;classif.log_reg&#39; on task &#39;mhv&#39; (iter 5/5)</code></pre>
 <pre class="r"><code>rr$score(measure)</code></pre>
 <pre><code>##                 task task_id                    learner      learner_id
 ## 1: &lt;TaskClassif[45]&gt;     mhv &lt;LearnerClassifLogReg[30]&gt; classif.log_reg
@@ -1899,7 +1899,7 @@ cv_rsmp$test_set(1)</code></pre>
 </div>
 <div id="naive-bayes" class="section level2">
 <h2>Naive Bayes</h2>
-<p>The Naive Bayes approach is a best on trying to establish the conditional probability of any class given the values of the input features. Whichever class has the highest overall probability will be used as a prediction for a new case. These conditional probabilities are built either:</p>
+<p>The Naive Bayes approach tries to establish the conditional probability of any class given the values of the input features. Whichever class has the highest overall probability will be used as a prediction for a new case. These conditional probabilities are built either:</p>
 <ul>
 <li>Categorical features: Looking for the relative number of times an output class co-occurs with a feature class</li>
 <li>Continuous features: Building a probability function to relate values of the feature to the likelihood of a class (usually based on the mean and s.d. values of the feature for that class)</li>
@@ -1960,16 +1960,16 @@ learner</code></pre>
 ## y        [,1]     [,2]
 ##   0  31.24427 1162.991
 ##   1 -69.50991 1075.906</code></pre>
-<p>The output here is quite different from the previous model. The first thing to note are the prior probabilities. These are the probability of a district being in a low or high value district, independent of the feature values. Only about 8.5% of the districts are classified as high value.</p>
-<p>The following section provides the conditional probabilities: the probability of a district being classified as high or low value, dependent on the value of the feature. Here, for example, you should be able to see that the mean value for <code>housing_median_age</code> in the high value areas (<code>1</code>) are much higher (4.38) than the lower value areas (-0.45). Remember that these are centered values, and simply suggest that higher value areas are substantially above the mean income value. The second column gives the standard deviation. Both the values for <code>housing_median_age</code> are high (12+) relative to the mean values, suggesting that there may be quite a lot of overlap between the probability distributions of the two classes.</p>
-<p>The only one that is different is the <code>ocean_new</code> parameter, which gives the direct conditional probability for each value class in each of the <code>ocean_new</code> classes. We can see here that there the conditional probability of being high value if the district is close to the ocean is approximately 95%.</p>
+<p>The output here is quite different from the previous model. The first thing to note are the prior probabilities. These are the probability of a district being in a low or high value district, independent of the feature values. Only about 28% of the districts are classified as high value.</p>
+<p>The following section provides the conditional probabilities: the probability of a district being classified as high or low value, dependent on the value of the feature. Here, for example, you should be able to see that the mean value for <code>housing_median_age</code> in the high value areas (<code>1</code>) are much higher (1.84) than the lower value areas (-0.76). Remember that these are centered values, and simply suggest that higher value areas are substantially above the mean income value. The second column gives the standard deviation. Both the values for <code>housing_median_age</code> are high (12+) relative to the mean values, suggesting that there may be quite a lot of overlap between the probability distributions of the two classes.</p>
+<p>The only one that is different is the <code>ocean_new</code> parameter, which gives the direct conditional probability for each value class in each of the <code>ocean_new</code> classes. We can see here that there the conditional probability of being high value if the district is close to the ocean is approximately 94%.</p>
 <p>We’ll now run this through the resampling strategy to get a cross-validated AUC score. As the resampler has already been set up and initialized, we can simply reuse this. Note this will mean that the folds will remain the same, in other words, each of the five divisions of the original dataset will contain the same observations as in the logistic regression example.</p>
 <pre class="r"><code>rr &lt;- resample(task_mhv, learner, cv_rsmp, store_models = TRUE)</code></pre>
-<pre><code>## INFO  [09:57:43.961] Applying learner &#39;classif.naive_bayes&#39; on task &#39;mhv&#39; (iter 1/5) 
-## INFO  [09:57:44.840] Applying learner &#39;classif.naive_bayes&#39; on task &#39;mhv&#39; (iter 2/5) 
-## INFO  [09:57:45.644] Applying learner &#39;classif.naive_bayes&#39; on task &#39;mhv&#39; (iter 3/5) 
-## INFO  [09:57:46.444] Applying learner &#39;classif.naive_bayes&#39; on task &#39;mhv&#39; (iter 4/5) 
-## INFO  [09:57:47.236] Applying learner &#39;classif.naive_bayes&#39; on task &#39;mhv&#39; (iter 5/5)</code></pre>
+<pre><code>## INFO  [14:38:34.417] Applying learner &#39;classif.naive_bayes&#39; on task &#39;mhv&#39; (iter 1/5) 
+## INFO  [14:38:35.410] Applying learner &#39;classif.naive_bayes&#39; on task &#39;mhv&#39; (iter 2/5) 
+## INFO  [14:38:36.527] Applying learner &#39;classif.naive_bayes&#39; on task &#39;mhv&#39; (iter 3/5) 
+## INFO  [14:38:37.390] Applying learner &#39;classif.naive_bayes&#39; on task &#39;mhv&#39; (iter 4/5) 
+## INFO  [14:38:38.224] Applying learner &#39;classif.naive_bayes&#39; on task &#39;mhv&#39; (iter 5/5)</code></pre>
 <pre class="r"><code>rr$score(measure)</code></pre>
 <pre><code>##                 task task_id                        learner          learner_id
 ## 1: &lt;TaskClassif[45]&gt;     mhv &lt;LearnerClassifNaiveBayes[30]&gt; classif.naive_bayes
@@ -1992,6 +1992,7 @@ learner</code></pre>
 <pre class="r"><code>rr$aggregate(measure)</code></pre>
 <pre><code>## classif.auc 
 ##   0.8561359</code></pre>
+<p>The results are worse than the logistic regression. This is not too surprising; while the Naive Bayes is a very efficient classifier it is known to be relatively poor in making predictions. It’s main use is in classifying large text documents.</p>
 </div>
 <div id="svm" class="section level2">
 <h2>SVM</h2>
@@ -2033,11 +2034,11 @@ learner$model</code></pre>
 <div id="linear-kernel" class="section level4">
 <h4>Linear kernel</h4>
 <pre class="r"><code>rr &lt;- resample(task_mhv, learner, cv_rsmp, store_models = FALSE)</code></pre>
-<pre><code>## INFO  [09:58:07.997] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 1/5) 
-## INFO  [09:58:28.482] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 2/5) 
-## INFO  [09:58:48.423] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 3/5) 
-## INFO  [09:59:08.525] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 4/5) 
-## INFO  [09:59:27.574] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 5/5)</code></pre>
+<pre><code>## INFO  [14:39:00.978] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 1/5) 
+## INFO  [14:39:19.568] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 2/5) 
+## INFO  [14:39:38.494] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 3/5) 
+## INFO  [14:39:58.625] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 4/5) 
+## INFO  [14:40:20.668] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 5/5)</code></pre>
 <pre class="r"><code>rr$aggregate(msr(&quot;classif.auc&quot;))</code></pre>
 <pre><code>## classif.auc 
 ##   0.8898889</code></pre>
@@ -2049,11 +2050,11 @@ learner$model</code></pre>
 <pre class="r"><code>learner &lt;- lrn(&quot;classif.svm&quot;, kernel = &quot;radial&quot;, scale = TRUE, 
               predict_type = &quot;prob&quot;)
 rr &lt;- resample(task_mhv, learner, cv_rsmp, store_models = FALSE)</code></pre>
-<pre><code>## INFO  [09:59:46.264] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 1/5) 
-## INFO  [10:00:09.725] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 2/5) 
-## INFO  [10:00:32.376] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 3/5) 
-## INFO  [10:00:55.188] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 4/5) 
-## INFO  [10:01:17.710] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 5/5)</code></pre>
+<pre><code>## INFO  [14:40:41.261] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 1/5) 
+## INFO  [14:41:07.706] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 2/5) 
+## INFO  [14:41:32.459] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 3/5) 
+## INFO  [14:41:55.985] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 4/5) 
+## INFO  [14:42:20.193] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 5/5)</code></pre>
 <pre class="r"><code>rr$aggregate(msr(&quot;classif.auc&quot;))</code></pre>
 <pre><code>## classif.auc 
 ##    0.878282</code></pre>
@@ -2061,11 +2062,11 @@ rr &lt;- resample(task_mhv, learner, cv_rsmp, store_models = FALSE)</code></pre>
 <pre class="r"><code>learner &lt;- lrn(&quot;classif.svm&quot;, kernel = &quot;radial&quot;, scale = TRUE, 
               predict_type = &quot;prob&quot;, gamma = 0.01)
 rr &lt;- resample(task_mhv, learner, cv_rsmp, store_models = FALSE)</code></pre>
-<pre><code>## INFO  [10:01:40.680] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 1/5) 
-## INFO  [10:02:05.311] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 2/5) 
-## INFO  [10:02:30.621] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 3/5) 
-## INFO  [10:02:55.856] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 4/5) 
-## INFO  [10:03:22.111] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 5/5)</code></pre>
+<pre><code>## INFO  [14:42:44.892] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 1/5) 
+## INFO  [14:43:11.022] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 2/5) 
+## INFO  [14:43:37.227] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 3/5) 
+## INFO  [14:44:02.304] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 4/5) 
+## INFO  [14:44:27.054] Applying learner &#39;classif.svm&#39; on task &#39;mhv&#39; (iter 5/5)</code></pre>
 <pre class="r"><code>rr$aggregate(msr(&quot;classif.auc&quot;))</code></pre>
 <pre><code>## classif.auc 
 ##   0.8931251</code></pre>
@@ -2075,13 +2076,13 @@ rr &lt;- resample(task_mhv, learner, cv_rsmp, store_models = FALSE)</code></pre>
 <div id="exercise" class="section level2">
 <h2>Exercise</h2>
 <p>The file <em>Sonar.csv</em> contains values of 208 sonar signals. The data have 60 features, each representing “the energy within a particular frequency band, integrated over a certain period of time”, and an outcome variable <code>Class</code>, which is coded <code>M</code> or <code>R</code>. The goal of the experiment is to discriminate between the sonar signals bounced of a rock <code>R</code> or a metal object (a mine <code>M</code>).</p>
-<p>For the exercise, you need to carry out a comparison of the three methods presented in today’s lab with this new dataset. You should use the <strong>mlr3</strong> framework to set up and test your models, and report the AUC score for each one. At the end of this exercise, you should make a recommendation as to which method you think is best for this task.</p>
+<p>For the exercise, you need to carry out a comparison of the three methods presented in today’s lab with this new dataset. You should use the <strong>mlr3</strong> framework to set up and test your models, and report the cross-validated AUC score for each one. At the end of this exercise, you should make a recommendation as to which method you think is best for this task.</p>
 <p>Your answer should include</p>
 <ul>
-<li>Your R code</li>
-<li>A list of aggregate AUC scores, one per method</li>
-<li>A note of any parameter settings you used (e.g. for the SVM method)</li>
-<li>The recommendation</li>
+<li>Your R code [2]</li>
+<li>A list of aggregate AUC scores, one per method [1]</li>
+<li>A note of any parameter settings you used (e.g. for the SVM method) [1]</li>
+<li>The recommendation [1]</li>
 </ul>
 </div>
 
