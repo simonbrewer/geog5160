@@ -342,7 +342,7 @@ The overall AUC is `r round(as.numeric(rr$aggregate(measure)),3)`, which is a pr
 
 ## Naive Bayes
 
-The Naive Bayes approach is a best on trying to establish the conditional probability of any class given the values of the input features. Whichever class has the highest overall probability will be used as a prediction for a new case. These conditional probabilities are built either:
+The Naive Bayes approach tries to establish the conditional probability of any class given the values of the input features. Whichever class has the highest overall probability will be used as a prediction for a new case. These conditional probabilities are built either:
 
 - Categorical features: Looking for the relative number of times an output class co-occurs with a feature class 
 - Continuous features: Building a probability function to relate values of the feature to the likelihood of a class (usually based on the mean and s.d. values of the feature for that class)
@@ -381,6 +381,7 @@ rr <- resample(task_mhv, learner, cv_rsmp, store_models = TRUE)
 rr$score(measure)
 rr$aggregate(measure)
 ```
+The results are worse than the logistic regression. This is not too surprising; while the Naive Bayes is a very efficient classifier it is known to be relatively poor in making predictions. It's main use is in classifying large text documents.
 
 ## SVM
 
@@ -448,7 +449,7 @@ Dropping $\gamma$ from the default value to 0.01 has a substantial impact on the
 
 The file *Sonar.csv* contains values of 208 sonar signals. The data have 60 features, each representing "the energy within a particular frequency band, integrated over a certain period of time", and an outcome variable `Class`, which is coded `M` or `R`. The goal of the experiment is to discriminate between the sonar signals bounced of a rock `R` or a metal object (a mine `M`). 
 
-For the exercise, you need to carry out a comparison of the three methods presented in today's lab with this new dataset. You should use the **mlr3** framework to set up and test your models, and report the AUC score for each one. At the end of this exercise, you should make a recommendation as to which method you think is best for this task. 
+For the exercise, you need to carry out a comparison of the three methods presented in today's lab with this new dataset. You should use the **mlr3** framework to set up and test your models, and report the cross-validated AUC score for each one. At the end of this exercise, you should make a recommendation as to which method you think is best for this task. 
 
 Your answer should include
 
