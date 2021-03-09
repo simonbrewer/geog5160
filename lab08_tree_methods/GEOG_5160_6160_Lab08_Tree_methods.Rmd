@@ -1,0 +1,645 @@
+---
+title: "GEOG 5160/6160 Lab 09 Tree methods"
+author: | 
+  | Simon Brewer
+  | Geography Department
+  | University of Utah
+date: "March 20, 2020"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    fig_caption: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(png)
+library(grid)
+```
+
+```{r echo=FALSE}
+set.seed(1234)
+```
+
+## Tree methods
+
+In this lab, we'll look at how to implement a range on tree methods in R using the **mlr3** package. We'll cover basic classification and regression trees, random forests and boosted regression trees. We will also look at how to predict for new data using the **mlr3** package and how to automate hyperparameter tuning.
+
+We'll use the same species distribution dataset from the previous lab as an example for these methods, and also quickly demonstrate how to build a regression tree for the California housing dataset. 
+
+You will need to make sure the following libraries are installed on your computer:
+
+- **rpart.plot**: better CART graphics
+- **vip**: better variable importance plots
+- **pdp**: partial dependency plots
+
+## Setup
+
+To avoid having several copies of these files, I'd suggest using the same working directory that you created last week. Make sure you have a copy of the following files. Download anything that is missing from Canvas and place them in this directory. Make sure that the *borders.zip* file is unzipped. 
+
+- *Pinus_edulis.csv*
+- *borders.zip*
+- *current.env.RData*
+- *future.env.RData*
+
+The last two files contain the climate data from Worldclim from the previous lab, cropped to the region and converted to the correct units. Unzip the *borders.zip* file. Now start RStudio and change the working directory to the folder you just created. This can be changed by going to the [Session] menu and selecting [Set working directory] -> [Choose directory...], then browsing to the folder. 
+
+Before doing anything else, run the following command and make sure that you can see the files you downloaded. 
+
+```{r results='hide'}
+list.files()
+```
+
+Next load the libraries you will need for the lab. You should at this stage have most of these already installed. Add anything that is not installed using the `install.packages()` function.
+
+```{r message=FALSE}
+library(dplyr)
+library(RColorBrewer)
+library(rgdal)
+library(raster)
+library(dismo)
+library(tree)
+library(mlr3)
+library(mlr3learners)
+library(mlr3viz)
+library(mlr3tuning)
+library(vip)
+library(pdp)
+```
+
+### Getting data 1: location data
+
+#### California housing data
+
+We'll start by reading in and plotting the California housing dataset. The follwoing code reads the file and cleans up the data. We then create two data sets to show how the algorithm works, one with only the cooordinates as features, and the other with the usual set of house characteristics as features. The only new code here divides the house values by 1000 to help in displaying some of the output. Refer back to the previous labs for explanations of this code:
+
+```{r}
+housing <- read.csv("housing.csv")
+housing <- housing %>%
+  dplyr::filter(!is.na(total_bedrooms))
+housing$avg_rooms = housing$total_rooms / housing$households
+housing$avg_bedrooms = housing$total_bedrooms / housing$households
+housing$median_house_value = housing$median_house_value / 1000
+housing2 = housing %>%
+  dplyr::select(longitude, latitude, median_house_value)
+housing3 = housing %>%
+  dplyr::select(-longitude, -latitude, -total_rooms, -total_bedrooms, -ocean_proximity)
+```
+
+Let's make a quick plot (we'll use this later to illustrate the regression tree)
+```{r}
+price.deciles = quantile(housing2$median_house_value,0:10/10)
+cut.prices = cut(housing2$median_house_value,price.deciles,include.lowest=TRUE)
+plot(housing2$longitude,housing2$latitude,col=grey(10:2/11)[cut.prices],pch=20,
+     xlab="Longitude",ylab="Latitude", asp = 1)
+```
+
+#### Pinus edulis data
+
+Next, we'll read the known locations of *Pinus edulis* trees from the file *Pinus_edulis.csv*, and plot to check the data
+
+```{r}
+pe = read.csv("./Pinus_edulis.csv")
+coordinates(pe) <- ~longitude+latitude
+borders = readOGR("./ne_50m_admin_0_countries/ne_50m_admin_0_countries.shp")
+plot(pe, xlim=c(-120,-80), ylim=c(25,55), pch=21, bg="darkorange", axes=TRUE)
+plot(borders, add=TRUE)
+```
+
+### Getting data 2: environmental data
+
+Start by loading the modern and future environmental data:
+```{r echo=TRUE}
+load("current.env.RData")
+load("future.env.RData")
+my.pal = brewer.pal(9,"YlOrRd")
+plot(raster(current.env,1))
+plot(pe, add=TRUE, pch=21, bg="olivedrab")
+```
+
+Finally, we make up a dataset for modeling. To do this, we first generate a set of random absence points using the `circles()` function:
+
+```{r}
+x = circles(pe, d=100000, lonlat=T)
+absence = spsample(x@polygons, type='random', n=nrow(pe))
+```
+
+In te previous lab, we worked with separate data frames for the presence and absence points. For **mlr3** however, we need to join all the coordinates together in a single data frame, together with a 0/1 label for presence/absence and the environmental variables.
+
+```{r}
+pe.crds = rbind(coordinates(pe), coordinates(absence))
+pe.env = raster::extract(current.env, pe.crds)
+pe.pa = c(rep(1, nrow(pe)),
+          rep(0, nrow(pe)))
+
+pe.df = data.frame(pe.crds, pa = pe.pa, pe.env)
+pe.df$pa <- as.factor(pe.df$pa)
+row.names(pe.df) <- 1:598
+```
+
+## Classification and regression trees
+
+Classification and Regression Trees (CART) is a non-linear, non-parametric modeling approach that can be used with a wide variety of data. Regression trees are used with continuous outcome data, and classification trees with binary or categorical data, but the interface for these is the same in R. 
+
+R has a number of packages for performing CART and associated analyses. We're going to use the **tree** package to demonstrate how this works with the California data, then we'll move to using **mlr3** which uses the **rpart** package. While the syntax will be different, there is little difference in the way these work:
+
+### Regression Trees 
+
+We will start by fitting a regression tree to the California housing data. The main function is `tree()`, and this will automatically choose a regression tree approach if the response variable is numerical (we'll build a classification tree in the next section). 
+
+```{r results='hide'}
+housing.tree = tree(median_house_value ~ longitude + latitude,
+                    data = housing2)
+```
+
+If you now type the name of the object containing the output, you will see the tree structure in text format. 
+
+```{r eval=FALSE}
+housing.tree
+```
+
+Each line shows a split in tree, with the condition, the number of observations that conform to that condition, the deviance (a derived loss function), and the value of the `median_house_value` in that node. Splits that are indented represent subsequent partitions.  
+
+```{r}
+plot(housing.tree)
+text(housing.tree)
+```
+
+The **tree** package has a function (`partition.tree`) that allows you to visualize the output of a CART model in the original parameter space. As the only features we used in this model with the coordinates, we can use this here to overlay the partitions on our map of house values:
+
+```{r}
+plot(housing2$longitude, housing2$latitude, col = grey(10:2/11)[cut.prices],
+     pch = 20, xlab = "Longitude", ylab = "Latitude", asp = 1)
+partition.tree(housing.tree ,ordvars = c("longitude","latitude"), add = TRUE)
+```
+
+In general this does a fairly good job of identifying the expected areas of higher values along the coast and aroung the bigger cities. As a comparison, we'll now build a regression tree using the usual set of features in `housing3`:
+
+```{r}
+housing.tree = tree(median_house_value ~ .,
+                    data = housing3)
+plot(housing.tree)
+text(housing.tree)
+```
+
+### Classification Trees 
+
+Next, we'll build a classification model for the *Pinus edulis* data set using **mlr3**. CART methods are implemented in **mlr3** using the **rpart** package and the two learners are `classif.rpart` for a classification tree and `regr.rpart` for a regression tree.
+
+As a recall, we need to identify the task, define a performance measure and a resampling strategy. Then we train the learner and evaluate the outcomes
+
+- Set task
+```{r}
+task_pe = TaskClassif$new(id = "pe", backend = pe.df, 
+                          target = "pa")
+
+## Check the task details
+task_pe$col_roles
+task_pe$col_roles$feature = setdiff(task_pe$col_roles$feature,
+                                    c("longitude", "latitude"))
+task_pe$feature_names
+```
+
+- Set performance measure
+```{r}
+measure = msr("classif.auc")
+```
+
+- Define learner (leave parameters at defaults)
+```{r} 
+lrn_ct = lrn("classif.rpart", predict_type = "prob")
+```
+
+- Define the resampling strategy (we'll use a simple hold-out with 20% of samples in the test set)
+
+```{r}
+resamp_hout = rsmp("holdout", ratio = 0.8)
+resamp_hout$instantiate(task_pe)
+```
+
+We then run the resampler and examine the performance
+```{r}
+rr = resample(task_pe, lrn_ct, resamp_hout, store_models = TRUE)
+rr$score(measure)
+rr$aggregate(measure)
+```
+
+With the default settings, this has worked fairly well, but we will next try to improve on this by using a couple of more complex algorithms. Before doing so, we can extract any of the trees that were built during the resampling. These are stored in a list in `rr$learners`, and you can select an individual models using R's list index `[[i]]`. As we are using a hold-out, there is only one learner in this list (`[[1]]`). With a 5-fold cross-validation, there would be 5 (`[[1]]...[[5]]`). 
+
+```{r}
+rr$learners[[1]]$model
+```
+
+We'll use the **rpart.plot** package to visualize the first of these. This allows you to make a large number of tweaks to a tree plot. Here `extra=106` adds the following to each terminal node: the predicted value, the proportion of `1`s and th percentage of observations in that node: 
+
+```{r}
+library(rpart.plot)
+prp(rr$learners[[1]]$model, extra = 106, roundint = FALSE)
+```
+
+### Tuning
+
+Classification and regression trees have a large number of hyper parameters and benefit from tuning. We can do this using the **mlr3tuning** package. There are several steps here:
+
+#### 1. Define the task, learner and measure
+
+We'll use the definitions from the previous section 
+
+#### 2. Define the parameters to test 
+
+Parameter sets can be generated using the **paradox** package. This should have been installed along with **mlr3**, so load this now. 
+
+```{r}
+library(paradox)
+```
+
+Next check the available parameters for our learner
+```{r}
+lrn_ct$param_set
+```
+
+This table also gives the type of parameter (e.g. double precision or integer), the lower and upper bounds amd the default value. We'll test values for the complexity parameter (`cp`) between 0.001 and 0.1, and the minimum number of observations to considering partitioning a node (`minsplit`) from 1 to 12.
+
+```{r}
+## Build parameter set
+tune_ps = ParamSet$new(list(
+  ParamDbl$new("cp", lower = 0.0001, upper = 0.1),
+  ParamInt$new("minsplit", lower = 2, upper = 20)
+))
+tune_ps
+```
+
+#### 3. Define a stopping condition 
+
+Next we defining one or more stopping criteria for the tuning. This is largely to ensure that tuning for highly complex algorithms is manageable. The available stopping criteria include:
+
+- limiting clock time
+- limiting the number of iterations or evaluations 
+- stopping when a specific level of performance has been reached
+- stopping when performance no longer improves by more than some amount
+
+We'll use the second of these. The function to set the terminator is `term()`, and we set the number of evaluations to 50. 
+
+```{r}
+evals = term("evals", n_evals = 50)
+```
+
+#### 4. Define the `Tuner`
+
+Now, we set up a sampling strategy for searching among different hyperparameter values. There are a couple of options here; we will use a grid search, where the argument `resolution` gives the size of the steps between the lower and upper bounds defined in our `ParamSet`.
+
+```{r}
+tuner = tnr("grid_search", resolution = 10)
+```
+
+#### 5. Run the tuner
+
+The **mlr3tuning** package offers a couple of ways to tune. Either by furst running the tuning, then using these parameters to train the final model, or combining these using `AutoTuner()`. We'll use the second of these here - it's a little neater, and has one other advantage as we will see in later. 
+
+First create a new `AutoTuner` using the various other functions and parameters that we have just defined
+
+```{r}
+at_ct = AutoTuner$new(learner = lrn_ct, 
+                      resampling = rsmp("holdout"),
+                      measures = measure, 
+                      tune_ps = tune_ps,
+                      terminator = evals,
+                      tuner = tuner)
+```
+
+Note that we use a holdout method in the AutoTuner to split the data. This will be used to assess how the model's skill changes as we vary the parameters. Each time it will evaluate the measure on the holdout test set. Whichever parameter set gives the best performance will then be automatically used to train a final model. The `AutoTuner` object inherits from the `Learner` methods we have previously seen, so to tune and train the model, just type:
+
+```{r echo=FALSE}
+lgr::get_logger("mlr3")$set_threshold("warn")
+```
+
+```{r}
+at_ct$train(task_pe)
+```
+
+We can then see the results in `at_ct$learner`, showing a value of `cp` of `r at_ct$learner$model$control$cp` and `minsplit` of `r at_ct$learner$model$control$minsplit`.
+
+```{r results='hide'}
+at_ct$learner
+```
+
+### Nested resampling
+
+The previous code has trained a model, but it has not evaluated it. While this used a resmapling strategy (the holdout), this is only used to select the best value of the hyperparameters. To evaluate the final trained model, we need to use an independent dataset. Fortunately, this is quite easy to set up using the `AutoTuner`. 
+
+To understand the following code, we need to define the inner vs. the outer resampling strategy. 
+
+- The outer strategy divides the dataset into a training and testing data set, where the test set is used to evaluate the predictive skill of the model
+- The inner strategy takes the training data, and divides it into two new sets to tune the model - one set to train for each combination of parameters, and one set to evaluate and help select
+
+Here, we'll use a hold-out for the inner strategy, and a 3-fold cross validation for the outer. 
+
+```{r}
+resampling_inner = rsmp("holdout", ratio = 0.8)
+resampling_outer = rsmp("cv", folds = 3)
+```
+
+Next we'll remake the `AutoTuner` with the inner strategy:
+
+```{r}
+at_ct = AutoTuner$new(learner = lrn_ct, 
+                      resampling = resampling_inner,
+                      measures = measure, 
+                      tune_ps = tune_ps,
+                      terminator = evals,
+                      tuner = tuner)
+```
+
+And now run `resample` using the `AutoTuner` as the learner, and the outer resampling strategy:
+
+```{r}
+rr_ct = resample(task = task_pe, learner = at_ct, 
+                 resampling = resampling_outer, store_models = TRUE)
+```
+
+This will take a little while to run; remember that this is dividing the original data set up three times, then for each one tuning the parameters across the parameter set/resolution. 
+
+```{r}
+rr_ct$score(measure) 
+rr_ct$aggregate(measure)
+```
+
+We get a small improvement here, but not much, and in general, `rpart` don't improve a lot with tuning. We'll turn now to some more complex methods, to see if we can improve on these results.
+
+## Random forest
+
+Next, we'll try to build a random forest for the Pinus data. The **mlr3** package uses a random forest routine from the **ranger** package that can run on multiple cores. To build this, all we need to do is create a new learner (`classif.ranger`), and run the hold-out resampling on it:
+
+```{r}
+lrn_rf = lrn("classif.ranger", 
+             predict_type = "prob", 
+             importance = "permutation")
+rr = resample(task_pe, lrn_rf, resamp_hout, store_models = TRUE)
+rr$score(measure)
+rr$aggregate(measure)
+```
+
+The default random forest shows an improvement over the CART model. We'll next try to tune this to see if we can improve it's performance. First, let's take a look at the set of available hyperparameters:
+
+```{r}
+lrn_rf$param_set
+```
+
+The two most frequently tuned parameters are `mtry` (the number of variables used per split) and `num.trees` (the number of trees built). Next we define a parameter set for these:
+
+```{r}
+## Build parameter set
+tune_ps = ParamSet$new(list(
+  ParamInt$new("mtry", lower = 1, upper = 8),
+  ParamInt$new("num.trees", lower = 100, upper = 1000)
+))
+```
+
+Then, we define a new `AutoTuner`. This is simply a copy of the previous one, but with an updated learner and parameter set. Note that we again set the inner resamplign strategy.
+
+```{r}
+at_rf = AutoTuner$new(learner = lrn_rf, 
+                      resampling = resampling_inner,
+                      measures = measure, 
+                      tune_ps = tune_ps,
+                      terminator = evals,
+                      tuner = tuner)
+```
+
+Again, we use `resample` to tune the model within the outer resampling strategy:
+
+```{r eval=TRUE}
+rr_rf = resample(task = task_pe, learner = at_rf, 
+                 resampling = resampling_outer, store_models = TRUE)
+```
+
+This will take a little while to run; remember that this is dividing the original data set up three times, then for each one running tuning the parameters across the parameter set/resolution. 
+
+```{r eval=TRUE}
+rr_rf$score(measure) 
+rr_rf$aggregate(measure)
+```
+
+And again, we see a small jump in the AUC with the newly tuned model. To see the selected parameter values
+
+```{r results='hide'}
+rr_rf$data$learner[[1]]$param_set$values
+```
+
+
+#### Variable importance plots
+
+Next we'll plot the permutation-based variable importance for this model. As a reminder, variable importance is a measure of how much worse a model becomes when we scramble the values of one of the features. The model is used to predict the outcome for some test data (here the out-of-bag samples) twice: once with the original values of the feature and once with randomly shuffled values. If there is a large difference in the skill of the model, this feature is important in controllign the outcome. We'll use the `vip()` function from the **vip** to show and then plot the variable importance scores. As there are three possible models from the resampling, we'll just plot the first. The model object is buried quite deep in the resampling output in `rr_rf$learners[[1]]$model$learner$model`:
+
+```{r eval=TRUE}
+vip(rr_rf$learners[[1]]$model$learner$model)
+```
+
+Which indicates that the `bio7` (the annual temperature range) is most important in controlling the distribution of the pine. 
+
+#### Partial dependency plots
+
+We can look at the form of the relationship between the occurrence of the pine and this feature (and any other one) using a partial dependency plot. This shows changes in the outcome across the range of some feature (with all other features held constant). Here, we'll use the `partial()` function from the the **pdp** package to produce the plot. As arguments, this requires the model, the feature that you want the dependency on, the set of data used to produce the model. For a classification model, we can also specify which class to plot for. In this data, the presences (1) are the second class.
+
+```{r eval=TRUE}
+partial(rr_rf$learners[[1]]$model$learner$model, pred.var = "bio7",
+        train = pe.df, plot = TRUE, which.class = 2)
+```
+
+The plot shows the range over which this species is found, with a clear peak in suitability at about 36-37 degrees. 
+
+## Boosted regression trees
+
+We will now build a boosted regression tree model for the Pinus data. In contrast to random forests that bild a et of individual weak trees, boosted regresstion trees (BRTs) start with a single weak tree and iteratively improve on this. This is done by targeting the residuals from the previous set of models and trying to model that in the next tree. While this can make these methods very powerful, it is easy for them to overfit the data, and hyperparameter tuning becomes very important here. 
+
+We'll follow the same steps as with the random forest. **mlr3** uses the **xgboost** package, so we define our learner as `classif.xgboost`. The only hyperparameter that we will set here is `subsample`. This runs a stochastic boosting where each individual tree is built with a random subset of 50% of the training data.
+
+```{r}
+lrn_brt = lrn("classif.xgboost", 
+              predict_type = "prob", 
+              subsample = 0.5)
+rr = resample(task_pe, lrn_brt, resamp_hout, store_models = TRUE)
+rr$score(measure)
+rr$aggregate(measure)
+```
+
+With the default settings, our BRT performs much worse than the random forest, and about the same as the initial CART model. We'll next try to tune this to see if we can improve it's performance. First, let's take a look at the set of available hyperparameters:
+
+```{r results='hide'}
+lrn_brt$param_set
+```
+
+There is a long list of potential parameters to tune here. We'll focus on three: `eta` (the learning rate), `max.depth` (the number of splits in a tree) and `nrounds` (the number of boosting iterations). Next we define a parameter set for these:
+
+```{r}
+tune_ps = ParamSet$new(list(
+  ParamDbl$new("eta", lower = 0.001, upper = 0.1),
+  ParamInt$new("max_depth", lower = 1, upper = 6), ## Raise upper limit
+  ParamInt$new("nrounds", lower = 100, upper = 1000)
+))
+```
+
+Then, we define a new `AutoTuner`. This is simply a copy of the previous one, but with an updated learner and parameter set. Note that we again set the inner resampling strategy.
+
+```{r}
+at_brt = AutoTuner$new(learner = lrn_brt, 
+                       resampling = resampling_inner,
+                       measures = measure, 
+                       tune_ps = tune_ps,
+                       terminator = evals,
+                       tuner = tuner)
+```
+
+Again, we use `resample` to tune the model within the outer resampling strategy. This may take a few minutes to run - remember we are dividing the data into 3 folds, then running 50 tuning iterations for each one. 
+
+```{r eval=TRUE,results='hide'}
+rr_brt = resample(task = task_pe, learner = at_brt, 
+                  resampling = resampling_outer, store_models = TRUE)
+rr_brt$data$learner[[1]]$param_set$values
+```
+
+You should a much more substantial improvement in the AUC here. 
+
+```{r}
+rr_brt$score(measure) 
+rr_brt$aggregate(measure)
+```
+
+#### Variable importance plots
+
+As before, we can use a variable importance plot to look at the contribution of the individual features to the model
+
+```{r eval=TRUE}
+vip(rr_brt$learners[[1]]$model$learner$model)
+```
+
+## Prediction
+
+In this last section, we will produce maps of suitability for the pine for the modern and future periods. In order to do this, we first need to extract the environmental data for every grid cell in our region. We also get a list of grid cell coordinates (this will help with plotting the results).
+
+```{r}
+current.env.df = as.data.frame(getValues(current.env))
+grid.crds = coordinates(current.env)
+```
+
+Next, we remove any grid cell with missing values (those over the oceans), and the associated coordinates. Finally here we make a list of the grid cell number or index. We'll use this to make maps of the predictions.
+
+```{r}
+naID = which(is.na(current.env.df$bio1))
+current.env.df = current.env.df[-naID,]
+grid.crds = grid.crds[-naID,]
+grid.idx = cellFromXY(current.env, grid.crds)
+```
+
+We can now use this dataframe with the `predict_newdata` method to estimate the suitability. 
+
+```{r}
+pe.curr.pred = rr_rf$learners[[1]]$model$learner$predict_newdata(current.env.df)
+```
+
+And finally, we use the grid cell indicies to make a new raster layer showing the predictions. We do this by first making a template raster as a copy of one of the environmental layers, then using the grid cell index to set values to the probability of suitability. Finally, we plot this and overlay the original points:
+
+- A raster* object to be used as a template for resolution and extent
+- The set of values (here the probability of a '1')
+- The grid cell indicies
+
+```{r}
+pe.curr.prob.r = raster(current.env,1)
+pe.curr.prob.r[grid.idx] <- pe.curr.pred$prob[,2]
+plot(pe.curr.prob.r)
+plot(pe, add = TRUE)
+```
+
+This shows that model captures the current distribution well, but also predicts a large area of suitability in the north-west. We can also plot the predicted class (0/1)
+
+```{r}
+pe.curr.class.r = raster(current.env,1)
+pe.curr.class.r[grid.idx] <- pe.curr.pred$response
+plot(pe.curr.class.r)
+plot(pe, add = TRUE)
+```
+
+Now let's do the same with the future environment. First extract the values and coordinates. 
+
+```{r}
+future.env.df = as.data.frame(getValues(future.env))
+grid.crds = coordinates(future.env)
+names(future.env.df) <- names(current.env.df)
+```
+
+Now remove the missing values and set the grid index
+```{r}
+naID = which(is.na(future.env.df$bio1))
+future.env.df = future.env.df[-naID,]
+grid.crds = grid.crds[-naID,]
+grid.idx = cellFromXY(future.env, grid.crds)
+```
+
+Predict the suitability:
+
+```{r}
+pe.rcp85.pred = rr_rf$learners[[1]]$model$learner$predict_newdata(future.env.df)
+```
+
+And plot it:
+```{r}
+pe.rcp85.prob.r = raster(future.env,1)
+pe.rcp85.prob.r[grid.idx] <- pe.rcp85.pred$prob[,2]
+plot(pe.rcp85.prob.r)
+plot(pe, add = TRUE)
+```
+
+You should here that the suitability has been reduced in the south, but increased in the north with warming temperatures. This is shown more clearly by looking at the predicted classes
+
+```{r}
+pe.rcp85.class.r = raster(future.env,1)
+pe.rcp85.class.r[grid.idx] <- pe.rcp85.pred$response
+plot(pe.rcp85.class.r)
+plot(pe, add = TRUE)
+```
+
+And finally, we can illustrate the change in range:
+
+```{r}
+my.pal = brewer.pal(3,'PRGn')
+plot(pe.rcp85.class.r - pe.curr.class.r, col=my.pal)
+```
+
+## Exercise
+
+In a previous lab, you used data from the *Sonar.csv* file to model types of object (rocks 'R' or mines 'M') using the values of a set of frequency bands. The exercise for this lab is to use one of the ensemble methods (random forest *or* boosted regression trees) to produce a new model of these data. You should use **mlr3** package, and you need to do the following:
+
+- Set up a task, learner, outer resampling strategy and performance measure
+- Use the `AutoTuner` to tune your model
+- Report the AUC score for the tuned model
+- Produce a variable importance plot
+
+In addition, your answer should include your R code. 
+
+## Appendix 1: Bioclimate variables
+
+- BIO1 = Annual Mean Temperature
+- BIO2 = Mean Diurnal Range (Mean of monthly (max temp - min temp))
+- BIO3 = Isothermality (BIO2/BIO7) (* 100)
+- BIO4 = Temperature Seasonality (standard deviation *100)
+- BIO5 = Max Temperature of Warmest Month
+- BIO6 = Min Temperature of Coldest Month
+- BIO7 = Temperature Annual Range (BIO5-BIO6)
+- BIO8 = Mean Temperature of Wettest Quarter
+- BIO9 = Mean Temperature of Driest Quarter
+- BIO10 = Mean Temperature of Warmest Quarter
+- BIO11 = Mean Temperature of Coldest Quarter
+- BIO12 = Annual Precipitation
+- BIO13 = Precipitation of Wettest Month
+- BIO14 = Precipitation of Driest Month
+- BIO15 = Precipitation Seasonality (Coefficient of Variation)
+- BIO16 = Precipitation of Wettest Quarter
+- BIO17 = Precipitation of Driest Quarter
+- BIO18 = Precipitation of Warmest Quarter
+- BIO19 = Precipitation of Coldest Quarter
+
+
+[gbifID]: https://www.gbif.org
+[wcID]: http://worldclim.org
+[wcfID]: http://www.worldclim.org/CMIP5v1

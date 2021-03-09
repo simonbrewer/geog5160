@@ -1,0 +1,433 @@
+---
+title: "Species Distribution Modeling Lab 2"
+author: "Simon Brewer"
+date: "3/10/2019"
+output:
+  word_document: default
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+set.seed(1234)
+```
+
+## SDMs and machine learning methods
+
+In today's lab we will look at two more advanced methods for species distribution modeling: random forests and MaxEnt. We will use the same data set of Colorado pine (*Pinus edulis*) locations as in the previous lab. Code is provided below to set these data up, but not commented - refer to last week's lab if you have questions. 
+
+You will need to make sure that the following R packages are installed on your computer (this includes the packages we needed last week):
+
+- **dismo**
+- **raster**
+- **rgdal**
+- **RColorBrewer**
+- **randomForest**
+- **maxnet**
+
+## Data setup
+
+```{r message=FALSE, warning=FALSE}
+library(rgdal)
+library(dismo)
+library(raster)
+library(RColorBrewer)
+
+## Read point locations
+pe = read.csv("./Pinus_edulis.csv")
+coordinates(pe) <- ~longitude+latitude
+
+## Environmental data
+current.env=getData("worldclim", var="bio", res=2.5)
+myext = extent(c(-130,-100,30,50))
+current.env = crop(current.env, myext)
+current.env = stack(subset(current.env, seq(1,11)) / 10, subset(current.env, seq(12,19)))
+## Elevation data
+elev = raster("worldclim_elev_2.5.nc")
+current.env = stack(current.env, elev)
+
+## Make some pseudo-absence points
+absence <- randomPoints(mask = raster(current.env, 1),  
+                        n = nrow(pe), p=pe)
+
+## Make up full dataset
+all.crds <- rbind(coordinates(pe), absence)
+all.bin <- c(rep(1, nrow(pe)), rep(0, nrow(absence))) 
+all.env <- extract(current.env, all.crds)
+all.df <-data.frame( cbind(pa=all.bin, all.env) )
+
+nfold = 5
+
+## Make up a k-fold crossvalidation dataset
+all.grp <- kfold(x = all.df, k = nfold, by=all.bin) 
+
+## Extract training set
+train.df <- subset(all.df, all.grp != 1)
+
+## Extract testing set
+test.df <- subset(all.df, all.grp == 1)
+```
+
+## Random forests
+
+Random forests (RFs) are an ensemble machine learning method, based the idea that complex datasets can be better modeled by fitting a large number of smaller (weaker) models to subsets of the data, rather than a single global model. In R, these can be fit using the **randomForest** package. Install this, if you haven't already, and load it for use with these data:
+
+```{r message=FALSE}
+library(randomForest)
+```
+
+The function to build a model is `randomForest()` which takes several arguments, including:
+
+- the formula specifying the response variable and the covariates
+- the data frame containing these variables
+- `ntree`: the number of trees to be built
+- `mtry`: the number of variables to be used for each split of the data
+
+Let's start by building an RF with the training data set: 
+
+```{r message=FALSE, warning=FALSE}
+pe.rf = randomForest(pa ~ ., data=train.df, ntree=500, mtry=3)
+```
+
+You should have received a warning message asking about regression. Random forests can be built to carry out either classification with binary or categorical variables or regression with continuous variables. The presence-absence data set we are working with falls in the first of these categories, but Hjimans and Elith (2017) suggest that regression may be a better approach:
+
+> Whereas with species distribution modeling we are often interested in classification (species is present or not), it is my experience that using regression provides better results
+
+As the `pa` variable in data frame is numeric, this will automatically run a regression RF, and if we type the name of the object we just created, you should see this, and some simple diagnostics:
+
+```{r}
+pe.rf
+```
+
+If you want to run this as a classification RF, simply convert the `pa` variable to a factor (R's version of a categorical variable):
+
+```{r message=FALSE, eval=FALSE}
+pe.rf2 = randomForest(factor(pa) ~ ., data=train.df, ntree=500, mtry=3)
+```
+
+We will however, be using the regression version for the rest of this lab. 
+
+The **randomForest** package has some useful diagnostic plots. The first of these simply plots the forest's error rate as a function of the number of trees. This is used to see if the a sufficient number of trees have been selected, shown by the traces flattening out. Any remaining trend suggests that the forest is not sufficiently large:
+
+```{r}
+plot(pe.rf)
+```
+
+The next plot shows the variable importance. As the RF only uses a subset of variables for each split, it can use this information to calculate importance. For a regression RF, this is shown as the increase in mean square error when that variable is omitted. Here, we can see that the altitude and 'BIO8' (Mean Temperature of Wettest Quarter) have the largest scores. 
+
+```{r}
+varImpPlot(pe.rf)
+```
+
+The final plots we will look at are partial dependence plots. These show the modeled response curve (the 'marginal' effect) for a given variable across it's range. For each plot, we need to specify:
+
+- the random forest object
+- the dataset used to build the model
+- the variable of interest
+
+```{r fig.keep='none'}
+partialPlot(pe.rf, train.df, "alt")
+partialPlot(pe.rf, train.df, "bio8")
+```
+
+### Evaluation
+
+Next, we evaluate the model. As in the previous lab, we will do this using the AUC scores, first for the training dataset, then for the test set. 
+
+```{r fig.keep='none'}
+## Predict for train set
+pe.train.pred = predict(pe.rf, train.df)
+
+## Evaluate and store AUC score
+rf.train.eval <- evaluate(p=pe.train.pred[train.df$pa==1], 
+                          a=pe.train.pred[train.df$pa==0])
+rf.train.eval
+plot(rf.train.eval, "ROC")
+```
+
+The training AUC is 1, which suggests perfect discrimination (!). We'll look at why this might be so high in the next section. For now, we'll just look at the test AUC for comparison:
+
+```{r fig.keep='none'}
+## Predict for test set
+pe.test.pred = predict(pe.rf, test.df)
+
+## Evaluate and store AUC score
+rf.test.eval <- evaluate(p=pe.test.pred[test.df$pa==1], 
+                         a=pe.test.pred[test.df$pa==0])
+rf.test.eval
+plot(rf.test.eval, "ROC")
+```
+
+#### Spatial sorting bias
+
+One issue with using the AUC to evaluate these models is that the value obtained depends on the size of the study region, relative to the area of observed presences. As the region increases, more 'absence' points are selected in areas that are far from the observations and are highly unlikely to have high modeled probabilities of presence. This artificially inflates the AUC and makes it difficult to compare models. The degree to which this is present in a dataset can be assess by the spatial sorting bias (SSB). This is a ratio of two distances, a) the average distance between training presence points and testing presence points and b) the average distance between training presence points and testing absence points. Where bias is present, this second distance will be much larger than the first, and the SSB value will tend to zero. In an unbiased dataset, these values will be approximately equal, and SSB will be close to 1. 
+
+To demonstrate this, we'll use the $k$-fold groupings to create four sets of coordinates, then use the `ssb()` function to estimate the distances, and finally calculate the SSB as a ratio:
+
+```{r}
+pres.train.crds = subset(all.crds, all.bin==1 & all.grp != 1)
+abs.train.crds = subset(all.crds, all.bin==0 & all.grp != 1)
+pres.test.crds = subset(all.crds, all.bin==1 & all.grp == 1)
+abs.test.crds = subset(all.crds, all.bin==0 & all.grp == 1)
+
+sb <- ssb(pres.test.crds, abs.test.crds, pres.train.crds)
+sb[1]/sb[2]
+```
+
+To correct for this in the evaluation, we can select only pairs of presence and absence observations that have similar distances to observations in the training set. This is a little complex, but returns a vector with one entry per observation in the presence test set. The value of these entries refer to the observation in the absence test set that it is paired to. If no absence location was found with a matching distance the value of the entry is set to `NA`
+
+```{r}
+i <- pwdSample(pres.test.crds, abs.test.crds, pres.train.crds, n=1)
+```
+
+We can now use this to create a new set of presence and absence coordinates, and re-run the SSB estimates: 
+```{r}
+pres.test.crds.pwd <- pres.test.crds[!is.na(i[,1]), ]
+abs.test.crds.pwd <- abs.test.crds[na.omit(as.vector(i)), ]
+sb2 <- ssb(pres.test.crds.pwd, abs.test.crds.pwd, pres.train.crds)
+sb2[1]/ sb2[2]
+```
+
+This has eliminated the bias, but at the cost of reducing the number of locations in the test set by somewhere around 75%. If we now recalculate the AUC score, we can see that the model performs much worse:
+
+```{r}
+pres.test.pred.pwd = predict(pe.rf, extract(current.env, pres.test.crds.pwd))
+abs.test.pred.pwd = predict(pe.rf, extract(current.env, abs.test.crds.pwd))
+rf.test.eval <- evaluate(p=pres.test.pred.pwd, a=abs.test.pred.pwd)
+rf.test.eval
+```
+
+#### $k$-fold cross-validation
+
+Previously, we have only run one iteration of the cross-validation by selecting one fold of data as the test set. In doing so, we risk getting a biased evaluation if the selected test set is a little unusual. To do this more thoroughly, we need to iterate across all $k$ subsets of data. There are tools to help with this in the **mlr** and **caret** packages, but here we will write our own code to do this, to help illustrate what is going on. Note that this also means that we need to build 5 random forest models (1 per testing subset), and so we will carry out the model evaluations *and* make predictions on the environmental grid as we go.
+
+Most of the code should be fairly easy to follow if you have worked through the rest of the lab, but some things to note:
+
+- We loop `j` times, one per test set
+- Two blank vectors are created to hold AUC scores and thresholds
+- The gridded predictors are stored as a raster stack (1 layer per prediction)
+
+```{r cache=TRUE, warning=FALSE}
+## Number of folds
+nfold = 5
+
+## Vector to store AUC values
+rf.cv.auc = rep(NA, nfold)
+
+## Vector to store threshold values
+rf.cv.thr = rep(NA, nfold)
+
+## Make up a k-fold crossvalidation dataset for all data
+all.grp <- kfold(x = all.df, k = nfold, by=all.bin) 
+
+for (j in 1:nfold) {
+  ## Extract training set
+  train.df <- subset(all.df, all.grp != j)
+  ## Extract testing set
+  test.df <- subset(all.df, all.grp == j)
+  
+  ## Build model
+  pe.rf = randomForest(pa ~ ., data=train.df, ntree=500, mtry=3)
+  
+  ## Get coordinates for pairwise distance
+  pres.train.crds = subset(all.crds, all.bin==1 & all.grp != j)
+  abs.train.crds = subset(all.crds, all.bin==0 & all.grp != j)
+  pres.test.crds = subset(all.crds, all.bin==1 & all.grp == j)
+  abs.test.crds = subset(all.crds, all.bin==0 & all.grp == j)
+  
+  ## Select out samples for evaluation
+  i <- pwdSample(pres.test.crds, abs.test.crds, pres.train.crds, n=1)
+  pres.test.crds.pwd <- pres.test.crds[!is.na(i[,1]), ]
+  abs.test.crds.pwd <- abs.test.crds[na.omit(as.vector(i)), ]
+  
+  ## Get predictions for these samples
+  pres.test.pred.pwd = predict(pe.rf, extract(current.env, pres.test.crds.pwd))
+  abs.test.pred.pwd = predict(pe.rf, extract(current.env, abs.test.crds.pwd))
+  
+  ## Evaluate
+  rf.test.eval <- evaluate(p=pres.test.pred.pwd, a=abs.test.pred.pwd)
+  ## Store AUC score
+  rf.cv.auc[j] <- rf.test.eval@auc
+  ## Store threshold
+  rf.cv.thr[j] <- threshold(x = rf.test.eval, stat = "spec_sens")
+  ## Predict on grid
+  rf.pred.r = predict(current.env, pe.rf)
+  ## Store the gridded predictions in a raster stack
+  if (j == 1) {
+    rf.pred.stk = stack(rf.pred.r)
+  } else {
+    rf.pred.stk = stack(rf.pred.stk, rf.pred.r)
+  }
+}
+```
+
+Let's look at the set of AUC scores
+
+```{r}
+print(rf.cv.auc)
+```
+
+Which gives a mean AUC of approximately `r round(mean(rf.cv.auc),3)`. 
+
+We can plot the set of predicted probabilities:
+
+```{r}
+plot(rf.pred.stk, main=paste("RF: Fold",1:5))
+```
+
+To make a final distribution map, we calculate the mean probability, and use the mean threshold to discriminate:
+
+```{r}
+plot(mean(rf.pred.stk) > mean(rf.cv.thr), main="RF predicted distribution")
+points(pe, cex=0.25)
+```
+
+The final map gives a fairly good correspondence to the observed range of *P. edulis*, which is much more tightly constrained than the first model. The AUC scores are pretty respectable, but the patch of predicted presences in the west suggest that the model could yet be improved. 
+
+## Maximum entropy
+
+Maximum entropy (or 'MaxEnt') was introduced by Phillips et al. (2006) as a method for species distribution modeling. One of it's major advantages at the time is that it did not require 'absence' points, but rather produced a model that contrasted observed presences with the 'background' - the full range and distribution of environmental variables. MaxEnt has undergone some substantial revisions recently, and there are currently two ways to run this in R: a) through the **dismo** package; b) using a new R package (**maxnet**). This second package is undergoing substantial development and does not yet integrate very well with the the functions we have been looking, so here we'll demonstrate the use of the `maxent()` function from **dismo**. A quick example with **maxnet** is provided in the appendix. 
+
+To make the following example work, you will need to download a copy of the Java file for MaxEnt (*maxent.jar*), which you can get [here][meID] or from the class Canvas page. Once downloaded, type the following command to find the **dismo** directory on your computer, and copy the jar file there. You will also need to install the **rJava** package.
+
+```{r eval=FALSE}
+system.file("java", package="dismo")
+```
+
+Once all this is installed, we can run the model. Unlike the previous models we have looked at, MaxEnt does not require absence points, but instead uses a series of 'background' points that characterize the environment of the whole study area, so all we need to supply is the raster stack of environmental variables and the list of observed presence locations. 
+
+```{r eval=TRUE}
+pe.me = maxent(current.env, pe)
+```
+
+If you now type `pe.me` a webpage will open with the output from MaxEnt in your browser, containing a great deal of information about your model, including the training AUC and importance scores. We can also get this information ourselves, using the functions from the **dismo** package. First, let's plot the variable importance scores
+
+```{r fig.keep='none'}
+plot(pe.me)
+```
+
+Response plots can be made for any of these variables using the function `response()` (these are similar to the partial dependence plots used with the random forest model):
+
+```{r}
+response(pe.me, "alt")
+```
+
+Model evaluation (with the test data set):
+```{r fig.keep='none'}
+## Predict for test set
+pe.test.pred = predict(pe.me, test.df)
+
+## Evaluate and store AUC score
+me.test.eval <- evaluate(p=pe.test.pred[test.df$pa==1], a=pe.test.pred[test.df$pa==0])
+me.test.eval
+plot(me.test.eval, "ROC")
+```
+
+Note that this is still subject to the same spatial sorting bias as in the random forest. If we correct for this using the pairwise distance approach described above, the we get a less biased estimate of AUC:
+
+```{r}
+pres.test.pred.pwd = predict(pe.me, extract(current.env, pres.test.crds.pwd))
+abs.test.pred.pwd = predict(pe.me, extract(current.env, abs.test.crds.pwd))
+me.test.eval <- evaluate(p=pres.test.pred.pwd, a=abs.test.pred.pwd)
+me.test.eval
+```
+
+```{r}
+me.pred.r = predict(current.env, pe.me)
+plot(me.pred.r, main="maxnet: predicted probabilities")
+```
+
+```{r}
+me.thr <- threshold(x = me.test.eval, stat = "spec_sens")
+plot(me.pred.r > me.thr, main="MaxEnt: predicted distribution")
+# points(pe, pch=16, cex=0.5)
+```
+
+\newpage
+
+## Appendix 1: **maxnet**
+
+### Data preparation
+
+Although MaxEnt does not require absence points, we need to generate a set of 'background' points for `maxnet()` to represent the environment of the study area. We will generate a new set of points using `randomPoints()`, but with a bigger sample size, in order to better estimate the background environment. Everything else in the following section is simply repeated from the first part of this lab. 
+
+```{r}
+## Make some pseudo-absence points
+background <- randomPoints(mask = raster(current.env, 1),  
+                           n = 1000, p=pe)
+
+## Make up full dataset
+all.crds <- rbind(coordinates(pe), background)
+all.bin <- c(rep(1, nrow(pe)), rep(0, nrow(background))) 
+all.env <- extract(current.env, all.crds)
+all.df <-data.frame( cbind(pa=all.bin, all.env) )
+
+nfold = 5
+
+## Make up a k-fold crossvalidation dataset
+all.grp <- kfold(x = all.df, k = nfold, by=all.bin) 
+
+## Extract training set
+train.df <- subset(all.df, all.grp != 1)
+
+## Extract testing set
+test.df <- subset(all.df, all.grp == 1)
+```
+
+With this, we now go ahead and build our first model. Make sure you have installed the **maxnet** package and then run the following lines to build the model. Note that we split the data into `p` (a vector of 0/1, where 0 is the background) and the data frame of environmental variables. 
+
+```{r warning=FALSE}
+library(maxnet)
+p = c(train.df$pa)
+data = train.df[,-1]
+pe.mn = maxnet(p,data)
+```
+
+The `maxnet` model can be evaluated using our testing dataset. Note we use the complementary log-log transformation in the `predict()` function
+
+```{r fig.keep='none'}
+mn.test.pred <- predict(pe.mn, newdata=test.df, type='cloglog')
+mn.test.eval <- evaluate(p=mn.test.pred[test.df$pa==1],
+                         a=mn.test.pred[test.df$pa==0])
+mn.test.eval
+plot(mn.test.eval, "ROC")
+```
+
+And here is the corrected AUC with SSB removed:
+```{r fig.keep='none'}
+pres.test.pred.pwd = predict(pe.mn, extract(current.env, pres.test.crds.pwd), type='cloglog')
+abs.test.pred.pwd = predict(pe.mn, extract(current.env, abs.test.crds.pwd), type='cloglog')
+mn.test.eval <- evaluate(p=pres.test.pred.pwd[,1], a=abs.test.pred.pwd[,1])
+mn.test.eval
+```
+
+And finally, we can predict using the gridded environmental data. Unlike the other methods we have looked at, this won't yet use the raster stack directly, so we need to first extract values to a data frame then use this for prediction
+
+```{r}
+ce.df = getValues(current.env)
+pred.mn = predict(pe.mn, ce.df, type="cloglog")
+```
+
+And then create a new raster (`pred.me.r`) to hold the predicted output
+```{r}
+mn.pred.r = raster(current.env,1)
+mn.pred.r[as.numeric(rownames(pred.mn))] <- pred.mn
+plot(mn.pred.r, main="maxnet: predicted probabilities")
+```
+
+```{r}
+mn.thr <- threshold(x = mn.test.eval, stat = "spec_sens")
+plot(mn.pred.r > mn.thr, main="maxnet: predicted distribution")
+points(pe, pch=16, cex=0.5)
+```
+
+
+Hijmans, R.J., 2012. Cross-validation of species distribution models: removing spatial sorting bias and calibration with a null-model. Ecology 93: 679- 688.
+
+Hijmans, R.J. and Elith, J. (2017). Species distribution modeling with R. https://cran.r-project.org/web/packages/dismo/vignettes/sdm.pdf
+
+Phillips, S.J., R.P. Anderson, R.E. Schapire, 2006. Maximum entropy modeling of species geographic distributions. Ecological Modelling 190: 231-259
+
+
+[meID]: https://biodiversityinformatics.amnh.org/open_source/maxent/
