@@ -50,7 +50,7 @@ As before, we will start by loading and cleaning the dataset for us. There are s
 Let's start by by loading the data and using the `head()` function to remind us of the available variables/features
 
 ```{r eval=FALSE}
-housing <- read.csv("housing.csv")
+housing <- read.csv("../datafiles/housing.csv")
 head(housing)
 ```
 
