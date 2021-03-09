@@ -24,26 +24,58 @@ set.seed(1234)
 
 ## Tree methods
 
-In this lab, we'll look at how to implement a range on tree methods in R using the **mlr3** package. We'll cover basic classification and regression trees, random forests and boosted regression trees. We will also look at how to predict for new data using the **mlr3** package and how to automate hyperparameter tuning.
+In this lab, we'll look at how to implement a range of tree methods including basic classification and regression trees, random forests and boosted regression trees. We will also look at how to predict for new data and how to automate hyperparameter tuning.
 
-We'll use the same species distribution dataset from the previous lab as an example for these methods, and also quickly demonstrate how to build a regression tree for the California housing dataset. 
+We'll illustrate these methods by using them to build a species distribution model for the pinon pine in the western United States. We'll also quickly demonstrate how to build a regression tree for the California housing dataset. You will need the following datasets from Canvas, so download these to your `datafiles` folder (extract any zip files). Make a new folder for today's class called `lab08`.  
+
+- *Pinus_edulis.csv*
+- *ne_50m_admin_0_countries.zip*
+- *current.env.RData*
+- *future.env.RData*
+
+### Python users
+
+If you are using Python for today's lab, you'll need to download the Jupyter notenook for this lab (*GEOG_5160_6160_lab08.ipynb*). Make a new folder for the lab (`lab08`) and move the notebook to this. Now open a new terminal (in Windows go to the [Start Menu] > [Anaconda (64-bit)] > [Anaconda prompt]). 
+
+**CHECK THIS YOU FOOL** 
 
 You will need to make sure the following libraries are installed on your computer:
 
+- **dismo**: utility functions for species distribution models
 - **rpart.plot**: better CART graphics
 - **vip**: better variable importance plots
 - **pdp**: partial dependency plots
 
-## Setup
+Once opened, change directory to the folder you just made, activate your conda environment
 
-To avoid having several copies of these files, I'd suggest using the same working directory that you created last week. Make sure you have a copy of the following files. Download anything that is missing from Canvas and place them in this directory. Make sure that the *borders.zip* file is unzipped. 
+```
+conda activate geog5160
+```
 
-- *Pinus_edulis.csv*
-- *borders.zip*
-- *current.env.RData*
-- *future.env.RData*
+Start the Jupyter Notebook server:
 
-The last two files contain the climate data from Worldclim from the previous lab, cropped to the region and converted to the correct units. Unzip the *borders.zip* file. Now start RStudio and change the working directory to the folder you just created. This can be changed by going to the [Session] menu and selecting [Set working directory] -> [Choose directory...], then browsing to the folder. 
+```
+jupyter notebook
+```
+
+And open the notebook for today's class. 
+
+### RStudio users 
+
+Start RStudio and set the working directory to this directory (This can be changed by going to the [Session] menu and selecting [Set working directory] -> [Choose directory...], then browsing to the folder). 
+
+You will need to make sure the following libraries are installed on your computer:
+
+- **sf**: functions for working with spatial data
+- **raster**: functions for working with gridded spatial data
+- **dismo**: utility functions for species distribution models
+- **tree**: simple classification and regression trees
+- **rpart.plot**: better CART graphics
+- **vip**: better variable importance plots
+- **pdp**: partial dependency plots
+
+
+## Data processing
 
 Before doing anything else, run the following command and make sure that you can see the files you downloaded. 
 
@@ -55,14 +87,12 @@ Next load the libraries you will need for the lab. You should at this stage have
 
 ```{r message=FALSE}
 library(dplyr)
-library(RColorBrewer)
-library(rgdal)
 library(raster)
+library(sf) 
 library(dismo)
 library(tree)
 library(mlr3)
 library(mlr3learners)
-library(mlr3viz)
 library(mlr3tuning)
 library(vip)
 library(pdp)
@@ -75,22 +105,22 @@ library(pdp)
 We'll start by reading in and plotting the California housing dataset. The follwoing code reads the file and cleans up the data. We then create two data sets to show how the algorithm works, one with only the cooordinates as features, and the other with the usual set of house characteristics as features. The only new code here divides the house values by 1000 to help in displaying some of the output. Refer back to the previous labs for explanations of this code:
 
 ```{r}
-housing <- read.csv("housing.csv")
+housing <- read.csv("../datafiles/housing.csv")
 housing <- housing %>%
   dplyr::filter(!is.na(total_bedrooms))
-housing$avg_rooms = housing$total_rooms / housing$households
-housing$avg_bedrooms = housing$total_bedrooms / housing$households
-housing$median_house_value = housing$median_house_value / 1000
-housing2 = housing %>%
+housing$avg_rooms <- housing$total_rooms / housing$households
+housing$avg_bedrooms <- housing$total_bedrooms / housing$households
+housing$median_house_value <- housing$median_house_value / 1000
+housing2 <- housing %>%
   dplyr::select(longitude, latitude, median_house_value)
-housing3 = housing %>%
+housing3 <- housing %>%
   dplyr::select(-longitude, -latitude, -total_rooms, -total_bedrooms, -ocean_proximity)
 ```
 
 Let's make a quick plot (we'll use this later to illustrate the regression tree)
 ```{r}
-price.deciles = quantile(housing2$median_house_value,0:10/10)
-cut.prices = cut(housing2$median_house_value,price.deciles,include.lowest=TRUE)
+price.deciles <- quantile(housing2$median_house_value, 0:10/10)
+cut.prices <- cut(housing2$median_house_value,price.deciles,include.lowest=TRUE)
 plot(housing2$longitude,housing2$latitude,col=grey(10:2/11)[cut.prices],pch=20,
      xlab="Longitude",ylab="Latitude", asp = 1)
 ```
@@ -100,43 +130,128 @@ plot(housing2$longitude,housing2$latitude,col=grey(10:2/11)[cut.prices],pch=20,
 Next, we'll read the known locations of *Pinus edulis* trees from the file *Pinus_edulis.csv*, and plot to check the data
 
 ```{r}
-pe = read.csv("./Pinus_edulis.csv")
-coordinates(pe) <- ~longitude+latitude
-borders = readOGR("./ne_50m_admin_0_countries/ne_50m_admin_0_countries.shp")
-plot(pe, xlim=c(-120,-80), ylim=c(25,55), pch=21, bg="darkorange", axes=TRUE)
-plot(borders, add=TRUE)
+pe <- read.csv("../datafiles/Pinus_edulis.csv")
+pe <- st_as_sf(pe, coords = c("longitude", "latitude"))
+borders <- st_read("../datafiles/ne_50m_admin_0_countries/ne_50m_admin_0_countries.shp")
+plot(st_geometry(pe), xlim = c(-120,-80), ylim = c(25,55), 
+     pch = 21, bg = "darkorange", axes=TRUE)
+plot(st_geometry(borders), add = TRUE)
 ```
+
+### Getting online data [optional]
+
+If you need to get your own species data, the **dismo** package includes a function `gbif()` that allows you to download records directly from the GBIF. To demonstrate this, we'll use it here to get occurrence records of the timber rattlesnake *Crotalus horridus*. This function allows selection by Latin name, so here we specify the genus and species names separately (this will take a few second to retrieve all the records:
+
+```{r eval=FALSE}
+rattler <- gbif('crotalus','horridus')
+```
+
+```{r echo=FALSE}
+rattler <- read.csv("../datafiles/rattler.csv")
+```
+
+The returned object has much more information about the occurrence records, including metadata about the original study that supplied the data. Note that all records are returned irrespective of whether or not they have associated geolocations, so we subset only the records that have coordinates (the function does have an argument to exclude records with no longitude or latitude). 
+
+```{r}
+rattler <- subset(rattler, !is.na(rattler$lon))
+rattler <- st_as_sf(rattler, coords = c("lon", "lat"))
+```
+
+Finally we plot the records using the same code as before
+
+```{r}
+plot(st_geometry(rattler), pch = 21, bg = "green", axes = TRUE)
+plot(st_geometry(borders), add = TRUE)
+```
+
+Note that there are some odd locations, including an observation in Turkey. Before using these data in modeling, we would want to verify and potentially remove these records. 
 
 ### Getting data 2: environmental data
 
-Start by loading the modern and future environmental data:
+There are a large number of available datta sources for environmental data that can be used in species distribution models. We'll take data from the [Worldclim project][wcID] (Hijmans et al. 2005), a collection of standardized climate data at a variety of spatial resolutions. This data can be downloaded directly using the `getData()` function, which allows direct downloads from this and other datasets. The data contains monthly averages of temperature and precipitation and a set of bioclimatic variables, which represent aggregate climate variables assumed to be linked to species distributions. I've already downloaded the bioclimatic variables for you and clipped them to the region you're going to work in. These are available in two RData files containing modern (*current.env.RData*) and future  (*future.env.RData*) climates for the study area.
+
 ```{r echo=TRUE}
-load("current.env.RData")
-load("future.env.RData")
-my.pal = brewer.pal(9,"YlOrRd")
+load("../datafiles/current.env.RData")
+load("../datafiles/future.env.RData")
+```
+
+The data are in R's raster format, but as an 3D array. If you type the name of the objects that have been loaded, you see an overview of the data: 
+
+```{r}
+current.env
+```
+
+This tells us that the files are 480*720 pixels, with 19 layers, each representing a single climate variables (the variables are listed in the appendix of today's lab). There's also information about the extent and resolution of the data. If you need to get different data or data for another region, look at the help fo the `getData()` function. 
+
+You can extract any single layer using the `raster()` function (e.g. `raster(current.env, 1))` will give you the first layer). We can use this to visualize the data:
+
+```{r}
+plot(raster(current.env, 1))
+plot(st_geometry(pe), add = TRUE, pch = 21, bg = "olivedrab")
+```
+
+The **RColorBrewer** package provides several color palettes for spatial data. If you have this installed, you can change the colors as follows:
+
+```{r eval=FALSE}
+my.pal <- brewer.pal(9, "YlOrRd")
+plot(raster(current.env, 1), col = my.pal)
+```
+
+
+### Merging locations and environment
+
+Finally, we make up a dataset for modeling. We want to model the species distribution using a binary classification task, where 1 indicates presence and 0 indicates absence. However, we only have observations of presences (nobody records when they *don't* see a species). TO get around this, we'll generate some 'pseudo-absences': locations that represent an absence of this species. There are several ways to generate these. One of the easiest is to simply pick random locations within the study area using the `randomPoints()` function. This takes as inputs:
+
+- A mask layer defining the study area
+- The number of selected points (we'll get the same number as observed values)
+- The set of presence points
+
+This generates a matrix of coordinates that we then need to convert to a spatial `sf` object. This is a bit long-winded, but allows to easily plot the new points.
+
+```{r}
+absence <- randomPoints(mask = raster(current.env, 1),  
+                   n = nrow(pe), p = st_coordinates(pe))
+absence <- st_as_sf(as.data.frame(absence), coords = c("x", "y"))
+```
+
+Now we can compare the distribution of presences and absences:
+```{r}
+plot(raster(current.env, 1))
+plot(st_geometry(pe), pch = 21, bg = "olivedrab", add = TRUE)
+plot(st_geometry(absence), pch = 21, bg = "white", add = TRUE)
+```
+
+One problem with this method is that we sample absences very far from the observed points. As the environment of these points is very unlike the places where the species are found, these will always predict as absences, and can bias our assessment of the model. A better approach is to restrict the absences to a small region aroudn the observed points. We could crop the environmental mask to a smaller region, or use a buffer approach. We'll do the second of these here. We first general 200km buffers around each observed presence using the `circles()` function. Then use theb `spsample()` function to pick random points *within* these buffers: 
+
+```{r}
+x = circles(st_coordinates(pe), d=200000, lonlat=T)
+absence = as(spsample(x@polygons, type = 'random', n = nrow(pe)), "sf")
+```
+
+```{r}
 plot(raster(current.env,1))
-plot(pe, add=TRUE, pch=21, bg="olivedrab")
+plot(st_geometry(pe), pch = 21, bg = "olivedrab", add = TRUE)
+plot(st_geometry(absence), pch = 21, bg = "white", add = TRUE)
 ```
 
-Finally, we make up a dataset for modeling. To do this, we first generate a set of random absence points using the `circles()` function:
+Now we have the presence and absence points, we need to extract the environmental values for these points (these will be a features for machine learning). To do this we use the following steps:
+
+- Concatenate the presence and absence coordinates 
+- Use the `extract()` function to get the associated climate values from the environmental grids
+- Create a binary (0/1) vector for use as labels
+- Combine the features and labels into a data frame
+- Reset the row names to numeric indices
 
 ```{r}
-x = circles(pe, d=100000, lonlat=T)
-absence = spsample(x@polygons, type='random', n=nrow(pe))
-```
+pe.crds <- rbind(st_coordinates(pe), st_coordinates(absence))
+pe.env <- raster::extract(current.env, pe.crds)
+pe.pa <- as.factor(c(rep(1, nrow(pe)), rep(0, nrow(pe))))
 
-In te previous lab, we worked with separate data frames for the presence and absence points. For **mlr3** however, we need to join all the coordinates together in a single data frame, together with a 0/1 label for presence/absence and the environmental variables.
-
-```{r}
-pe.crds = rbind(coordinates(pe), coordinates(absence))
-pe.env = raster::extract(current.env, pe.crds)
-pe.pa = c(rep(1, nrow(pe)),
-          rep(0, nrow(pe)))
-
-pe.df = data.frame(pe.crds, pa = pe.pa, pe.env)
-pe.df$pa <- as.factor(pe.df$pa)
+pe.df <- data.frame(pe.crds, pa = pe.pa, pe.env)
 row.names(pe.df) <- 1:598
 ```
+
+And having done all that, we can now move on to building our models. 
 
 ## Classification and regression trees
 
@@ -149,7 +264,7 @@ R has a number of packages for performing CART and associated analyses. We're go
 We will start by fitting a regression tree to the California housing data. The main function is `tree()`, and this will automatically choose a regression tree approach if the response variable is numerical (we'll build a classification tree in the next section). 
 
 ```{r results='hide'}
-housing.tree = tree(median_house_value ~ longitude + latitude,
+housing.tree <- tree(median_house_value ~ longitude + latitude,
                     data = housing2)
 ```
 
@@ -177,7 +292,7 @@ partition.tree(housing.tree ,ordvars = c("longitude","latitude"), add = TRUE)
 In general this does a fairly good job of identifying the expected areas of higher values along the coast and aroung the bigger cities. As a comparison, we'll now build a regression tree using the usual set of features in `housing3`:
 
 ```{r}
-housing.tree = tree(median_house_value ~ .,
+housing.tree <- tree(median_house_value ~ .,
                     data = housing3)
 plot(housing.tree)
 text(housing.tree)
@@ -282,7 +397,7 @@ Next we defining one or more stopping criteria for the tuning. This is largely t
 We'll use the second of these. The function to set the terminator is `term()`, and we set the number of evaluations to 50. 
 
 ```{r}
-evals = term("evals", n_evals = 50)
+evals = trm("evals", n_evals = 50)
 ```
 
 #### 4. Define the `Tuner`
