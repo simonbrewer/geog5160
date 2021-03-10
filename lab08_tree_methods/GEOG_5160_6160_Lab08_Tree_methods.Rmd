@@ -697,12 +697,13 @@ plot(pe.curr.prob.r, col = pred.pal)
 plot(st_geometry(pe), pch = 21, cex = 0.5, add = TRUE)
 ```
 
-This shows that model captures the current distribution well, but also predicts a large area of suitability in the north-west. We can also plot the predicted class (0/1)
+This shows that model captures the current distribution well, but also predicts a large area of suitability in the north-west. We can also plot the predicted class (0/1). This requires converting it from R's factor class to a numeric value
 
 ```{r}
 pe.curr.class.r = raster(current.env,1)
-pe.curr.class.r[grid.idx] <- pe.curr.pred$response
-plot(pe.curr.class.r-1)
+tmp.pred <- as.numeric(pe.curr.pred$response) - 1
+pe.curr.class.r[grid.idx] <- tmp.pred
+plot(pe.curr.class.r)
 plot(st_geometry(pe), pch = 21, cex = 0.5, add = TRUE)
 ```
 
@@ -740,7 +741,8 @@ You should here that the suitability has been reduced in the south, but increase
 
 ```{r}
 pe.rcp85.class.r <- raster(future.env,1)
-pe.rcp85.class.r[grid.idx] <- pe.rcp85.pred$response
+tmp.pred <- as.numeric(pe.rcp85.pred$response) - 1
+pe.rcp85.class.r[grid.idx] <- tmp.pred
 plot(pe.rcp85.class.r)
 plot(st_geometry(pe), pch = 21, cex = 0.5, add = TRUE)
 ```
