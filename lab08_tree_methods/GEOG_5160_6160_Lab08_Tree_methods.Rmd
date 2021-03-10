@@ -4,7 +4,7 @@ author: |
   | Simon Brewer
   | Geography Department
   | University of Utah
-date: "March 20, 2020"
+  date: "March 20, 2020"
 output:
   html_document:
     toc: true
@@ -20,6 +20,7 @@ library(grid)
 
 ```{r echo=FALSE}
 set.seed(1234)
+lgr::suspend_logging()
 ```
 
 ## Tree methods
@@ -35,7 +36,7 @@ We'll illustrate these methods by using them to build a species distribution mod
 
 ### Python users
 
-If you are using Python for today's lab, you'll need to download the Jupyter notenook for this lab (*GEOG_5160_6160_lab08.ipynb*). Make a new folder for the lab (`lab08`) and move the notebook to this. Now open a new terminal (in Windows go to the [Start Menu] > [Anaconda (64-bit)] > [Anaconda prompt]). 
+If you are using Python for today's lab, you'll need to download the Jupyter notebook for this lab (*GEOG_5160_6160_lab08.ipynb*). Make a new folder for the lab (`lab08`) and move the notebook to this. Now open a new terminal (in Windows go to the [Start Menu] > [Anaconda (64-bit)] > [Anaconda prompt]). 
 
 **CHECK THIS YOU FOOL** 
 
@@ -73,7 +74,7 @@ You will need to make sure the following libraries are installed on your compute
 - **rpart.plot**: better CART graphics
 - **vip**: better variable importance plots
 - **pdp**: partial dependency plots
-
+- **RColorBrewer**: color palettes for mapping
 
 ## Data processing
 
@@ -96,13 +97,14 @@ library(mlr3learners)
 library(mlr3tuning)
 library(vip)
 library(pdp)
+library(RColorBrewer)
 ```
 
 ### Getting data 1: location data
 
 #### California housing data
 
-We'll start by reading in and plotting the California housing dataset. The follwoing code reads the file and cleans up the data. We then create two data sets to show how the algorithm works, one with only the cooordinates as features, and the other with the usual set of house characteristics as features. The only new code here divides the house values by 1000 to help in displaying some of the output. Refer back to the previous labs for explanations of this code:
+We'll start by reading in and plotting the California housing dataset. The following code reads the file and cleans up the data. We then create two data sets to show how the algorithm works, one with only the coordinates as features, and the other with the usual set of house characteristics as features. The only new code here divides the house values by 1000 to help in displaying some of the output. Refer back to the previous labs for explanations of this code:
 
 ```{r}
 housing <- read.csv("../datafiles/housing.csv")
@@ -168,7 +170,7 @@ Note that there are some odd locations, including an observation in Turkey. Befo
 
 ### Getting data 2: environmental data
 
-There are a large number of available datta sources for environmental data that can be used in species distribution models. We'll take data from the [Worldclim project][wcID] (Hijmans et al. 2005), a collection of standardized climate data at a variety of spatial resolutions. This data can be downloaded directly using the `getData()` function, which allows direct downloads from this and other datasets. The data contains monthly averages of temperature and precipitation and a set of bioclimatic variables, which represent aggregate climate variables assumed to be linked to species distributions. I've already downloaded the bioclimatic variables for you and clipped them to the region you're going to work in. These are available in two RData files containing modern (*current.env.RData*) and future  (*future.env.RData*) climates for the study area.
+There are a large number of available data sources for environmental data that can be used in species distribution models. We'll take data from the [Worldclim project][wcID] (Hijmans et al. 2005), a collection of standardized climate data at a variety of spatial resolutions. This data can be downloaded directly using the `getData()` function, which allows direct downloads from this and other datasets. The data contains monthly averages of temperature and precipitation and a set of bioclimatic variables, which represent aggregate climate variables assumed to be linked to species distributions. I've already downloaded the bioclimatic variables for you and clipped them to the region you're going to work in. These are available in two RData files containing modern (*current.env.RData*) and future  (*future.env.RData*) climates for the study area.
 
 ```{r echo=TRUE}
 load("../datafiles/current.env.RData")
@@ -181,7 +183,7 @@ The data are in R's raster format, but as an 3D array. If you type the name of t
 current.env
 ```
 
-This tells us that the files are 480*720 pixels, with 19 layers, each representing a single climate variables (the variables are listed in the appendix of today's lab). There's also information about the extent and resolution of the data. If you need to get different data or data for another region, look at the help fo the `getData()` function. 
+This tells us that the files are 480*720 pixels, with 19 layers, each representing a single climate variables (the variables are listed in the appendix of today's lab). There's also information about the extent and resolution of the data. If you need to get different data or data for another region, look at the help for the `getData()` function. 
 
 You can extract any single layer using the `raster()` function (e.g. `raster(current.env, 1))` will give you the first layer). We can use this to visualize the data:
 
@@ -210,7 +212,7 @@ This generates a matrix of coordinates that we then need to convert to a spatial
 
 ```{r}
 absence <- randomPoints(mask = raster(current.env, 1),  
-                   n = nrow(pe), p = st_coordinates(pe))
+                        n = nrow(pe), p = st_coordinates(pe))
 absence <- st_as_sf(as.data.frame(absence), coords = c("x", "y"))
 ```
 
@@ -221,11 +223,11 @@ plot(st_geometry(pe), pch = 21, bg = "olivedrab", add = TRUE)
 plot(st_geometry(absence), pch = 21, bg = "white", add = TRUE)
 ```
 
-One problem with this method is that we sample absences very far from the observed points. As the environment of these points is very unlike the places where the species are found, these will always predict as absences, and can bias our assessment of the model. A better approach is to restrict the absences to a small region aroudn the observed points. We could crop the environmental mask to a smaller region, or use a buffer approach. We'll do the second of these here. We first general 200km buffers around each observed presence using the `circles()` function. Then use theb `spsample()` function to pick random points *within* these buffers: 
+One problem with this method is that we sample absences very far from the observed points. As the environment of these points is very unlike the places where the species are found, these will always predict as absences, and can bias our assessment of the model. A better approach is to restrict the absences to a small region around the observed points. We could crop the environmental mask to a smaller region, or use a buffer approach. We'll do the second of these here. We first general 200km buffers around each observed presence using the `circles()` function. Then use the `spsample()` function to pick random points *within* these buffers: 
 
 ```{r}
-x = circles(st_coordinates(pe), d=200000, lonlat=T)
-absence = as(spsample(x@polygons, type = 'random', n = nrow(pe)), "sf")
+x <- circles(st_coordinates(pe), d = 200000, lonlat = TRUE)
+absence <- as(spsample(x@polygons, type = 'random', n = nrow(pe)), "sf")
 ```
 
 ```{r}
@@ -265,7 +267,7 @@ We will start by fitting a regression tree to the California housing data. The m
 
 ```{r results='hide'}
 housing.tree <- tree(median_house_value ~ longitude + latitude,
-                    data = housing2)
+                     data = housing2)
 ```
 
 If you now type the name of the object containing the output, you will see the tree structure in text format. 
@@ -289,11 +291,11 @@ plot(housing2$longitude, housing2$latitude, col = grey(10:2/11)[cut.prices],
 partition.tree(housing.tree ,ordvars = c("longitude","latitude"), add = TRUE)
 ```
 
-In general this does a fairly good job of identifying the expected areas of higher values along the coast and aroung the bigger cities. As a comparison, we'll now build a regression tree using the usual set of features in `housing3`:
+In general this does a fairly good job of identifying the expected areas of higher values along the coast and around the bigger cities. As a comparison, we'll now build a regression tree using the usual set of features in `housing3`:
 
 ```{r}
 housing.tree <- tree(median_house_value ~ .,
-                    data = housing3)
+                     data = housing3)
 plot(housing.tree)
 text(housing.tree)
 ```
@@ -306,13 +308,18 @@ As a recall, we need to identify the task, define a performance measure and a re
 
 - Set task
 ```{r}
-task_pe = TaskClassif$new(id = "pe", backend = pe.df, 
-                          target = "pa")
+task_pe <- TaskClassif$new(id = "pe", backend = pe.df, 
+                           target = "pa")
 
 ## Check the task details
 task_pe$col_roles
-task_pe$col_roles$feature = setdiff(task_pe$col_roles$feature,
-                                    c("longitude", "latitude"))
+```
+
+The task is currently using all features including the coordinates (`X` and `Y`). We can exclude these from the feature list:
+
+```{r}
+task_pe$col_roles$feature <- setdiff(task_pe$col_roles$feature,
+                                     c("X", "Y"))
 task_pe$feature_names
 ```
 
@@ -340,13 +347,13 @@ rr$score(measure)
 rr$aggregate(measure)
 ```
 
-With the default settings, this has worked fairly well, but we will next try to improve on this by using a couple of more complex algorithms. Before doing so, we can extract any of the trees that were built during the resampling. These are stored in a list in `rr$learners`, and you can select an individual models using R's list index `[[i]]`. As we are using a hold-out, there is only one learner in this list (`[[1]]`). With a 5-fold cross-validation, there would be 5 (`[[1]]...[[5]]`). 
+With the default settings, this has worked fairly well, but we will next try to improve on this by tuning the hyperparameters. Before doing so, we can extract any of the trees that were built during the resampling. These are stored in a list in `rr$learners`, and you can select an individual models using R's list index `[[i]]`. As we are using a hold-out, there is only one learner in this list (`[[1]]`). With a 5-fold cross-validation, there would be 5 (`[[1]]...[[5]]`). 
 
 ```{r}
 rr$learners[[1]]$model
 ```
 
-We'll use the **rpart.plot** package to visualize the first of these. This allows you to make a large number of tweaks to a tree plot. Here `extra=106` adds the following to each terminal node: the predicted value, the proportion of `1`s and th percentage of observations in that node: 
+We'll use the **rpart.plot** package to visualize the first of these. This allows you to make a large number of tweaks to a tree plot. Here `extra=106` adds the following to each terminal node: the predicted value, the proportion of `1`s and the percentage of observations in that node: 
 
 ```{r}
 library(rpart.plot)
@@ -374,7 +381,7 @@ Next check the available parameters for our learner
 lrn_ct$param_set
 ```
 
-This table also gives the type of parameter (e.g. double precision or integer), the lower and upper bounds amd the default value. We'll test values for the complexity parameter (`cp`) between 0.001 and 0.1, and the minimum number of observations to considering partitioning a node (`minsplit`) from 1 to 12.
+This table also gives the type of parameter (e.g. double precision or integer), the lower and upper bounds and the default value. We'll test values for the complexity parameter (`cp`) between 0.001 and 0.1, and the minimum number of observations to considering partitioning a node (`minsplit`) from 1 to 12.
 
 ```{r}
 ## Build parameter set
@@ -402,7 +409,7 @@ evals = trm("evals", n_evals = 50)
 
 #### 4. Define the `Tuner`
 
-Now, we set up a sampling strategy for searching among different hyperparameter values. There are a couple of options here; we will use a grid search, where the argument `resolution` gives the size of the steps between the lower and upper bounds defined in our `ParamSet`.
+Now, we set up a sampling strategy for searching among different hyperparameter values. There are a couple of options here; we will use a grid search, where the argument `resolution` gives the number of steps between the lower and upper bounds defined in our `ParamSet`.
 
 ```{r}
 tuner = tnr("grid_search", resolution = 10)
@@ -410,15 +417,15 @@ tuner = tnr("grid_search", resolution = 10)
 
 #### 5. Run the tuner
 
-The **mlr3tuning** package offers a couple of ways to tune. Either by furst running the tuning, then using these parameters to train the final model, or combining these using `AutoTuner()`. We'll use the second of these here - it's a little neater, and has one other advantage as we will see in later. 
+The **mlr3tuning** package offers a couple of ways to tune. Either by first running the tuning, then using these parameters to train the final model, or combining these using `AutoTuner()`. We'll use the second of these here - it's a little neater, and has one other advantage as we will see in later. 
 
 First create a new `AutoTuner` using the various other functions and parameters that we have just defined
 
 ```{r}
 at_ct = AutoTuner$new(learner = lrn_ct, 
                       resampling = rsmp("holdout"),
-                      measures = measure, 
-                      tune_ps = tune_ps,
+                      measure = measure, 
+                      search_space = tune_ps,
                       terminator = evals,
                       tuner = tuner)
 ```
@@ -426,7 +433,7 @@ at_ct = AutoTuner$new(learner = lrn_ct,
 Note that we use a holdout method in the AutoTuner to split the data. This will be used to assess how the model's skill changes as we vary the parameters. Each time it will evaluate the measure on the holdout test set. Whichever parameter set gives the best performance will then be automatically used to train a final model. The `AutoTuner` object inherits from the `Learner` methods we have previously seen, so to tune and train the model, just type:
 
 ```{r echo=FALSE}
-lgr::get_logger("mlr3")$set_threshold("warn")
+lgr::get_logger("bbotk")$set_threshold("warn")
 ```
 
 ```{r}
@@ -441,12 +448,12 @@ at_ct$learner
 
 ### Nested resampling
 
-The previous code has trained a model, but it has not evaluated it. While this used a resmapling strategy (the holdout), this is only used to select the best value of the hyperparameters. To evaluate the final trained model, we need to use an independent dataset. Fortunately, this is quite easy to set up using the `AutoTuner`. 
+The previous code has trained a model, but it has not evaluated it. While this used a resampling strategy (the holdout), this is only used to select the best value of the hyperparameters. To evaluate the final trained model, we need to use an independent dataset. Fortunately, this is quite easy to set up using the `AutoTuner`. 
 
 To understand the following code, we need to define the inner vs. the outer resampling strategy. 
 
 - The outer strategy divides the dataset into a training and testing data set, where the test set is used to evaluate the predictive skill of the model
-- The inner strategy takes the training data, and divides it into two new sets to tune the model - one set to train for each combination of parameters, and one set to evaluate and help select
+- The inner strategy takes the training data, and divides it into two new sets to tune the model - one set to train for each combination of parameters, and one set to evaluate and help select the best values of these parameters
 
 Here, we'll use a hold-out for the inner strategy, and a 3-fold cross validation for the outer. 
 
@@ -460,27 +467,31 @@ Next we'll remake the `AutoTuner` with the inner strategy:
 ```{r}
 at_ct = AutoTuner$new(learner = lrn_ct, 
                       resampling = resampling_inner,
-                      measures = measure, 
-                      tune_ps = tune_ps,
+                      measure = measure, 
+                      search_space = tune_ps,
                       terminator = evals,
                       tuner = tuner)
 ```
 
-And now run `resample` using the `AutoTuner` as the learner, and the outer resampling strategy:
+And now run `resample` using the `AutoTuner` as the learner, and the outer resampling strategy (this will take a minute or so to run):
 
 ```{r}
 rr_ct = resample(task = task_pe, learner = at_ct, 
                  resampling = resampling_outer, store_models = TRUE)
 ```
 
-This will take a little while to run; remember that this is dividing the original data set up three times, then for each one tuning the parameters across the parameter set/resolution. 
+This will take a little while to run; remember that this is dividing the original data set up three times, then for each one tuning the parameters across the parameter set/resolution. You can see the selected set of parameters for each of the outer cross-validation folds as follows:
+
+```{r}
+sapply(rr_ct$learners, function(x) x$param_set$values)
+```
 
 ```{r}
 rr_ct$score(measure) 
 rr_ct$aggregate(measure)
 ```
 
-We get a small improvement here, but not much, and in general, `rpart` don't improve a lot with tuning. We'll turn now to some more complex methods, to see if we can improve on these results.
+We get a small improvement here, but not much, and in general, `rpart` doesn't improve a lot with tuning. We'll turn now to some more complex methods, to see if we can improve on these results.
 
 ## Random forest
 
@@ -511,13 +522,13 @@ tune_ps = ParamSet$new(list(
 ))
 ```
 
-Then, we define a new `AutoTuner`. This is simply a copy of the previous one, but with an updated learner and parameter set. Note that we again set the inner resamplign strategy.
+Then, we define a new `AutoTuner`. This is simply a copy of the previous one, but with an updated learner and parameter set. Note that we again set the inner resampling strategy.
 
 ```{r}
 at_rf = AutoTuner$new(learner = lrn_rf, 
                       resampling = resampling_inner,
-                      measures = measure, 
-                      tune_ps = tune_ps,
+                      measure = measure, 
+                      search_space = tune_ps,
                       terminator = evals,
                       tuner = tuner)
 ```
@@ -538,27 +549,28 @@ rr_rf$aggregate(measure)
 
 And again, we see a small jump in the AUC with the newly tuned model. To see the selected parameter values
 
-```{r results='hide'}
-rr_rf$data$learner[[1]]$param_set$values
+```{r}
+sapply(rr_rf$learners, function(x) x$param_set$values)
 ```
 
 
 #### Variable importance plots
 
-Next we'll plot the permutation-based variable importance for this model. As a reminder, variable importance is a measure of how much worse a model becomes when we scramble the values of one of the features. The model is used to predict the outcome for some test data (here the out-of-bag samples) twice: once with the original values of the feature and once with randomly shuffled values. If there is a large difference in the skill of the model, this feature is important in controllign the outcome. We'll use the `vip()` function from the **vip** to show and then plot the variable importance scores. As there are three possible models from the resampling, we'll just plot the first. The model object is buried quite deep in the resampling output in `rr_rf$learners[[1]]$model$learner$model`:
+Next we'll plot the permutation-based variable importance for this model. As a reminder, variable importance is a measure of how much worse a model becomes when we scramble the values of one of the features. The model is used to predict the outcome for some test data (here the out-of-bag samples) twice: once with the original values of the feature and once with randomly shuffled values. If there is a large difference in the skill of the model, this feature is important in controlling the outcome. We'll use the `vip()` function from the **vip** to show and then plot the variable importance scores. As there are three possible models from the resampling, we'll just plot the first. The model object is buried quite deep in the resampling output in `rr_rf$learners[[1]]$model$learner$model`:
 
 ```{r eval=TRUE}
 vip(rr_rf$learners[[1]]$model$learner$model)
 ```
 
-Which indicates that the `bio7` (the annual temperature range) is most important in controlling the distribution of the pine. 
+Which indicates that the `bio10` (the annual temperature range) is most important in controlling the distribution of the pine. 
 
 #### Partial dependency plots
 
 We can look at the form of the relationship between the occurrence of the pine and this feature (and any other one) using a partial dependency plot. This shows changes in the outcome across the range of some feature (with all other features held constant). Here, we'll use the `partial()` function from the the **pdp** package to produce the plot. As arguments, this requires the model, the feature that you want the dependency on, the set of data used to produce the model. For a classification model, we can also specify which class to plot for. In this data, the presences (1) are the second class.
 
 ```{r eval=TRUE}
-partial(rr_rf$learners[[1]]$model$learner$model, pred.var = "bio7",
+partial(rr_rf$learners[[1]]$model$learner$model, 
+        pred.var = "bio7", prob = TRUE, 
         train = pe.df, plot = TRUE, which.class = 2)
 ```
 
@@ -566,7 +578,7 @@ The plot shows the range over which this species is found, with a clear peak in 
 
 ## Boosted regression trees
 
-We will now build a boosted regression tree model for the Pinus data. In contrast to random forests that bild a et of individual weak trees, boosted regresstion trees (BRTs) start with a single weak tree and iteratively improve on this. This is done by targeting the residuals from the previous set of models and trying to model that in the next tree. While this can make these methods very powerful, it is easy for them to overfit the data, and hyperparameter tuning becomes very important here. 
+We will now build a boosted regression tree model for the Pinus data. In contrast to random forests that build a set of individual weak trees, boosted regression trees (BRTs) start with a single weak tree and iteratively improve on this. This is done by targeting the residuals from the previous set of models and trying to model that in the next tree. While this can make these methods very powerful, it is easy for them to overfit the data, and hyperparameter tuning becomes very important here. 
 
 We'll follow the same steps as with the random forest. **mlr3** uses the **xgboost** package, so we define our learner as `classif.xgboost`. The only hyperparameter that we will set here is `subsample`. This runs a stochastic boosting where each individual tree is built with a random subset of 50% of the training data.
 
@@ -600,18 +612,18 @@ Then, we define a new `AutoTuner`. This is simply a copy of the previous one, bu
 ```{r}
 at_brt = AutoTuner$new(learner = lrn_brt, 
                        resampling = resampling_inner,
-                       measures = measure, 
-                       tune_ps = tune_ps,
+                       measure = measure, 
+                       search_space = tune_ps,
                        terminator = evals,
                        tuner = tuner)
 ```
 
 Again, we use `resample` to tune the model within the outer resampling strategy. This may take a few minutes to run - remember we are dividing the data into 3 folds, then running 50 tuning iterations for each one. 
 
-```{r eval=TRUE,results='hide'}
+```{r eval=TRUE}
 rr_brt = resample(task = task_pe, learner = at_brt, 
                   resampling = resampling_outer, store_models = TRUE)
-rr_brt$data$learner[[1]]$param_set$values
+sapply(rr_brt$learners, function(x) x$param_set$values)
 ```
 
 You should a much more substantial improvement in the AUC here. 
@@ -631,39 +643,58 @@ vip(rr_brt$learners[[1]]$model$learner$model)
 
 ## Prediction
 
-In this last section, we will produce maps of suitability for the pine for the modern and future periods. In order to do this, we first need to extract the environmental data for every grid cell in our region. We also get a list of grid cell coordinates (this will help with plotting the results).
+In this last section, we will produce predictive maps of suitability for the pine for the modern and future periods. The first step will be to make a final model based on the tuned hyperparameters and the full dataset. We'll use the random forest here as an example. As a reminder, the results of the tuning were:
 
 ```{r}
-current.env.df = as.data.frame(getValues(current.env))
-grid.crds = coordinates(current.env)
+sapply(rr_rf$learners, function(x) x$param_set$values)
+```
+
+We'll use the most common values of 100 trees and `mtr=1` for our final model and train it on the full dataset. 
+
+```{r}
+final_rf = lrn("classif.ranger", 
+             predict_type = "prob", 
+             importance = "permutation",
+             mtry = 1,
+             num.trees = 100)
+final_rf$train(task_pe)
+```
+
+
+For prediction, we now need to extract the environmental data for every grid cell in our region into a dataframe. We also get a list of grid cell coordinates (this will help with plotting the results).
+
+```{r}
+current.env.df <- as.data.frame(getValues(current.env))
+grid.crds <- coordinates(current.env)
 ```
 
 Next, we remove any grid cell with missing values (those over the oceans), and the associated coordinates. Finally here we make a list of the grid cell number or index. We'll use this to make maps of the predictions.
 
 ```{r}
-naID = which(is.na(current.env.df$bio1))
-current.env.df = current.env.df[-naID,]
-grid.crds = grid.crds[-naID,]
-grid.idx = cellFromXY(current.env, grid.crds)
+naID <- which(is.na(current.env.df$bio1))
+current.env.df <- current.env.df[-naID,]
+grid.crds <- grid.crds[-naID,]
+grid.idx <- cellFromXY(current.env, grid.crds)
 ```
 
 We can now use this dataframe with the `predict_newdata` method to estimate the suitability. 
 
 ```{r}
-pe.curr.pred = rr_rf$learners[[1]]$model$learner$predict_newdata(current.env.df)
+pe.curr.pred <- final_rf$predict_newdata(current.env.df)
 ```
 
-And finally, we use the grid cell indicies to make a new raster layer showing the predictions. We do this by first making a template raster as a copy of one of the environmental layers, then using the grid cell index to set values to the probability of suitability. Finally, we plot this and overlay the original points:
+And finally, we use the grid cell indices to make a new raster layer showing the predictions. We do this by first making a template raster as a copy of one of the environmental layers, then using the grid cell index to set values to the probability of suitability. Finally, we plot this and overlay the original points:
 
 - A raster* object to be used as a template for resolution and extent
 - The set of values (here the probability of a '1')
-- The grid cell indicies
+- The grid cell indices
 
 ```{r}
-pe.curr.prob.r = raster(current.env,1)
+pred.pal = brewer.pal(9, "Reds")
+pe.curr.prob.r <- raster(current.env,1)
 pe.curr.prob.r[grid.idx] <- pe.curr.pred$prob[,2]
-plot(pe.curr.prob.r)
-plot(pe, add = TRUE)
+plot(pe.curr.prob.r, col = pred.pal)
+plot(st_geometry(pe), pch = 21, cex = 0.5, add = TRUE)
 ```
 
 This shows that model captures the current distribution well, but also predicts a large area of suitability in the north-west. We can also plot the predicted class (0/1)
@@ -671,8 +702,8 @@ This shows that model captures the current distribution well, but also predicts 
 ```{r}
 pe.curr.class.r = raster(current.env,1)
 pe.curr.class.r[grid.idx] <- pe.curr.pred$response
-plot(pe.curr.class.r)
-plot(pe, add = TRUE)
+plot(pe.curr.class.r-1)
+plot(st_geometry(pe), pch = 21, cex = 0.5, add = TRUE)
 ```
 
 Now let's do the same with the future environment. First extract the values and coordinates. 
@@ -699,25 +730,25 @@ pe.rcp85.pred = rr_rf$learners[[1]]$model$learner$predict_newdata(future.env.df)
 
 And plot it:
 ```{r}
-pe.rcp85.prob.r = raster(future.env,1)
+pe.rcp85.prob.r <- raster(future.env,1)
 pe.rcp85.prob.r[grid.idx] <- pe.rcp85.pred$prob[,2]
-plot(pe.rcp85.prob.r)
-plot(pe, add = TRUE)
+plot(pe.rcp85.prob.r, col = pred.pal)
+plot(st_geometry(pe), pch = 21, cex = 0.5, add = TRUE)
 ```
 
 You should here that the suitability has been reduced in the south, but increased in the north with warming temperatures. This is shown more clearly by looking at the predicted classes
 
 ```{r}
-pe.rcp85.class.r = raster(future.env,1)
+pe.rcp85.class.r <- raster(future.env,1)
 pe.rcp85.class.r[grid.idx] <- pe.rcp85.pred$response
 plot(pe.rcp85.class.r)
-plot(pe, add = TRUE)
+plot(st_geometry(pe), pch = 21, cex = 0.5, add = TRUE)
 ```
 
 And finally, we can illustrate the change in range:
 
 ```{r}
-my.pal = brewer.pal(3,'PRGn')
+my.pal <- brewer.pal(3,'PRGn')
 plot(pe.rcp85.class.r - pe.curr.class.r, col=my.pal)
 ```
 

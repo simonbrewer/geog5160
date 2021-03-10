@@ -98,7 +98,7 @@ rattler=gbif('crotalus','horridus')
 ```
 
 ```{r echo=FALSE}
-rattler = read.csv("rattler.csv")
+rattler = read.csv("../datafiles/rattler.csv")
 ```
 
 The returned object has much more information about the occurrence records, including metadata about the original study that supplied the data. Note that all records are returned irrespective of whether or not they have associated geolocations, so we subset only the records that have coordinates (the function does have an argument to exclude records with no longitude or latitude). 
