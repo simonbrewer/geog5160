@@ -110,9 +110,10 @@ We'll start by reading in and plotting the California housing dataset. The follo
 housing <- read.csv("../datafiles/housing.csv")
 housing <- housing %>%
   dplyr::filter(!is.na(total_bedrooms))
-housing$avg_rooms <- housing$total_rooms / housing$households
-housing$avg_bedrooms <- housing$total_bedrooms / housing$households
-housing$median_house_value <- housing$median_house_value / 1000
+housing <- housing %>%
+  mutate(avg_rooms = total_rooms / households,
+         bedroom_ratio = total_bedrooms / total_rooms,
+         median_house_value = median_house_value / 1000)
 housing2 <- housing %>%
   dplyr::select(longitude, latitude, median_house_value)
 housing3 <- housing %>%
@@ -649,7 +650,7 @@ In this last section, we will produce predictive maps of suitability for the pin
 sapply(rr_rf$learners, function(x) x$param_set$values)
 ```
 
-We'll use the most common values of 100 trees and `mtr=1` for our final model and train it on the full dataset. 
+We'll use the most common values of 100 trees and `mtry = 1` for our final model and train it on the full dataset. 
 
 ```{r}
 final_rf = lrn("classif.ranger", 
