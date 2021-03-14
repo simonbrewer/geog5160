@@ -1,5 +1,5 @@
 ---
-title: "GEOG 5160/6160 Lab 09 Tree methods"
+title: "GEOG 5160/6160 Lab 08 Tree methods"
 author: | 
   | Simon Brewer
   | Geography Department
@@ -29,23 +29,26 @@ In this lab, we'll look at how to implement a range of tree methods including ba
 
 We'll illustrate these methods by using them to build a species distribution model for the pinon pine in the western United States. We'll also quickly demonstrate how to build a regression tree for the California housing dataset. You will need the following datasets from Canvas, so download these to your `datafiles` folder (extract any zip files). Make a new folder for today's class called `lab08`.  
 
-- *Pinus_edulis.csv*
-- *ne_50m_admin_0_countries.zip*
-- *current.env.RData*
-- *future.env.RData*
+- If you are doing the R version of the lab:
+    - *Pinus_edulis.csv*
+    - *ne_50m_admin_0_countries.zip*
+    - *current.env.RData*
+    - *future.env.RData*
+
+- If you are doing the Python version of the lab:
+    - *Pinus_edulis.csv*
+    - *absence.csv*
+    - *current.env.nc*
+    - *future.env.nc*
 
 ### Python users
 
 If you are using Python for today's lab, you'll need to download the Jupyter notebook for this lab (*GEOG_5160_6160_lab08.ipynb*). Make a new folder for the lab (`lab08`) and move the notebook to this. Now open a new terminal (in Windows go to the [Start Menu] > [Anaconda (64-bit)] > [Anaconda prompt]). 
 
-**CHECK THIS YOU FOOL** 
+You will need to make sure the following packages are installed on your computer (in addition to the packages we have used in previous labs). 
 
-You will need to make sure the following libraries are installed on your computer:
-
-- **dismo**: utility functions for species distribution models
-- **rpart.plot**: better CART graphics
-- **vip**: better variable importance plots
-- **pdp**: partial dependency plots
+- **xarray**: functions for working with regular arrays (`conda install xarray`)
+- **xgboost**: extreme gradient boosting (`conda install py-xgboost`)
 
 Once opened, change directory to the folder you just made, activate your conda environment
 
