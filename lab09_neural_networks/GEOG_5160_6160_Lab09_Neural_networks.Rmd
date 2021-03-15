@@ -1,0 +1,478 @@
+---
+title: "GEOG 5160/6160 Lab 10 Neural networks"
+author: | 
+  | Simon Brewer
+  | Geography Department
+  | University of Utah
+date: "March 20, 2020"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    fig_caption: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(png)
+library(grid)
+```
+
+```{r echo=FALSE}
+set.seed(1234)
+```
+
+## Introduction
+
+In this lab, we'll go over the two neural network examples shown in class. These are simple one or two hidden layer networks, and the main purpose of the exercise is to demonstrate how to build the networks and what options are available to modify these. You will need the following packages for today's lab, so make sure to install anything that is missing before proceeding.
+
+- **dplyr**
+- **neuralnet**
+- **NeuralNetTools**
+- **caret**
+
+```{r message=FALSE}
+library(dplyr)
+library(neuralnet)
+library(NeuralNetTools)
+```
+
+The two data files you will need are *cereal.csv* and *iris.csv*, which should be available from Canvas with this document. 
+
+## Neural network regression
+
+We'll start with an example of using a neural network for a regression task. The data are taken from a Kaggle competition and are based on a set of 77 breakfast cereals. The file contains the following fields:
+
+- `Name`: Name of cereal
+- `mfr`: Manufacturer of cereal
+  - A = American Home Food Products;
+  - G = General Mills
+  - K = Kelloggs
+  - N = Nabisco
+  - P = Post
+  - Q = Quaker Oats
+  - R = Ralston Purina
+- `type`:
+  - cold
+  - hot
+- `calories`: calories per serving
+- `protein`: grams of protein
+- `fat`: grams of fat
+- `sodium`: milligrams of sodium
+- `fiber`: grams of dietary fiber
+- `carbo`: grams of complex carbohydrates
+- `sugars`: grams of sugars
+- `potass`: milligrams of potassium
+- `vitamins`: vitamins and minerals - 0, 25, or 100, indicating the typical percentage of FDA recommended
+- `shelf`: display shelf (1, 2, or 3, counting from the floor)
+- `weight`: weight in ounces of one serving
+- `cups`: number of cups in one serving
+- `rating`: a rating of the cereals (Possibly from Consumer Reports?)
+
+The last of these fields (`rating`) is the outcome variable that we will build the network for. Start by reading the file:
+
+```{r}
+# Read the Data
+data = read.csv("cereals.csv")
+head(data)
+```
+
+Next, we'll select a subset of the features for modeling, as well as the outcome variable:
+
+```{r}
+mydat = data %>% 
+  select(rating, calories, protein, fat, sodium, fiber)
+```
+
+To get an overview of the data, we can plot the correlation matrix (the pair-wise correlations between variables). This requires the **GGally** add-on package and can be skipped if you do not have this installed:
+
+```{r}
+library(GGally)
+ggcorr(mydat, 
+               label = TRUE, nbreaks = 6,
+               palette = "PuOr")
+```
+
+Next, we'll create training set and a hold-out test set using 20% of the data.
+
+```{r}
+train_set = sample(nrow(mydat), 0.8 * nrow(mydat))
+test_set = setdiff(seq_len(nrow(mydat)), train_set)
+train = mydat[train_set, ]
+test = mydat[test_set, ]
+```
+
+### Linear model
+
+We'll start by making a linear model as a baseline for comparisons with the neural network. 
+
+```{r}
+cereal.lm <- lm(rating ~ ., train)
+summary(cereal.lm)
+```
+
+This is a reasonable model with an R$^2$ of about 0.81. Now, we can test it's predictive skill by calculating the root mean squared error (RMSE). We do this by first predicting for the test set, then:
+
+- Calculating the difference between predicted and observed ratings
+- Squaring
+- Taking the average
+- Taking the square root
+
+```{r}
+pred.test = predict(cereal.lm, test)
+sqrt(mean((pred.test - test$rating)^2))
+```
+
+### Neural network
+
+Now we'll turn to making a neural network. As the network uses weighted sums of the input features, it's important that none of these are on very different scales. The easiest way to avoid this is to scale all variables to approximately the same range. The scaling we use here is a min-max transformation (i.e. each variable is converted to a 0-1 range). We do this in three steps: first calculate the maximum then minimum value for each variable using the `apply()` function. Then we use these to scale the data - effectively setting the smallest value of each variable to 0, the highest value to 1. 
+
+```{r}
+maxs = apply(mydat, 2, max)
+mins = apply(mydat, 2, min)
+scaled = as.data.frame(scale(mydat, center = mins, scale = maxs - mins))
+```
+
+Now, we use the same indices for the training and test set form before to create a *scaled* training and test set:
+
+```{r}
+train_ <- scaled[train_set,]
+test_ <- scaled[test_set,]
+```
+
+We can now fit the network. A few things to note:
+
+- This function (`neuralnet`) is taken from the package with the same name. It is not the default neural network package in R. 
+- It uses regular R model syntax (`y ~ x`)
+- The `hidden` argument dictates the number of nodes in the hidden layer
+- `linear.output=TRUE` sets the activation function to be linear
+
+```{r}
+# fit neural network
+cereal.nn = neuralnet(rating ~ calories + protein + fat + sodium + fiber, 
+                      data = train_, hidden = 3 , linear.output = TRUE)
+```
+
+Running the `summary()` function on the resulting model object shows that there is a large amount of information provides, including the network weights
+
+```{r results='hide'}
+summary(cereal.nn)
+```
+
+And we can print the final weights as follows. The first three lines show the final error of the loss function, the amount the error changed in the final step (`reached.threshold`) and the number of iterations (`steps`) run. The next lines show the weight for each connection:
+
+```{r}
+cereal.nn$result.matrix
+```
+
+We can also plot out these weights to show the final network:
+```{r}
+# plot neural network
+plot(cereal.nn)
+```
+
+An alternative visualization is provided in the **NeuralNetTools** package, where the width of the lines reflects the weights and the color reflects the sign (black = positive; grey = negative):
+
+```{r}
+plotnet(cereal.nn)
+```
+
+We can now calculate the RMSE for this model. The `compute()` function makes predictions from a neural network, and we use it here with the *scaled* test set. Note that we specify that we want to use the function from the **neuralnet** package as there is a conflict with a function in the **dplyr** package:
+
+```{r}
+pred.test = neuralnet::compute(cereal.nn, test_)
+pred.test = (pred.test$net.result * (maxs[1] - mins[1]) + mins[1])
+sqrt(mean((pred.test - test$rating)^2))
+```
+
+And we can see that the RMSE has dropped by about 20%. As with the random forest we looked at previously, we can make variable importance plots to show which variables the network is most reliant on. A very good visualization can be made using a function downloaded from a Github page. [This section can be skipped.]
+
+```{r warning=FALSE, results='hide', message=FALSE, eval=FALSE}
+#import 'gar.fun' from beckmw's Github - this is Garson's algorithm
+devtools::source_gist('6206737')
+#use the function on the model created above
+gar.fun('rating',cereal.nn)
+```
+
+With a small dataset, the RMSE is very dependent on the way the data is split into a training and test set. We can get a better idea of the predictive skill by running a $k$-fold cross-validation (CV). Unfortunately, neural networks are not yet implemented in the **mlr3** library, so we will need to construct our own CV. 
+
+The following code will run a 5-fold CV using the one layer neural network. It's a fairly long piece of code, so I strongly suggest copying it or typing it into an R script and running it from there. This script does the following:
+
+- Set the number of folds (`k`)
+- Define a NULL object to hold the test results
+- Create a vector of indices (1-5) defining which fold each observation belongs to
+- Next, run a loop with one iteration per fold. In this loop we:
+    - Create a training and test set with the original and  scaled data. This uses the fold index, so for example, we select all rows with fold equal to 1 for the first test set
+    - Build a neural network
+    - Estimate and store the RMSE
+- Finally we calculate and print the average RMSE
+
+```{r}
+k = 5
+outs <- NULL
+
+foldID = sample(seq(1,k), nrow(mydat), replace = TRUE)
+for(i in 1:k)
+{
+  
+  traincv <- mydat[(foldID != i), ]
+  testcv <- mydat[(foldID == i), ]
+  train_cv <- scaled[(foldID != i), ]
+  test_cv <- scaled[(foldID == i), ]
+  
+  cereal.nn.cv = neuralnet(rating ~ calories + protein + fat + sodium + fiber,
+                           data = train_cv, hidden = 3,
+                           linear.output = TRUE)
+  
+  pred.test = neuralnet::compute(cereal.nn, test_cv)
+  pred.test = (pred.test$net.result * (maxs[1] - mins[1]) + mins[1])
+  
+  outs[i] = sqrt(mean((pred.test - testcv$rating)^2))
+}
+
+print(mean(outs))
+```
+
+And the results show us that the overall network represents a substantial improvement over the linear model. Note that your value will be different due to the random set up of the folds in the cross-validation exercise. 
+
+### Network with more hidden layers
+
+The key parameter in a multi-layer neural network is the definition of the hidden layers, which include
+
+- the number of layers
+- the number of nodes in each layer
+
+A good rule of thumb for the number of nodes is that this should be somewhere between the number of input and number of output nodes. However, picking this number is not straightforward. Another good suggestion is that you should generally prefer a smaller number of nodes, but a larger number of layers. 
+
+We'll now see if adding a second hidden layer will improve the model. To do this, we use a vector as the argument in the `neuralnet()` function. Each value in this vector defines how many nodes to include in that layer. Here, we use two hidden layers, with 6 and 3 nodes respectively:
+
+```{r eval=TRUE}
+# fit neural network
+cereal.nn = neuralnet(rating ~ calories + protein + fat + sodium + fiber, 
+                      data = train_, hidden = c(6, 3), 
+                      linear.output = TRUE)
+plotnet(cereal.nn)
+```
+
+```{r echo=FALSE, results='hide'}
+k = 5
+outs <- NULL
+
+foldID = sample(seq(1,k), nrow(mydat), replace = TRUE)
+for(i in 1:k)
+{
+  
+  traincv <- mydat[(foldID != i), ]
+  testcv <- mydat[(foldID == i), ]
+  train_cv <- scaled[(foldID != i), ]
+  test_cv <- scaled[(foldID == i), ]
+  
+  cereal.nn.cv = neuralnet(rating ~ calories + protein + fat + sodium + fiber,
+                           data = train_cv, hidden = 3,
+                           linear.output = TRUE)
+  
+  pred.test = neuralnet::compute(cereal.nn, test_cv)
+  pred.test = (pred.test$net.result * (maxs[1] - mins[1]) + mins[1])
+  
+  outs[i] = sqrt(mean((pred.test - testcv$rating)^2))
+}
+
+print(mean(outs))
+```
+
+But is this a better model? To find out, we can re-run the 5-fold cross validation shown above. I've not shown the code here, but you simply need to change the `hidden` argument in the cross validation loop. Running this gave me a cross-validated RMSE of `r round(mean(outs),4)` suggesting this more complex model does a better job. 
+
+## Neural network classification
+
+Next, we'll build a neural network for a classification task. We'll use the dataset of Fisher's iris plant measurements for three species. We'll use the measurements (4) as input features and the species name as an outcome. We'll start again by reading the data:
+
+```{r}
+data(iris)
+head(iris)
+```
+
+And we can use the `pairs()` function to make a set of scatterplots showing the different variables:
+
+```{r fig.keep='none'}
+pairs(iris[,1:4], col = iris$Species, pch = 16)
+```
+
+If you have installed the **GGally**, you can make a similar plot with 
+
+```{r results='hide'}
+ggpairs(iris[,1:4], mapping=aes(col = iris$Species))
+```
+
+We'll also make a vector of the species names, which we will need later n:
+
+```{r}
+sppnames = unique(iris$Species)
+```
+
+Now we follow a similar workflow as before:
+
+- Define training and testing indices
+
+```{r}
+train_set = sample(nrow(iris), 0.8 * nrow(iris))
+test_set = setdiff(seq_len(nrow(iris)), train_set)
+```
+
+- Create training and test set
+```{r}
+train = iris[train_set, ]
+test = iris[test_set, ]
+```
+
+- Scale data for neural network. Note that this is a little more complex, as we only need to scale the numerical features:
+```{r}
+scaled = iris
+scaled$Sepal.Length = scale(iris$Sepal.Length, 
+                            center = min(iris$Sepal.Length), 
+                            scale = max(iris$Sepal.Length) -
+                              min(iris$Sepal.Length))
+scaled$Sepal.Width = scale(iris$Sepal.Width, 
+                           center = min(iris$Sepal.Width), 
+                           scale = max(iris$Sepal.Width) -
+                             min(iris$Sepal.Width))
+scaled$Petal.Length = scale(iris$Petal.Length, 
+                            center = min(iris$Petal.Length), 
+                            scale = max(iris$Petal.Length) -
+                              min(iris$Petal.Length))
+scaled$Petal.Width = scale(iris$Petal.Width, 
+                           center = min(iris$Petal.Width), 
+                           scale = max(iris$Petal.Width) -
+                             min(iris$Petal.Width))
+```
+
+- Create a scaled training and test set
+```{r}
+train_ <- scaled[train_set,]
+test_ <- scaled[test_set,]
+```
+
+- Build the neural network, with a single hidden layer> Note that we set the error function or loss function to cross entropy (`ce`) and the activation function to a sigmoid (`logistic`):
+```{r}
+# fit neural network
+iris.nn = neuralnet(Species ~ ., err.fct = "ce",
+                    data = train_, hidden = 3, 
+                    linear.output = FALSE, act.fct = "logistic")
+```
+
+- Print the network weights (note that this model has take quite a bit longer to converge (~1700 steps))
+
+```{r results='hide'}
+iris.nn$result.matrix
+```
+
+- Plot the network 
+
+```{r}
+plotnet(iris.nn)
+```
+
+As this is a classification task, we can no longer use the RMSE. Instead, we'll use the accuracy. To do this, we first make a prediction for the test set. For any classification problem, the prediction will be the probability of each class. 
+
+```{r}
+pr.nn <- compute(iris.nn,test_)
+head(pr.nn$net.result)
+```
+
+To calculate the accuracy, we need to convert this to a predicted class. Here we make use of a) R's `which.max()` function, which shows which of the three probabilities is the highest; and b) the `apply()` function, which allows us to calculate this for every row of output. 
+
+```{r eval=FALSE}
+apply(pr.nn$net.result, 1, which.max)
+```
+
+We can then use this to create a contingency table showing the correct and incorrect classifications:
+
+```{r}
+xtab = table(apply(pr.nn$net.result, 1, which.max), test_$Species)
+rownames(xtab) <- sppnames
+print(xtab)
+```
+
+Now we can use the `confusionMatrix()` function from the **caret** package to calculate the accuracy. In fact, this will generate a set of performance metrics:
+
+```{r}
+caret::confusionMatrix(xtab)
+```
+
+Which gives an accuracy of `r round(caret::confusionMatrix(xtab)$overall[1], 3)`
+
+
+### Second hidden layer
+
+As in the previous example, we'll add a second hidden layer, and recalculate the accuracy:
+
+```{r results='hide'}
+# fit neural network
+iris.nn = neuralnet(Species ~ ., err.fct = "ce",
+                    data = train_, hidden = c(6,6), 
+                    linear.output = FALSE, act.fct = "logistic")
+pr.nn <- compute(iris.nn,test_)
+xtab = table(apply(pr.nn$net.result, 1, which.max), test_$Species)
+rownames(xtab) <- sppnames
+caret::confusionMatrix(xtab)
+```
+
+And we'll finish this exercise but running a 5-fold cross-validation for this neural network mode. This is the same code as we used in the previous example, with the only changes being: the data used, the set up for the neural network and the accuracy measure:
+
+```{r}
+k = 5
+outs <- NULL
+
+# Crossvalidate, go!
+foldID = sample(seq(1,k), nrow(iris), replace = TRUE)
+for(i in 1:k)
+{
+  
+  traincv <- iris[(foldID != i), ]
+  testcv <- iris[(foldID == i), ]
+  train_cv <- scaled[(foldID != i), ]
+  test_cv <- scaled[(foldID == i), ]
+  
+  iris.nn.cv = neuralnet(Species ~ ., err.fct = "ce",
+                         data = train_cv, hidden = c(6,6), 
+                         linear.output = FALSE, act.fct = "logistic")
+  
+  pr.nn <- neuralnet::compute(iris.nn,test_cv)
+  xtab = table(apply(pr.nn$net.result, 1, which.max), test_cv$Species)
+  rownames(xtab) <- sppnames
+  pfm <- caret::confusionMatrix(xtab)
+  outs[i] <- pfm$overall[1]
+}
+
+mean(outs)
+```
+
+## Exercise
+
+For the exercise we will once again use the data from the *Sonar.csv* file to model types of object (rocks 'R' or mines 'M') using the values of a set of frequency bands. The goal of the exercise is to build the best predictive neural network for predicting these data. You should use the 5-fold cross validation strategy from the lab to test at least two different definitions for the hidden layers of your network (e.g. one model could have a single layer with 20 nodes, and another two layers with 10 nodes each). 
+
+Your answer should consist of the following
+
+- A list of the different hidden layer definitions you used
+- Figures showing the resulting network and connection weights (use the `plotnet()` function, especially for large networks)
+- Estimates of the RMSE for each network based on the 5-fold cross validation strategy
+
+You should also provide your full R code. 
+
+As this is a binary outcome, not a multi-class outcome, the following code snippets will help with reading and predicting these data. 
+
+- Reading data and converting to binary (0/1) outcome:
+
+```{r eval=FALSE}
+mydat = read.csv("Sonar.csv")
+mydat$Class <- as.numeric(mydat$Class) - 1
+```
+
+- Converting model output (in probabilities) to binary prediction
+
+```{r eval=FALSE}
+pr.nn <- compute(sonar.nn,test_cv)
+xtab = table(pr.nn$net.result>0.5, test_cv$Class)
+rownames(xtab) <- c("0","1")
+```
+
+
