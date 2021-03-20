@@ -5,6 +5,8 @@ library(mlr3)
 library(mlr3learners)
 #library(mlr3extralearners)
 library(mlr3pipelines)
+library(mlr3filters)
+library(mlr3tuning)
 library(paradox)
 
 credit_data <- read.csv("credit_data.csv")
@@ -14,7 +16,8 @@ credit_data <- credit_data %>% mutate_if(is.character,as.factor)
 credit_task <- TaskClassif$new("credit", backend = credit_data,
                                target = "Status")
 
-impute_cat <- po("imputemode")
+impute_cat <- po("imputemode",
+                 affect_columns = selector_type("factor"))
 encode <- po("encode", method = "treatment",
              affect_columns = selector_type("factor"))
 
@@ -23,7 +26,8 @@ cat <- impute_cat %>>%
 
 cat$train(credit_task)[[1]]$data()
 
-impute_num <- po("imputemedian")
+impute_num <- po("imputemedian",
+                 affect_columns = selector_type("integer"))
 scale <- po("scalerange", param_vals = list(lower = 0, upper = 1), 
              affect_columns = selector_type("integer"))
 
@@ -36,6 +40,7 @@ graph <- cat %>>%
   num
 
 graph$train(credit_task)[[1]]$data()
+summary(graph$train(credit_task)[[1]]$data())
 
 graph$is_trained
 
@@ -45,16 +50,17 @@ graph <- cat %>>%
   num %>>%
   lrn_nn
 
+graph$plot()
+
 graph$train(credit_task)
 
 graph$predict(credit_task)
-
-graph$plot()
 
 resamp_hout = rsmp("holdout", ratio = 0.8)
 resamp_hout$instantiate(credit_task)
 
 rr = resample(credit_task, graph, resamp_hout)
+measure <- msr("classif.auc")
 rr$score(measure)
 rr$aggregate(measure)
 
@@ -68,22 +74,6 @@ measure = msr("classif.auc")
 rr = resample(credit_task, glrn, resampling, store_models = TRUE)
 rr$score(measure)
 rr$aggregate(measure)
-
-## Now its a graph learner we can predict for new data
-new_credit <- data.frame(Seniority = 8, 
-                         Home = "rent",
-                         Time = 36,
-                         Age = 26,
-                         Marital = "single",
-                         Records = "no",
-                         Job = "fixed",
-                         Expenses = 50,
-                         Income = 100,
-                         Assets = 0,
-                         Debt = 10,
-                         Amount = 100,
-                         Price = 125)
-glrn$predict_newdata(newdata = new_credit)
 
 ## Tuning with pipeline
 
@@ -108,10 +98,72 @@ at_nn = AutoTuner$new(learner = glrn,
 
 at_nn$train(credit_task)
 
+## Now its a graph learner we can predict for new data
+new_credit <- data.frame(Seniority = 8, 
+                         Home = "rent",
+                         Time = 36,
+                         Age = 26,
+                         Marital = "single",
+                         Records = "no",
+                         Job = "fixed",
+                         Expenses = 50,
+                         Income = 100,
+                         Assets = 0,
+                         Debt = 10,
+                         Amount = 100,
+                         Price = 125)
+
+at_nn$learner$predict_newdata(newdata = new_credit)
+
+## ------------------------------------------------------------------------- ##
+## Feature selection (MIM)
+filter_mim <-   po("filter", flt("mim"), filter.nfeat = 3)
+
+graph <- cat %>>%
+  num %>>%
+  filter_mim 
+
+graph$train(credit_task)[[1]]$data()
+
+graph <- cat %>>%
+  num %>>%
+  filter_mim %>>%
+  lrn_nn
+
+plot(graph)
+
+## For resampling we need to convert to a GraphLearner
+glrn = GraphLearner$new(graph)
+
+## Tuning processing as well as algorithm!
+## nnet parameter set
+glrn$param_set
+tune_ps = ParamSet$new(list(
+  ParamInt$new("mim.filter.nfeat", lower = 2, upper = 20),
+  
+  ParamInt$new("classif.nnet.size", lower = 2, upper = 20)
+))
+tune_ps
+
+evals = trm("evals", n_evals = 50)
+
+tuner = tnr("random_search")
+
+at_nn = AutoTuner$new(learner = glrn, 
+                      resampling = rsmp("holdout"),
+                      measure = measure, 
+                      search_space = tune_ps,
+                      terminator = evals,
+                      tuner = tuner)
+
+
+at_nn$train(credit_task)
+
 at_nn$learner
+at_nn$tuning_result
 
+## ------------------------------------------------------------------------- ##
 ## PCA transform
-
 pca <- po("pca")
 filter <- po("filter", filter = mlr3filters::flt("variance"), filter.frac = 0.5)
 
@@ -125,14 +177,6 @@ plot(graph)
 
 ## For resampling we need to convert to a GraphLearner
 glrn = GraphLearner$new(graph)
-
-resampling = rsmp("cv", folds = 5)
-resampling$instantiate(credit_task)
-
-measure = msr("classif.auc")
-rr = resample(credit_task, glrn, resampling, store_models = TRUE)
-rr$score(measure)
-rr$aggregate(measure)
 
 ## Tuning processing as well as algorithm!
 ## nnet parameter set
