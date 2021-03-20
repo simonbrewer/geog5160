@@ -73,7 +73,7 @@ The last of these fields (`rating`) is the outcome variable that we will build t
 
 ```{r}
 # Read the Data
-data = read.csv("cereals.csv")
+data = read.csv("../datafiles/cereals.csv")
 head(data)
 ```
 
