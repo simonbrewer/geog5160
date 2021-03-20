@@ -37,39 +37,11 @@ library(neuralnet)
 library(NeuralNetTools)
 ```
 
-The two data files you will need are *cereal.csv* and *iris.csv*, which should be available from Canvas with this document. 
+The two data files you will need are *cereal.csv* and *credit_data.csv*, which should be available from Canvas with this document. Download these to your `datafiles` folder (extract any zip files). Make a new folder for today's class called `lab08`, start RStudio and set your working directory to this new folder. 
 
 ## Neural network regression
 
-We'll start with an example of using a neural network for a regression task. The data are taken from a Kaggle competition and are based on a set of 77 breakfast cereals. The file contains the following fields:
-
-- `Name`: Name of cereal
-- `mfr`: Manufacturer of cereal
-  - A = American Home Food Products;
-  - G = General Mills
-  - K = Kelloggs
-  - N = Nabisco
-  - P = Post
-  - Q = Quaker Oats
-  - R = Ralston Purina
-- `type`:
-  - cold
-  - hot
-- `calories`: calories per serving
-- `protein`: grams of protein
-- `fat`: grams of fat
-- `sodium`: milligrams of sodium
-- `fiber`: grams of dietary fiber
-- `carbo`: grams of complex carbohydrates
-- `sugars`: grams of sugars
-- `potass`: milligrams of potassium
-- `vitamins`: vitamins and minerals - 0, 25, or 100, indicating the typical percentage of FDA recommended
-- `shelf`: display shelf (1, 2, or 3, counting from the floor)
-- `weight`: weight in ounces of one serving
-- `cups`: number of cups in one serving
-- `rating`: a rating of the cereals (Possibly from Consumer Reports?)
-
-The last of these fields (`rating`) is the outcome variable that we will build the network for. Start by reading the file:
+We'll start with an example of using a neural network for a regression task. The data are taken from a Kaggle competition and are based on a set of 77 breakfast cereals. A description of the data is given in the appendix. The last field in the file (`rating`) is the outcome variable that we will build the network for. Start by reading the file:
 
 ```{r}
 # Read the Data
@@ -77,7 +49,7 @@ data = read.csv("../datafiles/cereals.csv")
 head(data)
 ```
 
-Next, we'll select a subset of the features for modeling, as well as the outcome variable:
+Next, we'll select a subset of the numeric features for modeling, as well as the outcome variable:
 
 ```{r}
 mydat = data %>% 
@@ -125,7 +97,9 @@ sqrt(mean((pred.test - test$rating)^2))
 
 ### Neural network
 
-Now we'll turn to making a neural network. As the network uses weighted sums of the input features, it's important that none of these are on very different scales. The easiest way to avoid this is to scale all variables to approximately the same range. The scaling we use here is a min-max transformation (i.e. each variable is converted to a 0-1 range). We do this in three steps: first calculate the maximum then minimum value for each variable using the `apply()` function. Then we use these to scale the data - effectively setting the smallest value of each variable to 0, the highest value to 1. 
+Now we'll turn to making a neural network. Unfortunately, **mlr3** doesn't yet work with regression neural networks, so we'll have to use original R functions to train and test the model
+
+As the network uses weighted sums of the input features, it's important that none of these are on very different scales. The easiest way to avoid this is to scale all variables to approximately the same range. The scaling we use here is a min-max transformation (i.e. each variable is converted to a 0-1 range). We do this in three steps: first calculate the maximum then minimum value for each variable using the `apply()` function. Then we use these to scale the data - effectively setting the smallest value of each variable to 0, the highest value to 1. 
 
 ```{r}
 maxs = apply(mydat, 2, max)
@@ -194,7 +168,7 @@ devtools::source_gist('6206737')
 gar.fun('rating',cereal.nn)
 ```
 
-With a small dataset, the RMSE is very dependent on the way the data is split into a training and test set. We can get a better idea of the predictive skill by running a $k$-fold cross-validation (CV). Unfortunately, neural networks are not yet implemented in the **mlr3** library, so we will need to construct our own CV. 
+With a small dataset, the RMSE is very dependent on the way the data is split into a training and test set. We can get a better idea of the predictive skill by running a $k$-fold cross-validation (CV). 
 
 The following code will run a 5-fold CV using the one layer neural network. It's a fairly long piece of code, so I strongly suggest copying it or typing it into an R script and running it from there. This script does the following:
 
@@ -284,167 +258,373 @@ But is this a better model? To find out, we can re-run the 5-fold cross validati
 
 ## Neural network classification
 
-Next, we'll build a neural network for a classification task. We'll use the dataset of Fisher's iris plant measurements for three species. We'll use the measurements (4) as input features and the species name as an outcome. We'll start again by reading the data:
+```{r echo=FALSE}
+lgr::get_logger("bbotk")$set_threshold("warn")
+```
+
+Next, we'll build a neural network for a classification task. We'll use a new dataset, containing credit rankings for over 4000 people (see appendix for a description of the fields). The goal will be to predict `Status`, a binary outcome with two levels: `good` and `bad`. We'll start again by reading the data:
 
 ```{r}
-data(iris)
-head(iris)
+credit_data <- read.csv("../datafiles/credit_data.csv")
+str(credit_data)
 ```
 
-And we can use the `pairs()` function to make a set of scatterplots showing the different variables:
+As we have several categorical variables, we need to make sure that R recognizes these as factors. The following line of code checks each column in the `credit_data` data frame, and if it contains character data, it then converts it to a factor:
 
-```{r fig.keep='none'}
-pairs(iris[,1:4], col = iris$Species, pch = 16)
+```{r}
+credit_data <- credit_data %>% mutate_if(is.character,as.factor)
 ```
 
-If you have installed the **GGally**, you can make a similar plot with 
+If you run the `summary()` function, you shoudl see that there are several missing values:
+
+```{r}
+summary(credit_data)
+```
+
+As machine learning algorithms can't use missing data to train, we need to decide what to do with these. Fortunately, **mlr3** does have functions for training classification neural networks, so we can take advantage of some of the pre-processing tools in the **mlr3pipelines** library to help with these missing values. Let's first set up a classification task with the credit dataset:
+
+```{r}
+credit_task <- TaskClassif$new("credit", backend = credit_data,
+                               target = "Status")
+```
+
+There are several steps that we might want to do to process these data:
+
+- Impute any missing values
+- Convert categorical/factor variables to numeric by one-hot encoding
+- Scale the numerical variables to prevent biases while training our neural networks
+
+While it is possible to do this in an ad-hoc way (as we did in the previous example), we will set up a processing *pipeline* that contains all of these steps. This takes more time to set up, but has a number of advantages: we can use the pipeline directly in cross-validation or tuning, and we can use it to process any new data that we might to make predictions for, without having to remember the individual steps. The main function is `PipeOps` or `po()` which creates a pipeline operator that will carry our a single data processing step. To see the set of options, simply type:
 
 ```{r results='hide'}
-ggpairs(iris[,1:4], mapping=aes(col = iris$Species))
+library(mlr3pipelines)
+mlr_pipeops
 ```
 
-We'll also make a vector of the species names, which we will need later n:
+It is possible to set up the full pipeline in one step, but we'll work through this gradually so you can get a sense of what each operator is doing. First, we'll design two operators to process the categorical data. The first (`impute_cat`) will carry out a mode-based imputation of any missing values (i.e. fill in with the most common value). Note that we include an argument `affect_columns` to define which features should be processed (this will ignore any numerical features). The second operator will one-hot encode the same set of features. The argument `method = "treatment"` will drop the first encode column to prevent redundancy and multicollinearity. 
 
 ```{r}
-sppnames = unique(iris$Species)
+impute_cat <- po("imputemode",
+             affect_columns = selector_type("factor"))
+encode <- po("encode", method = "treatment",
+             affect_columns = selector_type("factor"))
 ```
 
-Now we follow a similar workflow as before:
-
-- Define training and testing indices
+With these set up, we can now use a pipe function (`%>>%`) to combine these into a pipeline for the categorical features:
 
 ```{r}
-train_set = sample(nrow(iris), 0.8 * nrow(iris))
-test_set = setdiff(seq_len(nrow(iris)), train_set)
+cat <- impute_cat %>>%
+  encode 
 ```
 
-- Create training and test set
-```{r}
-train = iris[train_set, ]
-test = iris[test_set, ]
-```
-
-- Scale data for neural network. Note that this is a little more complex, as we only need to scale the numerical features:
-```{r}
-scaled = iris
-scaled$Sepal.Length = scale(iris$Sepal.Length, 
-                            center = min(iris$Sepal.Length), 
-                            scale = max(iris$Sepal.Length) -
-                              min(iris$Sepal.Length))
-scaled$Sepal.Width = scale(iris$Sepal.Width, 
-                           center = min(iris$Sepal.Width), 
-                           scale = max(iris$Sepal.Width) -
-                             min(iris$Sepal.Width))
-scaled$Petal.Length = scale(iris$Petal.Length, 
-                            center = min(iris$Petal.Length), 
-                            scale = max(iris$Petal.Length) -
-                              min(iris$Petal.Length))
-scaled$Petal.Width = scale(iris$Petal.Width, 
-                           center = min(iris$Petal.Width), 
-                           scale = max(iris$Petal.Width) -
-                             min(iris$Petal.Width))
-```
-
-- Create a scaled training and test set
-```{r}
-train_ <- scaled[train_set,]
-test_ <- scaled[test_set,]
-```
-
-- Build the neural network, with a single hidden layer> Note that we set the error function or loss function to cross entropy (`ce`) and the activation function to a sigmoid (`logistic`):
-```{r}
-# fit neural network
-iris.nn = neuralnet(Species ~ ., err.fct = "ce",
-                    data = train_, hidden = 3, 
-                    linear.output = FALSE, act.fct = "logistic")
-```
-
-- Print the network weights (note that this model has take quite a bit longer to converge (~1700 steps))
-
-```{r results='hide'}
-iris.nn$result.matrix
-```
-
-- Plot the network 
+The pipeline we have just created has a `train()` method. This is does not train a model, but will run the set of operators on a task. We can use this to show what the resulting transformation is:
 
 ```{r}
-plotnet(iris.nn)
+cat$train(credit_task)[[1]]$data()
 ```
-
-As this is a classification task, we can no longer use the RMSE. Instead, we'll use the accuracy. To do this, we first make a prediction for the test set. For any classification problem, the prediction will be the probability of each class. 
-
-```{r}
-pr.nn <- compute(iris.nn,test_)
-head(pr.nn$net.result)
-```
-
-To calculate the accuracy, we need to convert this to a predicted class. Here we make use of a) R's `which.max()` function, which shows which of the three probabilities is the highest; and b) the `apply()` function, which allows us to calculate this for every row of output. 
+You should see here that each of the original factor variables (e.g. `Home`) has been one-hot encoded, and there are now $m-1$ new features, each representing one level in the original factor (e.g. `Home.owner`). Note that this automatically drops the original feature and has not affected the numerical variables. In fact, if you re-run the `summary()` function on this new dataset, you should see that there are still missing variables in the numerical features
 
 ```{r eval=FALSE}
-apply(pr.nn$net.result, 1, which.max)
+summary(cat$train(credit_task)[[1]]$data())
 ```
 
-We can then use this to create a contingency table showing the correct and incorrect classifications:
+Now we'll set operators for the numerical variables: we'll use median imputation (`imputemedian`) for missing values, and we'll use a min-max scaling to a 0-1 range (`scalerange`):
 
 ```{r}
-xtab = table(apply(pr.nn$net.result, 1, which.max), test_$Species)
-rownames(xtab) <- sppnames
-print(xtab)
+impute_num <- po("imputemedian", 
+            affect_columns = selector_type("integer"))
+scale <- po("scalerange", param_vals = list(lower = 0, upper = 1), 
+            affect_columns = selector_type("integer"))
+num <- impute_num %>>%
+  scale 
 ```
 
-Now we can use the `confusionMatrix()` function from the **caret** package to calculate the accuracy. In fact, this will generate a set of performance metrics:
+As before, we can see the resulting transformation (note that this has not affected any of the factor variables):
 
 ```{r}
-caret::confusionMatrix(xtab)
+num$train(credit_task)[[1]]$data()
 ```
-
-Which gives an accuracy of `r round(caret::confusionMatrix(xtab)$overall[1], 3)`
-
-
-### Second hidden layer
-
-As in the previous example, we'll add a second hidden layer, and recalculate the accuracy:
-
-```{r results='hide'}
-# fit neural network
-iris.nn = neuralnet(Species ~ ., err.fct = "ce",
-                    data = train_, hidden = c(6,6), 
-                    linear.output = FALSE, act.fct = "logistic")
-pr.nn <- compute(iris.nn,test_)
-xtab = table(apply(pr.nn$net.result, 1, which.max), test_$Species)
-rownames(xtab) <- sppnames
-caret::confusionMatrix(xtab)
-```
-
-And we'll finish this exercise but running a 5-fold cross-validation for this neural network mode. This is the same code as we used in the previous example, with the only changes being: the data used, the set up for the neural network and the accuracy measure:
+We can now combine these two sets of operators into the full pipeline. 
 
 ```{r}
-k = 5
-outs <- NULL
-
-# Crossvalidate, go!
-foldID = sample(seq(1,k), nrow(iris), replace = TRUE)
-for(i in 1:k)
-{
-  
-  traincv <- iris[(foldID != i), ]
-  testcv <- iris[(foldID == i), ]
-  train_cv <- scaled[(foldID != i), ]
-  test_cv <- scaled[(foldID == i), ]
-  
-  iris.nn.cv = neuralnet(Species ~ ., err.fct = "ce",
-                         data = train_cv, hidden = c(6,6), 
-                         linear.output = FALSE, act.fct = "logistic")
-  
-  pr.nn <- neuralnet::compute(iris.nn,test_cv)
-  xtab = table(apply(pr.nn$net.result, 1, which.max), test_cv$Species)
-  rownames(xtab) <- sppnames
-  pfm <- caret::confusionMatrix(xtab)
-  outs[i] <- pfm$overall[1]
-}
-
-mean(outs)
+graph <- cat %>>%
+  num
 ```
+
+If you now run this on the credit task, the resulting dataset has the full set of encode variables and has now imputed values for anything that was missing. 
+
+```{r}
+graph$train(credit_task)[[1]]$data()
+summary(graph$train(credit_task)[[1]]$data())
+```
+
+So far, we have a pipeline that transforms the dataset into a format ready for modeling. The next step is to link it to a learner, so that we can pass the transformed data directly to it. We'll set up a classification based neural network, with 10 nodes in the hidden layer and a maximum iteration limit of 500:
+
+```{r}
+lrn_nn <- lrn("classif.nnet", size = 10, maxit = 500)
+```
+
+And we can just add this to our existing pipeline
+
+```{r}
+graph <- cat %>>%
+  num %>>%
+  lrn_nn
+```
+
+**mlr3** uses a graph framework to connect all the pieces of a framework, which means that it can use R-based tools to visualize the pipeline:
+
+```{r}
+plot(graph)
+```
+Now if we call the `train()` method on the credit task, we transform the data and use this to train a neural network:
+
+```{r message=FALSE}
+graph$train(credit_task)
+```
+
+As the pipeline is connected to a learner, we can now run a use this to cross-validate the model trained on the transformed data. We first convert the pipeline to a `GraphLearner()`. This has the same attributes as a basic `learner` object and will facilitate the cross-validation
+
+```{r}
+glrn = GraphLearner$new(graph)
+```
+
+Now we can set up a 5-fold cross-validation, and calculate the AUC for our neural network. 
+
+```{r}
+resampling = rsmp("cv", folds = 5)
+resampling$instantiate(credit_task)
+measure = msr("classif.auc")
+rr = resample(credit_task, glrn, resampling, store_models = TRUE)
+```
+
+```{r}
+rr$score(measure)
+rr$aggregate(measure)
+```
+
+Alternatively, we can use our combined pipeline and learner to tune hyperparameters of the learner. We'll try tuning the number of nodes in the hidden layer, the `size` argument to between 2 and 20. To see the full set of available hyperparameters, just type `glrn$param_set`.
+
+```{r}
+library(paradox)
+tune_ps = ParamSet$new(list(
+  ParamInt$new("classif.nnet.size", lower = 2, upper = 20)
+))
+tune_ps
+```
+
+If you are wondering where the name of the hyperparameter we are tuning (`classif.nnet.size`) comes from, it's a combination of the learner `classif.nnet` and the parameter in the learner (`size`). To check the names of hyperparameters in *any* learner, just type: `glrn$param_set`.
+
+Now we set up a terminating condition (20 evaluations), and a search strategy (simple random choice):
+
+```{r}
+evals = trm("evals", n_evals = 20)
+tuner = tnr("random_search")
+```
+
+And finally, we build an `AutoTuner` to carry out the tuning using a simple holdout strategy. Note that we can just pass the graph-based learner to this function:
+
+```{r}
+at_nn = AutoTuner$new(learner = glrn, 
+                      resampling = rsmp("holdout"),
+                      measure = measure, 
+                      search_space = tune_ps,
+                      terminator = evals,
+                      tuner = tuner)
+```
+
+And with that done, it's time to tune the model (this will take a few seconds):
+
+```{r message=FALSE}
+at_nn$train(credit_task)
+```
+
+```{r}
+at_nn$learner
+at_nn$tuning_result
+```
+
+The final selected model as a hidden layer size of `r at_nn$tuning_result$classif.nnet.size` and an AUC of `r round(at_nn$tuning_result$classif.auc, 2)`. 
+
+We can use the tuned learner to make predictions for a new data set. As the learner is built on the data transformation pipeline, we do need to carry out any transformations prior to prediction. Instead we can simply pass the new data to the learner, and leave it to do all that for us. We'll set a single example and use the `predict_new()` method to get a prediction of credit risk:
+
+```{r}
+new_credit <- data.frame(Seniority = 8, 
+                         Home = "rent",
+                         Time = 36,
+                         Age = 26,
+                         Marital = "single",
+                         Records = "no",
+                         Job = "fixed",
+                         Expenses = 50,
+                         Income = 100,
+                         Assets = 0,
+                         Debt = 10,
+                         Amount = 100,
+                         Price = 125)
+
+at_nn$learner$predict_newdata(newdata = new_credit)
+```
+
+### Feature selection
+
+When working with datasets with large numbers of features we often want to reduce the number of features used to build the model. We can further modify the pipeline to allow for feature selection using the **mlr3filters** package. To get a list of all avaialble filters:
+
+```{r}
+library(mlr3filters)
+mlr_filters
+```
+
+We'll use the `mim` filter. For a given classification task this calculates an information based correlation between the outcome and each feature and then selects the subset with the highest values. We'll use this to pick the top 3 features. As we want to use this in the pipeline, we again use th `po()` function to create a new operator. We specify the filter type (`mim`) and the number of features we want to retain:
+
+```{r}
+filter_mim <-   po("filter", flt("mim"), filter.nfeat = 3)
+```
+
+We then just need to add this to our pipeline
+
+```{r}
+graph <- cat %>>%
+  num %>>%
+  filter_mim 
+```
+
+And you can see which features are selected:
+
+```{r}
+graph$train(credit_task)[[1]]$data()
+```
+
+Note that one impact of running this following the one-hot encoding is that the filter might select the encoding of *individual* levels of the original factor. 
+
+We don't, however, know if 3 is the best subset of variables to include in the model. This is where the link between the pipeline, learner and tuning becomes very useful as we can tune this parameter (`filter.nfeat`) just as we would tune any hyperparameter. To do this, first create a new `GraphLearner` with the combination of data transformations, filter and learner:
+
+```{r}
+graph <- cat %>>%
+  num %>>%
+  filter_mim %>>%
+  lrn_nn
+
+glrn = GraphLearner$new(graph)
+```
+
+Now set up a new tuning grid that includes both the number of features and the number of nodes in the hidden layer (as a reminder, type `glrn$param_set` to see the parameter names)
+
+```{r}
+tune_ps = ParamSet$new(list(
+  ParamInt$new("mim.filter.nfeat", lower = 2, upper = 20),
+  ParamInt$new("classif.nnet.size", lower = 2, upper = 20)
+))
+tune_ps
+```
+
+Now we set up the tuning strategy (terminator, search):
+
+```{r}
+evals = trm("evals", n_evals = 50)
+tuner = tnr("random_search")
+at_nn = AutoTuner$new(learner = glrn, 
+                      resampling = rsmp("holdout"),
+                      measure = measure, 
+                      search_space = tune_ps,
+                      terminator = evals,
+                      tuner = tuner)
+```
+
+And finally run. This will take a little while as we are building and testing 50 models. Note that this is not a very exhaustive search as we have about 320 (18*18) parameter combinations, and you might want to increase `n_evals` if you have the time.
+
+```{r}
+at_nn$train(credit_task)
+```
+
+Let's take a look at the output
+
+```{r}
+at_nn$learner
+at_nn$tuning_result
+```
+
+### PCA transformation
+
+For a final example, we'll look at a different feature selection strategy. Rather than selecting out original features, we'll use a PCA transformation to create new features. These are based on the original features, but a) are uncorrelated and b) try to maximize the amount of information contained in each one. 
+
+To do this, we'll recreate our pipeline with a new operator that will carry out the PCA transformation (`pca`). We also add a new filter that selects the set of new features based on how mich of the original variation in the dataset that they explain (we'll start by choosing the set that explain >50%).
+
+
+```{r}
+pca <- po("pca")
+filter <- po("filter", filter = mlr3filters::flt("variance"), filter.frac = 0.5)
+graph <- cat %>>%
+  num %>>%
+  pca %>>% 
+  filter
+```
+Let's take a look at the transformed data:
+
+```{r}
+graph$train(credit_task)[[1]]$data()
+```
+
+Which gives us `r ncol(graph$train(credit_task)[[1]]$data())` new features, called PC1, etc. Now we'll connect this pipeline to our learner:
+
+```{r}
+graph <- cat %>>%
+  num %>>%
+  pca %>>% 
+  filter %>>%
+  lrn_nn
+
+plot(graph)
+```
+And create a new GraphLearner
+
+```{r}
+glrn = GraphLearner$new(graph)
+```
+
+With all this in place, we can now tune our model. We'll again tune the size of the hidden layer, but we'll also use tune the number of new PC features that we use in the model by tuning the `filter.frac` parameter.
+
+- Set up parameter space
+```{r}
+tune_ps = ParamSet$new(list(
+  ParamDbl$new("variance.filter.frac", lower = 0.05, upper = 0.95),
+  
+  ParamInt$new("classif.nnet.size", lower = 2, upper = 20)
+))
+tune_ps
+```
+
+- Set up terminator and search strategy (these are the same as before):
+
+```{r}
+evals = trm("evals", n_evals = 50)
+tuner = tnr("random_search")
+```
+
+- Set up the `AutoTuner`
+
+```{r}
+at_nn = AutoTuner$new(learner = glrn, 
+                      resampling = rsmp("holdout"),
+                      measure = measure, 
+                      search_space = tune_ps,
+                      terminator = evals,
+                      tuner = tuner)
+```
+
+- And tune
+
+```{r}
+at_nn$train(credit_task)
+```
+
+When this is eventually done, inspect the output to see the final choices for the two hyperparameters, as well as the final AUC:
+
+```{r}
+at_nn$learner
+at_nn$tuning_result
+```
+
 
 ## Exercise
 
@@ -475,4 +655,57 @@ xtab = table(pr.nn$net.result>0.5, test_cv$Class)
 rownames(xtab) <- c("0","1")
 ```
 
+
+## Appendix
+
+### Cereal data set
+
+From https://www.kaggle.com/crawford/80-cereals
+
+- `Name`: Name of cereal
+- `mfr`: Manufacturer of cereal
+  - A = American Home Food Products;
+  - G = General Mills
+  - K = Kelloggs
+  - N = Nabisco
+  - P = Post
+  - Q = Quaker Oats
+  - R = Ralston Purina
+- `type`:
+  - cold
+  - hot
+- `calories`: calories per serving
+- `protein`: grams of protein
+- `fat`: grams of fat
+- `sodium`: milligrams of sodium
+- `fiber`: grams of dietary fiber
+- `carbo`: grams of complex carbohydrates
+- `sugars`: grams of sugars
+- `potass`: milligrams of potassium
+- `vitamins`: vitamins and minerals - 0, 25, or 100, indicating the typical percentage of FDA recommended
+- `shelf`: display shelf (1, 2, or 3, counting from the floor)
+- `weight`: weight in ounces of one serving
+- `cups`: number of cups in one serving
+- `rating`: a rating of the cereals (Possibly from Consumer Reports?)
+
+### Credit data set 
+
+From https://github.com/gastonstat/CreditScoring
+
+|    | Column name | Feature                | 
+|----|-------------|------------------------|
+| 1  | `Status`    | credit status          |
+| 2  | `Seniority` | job seniority (years)  |
+| 3  | `Home`      | type of home ownership |
+| 4  | `Time`      | time of requested loan |
+| 5  | `Age`       | client's age           |
+| 6  | `Marital`   | marital status         |
+| 7  | `Records`   | existence of records   |
+| 8  | `Job`       | type of job            |
+| 9  | `Expenses`  | amount of expenses     |
+| 10 | `Income`    | amount of income       |
+| 11 | `Assets`    | amount of assets       |
+| 12 | `Debt`      | amount of debt         |
+| 13 | `Amount`    | loan amount requested  |
+| 14 | `Price`     | price of good          |
 
