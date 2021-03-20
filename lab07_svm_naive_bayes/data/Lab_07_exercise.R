@@ -45,7 +45,7 @@ set.seed(1234)
 train_set = sample(task_class$nrow, 0.8 * task_class$ncol)
 test_set = setdiff(seq_len(task_class$nrow), train_set)
 
-learner = lrn("classif.log_reg")
+learner = lrn("classif.log_reg", maxit = 100)
 learner
 
 learner$train(task_class, row_ids = train_set)
