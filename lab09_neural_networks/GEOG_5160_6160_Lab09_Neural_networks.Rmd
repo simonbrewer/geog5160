@@ -258,10 +258,6 @@ But is this a better model? To find out, we can re-run the 5-fold cross validati
 
 ## Neural network classification
 
-```{r echo=FALSE}
-lgr::get_logger("bbotk")$set_threshold("warn")
-```
-
 Next, we'll build a neural network for a classification task. We'll use a new dataset, containing credit rankings for over 4000 people (see appendix for a description of the fields). The goal will be to predict `Status`, a binary outcome with two levels: `good` and `bad`. We'll start again by reading the data:
 
 ```{r}
@@ -275,7 +271,7 @@ As we have several categorical variables, we need to make sure that R recognizes
 credit_data <- credit_data %>% mutate_if(is.character,as.factor)
 ```
 
-If you run the `summary()` function, you shoudl see that there are several missing values:
+If you run the `summary()` function, you should see that there are several missing values:
 
 ```{r}
 summary(credit_data)
@@ -284,6 +280,9 @@ summary(credit_data)
 As machine learning algorithms can't use missing data to train, we need to decide what to do with these. Fortunately, **mlr3** does have functions for training classification neural networks, so we can take advantage of some of the pre-processing tools in the **mlr3pipelines** library to help with these missing values. Let's first set up a classification task with the credit dataset:
 
 ```{r}
+library(mlr3)
+library(mlr3learners)
+library(mlr3tuning)
 credit_task <- TaskClassif$new("credit", backend = credit_data,
                                target = "Status")
 ```
@@ -300,6 +299,8 @@ While it is possible to do this in an ad-hoc way (as we did in the previous exam
 library(mlr3pipelines)
 mlr_pipeops
 ```
+
+More information on the individual operations (and some examples) can be found [here][poID]. 
 
 It is possible to set up the full pipeline in one step, but we'll work through this gradually so you can get a sense of what each operator is doing. First, we'll design two operators to process the categorical data. The first (`impute_cat`) will carry out a mode-based imputation of any missing values (i.e. fill in with the most common value). Note that we include an argument `affect_columns` to define which features should be processed (this will ignore any numerical features). The second operator will one-hot encode the same set of features. The argument `method = "treatment"` will drop the first encode column to prevent redundancy and multicollinearity. 
 
@@ -322,6 +323,7 @@ The pipeline we have just created has a `train()` method. This is does not train
 ```{r}
 cat$train(credit_task)[[1]]$data()
 ```
+
 You should see here that each of the original factor variables (e.g. `Home`) has been one-hot encoded, and there are now $m-1$ new features, each representing one level in the original factor (e.g. `Home.owner`). Note that this automatically drops the original feature and has not affected the numerical variables. In fact, if you re-run the `summary()` function on this new dataset, you should see that there are still missing variables in the numerical features
 
 ```{r eval=FALSE}
@@ -360,8 +362,12 @@ summary(graph$train(credit_task)[[1]]$data())
 
 So far, we have a pipeline that transforms the dataset into a format ready for modeling. The next step is to link it to a learner, so that we can pass the transformed data directly to it. We'll set up a classification based neural network, with 10 nodes in the hidden layer and a maximum iteration limit of 500:
 
-```{r}
+```{r eval=FALSE}
 lrn_nn <- lrn("classif.nnet", size = 10, maxit = 500)
+```
+
+```{r echo=FALSE}
+lrn_nn <- lrn("classif.nnet", size = 10, maxit = 500, trace = FALSE)
 ```
 
 And we can just add this to our existing pipeline
@@ -377,6 +383,7 @@ graph <- cat %>>%
 ```{r}
 plot(graph)
 ```
+
 Now if we call the `train()` method on the credit task, we transform the data and use this to train a neural network:
 
 ```{r message=FALSE}
@@ -390,6 +397,10 @@ glrn = GraphLearner$new(graph)
 ```
 
 Now we can set up a 5-fold cross-validation, and calculate the AUC for our neural network. 
+```{r echo=FALSE}
+lgr::get_logger("mlr3")$set_threshold("warn")
+lgr::get_logger("bbotk")$set_threshold("warn")
+```
 
 ```{r}
 resampling = rsmp("cv", folds = 5)
@@ -446,7 +457,7 @@ at_nn$tuning_result
 
 The final selected model as a hidden layer size of `r at_nn$tuning_result$classif.nnet.size` and an AUC of `r round(at_nn$tuning_result$classif.auc, 2)`. 
 
-We can use the tuned learner to make predictions for a new data set. As the learner is built on the data transformation pipeline, we do need to carry out any transformations prior to prediction. Instead we can simply pass the new data to the learner, and leave it to do all that for us. We'll set a single example and use the `predict_new()` method to get a prediction of credit risk:
+We can use the tuned learner to make predictions for a new data set. As the learner is built on the data transformation pipeline, we do need to carry out any transformations prior to prediction. Instead we can simply pass the new data to the learner, and leave it to do all that for us. We'll create a single example and use the `predict_new()` method to get a prediction of credit risk (feel free to use different values to see the impact here):
 
 ```{r}
 new_credit <- data.frame(Seniority = 8, 
@@ -468,14 +479,14 @@ at_nn$learner$predict_newdata(newdata = new_credit)
 
 ### Feature selection
 
-When working with datasets with large numbers of features we often want to reduce the number of features used to build the model. We can further modify the pipeline to allow for feature selection using the **mlr3filters** package. To get a list of all avaialble filters:
+When working with datasets with large numbers of features we often want to reduce the number of features used to build the model. We can further modify the pipeline to allow for feature selection using the **mlr3filters** package. The full set of filters can be found on the package [website][filID] or by typing:
 
 ```{r}
 library(mlr3filters)
 mlr_filters
 ```
 
-We'll use the `mim` filter. For a given classification task this calculates an information based correlation between the outcome and each feature and then selects the subset with the highest values. We'll use this to pick the top 3 features. As we want to use this in the pipeline, we again use th `po()` function to create a new operator. We specify the filter type (`mim`) and the number of features we want to retain:
+We'll use the `mim` filter. For a given classification task this calculates an information based correlation between the outcome and each feature and then selects the subset with the highest values. We'll use this to pick the top 3 features. As we want to use this in the pipeline, we again use the `po()` function to create a new operator. We specify the filter type (`mim`) and the number of features we want to retain:
 
 ```{r}
 filter_mim <-   po("filter", flt("mim"), filter.nfeat = 3)
@@ -548,7 +559,7 @@ at_nn$tuning_result
 
 For a final example, we'll look at a different feature selection strategy. Rather than selecting out original features, we'll use a PCA transformation to create new features. These are based on the original features, but a) are uncorrelated and b) try to maximize the amount of information contained in each one. 
 
-To do this, we'll recreate our pipeline with a new operator that will carry out the PCA transformation (`pca`). We also add a new filter that selects the set of new features based on how mich of the original variation in the dataset that they explain (we'll start by choosing the set that explain >50%).
+To do this, we'll recreate our pipeline with a new operator that will carry out the PCA transformation (`pca`). We also add a new filter that selects the set of new features based on how much of the original variation in the dataset that they explain (we'll start by choosing the set that explain >50%).
 
 
 ```{r}
@@ -565,7 +576,7 @@ Let's take a look at the transformed data:
 graph$train(credit_task)[[1]]$data()
 ```
 
-Which gives us `r ncol(graph$train(credit_task)[[1]]$data())` new features, called PC1, etc. Now we'll connect this pipeline to our learner:
+Which gives us `r ncol(graph$train(credit_task)[[1]]$data()) - 1` new features, called PC1, etc. Now we'll connect this pipeline to our learner:
 
 ```{r}
 graph <- cat %>>%
@@ -628,33 +639,17 @@ at_nn$tuning_result
 
 ## Exercise
 
-For the exercise we will once again use the data from the *Sonar.csv* file to model types of object (rocks 'R' or mines 'M') using the values of a set of frequency bands. The goal of the exercise is to build the best predictive neural network for predicting these data. You should use the 5-fold cross validation strategy from the lab to test at least two different definitions for the hidden layers of your network (e.g. one model could have a single layer with 20 nodes, and another two layers with 10 nodes each). 
+For the exercise we will once again use the data from the *Sonar.csv* file to model types of object (rocks 'R' or mines 'M') using the values of a set of frequency bands. The goal of the exercise is to build the best predictive neural network for predicting these data. As this is a classification task, you can use the **mlr3** framework to setup, train and test your model. You will need to choose a cross-validation strategy and calculate the AUC to assess the model. 
+
+As the data has a large number of features, you should build a pipeline to reduce the number of features using one of the two filter examples from the lab (note that there are no categorical features so you can skip those steps). You should then tune both the filter and the size of the hidden layer in the network.
 
 Your answer should consist of the following
 
-- A list of the different hidden layer definitions you used
-- Figures showing the resulting network and connection weights (use the `plotnet()` function, especially for large networks)
-- Estimates of the RMSE for each network based on the 5-fold cross validation strategy
+- A description of your pipeline (this can include a figure showing the steps)
+- The values you obtained for the number of features and the size of the hidden layer through tuning
+- The cross-validated AUC
 
 You should also provide your full R code. 
-
-As this is a binary outcome, not a multi-class outcome, the following code snippets will help with reading and predicting these data. 
-
-- Reading data and converting to binary (0/1) outcome:
-
-```{r eval=FALSE}
-mydat = read.csv("Sonar.csv")
-mydat$Class <- as.numeric(mydat$Class) - 1
-```
-
-- Converting model output (in probabilities) to binary prediction
-
-```{r eval=FALSE}
-pr.nn <- compute(sonar.nn,test_cv)
-xtab = table(pr.nn$net.result>0.5, test_cv$Class)
-rownames(xtab) <- c("0","1")
-```
-
 
 ## Appendix
 
@@ -662,31 +657,32 @@ rownames(xtab) <- c("0","1")
 
 From https://www.kaggle.com/crawford/80-cereals
 
-- `Name`: Name of cereal
-- `mfr`: Manufacturer of cereal
-  - A = American Home Food Products;
-  - G = General Mills
-  - K = Kelloggs
-  - N = Nabisco
-  - P = Post
-  - Q = Quaker Oats
-  - R = Ralston Purina
-- `type`:
-  - cold
-  - hot
-- `calories`: calories per serving
-- `protein`: grams of protein
-- `fat`: grams of fat
-- `sodium`: milligrams of sodium
-- `fiber`: grams of dietary fiber
-- `carbo`: grams of complex carbohydrates
-- `sugars`: grams of sugars
-- `potass`: milligrams of potassium
-- `vitamins`: vitamins and minerals - 0, 25, or 100, indicating the typical percentage of FDA recommended
-- `shelf`: display shelf (1, 2, or 3, counting from the floor)
-- `weight`: weight in ounces of one serving
-- `cups`: number of cups in one serving
-- `rating`: a rating of the cereals (Possibly from Consumer Reports?)
+|    | Column name | Feature                | 
+|----|-------------|------------------------|
+| 1  | `Name`      | Name of cereal          |
+| 2  | `mfr`       | Manufacturer of cereal  |
+|    |             | A = American Home Food Products |
+|    |             | G = General Mills |
+|    |             | K = Kelloggs |
+|    |             | N = Nabisco |
+|    |             | P = Post |
+|    |             | Q = Quaker Oats |
+|    |             | R = Ralston Purina |
+| 3  | `type`      | cold or hot |
+| 4  | `calories`  | calories per serving |
+| 5  | `protein`   | grams of protein          |
+| 6  | `fat`       | grams of fat         |
+| 7  | `sodium`    | milligrams of sodium   |
+| 8  | `fiber`     | grams of dietary fiber           |
+| 9  | `carbo`     | grams of complex carbohydrates   |
+| 10 | `sugars`    | grams of sugars       |
+| 11 | `potass`    | milligrams of potassium       |
+| 12 | `vitamins`  | vitamins and minerals - 0, 25, or 100,          |
+|    |             | indicating the typical percentage of FDA recommended         |
+| 13 | `shelf`     | display shelf (1, 2, or 3, counting from the floor) |
+| 14 | `weight`    | weight in ounces of one serving         |
+| 15 | `cups`      | number of cups in one serving          |
+| 16 | `rating`    | a rating of the cereals          |
 
 ### Credit data set 
 
@@ -709,3 +705,5 @@ From https://github.com/gastonstat/CreditScoring
 | 13 | `Amount`    | loan amount requested  |
 | 14 | `Price`     | price of good          |
 
+[poID]: https://mlr3pipelines.mlr-org.com
+[filID]: https://mlr3filters.mlr-org.com/index.html
