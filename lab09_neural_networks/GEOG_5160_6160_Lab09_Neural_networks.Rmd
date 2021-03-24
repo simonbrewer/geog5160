@@ -24,20 +24,51 @@ set.seed(1234)
 
 ## Introduction
 
-In this lab, we'll go over the two neural network examples shown in class. These are simple one or two hidden layer networks, and the main purpose of the exercise is to demonstrate how to build the networks and what options are available to modify these. You will need the following packages for today's lab, so make sure to install anything that is missing before proceeding.
+In this lab, we'll go over two neural network examples. These are simple one or two hidden layer networks, and the main purpose of the exercise is to demonstrate how to build the networks and what options are available to modify these. We'll also walk through an example of building a pipeline for a machine learning project. 
+
+The two data files you will need are *cereal.csv* and *credit_data.csv*, which should be available from Canvas with this document. Download these to your `datafiles` folder (extract any zip files). Make a new folder for today's class called `lab08`, start RStudio and set your working directory to this new folder. 
+
+
+### R users
+
+Start RStudio and set the working directory to this directory (This can be changed by going to the [Session] menu and selecting [Set working directory] -> [Choose directory...], then browsing to the folder). 
+
+You will need the following packages for today's lab, so make sure to install anything that is missing before proceeding.
 
 - **dplyr**
 - **neuralnet**
 - **NeuralNetTools**
-- **caret**
+- **mlr3pipelines**
+- **mlr3filters**
+
+### Python users
+
+If you are using Python for today's lab, you'll need to download the Jupyter notebook for this lab (*GEOG_5160_6160_lab08.ipynb*). Make a new folder for the lab (`lab08`) and move the notebook to this. Now open a new terminal (in Windows go to the [Start Menu] > [Anaconda (64-bit)] > [Anaconda prompt]). 
+
+You will need to make sure the following packages are installed on your computer (in addition to the packages we have used in previous labs). 
+
+- **xarray**: functions for working with regular arrays (`conda install xarray`)
+- **xgboost**: extreme gradient boosting (`conda install py-xgboost`)
+
+Once opened, change directory to the folder you just made, activate your conda environment
+
+```
+conda activate geog5160
+```
+
+Start the Jupyter Notebook server:
+
+```
+jupyter notebook
+```
+
+And open the notebook for today's class. 
 
 ```{r message=FALSE}
 library(dplyr)
 library(neuralnet)
 library(NeuralNetTools)
 ```
-
-The two data files you will need are *cereal.csv* and *credit_data.csv*, which should be available from Canvas with this document. Download these to your `datafiles` folder (extract any zip files). Make a new folder for today's class called `lab08`, start RStudio and set your working directory to this new folder. 
 
 ## Neural network regression
 
@@ -99,7 +130,13 @@ sqrt(mean((pred.test - test$rating)^2))
 
 Now we'll turn to making a neural network. Unfortunately, **mlr3** doesn't yet work with regression neural networks, so we'll have to use original R functions to train and test the model
 
-As the network uses weighted sums of the input features, it's important that none of these are on very different scales. The easiest way to avoid this is to scale all variables to approximately the same range. The scaling we use here is a min-max transformation (i.e. each variable is converted to a 0-1 range). We do this in three steps: first calculate the maximum then minimum value for each variable using the `apply()` function. Then we use these to scale the data - effectively setting the smallest value of each variable to 0, the highest value to 1. 
+As the network uses weighted sums of the input features, it's important that none of these are on very different scales. The easiest way to avoid this is to scale all variables to approximately the same range. The scaling we use here is a min-max transformation or *normalization* (i.e. each variable is converted to a 0-1 range). This transformation is given by the following equation. 
+
+\[
+x_i'=\frac{x_i-min(x)}{max(x)-min(x)}
+\]
+
+We do this in three steps: first calculate the maximum then minimum value for each variable using the `apply()` function. Then we use these to scale the data - effectively setting the smallest value of each variable to 0, the highest value to 1. 
 
 ```{r}
 maxs = apply(mydat, 2, max)
@@ -127,7 +164,7 @@ cereal.nn = neuralnet(rating ~ calories + protein + fat + sodium + fiber,
                       data = train_, hidden = 3 , linear.output = TRUE)
 ```
 
-Running the `summary()` function on the resulting model object shows that there is a large amount of information provides, including the network weights
+Running the `summary()` function on the resulting model object shows that there is a large amount of information provided, including the network weights
 
 ```{r results='hide'}
 summary(cereal.nn)
