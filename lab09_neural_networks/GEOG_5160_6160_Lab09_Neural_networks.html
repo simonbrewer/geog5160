@@ -1506,17 +1506,37 @@ University of Utah</div></h4>
 
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
-<p>In this lab, we’ll go over the two neural network examples shown in class. These are simple one or two hidden layer networks, and the main purpose of the exercise is to demonstrate how to build the networks and what options are available to modify these. You will need the following packages for today’s lab, so make sure to install anything that is missing before proceeding.</p>
+<p>In this lab, we’ll go over two neural network examples. These are simple one or two hidden layer networks, and the main purpose of the exercise is to demonstrate how to build the networks and what options are available to modify these. We’ll also walk through an example of building a pipeline for a machine learning project.</p>
+<p>The two data files you will need are <em>cereal.csv</em> and <em>credit_data.csv</em>, which should be available from Canvas with this document. Download these to your <code>datafiles</code> folder (extract any zip files). Make a new folder for today’s class called <code>lab08</code>, start RStudio and set your working directory to this new folder.</p>
+<div id="r-users" class="section level3">
+<h3>R users</h3>
+<p>Start RStudio and set the working directory to this directory (This can be changed by going to the [Session] menu and selecting [Set working directory] -&gt; [Choose directory…], then browsing to the folder).</p>
+<p>You will need the following packages for today’s lab, so make sure to install anything that is missing before proceeding.</p>
 <ul>
 <li><strong>dplyr</strong></li>
 <li><strong>neuralnet</strong></li>
 <li><strong>NeuralNetTools</strong></li>
-<li><strong>caret</strong></li>
+<li><strong>mlr3pipelines</strong></li>
+<li><strong>mlr3filters</strong></li>
 </ul>
+</div>
+<div id="python-users" class="section level3">
+<h3>Python users</h3>
+<p>If you are using Python for today’s lab, you’ll need to download the Jupyter notebook for this lab (<em>GEOG_5160_6160_lab08.ipynb</em>). Make a new folder for the lab (<code>lab08</code>) and move the notebook to this. Now open a new terminal (in Windows go to the [Start Menu] &gt; [Anaconda (64-bit)] &gt; [Anaconda prompt]).</p>
+<p>You will need to make sure the following packages are installed on your computer (in addition to the packages we have used in previous labs).</p>
+<ul>
+<li><strong>xarray</strong>: functions for working with regular arrays (<code>conda install xarray</code>)</li>
+<li><strong>xgboost</strong>: extreme gradient boosting (<code>conda install py-xgboost</code>)</li>
+</ul>
+<p>Once opened, change directory to the folder you just made, activate your conda environment</p>
+<pre><code>conda activate geog5160</code></pre>
+<p>Start the Jupyter Notebook server:</p>
+<pre><code>jupyter notebook</code></pre>
+<p>And open the notebook for today’s class.</p>
 <pre class="r"><code>library(dplyr)
 library(neuralnet)
 library(NeuralNetTools)</code></pre>
-<p>The two data files you will need are <em>cereal.csv</em> and <em>credit_data.csv</em>, which should be available from Canvas with this document. Download these to your <code>datafiles</code> folder (extract any zip files). Make a new folder for today’s class called <code>lab08</code>, start RStudio and set your working directory to this new folder.</p>
+</div>
 </div>
 <div id="neural-network-regression" class="section level2">
 <h2>Neural network regression</h2>
@@ -1597,7 +1617,11 @@ sqrt(mean((pred.test - test$rating)^2))</code></pre>
 <div id="neural-network" class="section level3">
 <h3>Neural network</h3>
 <p>Now we’ll turn to making a neural network. Unfortunately, <strong>mlr3</strong> doesn’t yet work with regression neural networks, so we’ll have to use original R functions to train and test the model</p>
-<p>As the network uses weighted sums of the input features, it’s important that none of these are on very different scales. The easiest way to avoid this is to scale all variables to approximately the same range. The scaling we use here is a min-max transformation (i.e. each variable is converted to a 0-1 range). We do this in three steps: first calculate the maximum then minimum value for each variable using the <code>apply()</code> function. Then we use these to scale the data - effectively setting the smallest value of each variable to 0, the highest value to 1.</p>
+<p>As the network uses weighted sums of the input features, it’s important that none of these are on very different scales. The easiest way to avoid this is to scale all variables to approximately the same range. The scaling we use here is a min-max transformation or <em>normalization</em> (i.e. each variable is converted to a 0-1 range). This transformation is given by the following equation.</p>
+<p><span class="math display">\[
+x_i&#39;=\frac{x_i-min(x)}{max(x)-min(x)}
+\]</span></p>
+<p>We do this in three steps: first calculate the maximum then minimum value for each variable using the <code>apply()</code> function. Then we use these to scale the data - effectively setting the smallest value of each variable to 0, the highest value to 1.</p>
 <pre class="r"><code>maxs = apply(mydat, 2, max)
 mins = apply(mydat, 2, min)
 scaled = as.data.frame(scale(mydat, center = mins, scale = maxs - mins))</code></pre>
@@ -1614,7 +1638,7 @@ test_ &lt;- scaled[test_set,]</code></pre>
 <pre class="r"><code># fit neural network
 cereal.nn = neuralnet(rating ~ calories + protein + fat + sodium + fiber, 
                       data = train_, hidden = 3 , linear.output = TRUE)</code></pre>
-<p>Running the <code>summary()</code> function on the resulting model object shows that there is a large amount of information provides, including the network weights</p>
+<p>Running the <code>summary()</code> function on the resulting model object shows that there is a large amount of information provided, including the network weights</p>
 <pre class="r"><code>summary(cereal.nn)</code></pre>
 <p>And we can print the final weights as follows. The first three lines show the final error of the loss function, the amount the error changed in the final step (<code>reached.threshold</code>) and the number of iterations (<code>steps</code>) run. The next lines show the weight for each connection:</p>
 <pre class="r"><code>cereal.nn$result.matrix</code></pre>
@@ -2267,7 +2291,7 @@ tuner = tnr(&quot;random_search&quot;)</code></pre>
 <div id="exercise" class="section level2">
 <h2>Exercise</h2>
 <p>For the exercise we will once again use the data from the <em>Sonar.csv</em> file to model types of object (rocks ‘R’ or mines ‘M’) using the values of a set of frequency bands. The goal of the exercise is to build the best predictive neural network for predicting these data. As this is a classification task, you can use the <strong>mlr3</strong> framework to setup, train and test your model. You will need to choose a cross-validation strategy and calculate the AUC to assess the model.</p>
-<p>As the data has a large number of features, you should build a pipeline to reduce the number of features using one of the two filter examples from the lab (note that there are no categorical features so you can skip those steps). You should then tune both the filter and the size of the hidden layer in the network.</p>
+<p>As the data has a large number of features, you should build a pipeline to reduce the number of features using one of the two filter examples (mutual information or PCA) from the lab. Note that there are no categorical features so you can skip those steps. You should then tune both the filter and the size of the hidden layer in the network.</p>
 <p>Your answer should consist of the following</p>
 <ul>
 <li>A description of your pipeline (this can include a figure showing the steps)</li>

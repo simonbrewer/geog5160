@@ -678,7 +678,7 @@ at_nn$tuning_result
 
 For the exercise we will once again use the data from the *Sonar.csv* file to model types of object (rocks 'R' or mines 'M') using the values of a set of frequency bands. The goal of the exercise is to build the best predictive neural network for predicting these data. As this is a classification task, you can use the **mlr3** framework to setup, train and test your model. You will need to choose a cross-validation strategy and calculate the AUC to assess the model. 
 
-As the data has a large number of features, you should build a pipeline to reduce the number of features using one of the two filter examples from the lab (note that there are no categorical features so you can skip those steps). You should then tune both the filter and the size of the hidden layer in the network.
+As the data has a large number of features, you should build a pipeline to reduce the number of features using one of the two filter examples (mutual information or PCA) from the lab. Note that there are no categorical features so you can skip those steps. You should then tune both the filter and the size of the hidden layer in the network.
 
 Your answer should consist of the following
 
