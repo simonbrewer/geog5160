@@ -1,0 +1,55 @@
+---
+title: "GEOG 5160/6160 Lab 10 Deep learning with Keras"
+author: | 
+  | Simon Brewer
+  | Geography Department
+  | University of Utah
+date: "March 29, 2021"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    fig_caption: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(png)
+library(grid)
+```
+
+```{r echo=FALSE}
+set.seed(1234)
+```
+
+## Introduction
+
+In this lab, we'll go over two neural network examples. These are simple one or two hidden layer networks, and the main purpose of the exercise is to demonstrate how to build the networks and what options are available to modify these. We'll also walk through an example of building a pipeline for a machine learning project. 
+
+## Keras workflow
+
+Building a deep learning model through Keras requires a series of steps:
+
+1. Create training data as tensors. This should include the input features and the target as separate tensors. 
+2. Create the network architecture. This consists of the set of layers that link the inputs to the target(s)
+3. Define the loss function, the optimizer and the performance metrics to be used to test the progress of the training
+4. Train the model using the training data
+
+### Defining the netowrk architecture
+
+Keras has two methods to create the network. The simplest is to use the `keras_model_sequential()` function. This takes as input the definition of the hidden layers, as well as any parameters that are used to modify these during training. For example, to create a simple, two layer model with a single output, one hidden layer with 10 nodes, you would run the following command. Note that the first layer takes the argument `input_shape` which describes the expected shape of the tensor holding the features, and that we specify a ReLU activation function for the output. 
+
+```{r eval=FALSE}
+model <- keras_model_sequential() %>%
+  layer_dense(units = 10, input_shape = c(20)) %>%
+  layer_dense(units = 1, activation = "relu")
+```
+
+The other method to define the architecture uses the Keras API. This is a much more flexible approach based on graph theory and can be used to create networks that are much more complex. 
+
+## Example 1: binary classification
+
+The first example
+
+
+The variables `train_data` and `test_data` are lists of reviews; each review is a list of word indices (encoding a sequence of words). `train_labels` and `test_labels` are lists of 0s and 1s, where 0 stands for negative and 1 stands for positive:
