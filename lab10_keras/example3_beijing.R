@@ -1,96 +1,214 @@
-## Example 2: boston house prices
+## Example 3: Beijing air pollution
+set.seed(1234)
+library(reticulate)
+library(dplyr)
+library(tidyr)
 library(keras)
 
-dataset <- dataset_boston_housing()
-c(c(train_data, train_targets), c(test_data, test_targets)) %<-% dataset
+## Read data
+dat <- read.csv("../datafiles/pollution.csv")
 
-str(train_data)
+## Convert wnd_dir to numeric
+dat$wnd_dir <- as.numeric(factor(dat$wnd_dir, levels = c("NE", "NW", "SE", "cv")))
 
-str(test_data)
-
-mean <- apply(train_data, 2, mean)
-std <- apply(train_data, 2, sd)
-train_data <- scale(train_data, center = mean, scale = std)
-test_data <- scale(test_data, center = mean, scale = std)
-
-## Set up model construction as a function (for k-fold)
-build_model <- function() {                                1
-  model <- keras_model_sequential() %>%
-    layer_dense(units = 64, activation = "relu",
-                input_shape = dim(train_data)[[2]]) %>%
-    layer_dense(units = 64, activation = "relu") %>%
-    layer_dense(units = 1)
-  model %>% compile(
-    optimizer = "rmsprop",
-    loss = "mse",
-    metrics = c("mae")
-  )
+normalize <- function(x) {
+  x <- c(x)
+  (x - min(x)) / (max(x) - min(x))
 }
 
+scaled <- dat %>%
+  mutate(pollution = normalize(pollution),
+         dew = normalize(dew),
+         temp = normalize(temp),
+         press = normalize(press),
+         wnd_dir = normalize(wnd_dir),
+         wnd_spd = normalize(wnd_spd),
+         snow = normalize(snow),
+         rain = normalize(rain))
 
-k <- 4
-indices <- sample(1:nrow(train_data))
-folds <- cut(indices, breaks = k, labels = FALSE)
+lagged <- scaled %>%
+  mutate(lag_1_pollution = lag(pollution, 1),
+         lag_1_dew = lag(dew, 1),
+         lag_1_temp = lag(temp, 1),
+         lag_1_press = lag(press, 1),
+         lag_1_wnd_dir = lag(wnd_dir, 1),
+         lag_1_wnd_spd = lag(wnd_spd, 1),
+         lag_1_snow = lag(snow, 1),
+         lag_1_rain = lag(rain, 1)
+  ) %>%
+  drop_na() %>%
+  select(pollution, contains("lag_1"))
+  
+n_obs = 365 * 24 ## SHould be -3
 
-num_epochs <- 100
-all_scores <- c()
-for (i in 1:k) {
-  cat("processing fold #", i, "\n")
-  
-  val_indices <- which(folds == i, arr.ind = TRUE)
-  val_data <- train_data[val_indices,]
-  val_targets <- train_targets[val_indices]
-  partial_train_data <- train_data[-val_indices,] 
-  partial_train_targets <- train_targets[-val_indices]
-  
-  model <- build_model()
-  
-  model %>% fit(partial_train_data, partial_train_targets,
-                epochs = num_epochs, batch_size = 1, verbose = 0)
-  
-  results <- model %>% evaluate(val_data, val_targets, verbose = 0)
-  all_scores <- c(all_scores, results["mae"])
-}
+X_train <- data.matrix(lagged[1:n_obs, -1])
+X_train <- array(X_train, dim = c(n_obs, 1, 8))
+y_train <- lagged$pollution[1:n_obs]
 
-all_scores
-mean(all_scores)
+X_test <- data.matrix(lagged[n_obs:nrow(lagged), -1])
+X_test <- array(X_test, dim = c(nrow(X_test), 1, 8))
+y_test <- lagged$pollution[n_obs:nrow(lagged)]
 
-## 500 epochs with saved MAE (do this first)
-num_epochs <- 500
-all_mae_histories <- NULL
-for (i in 1:k) {
-  cat("processing fold #", i, "\n")
-  
-  val_indices <- which(folds == i, arr.ind = TRUE)
-  val_data <- train_data[val_indices,]
-  val_targets <- train_targets[val_indices]
-  
-  partial_train_data <- train_data[-val_indices,]
-  partial_train_targets <- train_targets[-val_indices]
-  
-  model <- build_model()
-  
-  history <- model %>% fit(
-    partial_train_data, partial_train_targets,
-    validation_data = list(val_data, val_targets),
-    epochs = num_epochs, batch_size = 1, verbose = 0
-  )
-  mae_history <- history$metrics$val_mean_absolute_error
-  all_mae_histories <- rbind(all_mae_histories, mae_history)
-}
+# initialize our model
+model <- keras_model_sequential()
 
-average_mae_history <- data.frame(
-  epoch = seq(1:ncol(all_mae_histories)),
-  validation_mae = apply(all_mae_histories, 2, mean)
+# our input layer
+model %>%
+  layer_lstm(input_shape = dim(X_train)[2:3], units = 50)
+
+model %>%
+  layer_dense(units = 1) # output
+
+# look at our model architecture
+summary(model)
+
+## Compile it
+model %>% compile(
+  optimizer = optimizer_adam(), 
+  loss = "mse", 
+  metrics = c("mae")
 )
 
-library(ggplot2)
-ggplot(average_mae_history, aes(x = epoch, y = validation_mae)) + geom_line()
+# Actually train our model! This step will take a while
+history <- model %>% fit(
+  x = X_train, # sequence we're using for prediction 
+  y = y_train, # sequence we're predicting
+  batch_size = 64, # how many samples to pass to our model at a time
+  epochs = 50, # how many times we'll look @ the whole dataset
+  validation_data = list(X_test, y_test),
+  shuffle = FALSE) # 
 
-ggplot(average_mae_history, aes(x = epoch, y = validation_mae)) + geom_smooth()
+plot(history)
+## -------------------------------------------------------------------------------------------
+# Evaluate the model on the validation data
+results <- model %>% keras::evaluate(X_test, y_test, verbose = 1)
+results
 
-model <- build_model()
-model %>% fit(train_data, train_targets,
-              epochs = 80, batch_size = 16)
-result <- model %>% evaluate(test_data, test_targets)
-result
+pred_test = model %>% predict(X_test)
+print(postResample(pred = pred_test, obs = y_test))
+
+## -------------------------------------------------------------------------------------------
+# Three hour lag
+lagged <- scaled %>%
+  mutate(lag_1_pollution = lag(pollution, 1),
+         lag_1_dew = lag(dew, 1),
+         lag_1_temp = lag(temp, 1),
+         lag_1_press = lag(press, 1),
+         lag_1_wnd_dir = lag(wnd_dir, 1),
+         lag_1_wnd_spd = lag(wnd_spd, 1),
+         lag_1_snow = lag(snow, 1),
+         lag_1_rain = lag(rain, 1)
+  ) %>%
+  mutate(lag_2_pollution = lag(pollution, 2),
+         lag_2_dew = lag(dew, 2),
+         lag_2_temp = lag(temp, 2),
+         lag_2_press = lag(press, 2),
+         lag_2_wnd_dir = lag(wnd_dir, 2),
+         lag_2_wnd_spd = lag(wnd_spd, 2),
+         lag_2_snow = lag(snow, 2),
+         lag_2_rain = lag(rain, 2)
+  ) %>%
+  mutate(lag_3_pollution = lag(pollution, 3),
+         lag_3_dew = lag(dew, 3),
+         lag_3_temp = lag(temp, 3),
+         lag_3_press = lag(press, 3),
+         lag_3_wnd_dir = lag(wnd_dir, 3),
+         lag_3_wnd_spd = lag(wnd_spd, 3),
+         lag_3_snow = lag(snow, 3),
+         lag_3_rain = lag(rain, 3)
+  ) %>%
+  drop_na() %>%
+  select(pollution, contains("lag_1"), contains("lag_2"), contains("lag_3"))
+
+n_obs = 365 * 24 ## SHould be -3
+
+X_train <- data.matrix(lagged[1:n_obs, -1])
+X_train <- array(X_train, dim = c(n_obs, 1, 8))
+y_train <- lagged$pollution[1:n_obs]
+
+X_test <- data.matrix(lagged[n_obs:nrow(lagged), -1])
+X_test <- array(X_test, dim = c(nrow(X_test), 1, 8))
+y_test <- lagged$pollution[n_obs:nrow(lagged)]
+
+# initialize our model
+model <- keras_model_sequential()
+
+# our input layer
+model %>%
+  layer_lstm(input_shape = dim(X_train)[2:3], units = 50)
+
+model %>%
+  layer_dense(units = 1) # output
+
+# look at our model architecture
+summary(model)
+
+## Compile it
+model %>% compile(
+  optimizer = optimizer_adam(), 
+  loss = "mse", 
+  metrics = c("mae")
+)
+
+# Actually train our model! This step will take a while
+history <- model %>% fit(
+  x = X_train, # sequence we're using for prediction 
+  y = y_train, # sequence we're predicting
+  batch_size = 64, # how many samples to pass to our model at a time
+  epochs = 50, # how many times we'll look @ the whole dataset
+  validation_data = list(X_test, y_test),
+  shuffle = FALSE) # 
+
+plot(history)
+
+# Evaluate the model on the validation data
+results <- model %>% keras::evaluate(X_test, y_test, verbose = 1)
+results
+
+pred_test = model %>% predict(X_test)
+print(postResample(pred = pred_test, obs = y_test))
+
+## -------------------------------------------------------------------------------------------
+## More complex structure
+model <- keras_model_sequential()
+
+model %>%
+  layer_lstm(input_shape = dim(X_train)[2:3], 
+             units = 100, 
+             return_sequences = TRUE)  %>%
+  layer_dropout(rate = 0.5) %>%
+  layer_lstm(units = 50, 
+             return_sequences = TRUE) %>%
+  layer_dropout(rate = 0.5) %>%
+  layer_dense(units = 1)
+
+
+model %>%
+  compile(loss = 'mae', optimizer = 'adam')
+
+model
+
+## Compile it
+model %>% compile(
+  optimizer = optimizer_adam(), 
+  loss = "mse", 
+  metrics = c("mae")
+)
+
+# Actually train our model! This step will take a while
+history <- model %>% fit(
+  x = X_train, # sequence we're using for prediction 
+  y = y_train, # sequence we're predicting
+  batch_size = 64, # how many samples to pass to our model at a time
+  epochs = 10, # how many times we'll look @ the whole dataset
+  validation_data = list(X_test, y_test),
+  shuffle = FALSE) # 
+
+plot(history)
+
+# Evaluate the model on the validation data
+results <- model %>% keras::evaluate(X_test, y_test, verbose = 1)
+results
+
+pred_test = model %>% predict(X_test)
+print(postResample(pred = pred_test, obs = y_test))
