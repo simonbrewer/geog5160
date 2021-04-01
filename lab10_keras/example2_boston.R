@@ -75,11 +75,13 @@ average_mae_history <- data.frame(
   validation_mae = apply(all_mae_histories, 2, mean)
 )
 
+## Plot MAE history
 library(ggplot2)
 ggplot(average_mae_history, aes(x = epoch, y = validation_mae)) + geom_line()
 
 ggplot(average_mae_history, aes(x = epoch, y = validation_mae)) + geom_smooth()
 
+## Predict for testting set (build full model first)
 model <- build_model()
 model %>% fit(X_train, y_train,
               epochs = 80, batch_size = 16)
