@@ -200,7 +200,7 @@ history <- model %>% fit(
   x = X_train, # sequence we're using for prediction 
   y = y_train, # sequence we're predicting
   batch_size = 64, # how many samples to pass to our model at a time
-  epochs = 10, # how many times we'll look @ the whole dataset
+  epochs = 20, # how many times we'll look @ the whole dataset
   validation_data = list(X_test, y_test),
   shuffle = FALSE) # 
 
