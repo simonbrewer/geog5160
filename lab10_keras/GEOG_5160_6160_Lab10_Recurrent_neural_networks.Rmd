@@ -1,0 +1,190 @@
+---
+title: "GEOG 5160/6160 Lab 10 Recurrent neural networks"
+author: | 
+  | Simon Brewer
+  | Geography Department
+  | University of Utah
+date: "April 1, 2021"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    fig_caption: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(png)
+library(grid)
+```
+
+```{r echo=FALSE}
+set.seed(1234)
+```
+
+## Introduction
+
+**THIS IS AN OPTIONAL LAB**
+
+In this lab, we'll look at how to build a recurrent neural network using the Keras package.  The example is modified from an example in Python from Jason Brownlee's [blog on machine learning][[mlmID]]. 
+
+You will need the file called *pollution.csv*, which should be available from Canvas with this document. Download this to your `datafiles` folder (extract any zip files). Make a new folder for today's class called `lab10` (if you haven't already done so). 
+
+### R users
+
+Start RStudio and set the working directory to this directory (This can be changed by going to the [Session] menu and selecting [Set working directory] -> [Choose directory...], then browsing to the folder). 
+
+The **mlr3** developers are currently working on an interface to Keras models, which would allow you to use the same approach that we have used in previous labs to build models. Unfortunately, this is still in early development, so for this lab, we'll use the R **keras** package. 
+
+### Python users
+
+If you are using Python for today's lab, you'll need to download the Jupyter notebook for this lab (*GEOG_5160_6160_lab10.ipynb*). Make a new folder for the lab (`lab10`) and move the notebook to this. Now open a new terminal (in Windows go to the [Start Menu] > [Anaconda (64-bit)] > [Anaconda prompt]). 
+
+Once opened, change directory to the folder you just made, activate your conda environment
+
+```
+conda activate geog5160
+```
+
+Start the Jupyter Notebook server:
+
+```
+jupyter notebook
+```
+
+And open the notebook for today's class. 
+
+## Data processing
+
+Let's start by loading the libraries we'll need for this lab:
+
+```{r}
+library(dplyr)
+library(tidyr)
+library(keras)
+library(ggplot2)
+```
+
+Next, we'll load the dataset and take a quick look at the first few lines:
+
+```{r}
+dat <- read.csv("../datafiles/pollution.csv")
+head(dat)
+```
+The data are hourly pollution and weather measurements from the US embassy in Beijing for a period of 5 years. The goal will be to build a model that can do a step ahead prediction, i.e. can predict the PM2.5 concentration at any hour $t$ from the values of all the variables at previous hour $t-1$, *including the previous value of PM2.5.
+
+```{r}
+names(dat)
+```
+
+Let's make a couple of plots to see what the variables look like for the first year:
+
+```{r}
+dat_2010 <- dat %>%filter(date < 2011)
+plot(dat_2010$pollution, type = 'l', ylab = 'PM2.5')
+plot(dat_2010$temp, type = 'l', ylab = 'PM2.5')
+plot(dat_2010$rain, type = 'l', ylab = 'PM2.5')
+plot(dat_2010$press, type = 'l', ylab = 'PM2.5')
+```
+
+Before we can build a model there are a few things we'll need to do to process these data:
+
+- Encode the wind direction variable
+- Normalize all the features
+- Create lagged variables (i.e. the values of each variable one hour ahead of the target time)
+- Create a training and testing set
+
+```{r}
+table(dat$wnd_dir)
+```
+
+We can encode these to integer values by transforming them to a factor (a categorical variable), then to a numeric value:
+
+```{r}
+dat$wnd_dir <- as.numeric(factor(dat$wnd_dir, levels = c("NE", "NW", "SE", "cv")))
+```
+
+We'll normalize the data to 0-1 range for training. First, we'll create a short R function to carry out the min-max normalization:
+
+```{r}
+normalize <- function(x) {
+  x <- c(x)
+  (x - min(x)) / (max(x) - min(x))
+}
+```
+
+And now, we'll use **dplyr**'s `mutate` function to replace the original values with the transformed values. Normally, we'd only normalize the features, but as we are going to use the PM2.5 value from the previous time step as an additional feature, we need to normalize this as well. As this means we will be modeling the normalized PM2.5 values, we'll store the minimum and maximum. This will allow us to back convert any predictions we make to parts per billion. 
+
+```{r}
+scaled <- dat %>%
+  mutate(pollution = normalize(pollution),
+         dew = normalize(dew),
+         temp = normalize(temp),
+         press = normalize(press),
+         wnd_dir = normalize(wnd_dir),
+         wnd_spd = normalize(wnd_spd),
+         snow = normalize(snow),
+         rain = normalize(rain))
+
+pollution_min <- min(dat$pollution)
+pollution_max <- max(dat$pollution)
+```
+
+As we want to model pollution using the previous hour's features, we need to create a lagged version of each one. So for any given observation, we need the value of each feature from the previous hour. There's a couple of ways to do this, but we'll use a simple one, the `lag()` function from the **tidyr** package. In the following code, we create new `lag_1` features, remove any row with a missing value and finally keep only the lagged features and the pollution:
+
+```{r}
+lagged <- scaled %>%
+  mutate(lag_1_pollution = lag(pollution, 1),
+         lag_1_dew = lag(dew, 1),
+         lag_1_temp = lag(temp, 1),
+         lag_1_press = lag(press, 1),
+         lag_1_wnd_dir = lag(wnd_dir, 1),
+         lag_1_wnd_spd = lag(wnd_spd, 1),
+         lag_1_snow = lag(snow, 1),
+         lag_1_rain = lag(rain, 1)
+  ) %>%
+  drop_na() %>%
+  select(pollution, contains("lag_1"))
+head(lagged)
+```
+
+If you look at the first few rows, you should see that the target (pollution) is now linked to the previous hour's pollution value (and the other features).
+
+The last thing we need to do is to create out training and testing sets. We'll keep the first year for training, and the other four years for testing. Some things to note here:
+
+- We generate an index for the samples that is the number of days in a year * the number of hours. Technically it should be one less than this as we will have lost the first row once we lagged the features
+- The data are converted to a matrix form, then reshaped to a 3D array. As we are going to be fitting a recurrent neural network, we need to make sure the input tensor has the correct shape. RNNs use rank 3 tensors with a shape given by (`sample`, `timesteps`, `features`). Here, we only have a single time step, because we are only using the preceding hour as input. Ultimately we'll rely on the RNNs hidden state to 'remember' earlier information
+
+```{r}
+n_obs = 365 * 24 ## SHould be -3
+
+X_train <- data.matrix(lagged[1:n_obs, -1])
+X_train <- array(X_train, dim = c(n_obs, 1, 8))
+y_train <- lagged$pollution[1:n_obs]
+```
+
+Now let's do the same for the test set:
+
+```{r}
+X_test <- data.matrix(lagged[n_obs:nrow(lagged), -1])
+X_test <- array(X_test, dim = c(nrow(X_test), 1, 8))
+y_test <- lagged$pollution[n_obs:nrow(lagged)]
+```
+
+## Appendix
+
+### Beijing pollution dataset: *pollution.csv*
+
+| Column header | Variable |
+| --- | --- |
+| date | POSIX date (y-m-d h:m:s) |
+| pollution | PM2.5 concentration (ppb) |
+| dew | Dew point |
+| temp | Temperature (C) |
+| press | Air pressure (hPa) |
+| wnd_dir | Wind direction (categorical) |
+| wnd_spd | m s-1 |
+| rain | mm |
+
+
+[mlmID]: https://machinelearningmastery.com/multivariate-time-series-forecasting-lstms-keras/
