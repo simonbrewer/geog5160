@@ -24,20 +24,50 @@ set.seed(1234)
 
 ## Introduction
 
-In this lab, we'll go over two neural network examples. These are simple one or two hidden layer networks, and the main purpose of the exercise is to demonstrate how to build the networks and what options are available to modify these. We'll also walk through an example of building a pipeline for a machine learning project. 
+In this lab, we'll look at the use of the Keras package for deep learning. This document will introduce the building blocks of Keras models and use them to create basic boackpropagation type neural networks. There are two additional lab documents that then go on to show how to build recurrent neural networks and convolutional neural networks using Keras. These are optional and are simply available in case you would like to explore this method a little further. Both of the examples are taken from Deep Learning with Python by F. Chollet, and Deep Learning with R by Chollet and Allaire, and I highly recommend either (or both!) of these books. 
+
+The only new data file you will need for the lab is *boston6k.csv*, which should be available from Canvas with this document. Download this to your `datafiles` folder (extract any zip files). Make a new folder for today's class called `lab10`. 
+
+### R users
+
+Start RStudio and set the working directory to this directory (This can be changed by going to the [Session] menu and selecting [Set working directory] -> [Choose directory...], then browsing to the folder). 
+
+...Keras installation instructions...
+
+### Python users
+
+If you are using Python for today's lab, you'll need to download the Jupyter notebook for this lab (*GEOG_5160_6160_lab10.ipynb*). Make a new folder for the lab (`lab10`) and move the notebook to this. Now open a new terminal (in Windows go to the [Start Menu] > [Anaconda (64-bit)] > [Anaconda prompt]). 
+
+Once opened, change directory to the folder you just made, activate your conda environment
+
+```
+conda activate geog5160
+```
+
+...Keras installation instructions...
+
+Start the Jupyter Notebook server:
+
+```
+jupyter notebook
+```
+
+And open the notebook for today's class. 
 
 ## Keras workflow
 
 Building a deep learning model through Keras requires a series of steps:
 
-1. Create training data as tensors. This should include the input features and the target as separate tensors. 
+1. Create training data as tensors. This should include the input features and the target as separate tensors. For the simple models we are looking at in this lab, this is fairly straightforward, but for the more complex models, careful attention is required to the size and shape of these tensors.
 2. Create the network architecture. This consists of the set of layers that link the inputs to the target(s)
 3. Define the loss function, the optimizer and the performance metrics to be used to test the progress of the training
-4. Train the model using the training data
+4. Train the model using the training data, with part of the training data left out as validation data
 
 ### Defining the netowrk architecture
 
-Keras has two methods to create the network. The simplest is to use the `keras_model_sequential()` function. This takes as input the definition of the hidden layers, as well as any parameters that are used to modify these during training. For example, to create a simple, two layer model with a single output, one hidden layer with 10 nodes, you would run the following command. Note that the first layer takes the argument `input_shape` which describes the expected shape of the tensor holding the features, and that we specify a ReLU activation function for the output. 
+Keras has two methods to create the network. The simplest is to use the `keras_model_sequential()` function. This takes as input the definition of the hidden layers, as well as any parameters that are used to modify these during training. 
+
+For example, to create a simple, two layer model with a single output, one hidden layer with 10 nodes, you would run the following command. Note that the first layer takes the argument `input_shape` which describes the expected shape of the tensor holding the features, and that we specify a ReLU activation function for the output. 
 
 ```{r eval=FALSE}
 model <- keras_model_sequential() %>%
@@ -49,7 +79,226 @@ The other method to define the architecture uses the Keras API. This is a much m
 
 ## Example 1: binary classification
 
-The first example
+The first example we'll look is a binary classification task. This is based on a set of movie reviews taken from the IMDB. There are a total of 50,000 reviews, split 50-50 into a training and testing set. This dataset comes with the Keras package, so we don't need to worry about processing it, but simply load it. This will download the data to your computer, so make sure you are connected to the internet when you run this.
 
+```{r}
+library(keras)
+
+imdb <- dataset_imdb(num_words = 10000)
+```
+
+The `num_words` argument limits the data to the top 10,000 words, and ignores words that occur less frequently. If you take a quick look at the structure of the object that has been created, you should see that this has already been split into the training and testing set for us. 
+
+```{r}
+str(imdb, max.level = 2)
+```
+
+Let's take a quick look at the first review:
+
+```{r}
+imdb$train$x[[1]]
+```
+
+The review has already been encoded to an integer representation. Each number represents the presence of a single word in a review (for example 19 == `film`). 
+
+The authors provide a function that allows you to decode these reviews (i.e. back transform them to the original text). First, create an index containing the words and their integer representations:
+
+```{r}
+word_index <- dataset_imdb_word_index()
+reverse_word_index <- names(word_index)
+names(reverse_word_index) <- word_index
+```
+
+Now use this to transform the above review 
+```{r}
+decoded_review <- sapply(imdb$train$x[[1]], function(index) {                
+  word <- if (index >= 3) reverse_word_index[[as.character(index - 3)]]
+  if (!is.null(word)) word else "?"
+})
+decoded_review
+```
+
+We can also take a look at the outcome label. This is a binary value, where 0 indicates a negative review and 1 indicates a positive review. 
+
+```{r}
+imdb$train$y[[1]]
+```
+
+
+We'll now split the data into training and test sets:
+
+```{r}
+train_data <- imdb$train$x
+train_labels <- imdb$train$y
+test_data <- imdb$test$x
+test_labels <- imdb$test$y
+```
 
 The variables `train_data` and `test_data` are lists of reviews; each review is a list of word indices (encoding a sequence of words). `train_labels` and `test_labels` are lists of 0s and 1s, where 0 stands for negative and 1 stands for positive:
+
+Although the data have been processed and organized by review, we can't use these reviews directly in a model, as it will based any weights on the integer assigned to each word, rather than simply the presence or absence of that word. In addition, each review is of a different length, which makes it tricky to assign these values to input nodes in a neural network. We can get a better organization by one-hot encoding the reviews. This will produce, for each review, a vector of length 10,000, where each entry will be a binary (0/1) value indicating whether or not that particular word was present in the review. As we need to do this for both the training and testing sets, we'll create a function to do this for us:
+
+```{r}
+## One hot encode data
+vectorize_sequences <- function(sequences, dimension = 10000) {
+  results <- matrix(0, nrow = length(sequences), ncol = dimension)
+  for (i in 1:length(sequences))
+    results[i, sequences[[i]]] <- 1
+  results
+}
+```
+
+This first creates a matrix with 10,000 columns (representing each word) and the same number of rows as the set of reviews we are processing. It then iterates through each review, and if a given word is present in that review, then the value in the matrix os set to 1, otherwise it is left as a 0. 
+
+Now we can apply this to both the training and testing reviews:
+
+```{r}
+x_train <- vectorize_sequences(train_data)
+x_test <- vectorize_sequences(test_data)
+```
+
+If you want to see what the first training review looks like following the one-hot encoding, simply type `x_train[1,]`. These represent the input *tensors*. For this model, these are rank 2 tensors and simply represented in R as 2D arrays. 
+
+We'll also convert the labels from integer values to floating point (numeric):
+
+```{r}
+y_train <- as.numeric(train_labels)
+y_test <- as.numeric(test_labels)
+```
+
+Before we start to build the model, we'll create a validation dataset by splitting the training data in two parts. Validation datasets are important in deep learning as the complex networks can quickly and easily overfit to the training data. Validation data are used during the training process. Following each adjustment of the weights, the network predicts the labels for the validation set, and a validation error is calculated. A decreasing validation error suggests that the model is training well to the data, but when it starts to increase, this indicates overfitting: prediction for new data becomes worse. Here, we'll take the first 10,000 reviews and use them for validation:
+
+```{r}
+val_indices <- 1:10000
+
+x_val <- x_train[val_indices,]
+partial_x_train <- x_train[-val_indices,]
+y_val <- y_train[val_indices]
+partial_y_train <- y_train[-val_indices]
+```
+
+## Setting up the network
+
+Now we'll set up the network architecture. The Keras API uses a set of building block functions to set up this network. The `keras_model_sequential()` function defines a blank template for a sequential neural network. The `layer_dense()` function adds a single hidden layer to this. 
+
+In the following code, we define a simple network with two hidden layers. Each hidden layer has 16 nodes (`units`) and uses a ReLU activation function. The second layer is then connected to an output later with a single unit as we are predicting a single outcome (good vs. bad reviews). Note that 
+
+- we use a sigmoid activation function for the output layer, as this forces the output to be in 0-1 range. 
+- we define the number of features in the `input_shape` in the first hidden layer. This will define the number of connections needed between the input (10,000 words) and the nodes of the first layer
+- we use R's pipe operator (`%>%`) to link the successive layers together
+
+```{r warning=FALSE}
+model <- keras_model_sequential() %>%
+  layer_dense(units = 16, activation = "relu", input_shape = c(10000)) %>%
+  layer_dense(units = 16, activation = "relu") %>%
+  layer_dense(units = 1, activation = "sigmoid")
+```
+
+You may see a warning about the type of hardware detected. You can safely ignore this - the model will still run. 
+
+Let's take a look at the architecture this has created:
+
+```{r}
+summary(model)
+```
+
+This table shows for each layer:
+
+- Its name (this can be set in the `layer_dense` function)
+- The number of outputs (shape)
+- The number of parameters to be estimated. For the first this is the number of inputs (10,000) multiplied by the number of nodes (16) + a bias for each node (16). 
+- The total number of parameters in the model, which comes out to a little over 160,000. This large number of parameters is why these models requrie large amounts of data to train (and why they can fit complex problems)
+
+Next, we need to configure the model by specifying the optimizer to be used, the loss function and any error metrics we want to calculate. We'll use standard backpropagation for the optimizer, binary cross entropy for the loss function and we'll measure the model's accuracy. Cross entropy is a measure of how different two distributions are, and this is well suited to a binary classification exercise, where we want to discriminate between 0's and 1's,
+
+```{r}
+model %>% compile(
+  optimizer = "rmsprop",
+  loss = "binary_crossentropy",
+  metrics = c("accuracy")
+)
+```
+
+Now we have everything in place, we can train the model. Here we specify:
+
+- the set of features for training (`partial_x_train`)
+- the set of labels for training (`partial_y_train`)
+- the number of iterations to train the model for (`epochs`)
+- the `batch_size`. 
+- the validation features and labels
+
+The batch size is quite an useful parameter to make your network more efficient. This is the number of samples to pass through the network before updating weights. This allows you to trade off the speed of the calculation against the convergence. Using smaller batches uses less memory but may take longer to converge, as the weights are being updated using only a fraction of the data. Larger batches will converge quickly, by may cause memory issues, and may more easily result in overfitting. 
+
+```{r eval=FALSE}
+history <- model %>% fit(
+  partial_x_train,
+  partial_y_train,
+  epochs = 20,
+  batch_size = 512,
+  validation_data = list(x_val, y_val)
+)
+```
+
+```{r eval=TRUE}
+history <- model %>% fit(
+  partial_x_train,
+  partial_y_train,
+  epochs = 20,
+  batch_size = 512,
+  validation_data = list(x_val, y_val),
+  verbose = 0
+)
+```
+
+If you are running this in RStudio, Keras will plot the evolution of the loss function and the accuracy during the training. You can also visualize this from the `history` object that stores the results of the training:
+
+```{r}
+plot(history)
+```
+
+The red lines show the loss and accuracy for the training dataset, with a maximum accuracy close to 1. The blue lines show the same for the validation dataset, and show clear signs of overfitting. There is a peak in accuracy (and a minimum in the loss function) at around 5 epochs. We'll refit our model with a smaller number of epochs to the full training set, and then go on to test it.
+
+```{r eval=FALSE}
+model %>% compile(
+  optimizer = "rmsprop",
+  loss = "binary_crossentropy",
+  metrics = c("accuracy")
+)
+
+model %>% fit(x_train, 
+              y_train, 
+              epochs = 5, 
+              batch_size = 512)
+```
+
+
+```{r eval=FALSE}
+model %>% compile(
+  optimizer = "rmsprop",
+  loss = "binary_crossentropy",
+  metrics = c("accuracy")
+)
+
+model %>% fit(x_train, 
+              y_train, 
+              epochs = 5, 
+              batch_size = 512, 
+              verbose = 0)
+```
+
+We can test the model by using the `evaluate` function and the original test (not validation!) dataset:
+
+```{r}
+results <- model %>% evaluate(x_test, y_test)
+results
+```
+
+We get an accuracy of about `r round(results[2]*100)`, which is not bad for a first attempt. The next steps would be to modify the network architecture to see if this could e improved on, e.g. by adding more layers or more nodes in the layers. We'll finish here by making a quick prediction using our trained network, but feel free to try and change your network. 
+
+We'll take the first 10 reviews from the test data and use the `predict()` function to get a predicted probability of this being a good review:
+```{r}
+model %>% predict(x_test[1:10,])
+```
+
+This shows a fair range, with some reviews being predicted as very close to 0 or 1, but others where there is greater uncertainty. One thing to do would be to take the function that back transforms the reviews, and look at an example that has been predicted close to 0 or 1 to see what was actually written.
+
