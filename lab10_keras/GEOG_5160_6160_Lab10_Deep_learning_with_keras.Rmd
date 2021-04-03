@@ -24,7 +24,7 @@ set.seed(1234)
 
 ## Introduction
 
-In this lab, we'll look at the use of the Keras package for deep learning. This document will introduce the building blocks of Keras models and use them to create basic boackpropagation type neural networks. There are two additional lab documents that then go on to show how to build recurrent neural networks and convolutional neural networks using Keras. These are optional and are simply available in case you would like to explore this method a little further. Both of the examples are taken from Deep Learning with Python by F. Chollet, and Deep Learning with R by Chollet and Allaire, and I highly recommend either (or both!) of these books. 
+In this lab, we'll look at the use of the Keras package for deep learning. This document will introduce the building blocks of Keras models and use them to create basic backpropagation type neural networks. There are two additional lab documents that then go on to show how to build recurrent neural networks and convolutional neural networks using Keras. These are optional and are simply available in case you would like to explore this method a little further. Both of the examples are taken from Deep Learning with Python by F. Chollet, and Deep Learning with R by Chollet and Allaire, and I highly recommend either (or both!) of these books. 
 
 The only new data file you will need for the lab is *boston6k.csv*, which should be available from Canvas with this document. Download this to your `datafiles` folder (extract any zip files). Make a new folder for today's class called `lab10`. 
 
@@ -150,7 +150,7 @@ vectorize_sequences <- function(sequences, dimension = 10000) {
 }
 ```
 
-This first creates a matrix with 10,000 columns (representing each word) and the same number of rows as the set of reviews we are processing. It then iterates through each review, and if a given word is present in that review, then the value in the matrix os set to 1, otherwise it is left as a 0. 
+This first creates a matrix with 10,000 columns (representing each word) and the same number of rows as the set of reviews we are processing. It then iterates through each review, and if a given word is present in that review, then the value in the matrix is set to 1, otherwise it is left as a 0. 
 
 Now we can apply this to both the training and testing reviews:
 
@@ -181,7 +181,7 @@ partial_y_train <- y_train[-val_indices]
 
 ### Setting up the network
 
-Now we'll set up the network architecture. The Keras API uses a set of building block functions to set up this network. The `keras_model_sequential()` function defines a blank template for a sequential neural network. The `layer_dense()` function adds a single hidden layer to this. 
+Now we'll set up the network architecture. The Keras API uses a set of building block functions to set up this network. The `keras_model_sequential()` function defines a blank template for a sequential neural network. The `layer_dense()` function adds a single hidden layer to this. A *dense* layer is a a standard neural network hidden layer that is fully (or densely) connected to all inputs and all outputs. 
 
 In the following code, we define a simple network with two hidden layers. Each hidden layer has 16 nodes (`units`) and uses a ReLU activation function. The second layer is then connected to an output later with a single unit as we are predicting a single outcome (good vs. bad reviews). Note that 
 
@@ -209,7 +209,7 @@ This table shows for each layer:
 - Its name (this can be set in the `layer_dense` function)
 - The number of outputs (shape)
 - The number of parameters to be estimated. For the first this is the number of inputs (10,000) multiplied by the number of nodes (16) + a bias for each node (16). 
-- The total number of parameters in the model, which comes out to a little over 160,000. This large number of parameters is why these models requrie large amounts of data to train (and why they can fit complex problems)
+- The total number of parameters in the model, which comes out to a little over 160,000. This large number of parameters is why these models require large amounts of data to train (and why they can fit complex problems)
 
 Next, we need to configure the model by specifying the optimizer to be used, the loss function and any error metrics we want to calculate. We'll use standard backpropagation for the optimizer, binary cross entropy for the loss function and we'll measure the model's accuracy. Cross entropy is a measure of how different two distributions are, and this is well suited to a binary classification exercise, where we want to discriminate between 0's and 1's,
 
@@ -297,7 +297,7 @@ results <- model %>% evaluate(x_test, y_test)
 results
 ```
 
-We get an accuracy of about `r round(results[2]*100)`, which is not bad for a first attempt. The next steps would be to modify the network architecture to see if this could e improved on, e.g. by adding more layers or more nodes in the layers. We'll finish here by making a quick prediction using our trained network, but feel free to try and change your network. 
+We get an accuracy of about `r round(results[2]*100)`, which is not bad for a first attempt. The next steps would be to modify the network architecture to see if this could be improved on, e.g. by adding more layers or more nodes in the layers. We'll finish here by making a quick prediction using our trained network, but feel free to try and change your network. 
 
 We'll take the first 10 reviews from the test data and use the `predict()` function to get a predicted probability of this being a good review:
 ```{r}
@@ -440,12 +440,21 @@ ggplot(average_mae_history, aes(x = epoch, y = validation_mae)) +
   geom_line() 
 ```
 
-The plot suggests that, while there is no visible increase in the validation MAE, there is little improvement beyond about 70-80 epochs. Let's use this to train a final model on the full training dataset, and evaluate with the test set:
+The large drop in MAE over the first few epochs makes it quite difficult to see if and when the model reached an optimum. We'll remake this plot without the first 10 values:
+
+```{r}
+average_mae_history %>%
+  filter(epoch >= 10) %>%
+  ggplot(aes(x = epoch, y = validation_mae)) + 
+  geom_line() 
+```
+
+The plot suggests that, while there is no visible increase in the validation MAE, there is little improvement beyond about 125 epochs. Let's use this to train a final model on the full training dataset, and evaluate with the test set:
 
 ```{r eval=FALSE}
 model <- build_model()
 model %>% fit(X_train, y_train,
-              epochs = 80, batch_size = 16)
+              epochs = 125, batch_size = 16)
 result <- model %>% evaluate(X_test, y_test)
 result
 ```
@@ -471,9 +480,9 @@ For the exercise we will once again use the data from the *Sonar.csv* file to mo
 - Run the model with the full training set
 - Evaluate the model on the test set and report the *accuracy* of your final model
 
-All the code to do this is in the two examples of this lab. You submitted answers shoud contain:
+All the code to do this is in the two examples of this lab. You submitted answers should contain:
 
-- A description of your network, including the summary table (from the `summary(model)` function)
+- A description of your network, including the summary table (from the `model.summary()` function)
 - A figure showing the evolution of the loss function and accuracy
 - The accuracy of your final model
 
