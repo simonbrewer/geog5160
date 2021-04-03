@@ -26,7 +26,7 @@ set.seed(1234)
 
 **THIS IS AN OPTIONAL LAB**
 
-In this lab, we'll look at how to build a recurrent neural network using the Keras package.  The example is modified from an example in Python from Jason Brownlee's [blog on machine learning][[mlmID]]. 
+In this lab, we'll look at how to build a recurrent neural network using the Keras package. The example is modified from an example in Python from Jason Brownlee's [blog on machine learning][mlmID]. 
 
 You will need the file called *pollution.csv*, which should be available from Canvas with this document. Download this to your `datafiles` folder (extract any zip files). Make a new folder for today's class called `lab10` (if you haven't already done so). 
 
