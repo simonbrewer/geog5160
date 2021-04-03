@@ -32,6 +32,8 @@ The only new data file you will need for the lab is *boston6k.csv*, which should
 
 Start RStudio and set the working directory to this directory (This can be changed by going to the [Session] menu and selecting [Set working directory] -> [Choose directory...], then browsing to the folder). 
 
+The **mlr3** developers are currently working on an interface to Keras models, which would allow you to use the same approach that we have used in previous labs to build models. Unfortunately, this is still in early development, so for this lab, we'll use the R **keras** package. 
+
 ...Keras installation instructions...
 
 ### Python users
@@ -63,7 +65,7 @@ Building a deep learning model through Keras requires a series of steps:
 3. Define the loss function, the optimizer and the performance metrics to be used to test the progress of the training
 4. Train the model using the training data, with part of the training data left out as validation data
 
-### Defining the netowrk architecture
+### Defining the network architecture
 
 Keras has two methods to create the network. The simplest is to use the `keras_model_sequential()` function. This takes as input the definition of the hidden layers, as well as any parameters that are used to modify these during training. 
 
@@ -177,7 +179,7 @@ y_val <- y_train[val_indices]
 partial_y_train <- y_train[-val_indices]
 ```
 
-## Setting up the network
+### Setting up the network
 
 Now we'll set up the network architecture. The Keras API uses a set of building block functions to set up this network. The `keras_model_sequential()` function defines a blank template for a sequential neural network. The `layer_dense()` function adds a single hidden layer to this. 
 
@@ -219,6 +221,8 @@ model %>% compile(
 )
 ```
 
+### Training the model
+
 Now we have everything in place, we can train the model. Here we specify:
 
 - the set of features for training (`partial_x_train`)
@@ -239,7 +243,7 @@ history <- model %>% fit(
 )
 ```
 
-```{r eval=TRUE}
+```{r eval=TRUE, echo=FALSE}
 history <- model %>% fit(
   partial_x_train,
   partial_y_train,
@@ -272,7 +276,7 @@ model %>% fit(x_train,
 ```
 
 
-```{r eval=FALSE}
+```{r eval=TRUE, echo=FALSE}
 model %>% compile(
   optimizer = "rmsprop",
   loss = "binary_crossentropy",
@@ -302,3 +306,204 @@ model %>% predict(x_test[1:10,])
 
 This shows a fair range, with some reviews being predicted as very close to 0 or 1, but others where there is greater uncertainty. One thing to do would be to take the function that back transforms the reviews, and look at an example that has been predicted close to 0 or 1 to see what was actually written.
 
+## Example 2: regression
+
+For the second example, we'll demonstrate a regression example, as well as a $k$-fold cross-validation. We'll use data on house prices and neighborhood characteristics from Boston, in the file *boston6k.csv*. Start by reading this data in, and take a quick look at the values:
+
+```{r}
+boston <- read.csv("../datafiles/boston6k.csv")
+head(boston)
+```
+### Data processing
+
+Next, we'll split out the features (we'll use a subset of the available information) and the labels. The 'labels` we are going to model are the corrected median house values in $000s (from the 1970's - that's why it looks so cheap). 
+
+```{r}
+library(dplyr)
+X <- boston %>%
+  select(CRIM, ZN, INDUS, CHAS, NOX, RM, AGE, DIS, RAD, TAX, PTRATIO, B, LSTAT) %>%
+  as.matrix()
+
+y <- boston$CMEDV
+```
+
+Next, we'll make up a training and testing dataset, by adding 80% of the samples randomly to training and leaving the rest for testing. 
+
+```{r}
+train_set = sample(nrow(X), 0.8 * nrow(X))
+test_set = setdiff(seq_len(nrow(X)), train_set)
+
+X_train <- X[train_set, ]
+X_test <- X[-train_set, ]
+
+y_train <- y[train_set]
+y_test <- y[-train_set]
+```
+
+The features are on quite different scales, so we'll standardize them to $z$-scores. To do this, we a) calculate the column-wise mean and standard deviation from the training set, b) use R's built in `scale()` function to transform the values. 
+
+```{r}
+mean <- apply(X_train, 2, mean)
+std <- apply(X_train, 2, sd)
+X_train <- scale(X_train, center = mean, scale = std)
+X_test <- scale(X_test, center = mean, scale = std)
+```
+
+### Setting up the network
+
+We'll build a model that again has two hidden layers and a single output node. We'll use use the ReLU activation function and slightly more nodes in each hidden layer than in the previous example. One difference here is that we'll create a function (`build_model()`) that contains all the code to set up a Keras neural network. This just contains the two sets of instructions to build a sequential model and compile it together with loss and performance metrics (we're using the mean square error for loss and the mean absolute error for performance:
+
+```{r}
+build_model <- function() {
+  
+  model <- keras_model_sequential() %>%
+    layer_dense(units = 64, activation = "relu",
+                input_shape = dim(X_train)[[2]]) %>%
+    layer_dense(units = 64, activation = "relu") %>%
+    layer_dense(units = 1)
+
+  model %>% compile(
+    optimizer = "rmsprop",
+    loss = "mse",
+    metrics = c("mae")
+  )
+}
+```
+
+Now we can create a new, untrained version of our network by calling this function:
+
+```{r}
+model <- build_model()
+summary(model)
+```
+
+### Cross-validation
+
+We'll now set up a cross-validation strategy by hand. We'll use a four fold strategy, and we first define a set of indices that show which sample is in which fold. This is done by randomly shuffling the sample row number and then splitting them into 4 groups using the `cut()` function:
+
+```{r}
+## k-fold x-validation
+k <- 4
+indices <- sample(1:nrow(X_train))
+folds <- cut(indices, breaks = k, labels = FALSE)
+```
+
+Now we'll run the cross-validation. In the following code, we:
+
+- Define the number of epochs to run for (250)
+- Create a blank R object to store training information
+- Run a loop 4 times. In each iteration:
+    - Create a vector of indices for the validation set in this loop
+    - Use this vector to extract the features and labels for the validation set (`X_val`, `y_val`)
+    - Use these indices to reverse select the training feature and labels (`X_partial_train`, `y_partial_train`)
+    - Build a new, untrained network using the function we created earlier
+    - Train the model for the set number of epochs, using a batch size of 16
+    - Store the validated MAE in `all_mae_histories`
+    
+Copy this over, check the code and run it. It will take a couple of minutes to iterate across all the training
+
+```{r}
+num_epochs <- 250
+all_mae_histories <- NULL
+for (i in 1:k) {
+  cat("processing fold #", i, "\n")
+  
+  val_indices <- which(folds == i, arr.ind = TRUE)
+  X_val <- X_train[val_indices,]
+  
+  y_val <- y_train[val_indices]
+  
+  X_partial_train <- X_train[-val_indices,]
+  y_partial_train <- y_train[-val_indices]
+  
+  model <- build_model()
+  
+  history <- model %>% fit(
+    X_partial_train, y_partial_train,
+    validation_data = list(X_val, y_val),
+    epochs = num_epochs, batch_size = 16, verbose = 0
+  )
+  mae_history <- history$metrics$val_mae
+  all_mae_histories <- rbind(all_mae_histories, mae_history)
+}
+```
+
+We can now average across the 4 folds, and plot the evolution of the MAE
+
+```{r}
+average_mae_history <- data.frame(
+  epoch = seq(1:ncol(all_mae_histories)),
+  validation_mae = apply(all_mae_histories, 2, mean)
+)
+library(ggplot2)
+ggplot(average_mae_history, aes(x = epoch, y = validation_mae)) + 
+  geom_line() 
+```
+
+The plot suggests that, while there is no visible increase in the validation MAE, there is little improvement beyond about 70-80 epochs. Let's use this to train a final model on the full training dataset, and evaluate with the test set:
+
+```{r eval=FALSE}
+model <- build_model()
+model %>% fit(X_train, y_train,
+              epochs = 80, batch_size = 16)
+result <- model %>% evaluate(X_test, y_test)
+result
+```
+
+```{r eval=TRUE, echo=FALSE}
+model <- build_model()
+model %>% fit(X_train, y_train,
+              epochs = 100, batch_size = 16, verbose=0)
+result <- model %>% evaluate(X_test, y_test)
+result
+```
+
+As before, there are several modifications you could try to this basic network to attempt to improve on this. 
+
+## Exercise
+
+For the exercise we will once again use the data from the *Sonar.csv* file to model types of object (rocks 'R' or mines 'M') using the values of a set of frequency bands. The goal this time is to construct a neural network using Keras. You will need to do the following:
+
+- Import the data and divide it into a training and test set
+- Design a network
+- Train the network for a number of epochs with a validation set (use the `binary_crossentropy` loss function)
+- Identify the optimum number of epochs
+- Run the model with the full training set
+- Evaluate the model on the test set and report the *accuracy* of your final model
+
+All the code to do this is in the two examples of this lab. You submitted answers shoud contain:
+
+- A description of your network, including the summary table (from the `summary(model)` function)
+- A figure showing the evolution of the loss function and accuracy
+- The accuracy of your final model
+
+
+## Appendix
+
+### Boston housing dataset: *boston6k.csv*
+| Column header | Variable |
+| --- | --- |
+| ID | Sequential ID |
+| TOWN | Town names |
+| TOWNNO | Town ID |
+| TRACT | Tract ID numbers |
+| LON | Longitude in decimal degrees |
+| LAT | Latitude in decimal degrees |
+| MEDV | Median values of owner-occupied |
+|  | housing (USD 1000) |
+| CMEDV | Corrected median values of owner-occupied |
+|  | housing (USD 1000) |
+| CRIM | Per capita crime |
+| ZN | Proportion of residential land zoned |
+| | for lots over 25000 sq. ft |
+| INDUS | Proportions of non-retail business acres per town |
+| CHAS | 1 if tract borders Charles River; 0 otherwise |
+| NOX | Nitric oxides concentration (parts per 10 million) |
+| RM | Average numbers of rooms per dwelling |
+| AGE | Proportions of owner-occupied units built prior to 1940 |
+| DIS | Weighted distances to five Boston employment centers |
+| RAD | Index of accessibility to radial highways per town |
+| TAX | Property-tax rate per USD 10,000 per town |
+| PTRATIO | Pupil-teacher ratios per town |
+| B | Proportion African-American |
+| LSTAT | Percent lower status population |
