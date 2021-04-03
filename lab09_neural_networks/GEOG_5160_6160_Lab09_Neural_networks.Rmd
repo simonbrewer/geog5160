@@ -26,7 +26,7 @@ set.seed(1234)
 
 In this lab, we'll go over two neural network examples. These are simple one or two hidden layer networks, and the main purpose of the exercise is to demonstrate how to build the networks and what options are available to modify these. We'll also walk through an example of building a pipeline for a machine learning project. 
 
-The two data files you will need are *cereal.csv* and *credit_data.csv*, which should be available from Canvas with this document. Download these to your `datafiles` folder (extract any zip files). Make a new folder for today's class called `lab08`, start RStudio and set your working directory to this new folder. 
+The two data files you will need are *cereal.csv* and *credit_data.csv*, which should be available from Canvas with this document. Download these to your `datafiles` folder (extract any zip files). Make a new folder for today's class called `lab09`. 
 
 
 ### R users
