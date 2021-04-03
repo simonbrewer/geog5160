@@ -54,11 +54,13 @@ jupyter notebook
 
 And open the notebook for today's class. 
 
-## Data processing
+## Recurrent neural networks
+
+### Data processing
 
 Let's start by loading the libraries we'll need for this lab:
 
-```{r}
+```{r message=FALSE}
 library(dplyr)
 library(tidyr)
 library(keras)
@@ -150,13 +152,13 @@ head(lagged)
 
 If you look at the first few rows, you should see that the target (pollution) is now linked to the previous hour's pollution value (and the other features).
 
-The last thing we need to do is to create out training and testing sets. We'll keep the first year for training, and the other four years for testing. Some things to note here:
+The last thing we need to do is to create out training and testing sets. We'll keep the first two years for training, and the other three years for testing. Some things to note here:
 
 - We generate an index for the samples that is the number of days in a year * the number of hours. Technically it should be one less than this as we will have lost the first row once we lagged the features
 - The data are converted to a matrix form, then reshaped to a 3D array. As we are going to be fitting a recurrent neural network, we need to make sure the input tensor has the correct shape. RNNs use rank 3 tensors with a shape given by (`sample`, `timesteps`, `features`). Here, we only have a single time step, because we are only using the preceding hour as input. Ultimately we'll rely on the RNNs hidden state to 'remember' earlier information
 
 ```{r}
-n_obs = 365 * 24 ## SHould be -3
+n_obs = 365 * 24 * 2## SHould be -3
 
 X_train <- data.matrix(lagged[1:n_obs, -1])
 X_train <- array(X_train, dim = c(n_obs, 1, 8))
@@ -170,6 +172,238 @@ X_test <- data.matrix(lagged[n_obs:nrow(lagged), -1])
 X_test <- array(X_test, dim = c(nrow(X_test), 1, 8))
 y_test <- lagged$pollution[n_obs:nrow(lagged)]
 ```
+
+### Model
+
+Now let's put together a model. Before trying a recurrent NN, let's just build a standard dense network. This will allow us to test if the additional complexity of the RNN is worth it or not. 
+
+As before, we build our model as a sequential series of layers. We have just a single hidden layer with 50 nodes and we'll use a default liner activation function. This feeds into a output layer with a single node to match the observed, non-lagged PM2.5 values.
+
+```{r}
+model <- keras_model_sequential()
+model %>%
+  layer_dense(input_shape = dim(X_train)[2:3], units = 50)
+model %>%
+  layer_dense(units = 1) # output
+
+summary(model)
+```
+
+Now let's compile this by adding an optimizer, loss function and performance metric. We'll use a different optimizer called Adam, which works well with large, noisy datasets (and is particularly efficient for deep learning).
+
+```{r}
+model %>% compile(
+  optimizer = optimizer_adam(), 
+  loss = "mse", 
+  metrics = c("mae")
+)
+```
+
+And now we can train the network. We'll use a batch size of 64 as we have quite a lot of observations to work with, and run this for 50 epochs. We'll train on the dirst year of training data, and validate on the second.
+
+```{r}
+train_index <- 1:365*24
+X_train_partial <- X_train[train_index, , ]
+X_train_partial <- array(X_train_partial, dim = c(nrow(X_train_partial), 1, 8))
+y_train_partial <- y_train[train_index]
+
+X_val <- X_train[-train_index, , ]
+X_val <- array(X_val, dim = c(nrow(X_val), 1, 8))
+y_val <- y_train[-train_index]
+```
+
+```{r eval=FALSE}
+history <- model %>% fit(
+  x = X_train_partial, 
+  y = y_train_partial, 
+  batch_size = 64, 
+  epochs = 50, 
+  validation_data = list(X_val, y_val),
+  shuffle = FALSE) # 
+```
+
+```{r eval=TRUE, echo=FALSE}
+history <- model %>% fit(
+  x = X_train, 
+  y = y_train, 
+  batch_size = 64, 
+  epochs = 50, 
+  validation_data = list(X_test, y_test),
+  verbose = 0,
+  shuffle = FALSE) # 
+```
+
+```{r}
+plot(history)
+```
+
+The validation shows no sign of overfitting, but little improvement beyond about 35 epochs. Let's now build the full training model and evaluate:
+
+```{r}
+model <- keras_model_sequential()
+model %>%
+  layer_dense(input_shape = dim(X_train)[2:3], units = 50)
+model %>%
+  layer_dense(units = 1) # output
+
+model %>% compile(
+  optimizer = optimizer_adam(), 
+  loss = "mse", 
+  metrics = c("mae")
+)
+```
+
+```{r eval=FALSE}
+history <- model %>% fit(
+  x = X_train, 
+  y = y_train, 
+  batch_size = 64, 
+  epochs = 35, 
+  shuffle = FALSE) # 
+```
+
+```{r eval=TRUE, echo=FALSE}
+history <- model %>% fit(
+  x = X_train, 
+  y = y_train, 
+  batch_size = 64, 
+  epochs = 35, 
+  verbose = 0,
+  shuffle = FALSE) # 
+```
+
+```{r}
+plot(history)
+```
+
+We now evaluate on the test set
+
+```{r}
+results <- model %>% keras::evaluate(X_test, y_test, verbose = 1)
+results
+```
+
+As we had to normalize the PM2.5 values to use them as a lagged variable, the MAE is on this normalized scale. To get a better assessment of the model, we can calculate an error value by back-transforming the prediction. A simple function to back transform from a minmax scaling is:
+
+```{r}
+back_transform <- function(x, xmin = 0, xmax = 1) {
+  return((x * (xmax - xmin)) + xmin)
+}
+```
+
+To get a back transformed MAE, we need to 
+
+- Predict for the test set on the normalized scale
+- Back transform these predictions
+- Back transform the matching test labels (PM2.5 values)
+- Calculate the mean absolute error
+
+```{r}
+y_test_pred_norm <- model %>% predict(X_test)
+y_test_pred <- back_transform(y_test_pred_norm, pollution_min, pollution_max)
+y_obs <- back_transform(y_test, pollution_min, pollution_max)
+
+mean(abs(y_test_pred - y_obs))
+```
+
+## Long short term memory
+
+Now let's build a recurrent neural netowrk. We'll use a very similar structure to the previous model, but replace the hidden layer with a LSTM layer. This includes both the hidden state component and the carry track, allowing the model to propagate information over a large number of time steps. The input and output remain the same
+
+```{r}
+model <- keras_model_sequential()
+model %>%
+  layer_lstm(input_shape = dim(X_train)[2:3], units = 50)
+model %>%
+  layer_dense(units = 1) # output
+summary(model)
+
+model %>% compile(
+  optimizer = optimizer_adam(), 
+  loss = "mse", 
+  metrics = c("mae")
+)
+```
+
+Now let's train and validate. As this is a more complex algorithm, we'll train for 100 epochs. 
+
+```{r eval=FALSE}
+history <- model %>% fit(
+  x = X_train_partial, 
+  y = y_train_partial, 
+  batch_size = 64, 
+  epochs = 100, 
+  validation_data = list(X_test, y_test),
+  shuffle = FALSE) # 
+```
+
+```{r eval=TRUE, echo=FALSE}
+history <- model %>% fit(
+  x = X_train_partial, 
+  y = y_train_partial, 
+  batch_size = 64, 
+  epochs = 100, 
+  validation_data = list(X_test, y_test),
+  shuffle = FALSE) # 
+```
+
+```{r}
+plot(history)
+```
+
+The results suggest that the model converges at around 50 epochs. Let's train a final model and evaluate.
+
+```{r}
+model <- keras_model_sequential()
+model %>%
+  layer_lstm(input_shape = dim(X_train)[2:3], units = 50)
+model %>%
+  layer_dense(units = 1) # output
+
+model %>% compile(
+  optimizer = optimizer_adam(), 
+  loss = "mse", 
+  metrics = c("mae")
+)
+```
+
+```{r eval=FALSE}
+history <- model %>% fit(
+  x = X_train, 
+  y = y_train, 
+  batch_size = 64, 
+  epochs = 50, 
+  shuffle = FALSE) # 
+```
+
+```{r eval=TRUE, echo=FALSE}
+history <- model %>% fit(
+  x = X_train, 
+  y = y_train, 
+  batch_size = 64, 
+  epochs = 100, 
+  verbose = 0,
+  shuffle = FALSE) # 
+```
+
+We now evaluate on the test set
+
+```{r}
+results <- model %>% keras::evaluate(X_test, y_test, verbose = 1)
+results
+```
+
+And let's calculate the error after back-transformation
+
+```{r}
+y_test_pred_norm <- model %>% predict(X_test)
+y_test_pred <- back_transform(y_test_pred_norm, pollution_min, pollution_max)
+y_obs <- back_transform(y_test, pollution_min, pollution_max)
+
+mean(abs(y_test_pred - y_obs))
+```
+
+This gives a reduction in the MAE of about 2-3 ppb, a decrease of around 10% relative to the dense network model. 
 
 ## Appendix
 
