@@ -86,6 +86,16 @@ train_image_files_path <- "~/Dropbox/Data/ml/fruits/Training/"
 
 If you have any questions about setting this path, please ask. 
 
+You can visualize any of the images using the **imager** package (you'll need to install this):
+
+```{r}
+library(imager)
+im<-load.image(paste0(train_image_files_path, "Banana/0_100.jpg"))
+plot(im)
+```
+
+You can try other images by changing the folder name and filename. Note that these are somewhat idealized images, with a blank white background. 
+
 Next, we'll define a subset of images that we are going to process. There are 131 different types in the folder, but we'll use a subset of 16 here. This makes this a multi-class classification problem, and we'll require a different activation function to accommodate this. Feel free to choose a different set if you'd like (but it might be best to avoid folders with spaces in the names). 
 
 ```{r}
@@ -256,7 +266,7 @@ Finally, we need to output predictions. As this is a multiclass task, the final 
 
 ```{r}
 model %>%
-    layer_dense(output_n) %>% 
+  layer_dense(output_n) %>% 
   layer_activation("softmax")
 ```
 
@@ -266,12 +276,12 @@ Let's take a look at the whole thing:
 summary(model)
 ```
 
-If you'd rather build the model in one go, here's the code for that:
+Our model has a little under 87,000 parameters or weights to train (hence the need for a lot of images). Note that there are small set of non-trainable parameter from the normalization layer. If you'd rather build the model in one go, here's the code for that:
 
 ```{r}
 # initialise model
 model <- keras_model_sequential() %>%
-
+  
   # add convolution layer
   layer_conv_2d(filter = 16, kernel_size = c(3,3), padding = "same", 
                 input_shape = c(img_width, img_height, channels)) %>%
@@ -280,7 +290,7 @@ model <- keras_model_sequential() %>%
   # Use max pooling
   layer_max_pooling_2d(pool_size = c(2,2)) %>%
   layer_dropout(0.25) %>%
-
+  
   # Second hidden layer
   layer_conv_2d(filter = 32, kernel_size = c(3,3), padding = "same") %>%
   layer_activation_leaky_relu(0.5) %>%
@@ -301,17 +311,186 @@ model <- keras_model_sequential() %>%
   layer_activation("softmax")
 ```
 
+Now let's define an optimization function, loss function and performance metric. A good option for the loss function is `categorical_crossentropy`, which tries to maximize the difference between the distribution of multiple categories. We'll use a backpropagation optimizer, but change the default option for the learning rate (`lr`) to a lower value. This will limit the update to the weights as the model trains, which results in a slower training but a reduced risk of overfitting. The `decay` parameter acts to reduce the learning rate even further at each iteration of the model. 
 
+```{r}
+model %>% compile(
+  loss = "categorical_crossentropy",
+  optimizer = optimizer_rmsprop(lr = 0.0001, decay = 1e-6),
+  metrics = "accuracy"
+)
+```
+
+### Training the model
+
+We'll now train the model for 20 epochs. As we are using a data generator function to supply the images and data to the model, we use the `fit_generator()` function instead of the `fit()` function we have previously used. We specify:
+
+- `train_image_array_gen`: The generator of the training samples
+- `steps_per_epoch`: The number of update steps in each epoch (usually just number of samples / batch size)
+- `epochs`: number of full training iterations
+- `validation_data`: the generator of the validation samples
+- `validation_steps`: the number of validation steps per epoch
+
+```{r eval=FALSE}
+epochs = 20
+hist <- model %>% fit_generator(
+  train_image_array_gen,
+  
+  steps_per_epoch = as.integer(train_samples / batch_size), 
+  epochs = epochs, 
+  
+  validation_data = valid_image_array_gen,
+  validation_steps = as.integer(valid_samples / batch_size)
+)
+```
+
+```{r echo=FALSE}
+epochs = 20
+hist <- model %>% fit_generator(
+  train_image_array_gen,
+  
+  steps_per_epoch = as.integer(train_samples / batch_size), 
+  epochs = epochs, 
+  
+  validation_data = valid_image_array_gen,
+  validation_steps = as.integer(valid_samples / batch_size),
+  
+  verbose = 0
+)
+```
+
+```{r}
+plot(hist)
+```
+
+The plot shows a good evolution of both the loss and performance metrics. 
+
+### Model evaluation
+
+We'll now evaluate this model on the set of test images. Normally, we'd retrain the model using the full training set (including the validation set), but to save time, we'll just proceed with the existing model. In order to do this, we first need to create a new image generator for the test images:
+
+```{r}
+test_image_files_path <- "~/Dropbox/Data/ml/fruits/Test/"
+
+test_data_gen <- image_data_generator(rescale = 1/255)
+
+test_generator <- flow_images_from_directory(
+  test_image_files_path,
+  test_data_gen,
+  target_size = target_size,
+  class_mode = "categorical",
+  classes = fruit_list,
+  batch_size = 1,
+  shuffle = FALSE,
+  seed = 42)
+```
+
+The only differences here from the previous code is that we use the test image folder, and we no longer specify a validation parameter. Now we can use this to evaluate the model using `evaluate_generator()`:
+
+```{r}
+results <- model %>%
+  evaluate_generator(test_generator, 
+                     steps = as.integer(test_generator$n))
+print(results)
+```
+
+Which gives us an accuracy of about `r round(results[2], 2)` which is a very good classifier. It is worth noting that this is partly because the images have all been cleaned and prepared; achieving this level of accuracy with images take 'in the wild' would require much more work in setting up and training the model. 
+
+We'll finish by obtaining predictions for the set of test images, and building a confusion matrix based on these. Predictions for new samples can be obtained using the `predict_generator()` function. Note that if you were predicting for completely new images, you would need to make a new generator for these. We'll start by resetting the image generator (this just ensures that everything will align in the output), then obtain the predictions:
+
+```{r}
+test_generator$reset()
+predictions <- model %>% 
+  predict_generator(
+    generator = test_generator,
+    steps = as.integer(test_generator$n)
+  ) 
+```
+
+For each image, there is the predicted probability of each class:
+
+```{r}
+predictions[1,]
+```
+
+To get the predicted labels, we simply need to find the column with the highest probability. We can use R's `max.col()` function for this:
+
+```{r}
+pred_class <- max.col(predictions) 
+```
+
+The test_generatore stores the observed labels for the test set, so let's extract that and store it as `obs_class`:
+
+```{r}
+obs_class <- test_generator$classes
+```
+
+We can now make a confusion matrix between the observed and predicted classes:
+
+```{r}
+pred_table <- table(obs_class, pred_class)
+```
+
+Note that the row and column indices are different (this is because R starts indices at 1 and Keras starts at 0). We can simply replace these with the fruit labels
+
+```{r results='hide'}
+rownames(pred_table) <- colnames(pred_table) <- fruit_list
+pred_table
+```
+
+```{r echo=FALSE}
+knitr::kable(pred_table)
+```
+This shows why we got such a high accuracy - nearly all the images are correctly classified. Let's finish by plotting this result. Here, we convert this confusion matrix into a long data frame, and calculate the number of each observed image class. We then use this to calculate the percentage correctly identified, and use **ggplot2**'s `geom_tile` to plot this out. Note that you will need the **reshape2** package here:
+
+```{r}
+library(reshape2)
+
+pred_df <- melt(pred_table, value.name = "count") %>%
+  group_by(obs_class) %>%
+  mutate(n = sum(count)) %>%
+  ungroup()
+```
+
+```{r}
+p <- pred_df %>%
+  filter(count > 0) %>%
+  mutate(percentage_pred = count / n * 100) %>%
+  ggplot(aes(x = obs_class, y = pred_class, 
+             fill = percentage_pred,
+             label = round(percentage_pred, 2))) +
+  geom_tile() +
+  #scale_fill_continuous() +
+  scale_fill_gradient(low = "blue", high = "red") +
+  geom_text(color = "white") +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
+  labs(x = "True class", 
+       y = "Predicted class",
+       fill = "Percentage\nof predictions",
+       title = "True v. predicted class labels", 
+       subtitle = "Percentage of test images predicted for each label")
+
+print(p)
+```
 
 ## Appendix
+
+This is an example of an image generator that will perform data augmentation. In each epoch, each image is transformed according to a set of random modifications. The parameters here set limits on the amount of transformation that any method will carry out
 
 ```{r eval=FALSE}
 train_data_gen <- image_data_generator(
   rescale = 1/255,
+  rotation_range=40, ## Random rotation (+/- 40 degrees)
+  width_shift_range=0.2, ## Random horizontal shift (+/- proportion of image size)
+  height_shift_range=0.2, ## Random vertical shift (+/- proportion of image size)
+  shear_range=0.2, ## Shear angle in counter-clockwise direction in degrees
+  zoom_range=0.2, ## Zoom range. Zooms by 1 +/- 0.2 from original
+  horizontal_flip=True, ## Randomly flips 50% of images
+  fill_mode='nearest' ## How to fill newly created pixels (nearest neighbor)
   validation_split = 0.3)
 ```
 
-                                              
-                                                    
+
+
 [blogID]: https://shirinsplayground.netlify.com/2018/06/keras_fruits/
 [dataID]: https://www.kaggle.com/moltean/fruits
