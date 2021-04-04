@@ -88,7 +88,7 @@ If you have any questions about setting this path, please ask.
 
 You can visualize any of the images using the **imager** package (you'll need to install this):
 
-```{r}
+```{r message = FALSE}
 library(imager)
 im<-load.image(paste0(train_image_files_path, "Banana/0_100.jpg"))
 plot(im)
@@ -144,12 +144,12 @@ The next function we'll use is a *flow* function. This function controls how Ker
 
 - `train_image_files_path`: The path to the top-level folder containing the training images
 - `train_data_gen`: The image data generator
-- `subset`: The subset of images to use from the generator for training (this will be 1 - 0.3 = 0.7)
+- `subset`: The subset of images to use from the generator for training. As we set the `validation_size` to 0.3, this will be 1 - 0.3 = 0.7, or 70% of the images
 - `target_size`: The size for rescaling each image
 - `class_mode`: The type of label used (this will one-hot encode the labels of the images)
 - `classes`: The set of categories to use. This is the list we defined earlier and needs to match the subfolder names. If this is not included, this will use all subfolders, and create a list of labels
 - `batch_size`: The number of images to import for any update step
-- `seed`: a value to intiialize the random number generator (this is only there to ensure consistent results)
+- `seed`: a value to initialize the random number generator (this is only there to ensure consistent results)
 
 ```{r}
 train_image_array_gen <- flow_images_from_directory(train_image_files_path, 
@@ -162,7 +162,7 @@ train_image_array_gen <- flow_images_from_directory(train_image_files_path,
                                                     seed = 42)
 ```
 
-The function will tell you how many images (and classes) it found in the folder you defined. If this is 0, go back and check the fodler path you defined earlier. We'll also create a flow for the validation images. The only difference here is in the definition of the subset. 
+The function will tell you how many images (and classes) it found in the folder you defined. If this is 0, go back and check the folder path you defined earlier. We'll also create a flow for the validation images. The only difference here is in the definition of the subset. 
 
 ```{r}
 valid_image_array_gen <- flow_images_from_directory(train_image_files_path, 
@@ -279,7 +279,7 @@ summary(model)
 Our model has a little under 87,000 parameters or weights to train (hence the need for a lot of images). Note that there are small set of non-trainable parameter from the normalization layer. If you'd rather build the model in one go, here's the code for that:
 
 ```{r}
-# initialise model
+# initialize model
 model <- keras_model_sequential() %>%
   
   # add convolution layer
@@ -359,6 +359,7 @@ hist <- model %>% fit_generator(
 )
 ```
 
+Now plot the evolution of the loss function and performance metric:
 ```{r}
 plot(hist)
 ```
@@ -419,7 +420,7 @@ To get the predicted labels, we simply need to find the column with the highest 
 pred_class <- max.col(predictions) 
 ```
 
-The test_generatore stores the observed labels for the test set, so let's extract that and store it as `obs_class`:
+The test generator stores the observed labels for the test set, so let's extract that and store it as `obs_class`:
 
 ```{r}
 obs_class <- test_generator$classes
@@ -475,7 +476,7 @@ print(p)
 
 ## Appendix
 
-This is an example of an image generator that will perform data augmentation. In each epoch, each image is transformed according to a set of random modifications. The parameters here set limits on the amount of transformation that any method will carry out
+This is an example of an image generator that will perform data augmentation. In each epoch, each image is transformed according to a set of random modifications. The parameters here set limits on the amount of transformation that any method will carry out. For example, images will be randomly rotated by an amount between + and - 40 degrees.
 
 ```{r eval=FALSE}
 train_data_gen <- image_data_generator(
