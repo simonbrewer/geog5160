@@ -73,7 +73,7 @@ Next, we'll load the dataset and take a quick look at the first few lines:
 dat <- read.csv("../datafiles/pollution.csv")
 head(dat)
 ```
-The data are hourly pollution and weather measurements from the US embassy in Beijing for a period of 5 years. The goal will be to build a model that can do a step ahead prediction, i.e. can predict the PM2.5 concentration at any hour $t$ from the values of all the variables at previous hour $t-1$, *including the previous value of PM2.5.
+The data are hourly pollution and weather measurements from the US embassy in Beijing for a period of 5 years. The goal will be to build a model that can do a step ahead prediction, i.e. can predict the PM2.5 concentration at any hour $t$ from the values of all the variables at previous hour $t-1$, *including the previous value of PM2.5*.
 
 ```{r}
 names(dat)
@@ -199,7 +199,7 @@ model %>% compile(
 )
 ```
 
-And now we can train the network. We'll use a batch size of 64 as we have quite a lot of observations to work with, and run this for 50 epochs. We'll train on the dirst year of training data, and validate on the second.
+And now we can train the network. We'll use a batch size of 64 as we have quite a lot of observations to work with, and run this for 50 epochs. We'll train on the first year of training data, and validate on the second.
 
 ```{r}
 train_index <- 1:365*24
@@ -308,7 +308,7 @@ mean(abs(y_test_pred - y_obs))
 
 ## Long short term memory
 
-Now let's build a recurrent neural netowrk. We'll use a very similar structure to the previous model, but replace the hidden layer with a LSTM layer. This includes both the hidden state component and the carry track, allowing the model to propagate information over a large number of time steps. The input and output remain the same
+Now let's build a recurrent neural network. We'll use a very similar structure to the previous model, but replace the hidden layer with a LSTM layer. This includes both the hidden state component and the carry track, allowing the model to propagate information over a large number of time steps. The input and output remain the same
 
 ```{r}
 model <- keras_model_sequential()
