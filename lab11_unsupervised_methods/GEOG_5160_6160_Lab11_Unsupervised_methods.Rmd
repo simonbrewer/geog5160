@@ -4,7 +4,7 @@ author: |
   | Simon Brewer
   | Geography Department
   | University of Utah
-date: "March 20, 2020"
+date: "April 7, 2021"
 output:
   html_document:
     toc: true
@@ -29,10 +29,51 @@ In this lab, we'll look at how to implement two unsupervised classification meth
 - $k$-means classification
 - Self-organizing maps
 
-The data we will use is from the [Gap Minder project][gapID]. While you can download the individual variables from the web site, we will use a subset of data in the file *gapminder07.csv*. This is a slightly different subset of variables than the example used in class, with values only for 2007. Download this file from Canvas and move this to your current working directory. Once you have done this, make sure this is set as your working directory in R/RStudio and load the data. 
+The data we will use is from the [Gap Minder project][gapID]. While you can download the individual variables from the web site, we will use a subset of data in the file *gapminder07.csv*. This is a slightly different subset of variables than the example used in class, with values only for 2007. Download this to your `datafiles` folderand make a new folder for today's class called `lab11`. You will also need the shapefile of country borders: `ne_50m_admin_0_countries.shp` (you should have this from a previous lab).
+
+### R users
+
+Start RStudio and set the working directory to this directory (This can be changed by going to the [Session] menu and selecting [Set working directory] -> [Choose directory...], then browsing to the folder). 
+
+You will need the following packages for today's lab, so make sure to install anything that is missing before proceeding.
+
+- **dplyr**
+- **ggpubr**
+- **RColorBrewer**
+- **countrycode**
+- **sf**
+- **kohonen**
+
+### Python users
+
+If you are using Python for today's lab, you'll need to download the Jupyter notebook for this lab (*GEOG_5160_6160_lab08.ipynb*). Make a new folder for the lab (`lab08`) and move the notebook to this. Now open a new terminal (in Windows go to the [Start Menu] > [Anaconda (64-bit)] > [Anaconda prompt]). 
+
+You will need to make sure the following packages are installed on your computer (in addition to the packages we have used in previous labs). 
+
+- **xarray**: functions for working with regular arrays (`conda install xarray`)
+- **xgboost**: extreme gradient boosting (`conda install py-xgboost`)
+
+Once opened, change directory to the folder you just made, activate your conda environment
+
+```
+conda activate geog5160
+```
+
+Start the Jupyter Notebook server:
+
+```
+jupyter notebook
+```
+
+And open the notebook for today's class. 
+
+
+
+
+Once you have done this, make sure this is set as your working directory in R/RStudio and load the data. 
 
 ```{r}
-gap1.df = read.csv("gapminder07.csv")
+gap1.df = read.csv("../datafiles/gapminder07.csv")
 head(gap1.df)
 ```
 
@@ -104,8 +145,8 @@ Here, we can see that cluster 6, for example, has the lowest life expectancy and
 As these are spatial data, we can now plot the distribution of the clusters. First, we'll load the world shapefile in the `ne_50m_admin_0_countries` folder (we used this in a previous lab:)
 
 ```{r}
-library(rgdal)
-borders = readOGR("ne_50m_admin_0_countries/ne_50m_admin_0_countries.shp")
+library(sf)
+borders = st_read("../datafiles/ne_50m_admin_0_countries/ne_50m_admin_0_countries.shp")
 ```
 
 Next, we add the cluster assignments to the `gap2.df` data frame:
@@ -123,14 +164,14 @@ gap2.df <- gap2.df %>%
 
 Finally, we use these ISO codes to merge the two datasets. We need to specify the column name for each dataset that contains the label to be used in merging, which we do with `by.x` and `by.y`. 
 ```{r}
-cluster.sp = sp::merge(borders, gap2.df, by.x = "ADM0_A3", by.y = "ISO3",
-                      duplicateGeoms = TRUE)
+cluster_sf = merge(borders, gap2.df, by.x = "ADM0_A3", by.y = "ISO3")
 ```
 
 Finally, we can plot out the clusters using the **tmap** package, which highlights the position of this poorer cluster 6 in Saharan and sub-Saharan Africa:
+
 ```{r}
 library(tmap)
-tm_shape(cluster.sp) + tm_fill("kmeans", palette = "Set2")
+tm_shape(cluster_sf) + tm_fill("kmeans", palette = "Set2")
 ```
 
 ## Self-organizing maps
@@ -267,13 +308,12 @@ plot(gap.som, type="mapping", labels = abbreviate(gap1.df$country, 6),
      main = "Clusters", cex = 0.5, keepMargins=TRUE) 
 ```
 
-Finally, we add the SOM cluster assignments back to the `cluster.sp` spatial object and map them out:
+Finally, we add the SOM cluster assignments back to the `cluster_sf` spatial object and map them out:
 
 ```{r}
 gap2.df$somclust = as.factor(gap1.df$somclust)
-cluster.sp = sp::merge(borders, gap2.df, by.x = "ADM0_A3", by.y = "ISO3",
-                      duplicateGeoms = TRUE)
-tm_shape(cluster.sp) + tm_fill("somclust", palette = "Set2")
+cluster_sf = merge(borders, gap2.df, by.x = "ADM0_A3", by.y = "ISO3")
+tm_shape(cluster_sf) + tm_fill("somclust", palette = "Set2")
 ```
 
 ## Exercise
