@@ -64,15 +64,17 @@ jupyter notebook
 
 And open the notebook for today's class. 
 
+## Neural network regression
+
+We'll start with an example of using a neural network for a regression task. The data are taken from a Kaggle competition and are based on a set of 77 breakfast cereals. A description of the data is given in the appendix. The last field in the file (`rating`) is the outcome variable that we will build the network for. Start by loading the packages we'll need for today:
+
 ```{r message=FALSE}
 library(dplyr)
 library(neuralnet)
 library(NeuralNetTools)
 ```
 
-## Neural network regression
-
-We'll start with an example of using a neural network for a regression task. The data are taken from a Kaggle competition and are based on a set of 77 breakfast cereals. A description of the data is given in the appendix. The last field in the file (`rating`) is the outcome variable that we will build the network for. Start by reading the file:
+Next, read in the file:
 
 ```{r}
 # Read the Data
