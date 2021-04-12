@@ -176,7 +176,7 @@ Next, we add the cluster assignments to the `gap_df_scale2` data frame:
 gap_df_scale2$kmeans <- as.factor(gap_kmeans$cluster)
 ```
 
-Now we need to merge the `gap2_df` data frame with the world borders spatial object. To do this, we add a new column to the data frame containing the ISO3 standard country codes, using the **countrycode** package (you'll need to install this).
+Now we need to merge the `gap_df_scale2` data frame with the world borders spatial object. To do this, we add a new column to the data frame containing the ISO3 standard country codes, using the **countrycode** package (you'll need to install this).
 
 ```{r}
 library(countrycode)
