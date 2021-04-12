@@ -52,8 +52,8 @@ If you are using Python for today's lab, you'll need to download the Jupyter not
 
 You will need to make sure the following packages are installed on your computer (in addition to the packages we have used in previous labs). 
 
-- **xarray**: functions for working with regular arrays (`conda install xarray`)
-- **xgboost**: extreme gradient boosting (`conda install py-xgboost`)
+- **country_converter**: functions for working with regular arrays (`conda install country_converter`)
+- **minisom**: self organizing maps (`pip install minisom`)
 
 Once opened, change directory to the folder you just made, activate your conda environment
 
@@ -87,7 +87,7 @@ library(ggpubr)
 library(RColorBrewer)
 ```
 
-We can now make some plots to look at the data. First, histograms of the three variables in the data (gdp per capita, population and life expectancy):
+We can now make some plots to look at the data. First, histograms of the three variables in the data (child mortality, fertility, per capita CO2 emissions, GDP per capita, life expectancy and population size):
 
 ```{r warning=FALSE}
 names(gap_df)
@@ -106,7 +106,7 @@ h6 <- gap_df %>%
 ggarrange(h1, h2, h3, h4, h5, h6)
 ```
 
-The histograms clearly show the skew in most of the variables, and we will need to transform the data before analyzing it. We'll do this in two steps. First, we'll log transform all variables to remove the skew, then use the `scale()` function, which in R scales data to $z$-scores by subtracting the mean and dividing by the standard deviation. To simplify things, we do all this in a single step by nesting the `log()` function in the `scale()` function. 
+The histograms clearly show skew in most of the variables, and we will need to transform the data before analyzing it. We'll do this in two steps. First, we'll log transform all variables to remove the skew, then use the `scale()` function, which in R scales data to $z$-scores by subtracting the mean and dividing by the standard deviation. To simplify things, we do all this in a single step by nesting the `log()` function in the `scale()` function. 
 
 Note that we remove rows with missing observations (we could potentially impute these, but that is a little more difficult for time series data). We also remove any row where the per capita CO2 emissions are zero, partly because this would cause problems when log-transforming and partly because this is clearly not true. 
 
@@ -171,9 +171,9 @@ library(sf)
 borders = st_read("../datafiles/ne_50m_admin_0_countries/ne_50m_admin_0_countries.shp")
 ```
 
-Next, we add the cluster assignments to the `gap2_df` data frame:
+Next, we add the cluster assignments to the `gap_df_scale2` data frame:
 ```{r}
-gap_df_scale2$kmeans = as.factor(gap_kmeans$cluster)
+gap_df_scale2$kmeans <- as.factor(gap_kmeans$cluster)
 ```
 
 Now we need to merge the `gap2_df` data frame with the world borders spatial object. To do this, we add a new column to the data frame containing the ISO3 standard country codes, using the **countrycode** package (you'll need to install this).
