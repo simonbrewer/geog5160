@@ -4,7 +4,7 @@ author: |
   | Simon Brewer
   | Geography Department
   | University of Utah
-date: "January 07, 2020"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   html_document:
     toc: true
@@ -16,10 +16,11 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-##Introduction
+## Introduction
+
 In this lab, you will implement the model of butterfly movement introduced in class. This example is taken from the book: “Agent-Based and Individual-Based Modeling” by Railsback and Grimm (2012), and our example follows their steps. 
 
-The basis of the model is that butterflies move uphill to find mates, a process known as "hill-topping". In the model, we expect that this is not deterministic, but stochastic, in other words, at each turn a butterfly has a certain chance of moving uphill, otherwise it will simply move randomly. The goal of this exercise is to explore how the area travelled over by the butterflies changes as we modify this chance of moving uphill. The model therefore gives a good, simple demonstration of how an agent (turtle) interacts with the landscape (patches).
+The basis of the model is that butterflies move uphill to find mates, a process known as "hill-topping". In the model, we expect that this is not deterministic, but stochastic, in other words, at each turn a butterfly has a certain chance of moving uphill, otherwise it will simply move randomly. The goal of this exercise is to explore how the area traveled over by the butterflies changes as we modify this chance of moving uphill. The model therefore gives a good, simple demonstration of how an agent (turtle) interacts with the landscape (patches).
 
 To do this, we will follow the previous lab by first programming the overall structure of the model, then filling in the details. This allows us to get a working flow for the model, rather than getting lost in the details. As we start to add further parts, we will run tests to make sure that the model is developing correctly. 
 
@@ -45,7 +46,7 @@ In the model, the turtles (butterflies) have no variables other than their coord
 patches-own [ elevation ]
 ```
 
-Now use the [Settings] menu to change the spatial extent of the model to make an area covering 150x150 pixels. Set the origin to the bottom left corner amd turn off world-wrapping. Remember that you might need to change the patch size to keep the View window visible on your screen. 
+Now use the [Settings] menu to change the spatial extent of the model to make an area covering 150x150 pixels. Set the origin to the bottom left corner and turn off world-wrapping. Remember that you might need to change the patch size to keep the View window visible on your screen. 
 
 Finally, we will add the setup routine into the code. Add the following lines, after the code you have already entered:
 	
@@ -244,7 +245,7 @@ Note that if you remove the slider later, you will need to replace `q` in the co
 As before, once you have removed the code, click the [Check] button, then re-run the model to check that everything works. Try using the slider to change values of `q` and re-run. One very useful feature of sliders is that you can use them to change the value of the parameter during the model run. For example, try running the model with a very high value of `q`, then stop, set `q` to a low value and click the [go] button again (you may need to slow the model speed to do this). 
 
 ## Calculating corridor width
-So far, we have measured the number of patches visited by the butterfly during the model run. The goal of the model is to simulate virtual corridors, and a better measure of this is corridor width. We will estimate this as the number of patches visited divided by the average distance travelled by the butterflies. We will need to calculate the latter parameter. To do this, we will first need to record the initial position of each butterfly, as follows:
+So far, we have measured the number of patches visited by the butterfly during the model run. The goal of the model is to simulate virtual corridors, and a better measure of this is corridor width. We will estimate this as the number of patches visited divided by the average distance traveled by the butterflies. We will need to calculate the latter parameter. To do this, we will first need to record the initial position of each butterfly, as follows:
 
 1.	Add a variable called `start-patch` to the turtles-own statement
 2.	In the `setup` procedure, add the following code in the `crt` statement:
@@ -253,7 +254,7 @@ So far, we have measured the number of patches visited by the butterfly during t
 set start-patch patch-here
 ```
 
-Now we create a new procedure that will calculate a) the number of patches visited; b) the average distance travelled by each butterfly; c) the corridor width. Note that this is a reporter procedure (i.e. it will calculate and report back a value), so we use the function `to-report` instead of `to`. Add this code to the end of your model:
+Now we create a new procedure that will calculate a) the number of patches visited; b) the average distance traveled by each butterfly; c) the corridor width. Note that this is a reporter procedure (i.e. it will calculate and report back a value), so we use the function `to-report` instead of `to`. Add this code to the end of your model:
 
 ```
 to-report corridor-width
@@ -271,7 +272,8 @@ This code does the following:
 Finally, add a monitor window to the interface that will show the value reported by the procedure `corridor-width`. See above for notes on how to do this. 
 
 ## Assignment
-Use a word document to record your answers and screenshots of your output. Assignments, to include both the word document and .nlogo script file, should be submitted to Canvas before class on Monday, February 12. Ensure your assignment has been saved using the following naming convention: Lab03_lastname_script and Lab03_lastname_report. 
+
+Use a word document to record your answers and screenshots of your output. Assignments, to include both the word document and .nlogo script file, should be submitted to Canvas. Ensure your assignment has been saved using the following naming convention: *Lab03_lastname_script* and *Lab03_lastname_report*. 
 
 1.	Briefly describe the ruleset underlying this model (1)
 2.	Increase the number of butterflies in the model from 1 to 20. Once you have done this, check and re-run the model. Provide a screenshot of the output (right-click on the world-view window and select “Copy view”; then paste this into a word document). (1)
