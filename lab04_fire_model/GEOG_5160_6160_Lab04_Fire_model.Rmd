@@ -4,7 +4,7 @@ author: |
   | Simon Brewer
   | Geography Department
   | University of Utah
-date: "January 07, 2020"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   html_document:
     toc: true
@@ -349,7 +349,7 @@ img <- readPNG("./images/interface4.png")
 
 ## Exercise
 
-Use a word document to record your answers and output. Assignments, to include both the word document and .nlogo script file, should be submitted to Canvas before class on Monday, XXXXXX XX. Ensure your assignment has been saved using the following naming convention: Lab05_lastname_script and Lab05_lastname_report.
+Use a word document to record your answers and output. Assignments, to include both the word document and .nlogo script file, should be submitted to Canvas. Ensure your assignment has been saved using the following naming convention: Lab05_lastname_script and Lab05_lastname_report.
 
 1. Add a second plot to the interface, showing the number of patches that are actively burning at each time step. Remember, patches with `pcolor = red` are currently burning. [1]
 2. Change the `go` procedure, so that instead of stopping the model run at 100 ticks, the model stops when no more patches are actively burning. Remember that the command `count` allows you to get the number of patches that have a certain condition [1]
