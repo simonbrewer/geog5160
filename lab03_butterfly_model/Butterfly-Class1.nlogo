@@ -1,5 +1,5 @@
 globals [ q ]
-patches-own [ 
+patches-own [
   elevation
   used?
 ]
@@ -13,12 +13,14 @@ to setup
     let elev2 50 - distancexy 120 100
 
     ifelse elev1 > elev2
-      [ set elevation elev1 + random-float 10 ]
-      [ set elevation elev2 + random-float 10 ]
-    
-    set pcolor scale-color green elevation 0 100  
-    
-    set used? FALSE  
+      [ set elevation elev1 ]
+      ;[ set elevation elev1 + random-float 10 ]
+      [ set elevation elev2 ]
+      ;[ set elevation elev2 + random-float 10 ]
+
+    set pcolor scale-color green elevation 0 100
+
+    set used? FALSE
   ]
   crt 50
   [
@@ -26,7 +28,7 @@ to setup
     setxy 85 95
     pen-down
   ]
-  set q 0.9
+  set q 1
   reset-ticks
 end
 
@@ -46,8 +48,8 @@ end
 GRAPHICS-WINDOW
 210
 10
-670
-491
+668
+469
 -1
 -1
 3.0
@@ -451,9 +453,8 @@ false
 0
 Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
-
 @#$#@#$#@
-NetLogo 5.0.1
+NetLogo 6.2.0
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
@@ -461,15 +462,14 @@ NetLogo 5.0.1
 @#$#@#$#@
 default
 0.0
--0.2 0 1.0 0.0
+-0.2 0 0.0 1.0
 0.0 1 1.0 0.0
-0.2 0 1.0 0.0
+0.2 0 0.0 1.0
 link direction
 true
 0
 Line -7500403 true 150 150 90 180
 Line -7500403 true 150 150 210 180
-
 @#$#@#$#@
 0
 @#$#@#$#@
