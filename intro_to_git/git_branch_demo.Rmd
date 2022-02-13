@@ -1,0 +1,162 @@
+---
+title: "Branches in git (code)"
+author: "Simon Brewer"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Start by going to GitHub and making a new repo `myrepo`. Then clone
+
+```
+git clone https://github.com/simonbrewer/...
+```
+
+Move to local repo
+
+```
+cd myrepo
+```
+
+Some checks
+
+```
+git status
+git remote show origin
+```
+
+Modify README, then add
+
+```
+git status
+git add -A
+git status
+```
+
+Commit
+
+```
+git commit -m 'some message'
+```
+
+Push
+
+```
+git push
+```
+
+Show available branches
+
+```
+git branch -a
+git branch
+```
+
+Make a new one with `checkout`
+
+```
+git checkout -b devel
+git branch
+```
+
+```
+git checkout main
+git branch
+git checkout devel
+```
+
+Make a file
+
+```
+vim myscript.R
+```
+
+Usual steps: add, commit
+
+```
+git add myscript.R
+git commit -m '...'
+```
+
+List files in repo
+
+```
+ls
+git ls-files
+```
+
+```
+git checkout main
+git ls-files
+git checkout devel
+```
+
+
+Modify file again
+
+```
+git status
+git add myscript.R
+git commit -m '...'
+```
+
+Merge!
+
+```
+git checkout main
+git branch
+git merge devel --no-ff
+```
+
+Show that commits have carried over
+
+```
+git log
+```
+
+Now push to GitHub
+
+```
+git status
+git push
+```
+
+Show github, then delete local
+
+```
+git branch -d devel
+git branch
+```
+
+
+Remote branches. Make a new one
+
+```
+git checkout -b devel
+git branch
+```
+
+Now connect it to the remote
+
+```
+git push -u origin devel
+git branch -a
+```
+
+Add a new file, commit and push. Then go to GitHub to demo new branch
+
+Back to local, merge, check branch and push
+
+```
+git checkout main
+git branch
+git merge devel --no-ff
+git log
+git status
+git push
+```
+
+Check Git hub (including history). Then delete remote branch and then local branch
