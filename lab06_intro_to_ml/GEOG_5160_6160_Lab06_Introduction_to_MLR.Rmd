@@ -4,7 +4,7 @@ author: |
   | Simon Brewer
   | Geography Department
   | University of Utah
-date: "February 18, 2020"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   html_document:
     toc: true
@@ -227,7 +227,7 @@ To see the results of the model, use the `summary()` function:
 summary(fit1)
 ```
 
-This output gives the coefficients (the slope values) for each of the variables used. Most of these are straightforward to interpret (e.g. house price increases with the age of the prooerty), but others are less straightforward (e.g. house price decreases with the ratio of bedrooms to total rooms). In addition, the `R-squared` value here is small ($\approx0.06$), which suggests this is not a great model. You'll get to investigate this a little further in the exercise. 
+This output gives the coefficients (the slope values) for each of the variables used. Most of these are straightforward to interpret (e.g. house price increases with the age of the property), but others are less straightforward (e.g. house price decreases with the ratio of bedrooms to total rooms). In addition, the `R-squared` value here is small ($\approx0.06$), which suggests this is not a great model. You'll get to investigate this a little further in the exercise. 
 
 ## The **mlr3** package
 
@@ -283,7 +283,7 @@ task_housing$target_names
 
 ### Learners
 
-The base **mlr3** package only comes with a few machine learning algorithms or *learners*. Mnay more are available through the **mlr3learners** package, so let's load this now.
+The base **mlr3** package only comes with a few machine learning algorithms or *learners*. Many more are available through the **mlr3learners** package, so let's load this now.
 
 ```{r}
 library(mlr3learners)
@@ -381,7 +381,7 @@ The thin black line is the 1:1 line. If the model provides an unbiased predictio
 
 ### Performance measures
 
-THis plot allows us to visualize how well the model has predicted for the test data, but we also need to quantify this using a performance measure. This will eventually allow us to compare different learning algorithms or different setups of the same algorithm to see which is best. Not too surprisingly then, **mlr3** comes with a whole suite of different measures that we can use. To see the full list, type:
+This plot allows us to visualize how well the model has predicted for the test data, but we also need to quantify this using a performance measure. This will eventually allow us to compare different learning algorithms or different setups of the same algorithm to see which is best. Not too surprisingly then, **mlr3** comes with a whole suite of different measures that we can use. To see the full list, type:
 
 ```{r}
 mlr_measures
@@ -534,9 +534,9 @@ In this case, there is little improvement with this new algorithm, but hopefully
 
 ## Exercise
 
-Use a word document to record your answers and output. Assignments, to include both the word document and R script file, should be submitted to Canvas before class on Monday, XXXXXX XX. Ensure your assignment has been saved using the following naming convention: Lab06_lastname_script and Lab06_lastname_report.
+Use a word document to record your answers and output. Assignments, to include both the word document and R script file, should be submitted to Canvas. Ensure your assignment has been saved using the following naming convention: Lab06_lastname_script and Lab06_lastname_report.
 
-As we noted during the lab, our original model some odd effects, and had pretty poor predictive power. We'll try to improve on this by adding in extra features. The following code recreates the `housing2` data frame with a larger set of data. Note that previously we used the `select` function to choose which varaibles to include, here we use it with `-` in from of the variables we wish to *exclude*:
+As we noted during the lab, our original model some odd effects, and had pretty poor predictive power. We'll try to improve on this by adding in extra features. The following code recreates the `housing2` data frame with a larger set of data. Note that previously we used the `select` function to choose which variables to include, here we use it with `-` in from of the variables we wish to *exclude*:
 
 ```{r results='hide'}
 names(housing)
