@@ -4,7 +4,7 @@ author: |
   | Simon Brewer
   | Geography Department
   | University of Utah
-  date: "March 20, 2020"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   html_document:
     toc: true
@@ -586,7 +586,7 @@ We will now build a boosted regression tree model for the Pinus data. In contras
 
 We'll follow the same steps as with the random forest. **mlr3** uses the **xgboost** package, so we define our learner as `classif.xgboost`. The only hyperparameter that we will set here is `subsample`. This runs a stochastic boosting where each individual tree is built with a random subset of 50% of the training data.
 
-```{r}
+```{r warning=FALSE, results='hide'}
 lrn_brt = lrn("classif.xgboost", 
               predict_type = "prob", 
               subsample = 0.5)
@@ -624,7 +624,7 @@ at_brt = AutoTuner$new(learner = lrn_brt,
 
 Again, we use `resample` to tune the model within the outer resampling strategy. This may take a few minutes to run - remember we are dividing the data into 3 folds, then running 50 tuning iterations for each one. 
 
-```{r eval=TRUE}
+```{r eval=TRUE, warning=FALSE, results='hide'}
 rr_brt = resample(task = task_pe, learner = at_brt, 
                   resampling = resampling_outer, store_models = TRUE)
 sapply(rr_brt$learners, function(x) x$param_set$values)
