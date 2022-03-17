@@ -1,10 +1,10 @@
 ---
-title: "GEOG 5160/6160 Lab 10 Neural networks"
+title: "GEOG 5160/6160 Lab 09 Neural networks"
 author: | 
   | Simon Brewer
   | Geography Department
   | University of Utah
-date: "March 20, 2020"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   html_document:
     toc: true
@@ -179,6 +179,7 @@ cereal.nn$result.matrix
 ```
 
 We can also plot out these weights to show the final network:
+
 ```{r}
 # plot neural network
 plot(cereal.nn)
@@ -304,7 +305,7 @@ credit_data <- read.csv("../datafiles/credit_data.csv")
 str(credit_data)
 ```
 
-As we have several categorical variables, we need to make sure that R recognizes these as factors. The following line of code checks each column in the `credit_data` data frame, and if it contains character data, it then converts it to a factor:
+As we have several categorical variables, we need to make sure that R recognizes these as factors. The following line of code checks each column in the `credit_data` data frame, and if it contains character data, it then converts it to a factor. Note this is similar to the approach in the previous lab, where we convert individual variables to factors:
 
 ```{r}
 credit_data <- credit_data %>% mutate_if(is.character,as.factor)
@@ -423,13 +424,13 @@ graph <- cat %>>%
 plot(graph)
 ```
 
-Now if we call the `train()` method on the credit task, we transform the data and use this to train a neural network:
+Now if we call the `train()` method on the credit task, the data gets passed throught the pipeline, transformed, encoded and imputed and then used to train the neural network:
 
 ```{r message=FALSE}
 graph$train(credit_task)
 ```
 
-As the pipeline is connected to a learner, we can now run a use this to cross-validate the model trained on the transformed data. We first convert the pipeline to a `GraphLearner()`. This has the same attributes as a basic `learner` object and will facilitate the cross-validation
+As the pipeline is connected to a learner, we can also use this to cross-validate the model trained on the transformed data. We first convert the pipeline to a `GraphLearner()`. This has the same attributes as a basic `learner` object and will facilitate the cross-validation
 
 ```{r}
 glrn = GraphLearner$new(graph)
