@@ -53,7 +53,7 @@ install_keras()
 
 ### Python users
 
-If you are using Python for today's lab, you'll need to download the Jupyter notebook for this lab (*GEOG_5160_6160_lab10.ipynb*). Make a new folder for the lab (`lab10`) and move the notebook to this. Now open a new terminal (in Windows go to the [Start Menu] > [Anaconda (64-bit)] > [Anaconda prompt]). 
+If you are using Python for today's lab, you'll need to download the Jupyter notebook for this lab (*GEOG_5160_6160_lab10_Deep_learning_with_keras.ipynb*). Make a new folder for the lab (`lab10`) and move the notebook to this. Now open a new terminal (in Windows go to the [Start Menu] > [Anaconda (64-bit)] > [Anaconda prompt]). 
 
 Once opened, change directory to the folder you just made, activate your conda environment
 
