@@ -4,7 +4,7 @@ author: |
   | Simon Brewer
   | Geography Department
   | University of Utah
-date: "March 29, 2021"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   html_document:
     toc: true
@@ -34,7 +34,22 @@ Start RStudio and set the working directory to this directory (This can be chang
 
 The **mlr3** developers are currently working on an interface to Keras models, which would allow you to use the same approach that we have used in previous labs to build models. Unfortunately, this is still in early development, so for this lab, we'll use the R **keras** package. 
 
-...Keras installation instructions...
+## Installing Keras
+
+To utilize keras and/or tensorflow in R, you must have a working installation of Anaconda on your PC. Anaconda for individual users can be found and downloaded at: https://www.anaconda.com/products/individual
+
+Once Anaconda is installed, keras and the TensorFlow backend can be installed in R from Github as follows. Keras is designed to run on either a CPU or GPU, but this installation guide uses the pathway that recruits CPU support only.
+
+```{r eval = FALSE}
+install.packages('keras')
+```
+
+Once this step is complete, use the `install_keras()` function to install keras.
+
+```{r eval = FALSE}
+library(keras)
+install_keras()
+```
 
 ### Python users
 
