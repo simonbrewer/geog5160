@@ -4,7 +4,7 @@ author: |
   | Simon Brewer
   | Geography Department
   | University of Utah
-date: "April 2, 2021"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   html_document:
     toc: true
@@ -35,13 +35,11 @@ We'll use a [dataset][dataID] from Kaggle containing over 90,000 images of fruit
 
 Start RStudio and set the working directory to this directory (This can be changed by going to the [Session] menu and selecting [Set working directory] -> [Choose directory...], then browsing to the folder). 
 
-The **mlr3** developers are currently working on an interface to Keras models, which would allow you to use the same approach that we have used in previous labs to build models. Unfortunately, this is still in early development, so for this lab, we'll use the R **keras** package. 
-
-...Keras installation instructions...
+The **mlr3** developers are currently working on an interface to Keras models, which would allow you to use the same approach that we have used in previous labs to build models. Unfortunately, this is still in early development, so for this lab, we'll use the R **keras** package. See the first deep learning package for installation instructions.
 
 ### Python users
 
-If you are using Python for today's lab, you'll need to download the Jupyter notebook for this lab (*GEOG_5160_6160_lab10.ipynb*). Make a new folder for the lab (`lab10`) and move the notebook to this. Now open a new terminal (in Windows go to the [Start Menu] > [Anaconda (64-bit)] > [Anaconda prompt]). 
+If you are using Python for today's lab, you'll need to download the Jupyter notebook for this lab (*GEOG_5160_6160_lab10_Convolutional_neural_networks.ipynb*). Make a new folder for the lab (`lab10`) and move the notebook to this. Now open a new terminal (in Windows go to the [Start Menu] > [Anaconda (64-bit)] > [Anaconda prompt]). 
 
 Once opened, change directory to the folder you just made, activate your conda environment
 
