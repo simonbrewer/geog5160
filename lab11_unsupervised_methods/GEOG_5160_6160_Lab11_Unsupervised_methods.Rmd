@@ -4,7 +4,7 @@ author: |
   | Simon Brewer
   | Geography Department
   | University of Utah
-date: "April 7, 2021"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   html_document:
     toc: true
@@ -281,7 +281,7 @@ gap_som = som(gap_mat, som_grid, rlen = 1000)
 plot(gap_som, type = "changes")
 ```
 
-This plot shows a series of step like drops in the loss function, finally stablizing at approximately iteration 1600. 
+This plot shows a series of step like drops in the loss function, finally stabilizing at approximately iteration 900-1000. 
 
 ### Plots
 
@@ -457,14 +457,14 @@ cluster_sf = merge(borders, tmp.df, by.x = "ADM0_A3", by.y = "ISO3",
                    all = TRUE)
 ```
 
-```{r echo=FALSE, eval=FALSE}
-#load("cluster_sf.RData")
+```{r echo=FALSE, eval=TRUE}
+load("cluster_sf.RData")
 ```
 
 And finally, plot it:
 
 ```{r}
-tm_shape(cluster_sf) + 
+tm_shape(cluster_sf) +
   tm_fill("somclust", palette = "Set2") +
   tm_layout(main.title = paste("GAPMinder data",  myyear))
 ```
