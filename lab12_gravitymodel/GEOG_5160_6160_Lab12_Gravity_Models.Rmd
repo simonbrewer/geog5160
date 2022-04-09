@@ -22,15 +22,13 @@ set.seed(1234)
 In today's lab we will walk through the steps of building a spatial interaction model of commuting flows between London boroughs, using population size and median salary information. The code in this lab is modified from an example given by Dr. Adam Dennett of UCL's Center for Applied Spatial Analysis. You will need a set of R packages to carry out all parts of this lab, so make sure these are installed, then start loading them:
 
 ```{r message=FALSE, warning=FALSE}
-library(sp)
+library(sf)
 library(MASS)
 library(reshape2)
-library(rgdal)
 library(maptools)
 library(dplyr)
 library(stplanr)
 library(ggplot2)
-library(leaflet)
 ```
 
 ## Read in data
@@ -51,8 +49,8 @@ nrow(cdata)
 Next, read in and plot a shapefile of the London boroughs:
 
 ```{r}
-LondonBNG = readOGR("../datafiles/LondonBNG/London.shp")
-plot(LondonBNG)
+LondonBNG = st_read("../datafiles/LondonBNG/London.shp")
+plot(st_geometry(LondonBNG))
 ```
 
 Before we get to modeling the flow data, there are a couple of pre-processing steps that we need to undertake. 
@@ -60,7 +58,9 @@ Before we get to modeling the flow data, there are a couple of pre-processing st
 First, calculate a matrix of distances between all pairs of boroughs (this will be the $d_{ij}$ term in our gravity model), and for this we use the function `spDist()`:
 
 ```{r}
-dist <- spDists(LondonBNG)
+dist <- st_distance(st_centroid(LondonBNG))
+dist <- units::drop_units(dist)
+
 dist[1:10,1:10]
 ```
 
@@ -97,8 +97,8 @@ travel_network <- od2line(flow = cdata2, zones = LondonBNG)
 To get some sense of the size of the flows, we can use this variable to set the line widths of the network links (as a weighting factor `w`), and then plot it:
 ```{r}
 w <- cdata2$Total / max(cdata2$Total) * 10
-plot(LondonBNG)
-plot(travel_network, lwd = w, add=TRUE)
+plot(st_geometry(LondonBNG))
+plot(st_geometry(travel_network), lwd = w, add=TRUE)
 ```
 
 Now we can create pivot table to turn paired list into matrix (and compute the margins as well)
@@ -391,7 +391,7 @@ LondonBNG$prodcoef = c(0, modcoef)
 And then plot it, to show how commuting flows increase as we move further away from the center closer to the suburbs.
 
 ```{r}
-spplot(LondonBNG, "prodcoef")
+plot(LondonBNG["prodcoef"])
 ```
 
 Now let's explore the predicted flows. First, get the flow for each O/D pair from the original model:
