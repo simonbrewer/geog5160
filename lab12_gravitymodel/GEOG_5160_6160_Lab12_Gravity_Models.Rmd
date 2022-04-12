@@ -436,13 +436,13 @@ O_i=\sum_j T_{ij}
 And $A_i$ is a balancing factor it account for different levels of productivity. To model this, we just rewrite the equation of the Poisson model to allow estimates of this factor:
 
 \[
-T_{ij}=\mbox{exp}( \mbox{log}(k) + \mu_i + \alpha \mbox{log} (W_j) + \beta  \mbox{log} (d_{ij}) )
+T_{ij}=\mbox{exp}( k + \mu_i + \alpha \mbox{log} (W_j) + \beta  \mbox{log} (d_{ij}) )
 \]
 
-Here the coefficient $\mu_i$ is a vector of balancing factors for each zone. In a model, this is just a set of *dummy variables*, which we represent here by using the Borough name. Note that we also keep $k$ to represent the model intercept. In R, the syntax for this model is given as:
+Here the coefficient $\mu_i$ is a vector of balancing factors for each zone. In a model, this is just a set of *dummy variables*, which we represent here by using the Borough name. In R, the syntax for this model is given as:
 
 ```{r results='hide'}
-prodSim <- glm(Total ~ Orig+log(DestSal)+log(dist), 
+prodSim <- glm(Total ~ Orig + log(DestSal) + log(dist), 
                family = poisson(link = "log"), data = cdata2)
 summary(prodSim)
 ```
@@ -464,7 +464,7 @@ cdata2$Orig2 = relevel(cdata2$Orig, ref = "City of London")
 
 And let's use this to build a second model with the City of London as reference:
 ```{r results='hide'}
-prodSim2 <- glm(Total ~ Orig2+log(DestSal)+log(dist), 
+prodSim2 <- glm(Total ~ Orig2 + log(DestSal) + log(dist), 
                family = poisson(link = "log"), data = cdata2)
 summary(prodSim2)
 ```
@@ -472,7 +472,7 @@ summary(prodSim2)
 Now all these coefficients ($\mu_i$) are relative to the City of London. Let's map them out to see what the spatial pattern looks like. Here, we use the `coef()` function to extract these, and add them to the shapefile. Note that we need to remove the 1st and last two coefficients (the intercept and $\alpha$ and $\beta$ slopes).
 
 ```{r}
-modcoef = coef(prodSim2)[-c(1,34,35)]
+modcoef = coef(prodSim2)[-c(1, 34, 35)]
 LondonBNG$prodcoef = c(0, modcoef)
 ```
 
@@ -498,17 +498,17 @@ cdata2mat3
 If we now redo the comparison of the outflow values, we can see that the constraint has worked and the outflows match.
 
 ```{r}
-totoutflowObs = cdata2mat[,"(all)"]
-totoutflowPred = cdata2mat3[,"(all)"]
+totoutflowObs = cdata2mat[, "(all)"]
+totoutflowPred = cdata2mat3[, "(all)"]
 plot(totoutflowObs, totoutflowPred, log="xy",
-     xlab="Observed outflow", ylab="Predicted outflow")
-abline(0,1)
+     xlab = "Observed outflow", ylab = "Predicted outflow")
+abline(0, 1)
 ```
 
 Including the constraint has also improved the model RMSE, showing some benefit of incorporating this extra information in the model. 
 
 ```{r}
-sqrt(mean((cdata2$Total-cdata2$prodsimFitted)^2))
+sqrt(mean((cdata2$Total - cdata2$prodsimFitted)^2))
 ```
 
 ### Attraction constrained model
@@ -527,7 +527,7 @@ D_j=\sum_i T_{ij}
 And $B_j$ is a balancing factor it account for different levels of attraction. We make a similar modification to the Poisson model to accommodate this:
 
 \[
-T_{ij}=\mbox{exp}( \mbox{log}(k) + \mu \mbox{log} V_i + \alpha_i + \beta  \mbox{log} (d_{ij}) )
+T_{ij}=\mbox{exp}( k + \mu \mbox{log} V_i + \alpha_i + \beta  \mbox{log} (d_{ij}) )
 \]
 
 Now we have a vector of dummy variables ($\alpha_i$), one per zone, representing the level of attractiveness for commuting. In R, we simply include the destinations rather than the origins. Again, we'll set the City of London as the destination:
@@ -538,7 +538,7 @@ cdata2$Dest2 = relevel(cdata2$Dest, ref = "City of London")
 
 
 ```{r results='hide'}
-attrSim <- glm(Total ~ Dest2+log(OrigPop)+log(dist), 
+attrSim <- glm(Total ~ Dest2 + log(OrigPop) + log(dist), 
                family = poisson(link = "log"), data = cdata2)
 summary(attrSim)
 coef(attrSim)
@@ -571,13 +571,13 @@ cdata2mat4 <- dcast(cdata2, Orig ~ Dest, sum, value.var = "attrsimFitted",
 cdata2mat4
 ```
 
-No redo the comparison of the inflow values:
+Now redo the comparison of the inflow values:
 
 ```{r}
 totinflowObs = as.numeric(cdata2mat[cdata2mat$Orig=="(all)", -1])
 totinflowPred = as.numeric(cdata2mat4[cdata2mat4$Orig=="(all)", -1])
-plot(totinflowObs, totinflowPred, log="xy",
-     xlab="Observed inflow", ylab="Predicted inflow")
+plot(totinflowObs, totinflowPred, log = "xy",
+     xlab = "Observed inflow", ylab = "Predicted inflow")
 abline(0,1)
 ```
 
@@ -598,7 +598,7 @@ T_{ij} = A_i O_i D_j B_j d_{ij}^\beta
 Estimating this by hand is somewhat difficult, as the value of $A_i$ depends on $B_j$ and vice versa. It therefore requires a set of iterations to converge on the best estimates. In our case, however, there is no need to do this, and we can just run Poisson regression with a full set of the full set of factors (origins and destinations). 
 
 ```{r results='hide'}
-doubSim <- glm(Total ~ Orig+Dest+log(dist), 
+doubSim <- glm(Total ~ Orig + Dest + log(dist), 
                family = poisson(link = "log"), data = cdata2)
 #let's have a look at it's summary...
 summary(doubSim)
