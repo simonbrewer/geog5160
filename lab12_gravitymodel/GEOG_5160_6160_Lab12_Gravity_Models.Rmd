@@ -433,50 +433,29 @@ Where $O_i$ represents the total outflow from zone $i$
 O_i=\sum_j T_{ij}
 \]
 
-And $A_i$ is a balancing factor it account for different levels of productivity. To model this, we just rewrite the equation of the Poisson model to allow estimates of this factor:
+And $A_i$ is a balancing factor it account for different levels of accessibility To model this, we just rewrite the equation of the Poisson model to allow estimates of this factor (as $\mu_i$:
 
 \[
-T_{ij}=\mbox{exp}( k + \mu_i + \alpha \mbox{log} (W_j) + \beta  \mbox{log} (d_{ij}) )
+T_{ij}=\mbox{exp}( \mu_i + \alpha \mbox{log} (W_j) + \beta  \mbox{log} (d_{ij}) )
 \]
 
 Here the coefficient $\mu_i$ is a vector of balancing factors for each zone. In a model, this is just a set of *dummy variables*, which we represent here by using the Borough name. In R, the syntax for this model is given as:
 
 ```{r results='hide'}
-prodSim <- glm(Total ~ Orig + log(DestSal) + log(dist), 
+cdata2$Orig2 = relevel(cdata2$Orig, ref = "City of London")
+prodSim <- glm(Total ~ Orig2 + log(DestSal) + log(dist) - 1, 
                family = poisson(link = "log"), data = cdata2)
 summary(prodSim)
 ```
 
-The main difference between this and the previous model is that we no longer have a single estimate of $\mu$, but instead have set of coefficients for each origin. You might see that the first location is missing (the borough of Barking and Dagenham). This is used as the the reference location, and the rest of the coefficients indicate how important the other locations are as origins for commuters. 
-
-We might wish to have a less arbitrary choice of location as origin. For London, the City of London (shown on the map below) can be assumed to be the main destination for commuters. 
+The main difference between this and the previous model is that we no longer have a single estimate of $\mu$, but instead have coefficients for each origin, which represent the inverse of accessibility. We can map these out to see what the spatial pattern looks like. Here, we use the `coef()` function to extract these, invert them and add them to the shapefile. Note that we need to remove the last two coefficients (the intercept and $\alpha$ and $\beta$ slopes).
 
 ```{r}
-plot(st_geometry(LondonBNG))
-plot(st_geometry(LondonBNG[LondonBNG$lad15nm=="City of London",]), add=TRUE, col=2)
+modcoef = coef(prodSim)[-c(34, 35)]
+LondonBNG$prodcoef = 1 / modcoef
 ```
 
-To set this as the reference level in R, use the following code:
-
-```{r}
-cdata2$Orig2 = relevel(cdata2$Orig, ref = "City of London")
-```
-
-And let's use this to build a second model with the City of London as reference:
-```{r results='hide'}
-prodSim2 <- glm(Total ~ Orig2 + log(DestSal) + log(dist), 
-               family = poisson(link = "log"), data = cdata2)
-summary(prodSim2)
-```
-
-Now all these coefficients ($\mu_i$) are relative to the City of London. Let's map them out to see what the spatial pattern looks like. Here, we use the `coef()` function to extract these, and add them to the shapefile. Note that we need to remove the 1st and last two coefficients (the intercept and $\alpha$ and $\beta$ slopes).
-
-```{r}
-modcoef = coef(prodSim2)[-c(1, 34, 35)]
-LondonBNG$prodcoef = c(0, modcoef)
-```
-
-And then plot it, to show how commuting flows increase as we move further away from the center closer to the suburbs.
+And then plot it, to show how accessibility to salary increase as we move further away from the suburbs closer to the center.
 
 ```{r}
 plot(LondonBNG["prodcoef"])
@@ -524,34 +503,30 @@ Where $D_i$ represents the total outflow from zone $i$
 D_j=\sum_i T_{ij}
 \]
 
-And $B_j$ is a balancing factor it account for different levels of attraction. We make a similar modification to the Poisson model to accommodate this:
+And $B_j$ is a balancing factor it account for different levels of access We make a similar modification to the Poisson model to accommodate this:
 
 \[
-T_{ij}=\mbox{exp}( k + \mu \mbox{log} V_i + \alpha_i + \beta  \mbox{log} (d_{ij}) )
+T_{ij}=\mbox{exp}( k + \mu \mbox{log} V_i + \alpha_i + \beta \mbox{log} (d_{ij}) )
 \]
 
-Now we have a vector of dummy variables ($\alpha_i$), one per zone, representing the level of attractiveness for commuting. In R, we simply include the destinations rather than the origins. Again, we'll set the City of London as the destination:
-
-```{r}
-cdata2$Dest2 = relevel(cdata2$Dest, ref = "City of London")
-```
+Now we have a vector of dummy variables ($\alpha_i$), one per zone, representing the level of access. In R, we simply include the destinations rather than the origins. 
 
 
 ```{r results='hide'}
-attrSim <- glm(Total ~ Dest2 + log(OrigPop) + log(dist), 
+cdata2$Dest2 = relevel(cdata2$Dest, ref = "City of London")
+attrSim <- glm(Total ~ Dest2 + log(OrigPop) + log(dist) - 1, 
                family = poisson(link = "log"), data = cdata2)
 summary(attrSim)
-coef(attrSim)
 ```
 
-The output here again contains a single coefficient per region (minus the reference region), but here indicates how much more (or less) likely it is to be a *destination* for commuters. 
+The output here again contains a single coefficient per region, but here indicates the accessibility of a location to the surrounding population. 
 
 ```{r}
-modcoef = coef(attrSim)[-c(1,34,35)]
-LondonBNG$attrcoef = c(0, modcoef)
+modcoef = coef(attrSim)[-c(34, 35)]
+LondonBNG$attrcoef = 1 / modcoef
 ```
 
-And then plot it, to show how commuting flows increase as we move further away from the center closer to the suburbs.
+And then plot it, to show how access to population we move away from the center, particularly in the high density regions in the south-east. 
 
 ```{r}
 plot(LondonBNG["attrcoef"])
