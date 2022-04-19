@@ -449,12 +449,13 @@ gap_df_scale <- gap_df_scale %>%
 ```
 
 Next we'll extract a single year and merge it to our spatial object (`cluster_sf`):
+
 ```{r eval = TRUE}
 myyear <- 2000
 tmp.df <- gap_df_scale %>%
   filter(year == myyear)
 cluster_sf = merge(borders, tmp.df, by.x = "ADM0_A3", by.y = "ISO3",
-                   all = TRUE)
+                   all.x = TRUE)
 ```
 
 ```{r echo=FALSE, eval=TRUE}
