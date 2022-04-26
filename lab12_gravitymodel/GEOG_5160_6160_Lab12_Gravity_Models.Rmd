@@ -391,12 +391,12 @@ plot(st_geometry(travel_network), lwd = w, add = TRUE)
 
 ```{r eval = FALSE}
 mu <- 1
-vi1_mu <- ausdata$OrigPop^mu
+vi1_mu <- ausdata$vi1_origpop^mu
 alpha <- 1
-wj2_alpha <- ausdata$DestSal^alpha
+wj2_alpha <- ausdata$wj3_destmedinc^alpha
 beta <- -2
 dist_beta <- ausdata$dist^beta
-k <- sum(ausdata$Total) / sum(vi1_mu * wj2_alpha * dist_beta)
+k <- sum(ausdata$Flow) / sum(vi1_mu * wj2_alpha * dist_beta)
 ```
 
 2. Model 2: 
