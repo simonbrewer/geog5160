@@ -27,7 +27,7 @@ lgr::suspend_logging()
 
 In this lab, we'll look at how to implement a range of tree methods including basic classification and regression trees, random forests and boosted regression trees. We will also look at how to predict for new data and how to automate hyperparameter tuning.
 
-We'll illustrate these methods by using them to build a species distribution model for the pinon pine in the western United States. We'll also quickly demonstrate how to build a regression tree for the California housing dataset. You will need the following datasets from Canvas, so download these to your `datafiles` folder (extract any zip files). Make a new folder for today's class called `lab08`.  
+We'll illustrate these methods by using them to build a species distribution model for the pinon pine in the western United States. You will need the following datasets from Canvas, so download these to your `datafiles` folder (extract any zip files). Make a new folder for today's class called `lab08`.  
 
 - If you are doing the R version of the lab:
     - *Pinus_edulis.csv*
@@ -105,35 +105,7 @@ library(RColorBrewer)
 
 ### Getting data 1: location data
 
-#### California housing data
-
-We'll start by reading in and plotting the California housing dataset. The following code reads the file and cleans up the data. We then create two data sets to show how the algorithm works, one with only the coordinates as features, and the other with the usual set of house characteristics as features. The only new code here divides the house values by 1000 to help in displaying some of the output. Refer back to the previous labs for explanations of this code:
-
-```{r}
-housing <- read.csv("../datafiles/housing.csv")
-housing <- housing %>%
-  dplyr::filter(!is.na(total_bedrooms))
-housing <- housing %>%
-  mutate(avg_rooms = total_rooms / households,
-         bedroom_ratio = total_bedrooms / total_rooms,
-         median_house_value = median_house_value / 1000)
-housing2 <- housing %>%
-  dplyr::select(longitude, latitude, median_house_value)
-housing3 <- housing %>%
-  dplyr::select(-longitude, -latitude, -total_rooms, -total_bedrooms, -ocean_proximity)
-```
-
-Let's make a quick plot (we'll use this later to illustrate the regression tree)
-```{r}
-price.deciles <- quantile(housing2$median_house_value, 0:10/10)
-cut.prices <- cut(housing2$median_house_value,price.deciles,include.lowest=TRUE)
-plot(housing2$longitude,housing2$latitude,col=grey(10:2/11)[cut.prices],pch=20,
-     xlab="Longitude",ylab="Latitude", asp = 1)
-```
-
-#### Pinus edulis data
-
-Next, we'll read the known locations of *Pinus edulis* trees from the file *Pinus_edulis.csv*, and plot to check the data
+Next, we'll read the known locations of *Pinus edulis* (Pinyon pine) trees from the file *Pinus_edulis.csv*, and plot to check the data
 
 ```{r}
 pe <- read.csv("../datafiles/Pinus_edulis.csv")
@@ -206,7 +178,7 @@ plot(raster(current.env, 1), col = my.pal)
 
 ### Merging locations and environment
 
-Finally, we make up a dataset for modeling. We want to model the species distribution using a binary classification task, where 1 indicates presence and 0 indicates absence. However, we only have observations of presences (nobody records when they *don't* see a species). TO get around this, we'll generate some 'pseudo-absences': locations that represent an absence of this species. There are several ways to generate these. One of the easiest is to simply pick random locations within the study area using the `randomPoints()` function. This takes as inputs:
+Finally, we make up a dataset for modeling. We want to model the species distribution using a binary classification task, where 1 indicates presence and 0 indicates absence. However, we only have observations of presences (nobody records when they *don't* see a species). To get around this, we'll generate some 'pseudo-absences': locations that represent an absence of this species. There are several ways to generate these. One of the easiest is to simply pick random locations within the study area using the `randomPoints()` function. This takes as inputs:
 
 - A mask layer defining the study area
 - The number of selected points (we'll get the same number as observed values)
@@ -265,48 +237,7 @@ Classification and Regression Trees (CART) is a non-linear, non-parametric model
 
 R has a number of packages for performing CART and associated analyses. We're going to use the **tree** package to demonstrate how this works with the California data, then we'll move to using **mlr3** which uses the **rpart** package. While the syntax will be different, there is little difference in the way these work:
 
-### Regression Trees 
-
-We will start by fitting a regression tree to the California housing data. The main function is `tree()`, and this will automatically choose a regression tree approach if the response variable is numerical (we'll build a classification tree in the next section). 
-
-```{r results='hide'}
-housing.tree <- tree(median_house_value ~ longitude + latitude,
-                     data = housing2)
-```
-
-If you now type the name of the object containing the output, you will see the tree structure in text format. 
-
-```{r eval=FALSE}
-housing.tree
-```
-
-Each line shows a split in tree, with the condition, the number of observations that conform to that condition, the deviance (a derived loss function), and the value of the `median_house_value` in that node. Splits that are indented represent subsequent partitions.  
-
-```{r}
-plot(housing.tree)
-text(housing.tree)
-```
-
-The **tree** package has a function (`partition.tree`) that allows you to visualize the output of a CART model in the original parameter space. As the only features we used in this model with the coordinates, we can use this here to overlay the partitions on our map of house values:
-
-```{r}
-plot(housing2$longitude, housing2$latitude, col = grey(10:2/11)[cut.prices],
-     pch = 20, xlab = "Longitude", ylab = "Latitude", asp = 1)
-partition.tree(housing.tree ,ordvars = c("longitude","latitude"), add = TRUE)
-```
-
-In general this does a fairly good job of identifying the expected areas of higher values along the coast and around the bigger cities. As a comparison, we'll now build a regression tree using the usual set of features in `housing3`:
-
-```{r}
-housing.tree <- tree(median_house_value ~ .,
-                     data = housing3)
-plot(housing.tree)
-text(housing.tree)
-```
-
-### Classification Trees 
-
-Next, we'll build a classification model for the *Pinus edulis* data set using **mlr3**. CART methods are implemented in **mlr3** using the **rpart** package and the two learners are `classif.rpart` for a classification tree and `regr.rpart` for a regression tree.
+We'll build a classification model for the *Pinus edulis* data set using **mlr3**. CART methods are implemented in **mlr3** using the **rpart** package and the two learners are `classif.rpart` for a classification tree and `regr.rpart` for a regression tree.
 
 As a recall, we need to identify the task, define a performance measure and a resampling strategy. Then we train the learner and evaluate the outcomes
 
@@ -499,7 +430,7 @@ We get a small improvement here, but not much, and in general, `rpart` doesn't i
 
 ## Random forest
 
-Next, we'll try to build a random forest for the Pinus data. The **mlr3** package uses a random forest routine from the **ranger** package that can run on multiple cores. To build this, all we need to do is create a new learner (`classif.ranger`), and run the hold-out resampling on it:
+Next, we'll try to build a random forest for the *(Pinus edulis* data. The **mlr3** package uses a random forest routine from the **ranger** package that can run on multiple cores. To build this, all we need to do is create a new learner (`classif.ranger`), and run the hold-out resampling on it:
 
 ```{r}
 lrn_rf = lrn("classif.ranger", 
