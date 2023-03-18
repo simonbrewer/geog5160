@@ -43,7 +43,7 @@ We'll illustrate these methods by using them to build a species distribution mod
 
 ### Python users
 
-If you are using Python for today's lab, you'll need to download the Jupyter notebook for this lab (*GEOG_5160_6160_lab08.ipynb*). Make a new folder for the lab (`lab08`) and move the notebook to this. Now open a new terminal (in Windows go to the [Start Menu] > [Anaconda (64-bit)] > [Anaconda prompt]). 
+If you are using Python for today's lab, you'll need to download the Jupyter notebook for this lab (*GEOG_5160_6160_lab07.ipynb*). Make a new folder for the lab (`lab07`) and move the notebook to this. Now open a new terminal (in Windows go to the [Start Menu] > [Anaconda (64-bit)] > [Anaconda prompt]). 
 
 You will need to make sure the following packages are installed on your computer (in addition to the packages we have used in previous labs). 
 
@@ -174,7 +174,6 @@ The **RColorBrewer** package provides several color palettes for spatial data. I
 my.pal <- brewer.pal(9, "YlOrRd")
 plot(raster(current.env, 1), col = my.pal)
 ```
-
 
 ### Merging locations and environment
 
