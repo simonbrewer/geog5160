@@ -1,5 +1,5 @@
 ---
-title: "GEOG 5160/6160 Lab 09 Neural networks"
+title: "GEOG 5160/6160 Lab 08 Neural networks"
 author: | 
   | Simon Brewer
   | Geography Department
@@ -282,7 +282,7 @@ for(i in 1:k)
   test_cv <- scaled[(foldID == i), ]
   
   cereal.nn.cv = neuralnet(rating ~ calories + protein + fat + sodium + fiber,
-                           data = train_cv, hidden = 3,
+                           data = train_cv, hidden = c(6,),
                            linear.output = TRUE)
   
   pred.test = neuralnet::compute(cereal.nn, test_cv)
