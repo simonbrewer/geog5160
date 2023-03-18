@@ -27,7 +27,7 @@ lgr::suspend_logging()
 
 In this lab, we'll look at how to implement a range of tree methods including basic classification and regression trees, random forests and boosted regression trees. We will also look at how to predict for new data and how to automate hyperparameter tuning.
 
-We'll illustrate these methods by using them to build a species distribution model for the pinon pine in the western United States. You will need the following datasets from Canvas, so download these to your `datafiles` folder (extract any zip files). Make a new folder for today's class called `lab08`.  
+We'll illustrate these methods by using them to build a species distribution model for the pinon pine in the western United States. You will need the following datasets from Canvas, so download these to your `datafiles` folder (extract any zip files). Make a new folder for today's class called `lab07`.  
 
 - If you are doing the R version of the lab:
     - *Pinus_edulis.csv*
