@@ -20,7 +20,7 @@ library(grid)
 
 ```{r echo=FALSE}
 set.seed(1234)
-lgr::suspend_logging()
+# lgr::suspend_logging()
 ```
 
 ## Tree methods
@@ -95,9 +95,7 @@ library(raster)
 library(sf) 
 library(dismo)
 library(tree)
-library(mlr3)
-library(mlr3learners)
-library(mlr3tuning)
+library(mlr3verse)
 library(vip)
 library(pdp)
 library(RColorBrewer)
@@ -366,11 +364,12 @@ at_ct = AutoTuner$new(learner = lrn_ct,
 
 Note that we use a holdout method in the AutoTuner to split the data. This will be used to assess how the model's skill changes as we vary the parameters. Each time it will evaluate the measure on the holdout test set. Whichever parameter set gives the best performance will then be automatically used to train a final model. The `AutoTuner` object inherits from the `Learner` methods we have previously seen, so to tune and train the model, just type:
 
-```{r echo=FALSE}
-lgr::get_logger("bbotk")$set_threshold("warn")
+```{r eval=FALSE}
+at_ct$train(task_pe)
 ```
 
-```{r}
+```{r echo=FALSE}
+lgr::get_logger("bbotk")$set_threshold("warn")
 at_ct$train(task_pe)
 ```
 
@@ -398,7 +397,7 @@ resampling_outer = rsmp("cv", folds = 3)
 
 Next we'll remake the `AutoTuner` with the inner strategy:
 
-```{r}
+```{r eval=TRUE}
 at_ct = AutoTuner$new(learner = lrn_ct, 
                       resampling = resampling_inner,
                       measure = measure, 
@@ -409,7 +408,13 @@ at_ct = AutoTuner$new(learner = lrn_ct,
 
 And now run `resample` using the `AutoTuner` as the learner, and the outer resampling strategy (this will take a minute or so to run):
 
-```{r}
+```{r eval=FALSE}
+rr_ct = resample(task = task_pe, learner = at_ct, 
+                 resampling = resampling_outer, store_models = TRUE)
+```
+
+```{r echo=FALSE}
+lgr::get_logger("bbotk")$set_threshold("warn")
 rr_ct = resample(task = task_pe, learner = at_ct, 
                  resampling = resampling_outer, store_models = TRUE)
 ```
@@ -469,7 +474,13 @@ at_rf = AutoTuner$new(learner = lrn_rf,
 
 Again, we use `resample` to tune the model within the outer resampling strategy:
 
-```{r eval=TRUE}
+```{r eval=FALSE}
+rr_rf = resample(task = task_pe, learner = at_rf, 
+                 resampling = resampling_outer, store_models = TRUE)
+```
+
+```{r echo=FALSE}
+lgr::get_logger("bbotk")$set_threshold("warn")
 rr_rf = resample(task = task_pe, learner = at_rf, 
                  resampling = resampling_outer, store_models = TRUE)
 ```
@@ -554,7 +565,14 @@ at_brt = AutoTuner$new(learner = lrn_brt,
 
 Again, we use `resample` to tune the model within the outer resampling strategy. This may take a few minutes to run - remember we are dividing the data into 3 folds, then running 50 tuning iterations for each one. 
 
-```{r eval=TRUE, warning=FALSE, results='hide'}
+```{r eval=FALSE}
+rr_brt = resample(task = task_pe, learner = at_brt, 
+                  resampling = resampling_outer, store_models = TRUE)
+sapply(rr_brt$learners, function(x) x$param_set$values)
+```
+
+```{r echo=FALSE}
+lgr::get_logger("bbotk")$set_threshold("warn")
 rr_brt = resample(task = task_pe, learner = at_brt, 
                   resampling = resampling_outer, store_models = TRUE)
 sapply(rr_brt$learners, function(x) x$param_set$values)
