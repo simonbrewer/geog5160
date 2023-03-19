@@ -178,21 +178,25 @@ rr_nn <- resample(cereal_task, lrn_nn, rsmp_outer)
 rr_nn$aggregate(msr_rmse)
 ```
 
-We get a RMSE value of `r round(rr_nn$aggregate(msr_rmse), 2)` which is slightly worse than the original linear model. Let's see if increasing the number of hidden nodes to 5 and the number of learning iterations will improve this:
+We get a RMSE value of `r round(rr_nn$aggregate(msr_rmse), 2)` which is slightly worse than the original linear model. Let's see if increasing the number of hidden nodes to 50 and the number of learning iterations will improve this:
 
 ```{r eval=FALSE}
-lrn_nn <- lrn("regr.nnet", size = 10, maxit = 500)
+lrn_nn <- lrn("regr.nnet", size = 50, maxit = 500)
 rr_nn <- resample(cereal_task, lrn_nn, rsmp_outer)
 rr_nn$aggregate(msr_rmse)
 ```
 
 ```{r echo=FALSE}
-lrn_nn <- lrn("regr.nnet", size = 10, maxit = 500, trace = FALSE)
+lrn_nn <- lrn("regr.nnet", size = 50, maxit = 500, trace = FALSE)
 rr_nn <- resample(cereal_task, lrn_nn, rsmp_outer)
 rr_nn$aggregate(msr_rmse)
 ```
 
-This has made the model too complex, as to RMSE has increased substantially. Let's now tune the model to see if we can choose the optimal value for this parameter.  First, let's check the available parameters for `regr.nnet`:
+This has made the model too complex, as the RMSE has increased substantially. 
+
+### Tuning neural networks
+
+Let's now tune the model to see if we can choose the optimal value for this parameter.  First, let's check the available parameters for `regr.nnet`:
 
 ```{r echo = TRUE}
 lrn_nn$param_set
@@ -373,7 +377,7 @@ For the exercise, the goal will be to tune the Credit score neural network from 
 - Maximum number of iterations
 - Decay function
 
-You are free to use any cross-validation method for the inner and outer loops, any relevant performance metric (try a few if you are not sure), the parameter space and the tuning method (e.g. grid vs random). 
+You are free to use any cross-validation method for the inner and outer loops, any relevant performance metric (try a few if you are not sure), any definition of the parameter space and the tuning method (e.g. grid vs random). 
 
 Your answer should consist of the following
 

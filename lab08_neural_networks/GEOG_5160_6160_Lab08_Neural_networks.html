@@ -1631,11 +1631,11 @@ whether a neural network represents an improvement.</p>
 <pre class="r"><code>lrn_lm &lt;- lrn(&quot;regr.lm&quot;)</code></pre>
 <p>Now run the cross-validation:</p>
 <pre class="r"><code>rr_lm &lt;- resample(cereal_task, lrn_lm, rsmp_outer)</code></pre>
-<pre><code>## INFO  [13:54:35.981] [mlr3] Applying learner &#39;regr.lm&#39; on task &#39;cereal&#39; (iter 1/5)
-## INFO  [13:54:36.021] [mlr3] Applying learner &#39;regr.lm&#39; on task &#39;cereal&#39; (iter 2/5)
-## INFO  [13:54:36.037] [mlr3] Applying learner &#39;regr.lm&#39; on task &#39;cereal&#39; (iter 3/5)
-## INFO  [13:54:36.049] [mlr3] Applying learner &#39;regr.lm&#39; on task &#39;cereal&#39; (iter 4/5)
-## INFO  [13:54:36.061] [mlr3] Applying learner &#39;regr.lm&#39; on task &#39;cereal&#39; (iter 5/5)</code></pre>
+<pre><code>## INFO  [16:18:53.921] [mlr3] Applying learner &#39;regr.lm&#39; on task &#39;cereal&#39; (iter 1/5)
+## INFO  [16:18:54.005] [mlr3] Applying learner &#39;regr.lm&#39; on task &#39;cereal&#39; (iter 2/5)
+## INFO  [16:18:54.040] [mlr3] Applying learner &#39;regr.lm&#39; on task &#39;cereal&#39; (iter 3/5)
+## INFO  [16:18:54.067] [mlr3] Applying learner &#39;regr.lm&#39; on task &#39;cereal&#39; (iter 4/5)
+## INFO  [16:18:54.094] [mlr3] Applying learner &#39;regr.lm&#39; on task &#39;cereal&#39; (iter 5/5)</code></pre>
 <pre class="r"><code>rr_lm$aggregate(msr_rmse)</code></pre>
 <pre><code>## regr.rmse 
 ##  6.347373</code></pre>
@@ -1648,11 +1648,11 @@ setup of the learner.</p>
 <pre class="r"><code>lrn_nn &lt;- lrn(&quot;regr.nnet&quot;, size = 3)</code></pre>
 <p>And again, run the resampler:</p>
 <pre class="r"><code>rr_nn &lt;- resample(cereal_task, lrn_nn, rsmp_outer)</code></pre>
-<pre><code>## INFO  [13:54:36.148] [mlr3] Applying learner &#39;regr.nnet&#39; on task &#39;cereal&#39; (iter 1/5)
-## INFO  [13:54:36.170] [mlr3] Applying learner &#39;regr.nnet&#39; on task &#39;cereal&#39; (iter 2/5)
-## INFO  [13:54:36.180] [mlr3] Applying learner &#39;regr.nnet&#39; on task &#39;cereal&#39; (iter 3/5)
-## INFO  [13:54:36.192] [mlr3] Applying learner &#39;regr.nnet&#39; on task &#39;cereal&#39; (iter 4/5)
-## INFO  [13:54:36.205] [mlr3] Applying learner &#39;regr.nnet&#39; on task &#39;cereal&#39; (iter 5/5)</code></pre>
+<pre><code>## INFO  [16:18:54.309] [mlr3] Applying learner &#39;regr.nnet&#39; on task &#39;cereal&#39; (iter 1/5)
+## INFO  [16:18:54.355] [mlr3] Applying learner &#39;regr.nnet&#39; on task &#39;cereal&#39; (iter 2/5)
+## INFO  [16:18:54.379] [mlr3] Applying learner &#39;regr.nnet&#39; on task &#39;cereal&#39; (iter 3/5)
+## INFO  [16:18:54.412] [mlr3] Applying learner &#39;regr.nnet&#39; on task &#39;cereal&#39; (iter 4/5)
+## INFO  [16:18:54.443] [mlr3] Applying learner &#39;regr.nnet&#39; on task &#39;cereal&#39; (iter 5/5)</code></pre>
 <pre class="r"><code>rr_nn$aggregate(msr_rmse)</code></pre>
 <pre><code>## regr.rmse 
 ##  9.981332</code></pre>
@@ -1662,17 +1662,21 @@ and the number of learning iterations will improve this:</p>
 <pre class="r"><code>lrn_nn &lt;- lrn(&quot;regr.nnet&quot;, size = 10, maxit = 500)
 rr_nn &lt;- resample(cereal_task, lrn_nn, rsmp_outer)
 rr_nn$aggregate(msr_rmse)</code></pre>
-<pre><code>## INFO  [13:54:36.284] [mlr3] Applying learner &#39;regr.nnet&#39; on task &#39;cereal&#39; (iter 1/5)
-## INFO  [13:54:36.304] [mlr3] Applying learner &#39;regr.nnet&#39; on task &#39;cereal&#39; (iter 2/5)
-## INFO  [13:54:36.329] [mlr3] Applying learner &#39;regr.nnet&#39; on task &#39;cereal&#39; (iter 3/5)
-## INFO  [13:54:36.353] [mlr3] Applying learner &#39;regr.nnet&#39; on task &#39;cereal&#39; (iter 4/5)
-## INFO  [13:54:36.378] [mlr3] Applying learner &#39;regr.nnet&#39; on task &#39;cereal&#39; (iter 5/5)</code></pre>
+<pre><code>## INFO  [16:18:54.588] [mlr3] Applying learner &#39;regr.nnet&#39; on task &#39;cereal&#39; (iter 1/5)
+## INFO  [16:18:54.631] [mlr3] Applying learner &#39;regr.nnet&#39; on task &#39;cereal&#39; (iter 2/5)
+## INFO  [16:18:54.673] [mlr3] Applying learner &#39;regr.nnet&#39; on task &#39;cereal&#39; (iter 3/5)
+## INFO  [16:18:54.719] [mlr3] Applying learner &#39;regr.nnet&#39; on task &#39;cereal&#39; (iter 4/5)
+## INFO  [16:18:54.766] [mlr3] Applying learner &#39;regr.nnet&#39; on task &#39;cereal&#39; (iter 5/5)</code></pre>
 <pre><code>## regr.rmse 
 ##  13.97572</code></pre>
-<p>This has made the model too complex, as to RMSE has increased
-substantially. Let’s now tune the model to see if we can choose the
-optimal value for this parameter. First, let’s check the available
-parameters for <code>regr.nnet</code>:</p>
+<p>This has made the model too complex, as the RMSE has increased
+substantially.</p>
+</div>
+<div id="tuning-neural-networks" class="section level3">
+<h3>Tuning neural networks</h3>
+<p>Let’s now tune the model to see if we can choose the optimal value
+for this parameter. First, let’s check the available parameters for
+<code>regr.nnet</code>:</p>
 <pre class="r"><code>lrn_nn$param_set</code></pre>
 <pre><code>## &lt;ParamSet&gt;
 ##            id    class lower upper nlevels        default value
@@ -1914,8 +1918,8 @@ parameters:</p>
 </ul>
 <p>You are free to use any cross-validation method for the inner and
 outer loops, any relevant performance metric (try a few if you are not
-sure), the parameter space and the tuning method (e.g. grid vs
-random).</p>
+sure), any definition of the parameter space and the tuning method
+(e.g. grid vs random).</p>
 <p>Your answer should consist of the following</p>
 <ul>
 <li>A description of how you set up the experiment (e.g. number of
