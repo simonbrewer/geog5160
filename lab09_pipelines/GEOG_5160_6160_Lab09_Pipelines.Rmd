@@ -94,7 +94,7 @@ If you run the `summary()` function, you should see that there are several missi
 summary(credit_data)
 ```
 
-As machine learning algorithms can't use missing data to train, we need to decide what to do with these. Fortunately, **mlr3** does have functions for training classification neural networks, so we can take advantage of some of the pre-processing tools in the **mlr3pipelines** library to help with these missing values. Let's first set up a classification task with the credit dataset:
+As machine learning algorithms can't use missing data to train, we need to decide what to do with these. Fortunately, **mlr3** comes with a set of pre-processing tools in the **mlr3pipelines** library to help with these missing values. Let's first set up a classification task with the credit dataset:
 
 ```{r}
 credit_task <- TaskClassif$new("credit", backend = credit_data,
@@ -105,7 +105,7 @@ There are several steps that we might want to do to process these data:
 
 - Impute any missing values
 - Convert categorical/factor variables to numeric by one-hot encoding
-- Scale the numerical variables to prevent biases while training our neural networks
+- Scale the numerical variables to prevent biases while training our model
 
 While it is possible to do this in an ad-hoc way (as we did in previous labs), we will set up a processing *pipeline* that contains all of these steps. This takes more time to set up, but has a number of advantages: we can use the pipeline directly in cross-validation or tuning, and we can use it to process any new data that we might to make predictions for, without having to remember the individual steps. The main function is `PipeOps` or `po()` which creates a pipeline operator that will carry our a single data processing step. To see the set of options, simply type:
 
@@ -200,7 +200,7 @@ graph <- cat %>>%
 plot(graph)
 ```
 
-Now if we call the `train()` method on the credit task, the data gets passed throught the pipeline, transformed, encoded and imputed and then used to train the neural network:
+Now if we call the `train()` method on the credit task, the data gets passed throught the pipeline, transformed, encoded and imputed and then used to train the random forest:
 
 ```{r message=FALSE}
 graph$train(credit_task)
