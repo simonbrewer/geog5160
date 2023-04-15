@@ -1,0 +1,488 @@
+---
+title: "GEOG 5160/6160 Lab 12 Spatial Machine Learning"
+author: | 
+  | Simon Brewer
+  | Geography Department
+  | University of Utah
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    fig_caption: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(png)
+library(grid)
+```
+
+```{r echo=FALSE}
+set.seed(1234)
+# lgr::suspend_logging()
+```
+
+## Spatial Machine Learning
+
+While machine learning methods have been frequently used with spatial data, there is a growing awareness of how the characteristics of these data may cause some issues. In this lab, we'll look at how more robust methods of evaluating machine learning models with spatial data, and at a simple approach that can incorporate spatial dependency and improve predictions. 
+
+We'll use a well-known example dataset of soil samples from the Meuse River in the Netherlands to illustrate these data. The data are available in the zipfile *meuse.zip*, and contain shapefiles with:
+- The locations of the soil samples
+- A polygon outlining the river
+- A grid of locations for predictions
+
+Download this and move it to your *datafiles* folder
+
+## Python users
+
+If you are using Python for today's lab, you'll need to download the Jupyter notebook for this lab (*GEOG_5160_6160_lab12.ipynb*). Make a new folder for the lab (`lab12`) and move the notebook to this. Now open a new terminal (in Windows go to the [Start Menu] > [Anaconda (64-bit)] > [Anaconda prompt]). 
+
+You will need to make sure the following packages are installed on your computer (in addition to the packages we have used in previous labs). 
+
+- **xarray**: functions for working with regular arrays (`conda install xarray`)
+- **xgboost**: extreme gradient boosting (`conda install py-xgboost`)
+
+Once opened, change directory to the folder you just made, activate your conda environment
+
+```
+conda activate geog5160
+```
+
+Start the Jupyter Notebook server:
+
+```
+jupyter notebook
+```
+
+And open the notebook for today's class. 
+
+### RStudio users 
+
+Start RStudio and set the working directory to this directory (This can be changed by going to the [Session] menu and selecting [Set working directory] -> [Choose directory...], then browsing to the folder). 
+
+You will need to make sure the following libraries are installed on your computer:
+
+You'll need to make sure you have the following packages installed:
+
+- **sf**
+- **mlr3spatiotempcv**: For spatial-temporal cross validation
+- **gstat**
+- **ggplot2**
+- **tmap** (optional for visualization)
+
+## Data processing
+
+Before doing anything else, run the following command and make sure that you can see the files you downloaded. 
+
+```{r results='hide'}
+list.files()
+```
+
+Next load the libraries you will need for the lab. You should at this stage have most of these already installed. Add anything that is not installed using the `install.packages()` function.
+
+```{r message=FALSE, warning=FALSE}
+library(dplyr)
+library(ggplot2)
+library(sf) 
+library(gstat)
+library(mlr3verse)
+library(mlr3spatiotempcv)
+```
+
+### Reading the data
+
+We'll start by reading the data (points, river boundary, prediction grid):
+
+```{r}
+meuse <- st_read("../datafiles/meuse/meuse.shp", quiet = TRUE)
+meuse_riv <- st_read("../datafiles/meuse/meuseriv.shp", quiet = TRUE)
+meuse_grid <- st_read("../datafiles/meuse/meusegrid.shp", quiet = TRUE)
+```
+
+And we'll set the coordinate reference system to EPSG 28992 (a Netherlands projection system)
+
+```{r}
+st_crs(meuse) <- st_crs(meuse_riv) <- st_crs(meuse_grid) <- 28992
+```
+
+The target outcome is the zinc concentration in the soil samples. A quick visualization shows that this is right skewed:
+
+```{r}
+ggplot(meuse, aes(x = zinc)) +
+         geom_histogram(fill = "darkorange", binwidth = 50)
+```
+
+So we'll log-transform for model building:
+
+```{r}
+meuse <- meuse %>%
+  mutate(lzinc = log(zinc))
+```
+
+And make a quick map of the log-transformed values (the first code uses the base R plot, the second uses the **tmap** package)
+
+```{r}
+plot(meuse[,"lzinc"], pch = 16)
+```
+
+```{r}
+library(tmap)
+tm_shape(meuse) +
+  tm_symbols(col = "lzinc") + 
+  tm_shape(meuse_riv) +
+  tm_borders() +
+  tm_scale_bar()
+```
+
+We'll be using the following features to model this: soil type (`soil`), distance to river (`dist`) and flood frequency (`ffreq`). Try making maps of each of these.
+
+### **mlr3** with spatial data
+
+The **mlr3** set of libraries has several extensions, one of which is designed to help working with spatial (and temporal data). Load this now, and we'll go through the process of setting up a Spatio-Temporal task:
+
+```{r warning=FALSE, message=FALSE}
+library(mlr3spatiotempcv)
+```
+
+The data are currently held in a **sf** object, but **mlr3** tasks require a dataframe. We'll set this up now by a) removing the spatial geometry and b) adding the coordinates
+
+```{r}
+meuse_df <- st_drop_geometry(meuse)
+meuse_df$x <- st_coordinates(meuse)[, 1]
+meuse_df$y <- st_coordinates(meuse)[, 2]
+```
+
+Finally, we'll subset only the variables we'll use in the model
+
+```{r}
+meuse_df <- meuse_df %>%
+  select(x, y, dist, soil, ffreq, lzinc)
+```
+
+Now we can make the task. Note that we use `TaskRegrST` (or `TaskClassifST`) rather than `Task`, and specify which columns contain the coordinates:
+
+```{r}
+task_zinc <- TaskRegrST$new(
+  "zinc",
+  backend = meuse_df, 
+  target = "lzinc",
+  coordinate_names = c("x", "y")
+)
+
+## Check the task details
+task_zinc$feature_names
+```
+
+You can check that it has been created correctly by looking at the `roles` of each variable:
+
+```{r}
+task_zinc$col_roles$feature
+task_zinc$col_roles$coordinate
+```
+
+We'll also define a learner and a performance metric (RMSE):
+
+```{r}
+lrn_rf <- lrn("regr.ranger")
+msr_rmse <- msr("regr.rmse")
+```
+
+## Spatial dependency
+
+One of the key characteristics of spatial data is that they are *structured*: locations that are close together tend to have values that are more similar than locations that are far apart. There are several ways to test autocorrelation is present in your data. Here's we'll use a variogram to show this (we'll also use this in a later part of the lab). 
+
+A variogram plot shows the average difference in values of a variable across a set of spatial *lags*. Put simply, the method finds all the pairs of observations that are separated by a certain distance (e.g. 0-100m, 100-200m, etc) and calculates the difference in the value of some variable for each pair. This is then visualized as the mean of those differences (y-axis) against the lag distance (x-axis). 
+
+We'll use the **gstat** library in R to make and plot this for the log-zinc values. First use the `variogram` function to calculate the values. This uses R's formula syntax to define the variable we want to examine (`lzinc`):
+
+```{r}
+lzinc_var = variogram(lzinc ~ 1, meuse)
+```
+
+And plot:
+
+```{r}
+plot(lzinc_var)
+```
+
+Autocorrelation is indicated by lower values of semivariance (y-axis) at shorter separation distances, as clearly shown here. This just means that locations that are separated by less than, say, 100m, tend to have more similar values of zinc than locations that are separated by 500 or 1000m. Note that the points reach a plateau at around 1000m; this is called the **range** and indicates the limit of autocorrelation. We'll return to this figure a little later on in the lab.
+
+## Spatial cross-validation
+
+This spatial autocorrelation indicates that the observations are not independent. When evaluating your models, standard resampling methods that are based on random sampling (e.g., holdout or $k$-fold cross-validation) cannot account for this. Ignoring this can result in over-optimistic estimates of model performance.
+
+Recent work by Hengl and others have shown that stratified or spatial block sampling may be a better approach. R now has several packages that have different methods to set up this type of cross-validation (e.g. **sperrorest**, **blockCV**), but many of these are now integrated into **mlr3**. We'll look at a couple of examples here.
+
+### Non-spatial cross-validation
+
+As a reference, we'll start with a standard 5-fold cross-validation. 
+
+```{r}
+rsmp_nonspatial <- rsmp("cv", folds = 5)
+```
+
+The **mlr3spatiotempcv** package has a simple autoplot function to show the distribution of the samples across the different folds
+
+```{r}
+plot(rsmp_nonspatial, task_zinc)
+```
+
+Note that you can also plot individual folds:
+
+```{r}
+plot(rsmp_nonspatial, task_zinc, fold = 1)
+```
+
+Now run the resampler:
+
+```{r echo=FALSE}
+lgr::get_logger("mlr3")$set_threshold("warn")
+lgr::get_logger("bbotk")$set_threshold("warn")
+```
+
+```{r}
+rr_nonspatial = resample(task_zinc, lrn_rf, rsmp_nonspatial)
+```
+
+Which gives us an RMSE of approximately 0.41:
+
+```{r}
+rr_nonspatial$aggregate(msr_rmse)
+```
+
+
+### Block cross-validation
+
+We'll now set up a block cross-validation approach (`spcv_block`). This divides the region into a set of blocks, with their size defined by the `range` argument. Note that a fold may be comprised of several blocks if the range is small. 
+
+```{r}
+rsmp_block <- rsmp("spcv_block", folds = 5, range = 500)
+```
+
+```{r}
+plot(rsmp_block, task_zinc)
+```
+
+```{r}
+rr_block = resample(task_zinc, lrn_rf, rsmp_block)
+```
+
+```{r}
+rr_block$aggregate(msr_rmse)
+```
+
+This results is a slight increase in RMSE (you may not even see that). To check this, we need a better definition of the range. Valavi et al. (2018) suggest that this should larger than the autocorrelation of the data. Earlier on in the lab, we plotted the variogram of these data, which suggested that the range is around 1000m, so let's re-run our evaluation with this:
+
+```{r}
+rsmp_block <- rsmp("spcv_block", folds = 5, range = 1000)
+rr_block = resample(task_zinc, lrn_rf, rsmp_block)
+rr_block$aggregate(msr_rmse)
+```
+
+This results in an increase in the RMSE to around 0.434, suggesting that this initial random sampling did in fact underestimate the model error.
+
+### Spatial $k$-means
+
+An alternative approach uses a $k$-means clustering of the locations to form the spatial folds. This is implemented using `spcv_coords`:
+
+```{r}
+rsmp_cluster <- rsmp("spcv_coords", folds = 5)
+plot(rsmp_cluster, task_zinc)
+```
+
+```{r}
+rr_cluster = resample(task_zinc, lrn_rf, rsmp_cluster)
+rr_cluster$aggregate(msr_rmse)
+```
+
+### Other methods
+
+**mlr3** has several other methods for spatial cross-validation, including methods to include buffers between points (to ensure independence) and methods that form folds based on some background environmental variable (e.g. elevation or soil class). More information on these can be found here: https://mlr3spatiotempcv.mlr-org.com/
+
+## Incorporating spatial information in machine learning models
+
+When spatial dependency exists in a variable, this can be incorporated in machine learning models to try and improve their predictive skill. Here, we'll look at a simple approach that includes the coordinates as covariates, as well as a more complex method that uses a post-hoc adjustment of the model predictions.
+
+### Including coordinates
+
+This simple approach assumes that dependency can be captured as a function of the coordinates. This amounts to including a latent (i.e. unknown) variable in the model. In practice, this just requires including the `x` and `y` coordinates as additional features. We'll do that now by making a new task from the original Meuse dataset:
+
+```{r}
+task_zinc2 <- TaskRegr$new("zinc2", backend = meuse_df,
+                           target = 'lzinc')
+task_zinc2
+```
+
+And now we'll simply recycle our learner and original (non-spatial) resampling strategy:
+
+```{r}
+rr_crds = resample(task_zinc2, lrn_rf, rsmp_nonspatial)
+rr_crds$aggregate(msr_rmse)
+```
+
+This results in a substantial increase in the RMSE (although this is based on the non-spatial resampling). It is possible with this approach to visualize the latent spatial field as a partial dependency plot. To do this, we'll train the full model, then use the **pdp** library to make this plot:
+
+
+```{r}
+lrn_rf$train(task_zinc2)
+```
+
+```{r}
+library(pdp)
+partial(lrn_rf$model, c("x","y"), 
+        train = meuse_df, chull = TRUE, plot = TRUE)
+```
+
+### Random forest kriging
+
+Finally, we'll try a more complex approach that combines a machine learning model with a spatial interpolation method (kriging). The basis of this approach is that the value of zinc at each location ($s$) can be broken down into three elements:
+
+- A modeled value as a function of the features ($F(x(s))$)
+- A spatial error ($u_s$)
+- A random error ($v_s$)
+
+In this approach, we 
+
+- Fit a random forest to capture the first of these
+- Use the model to predict on a regular grid
+- Extract the errors from this at the observations
+- Interpolate the errors to the prediction grid
+- Add the gridded errors to the model prediction to obtain a final adjusted prediction
+
+As this method currently does not exist in **mlr3** (or any other meta package), we'll code this by hand
+
+#### Fit the random forest
+
+We'll use the ranger package for this. This is the function that **mlr3** uses, but here we call it directly:
+
+```{r}
+library(ranger)
+zinc_rf = ranger(lzinc ~ dist + soil + ffreq, meuse_df)
+zinc_rf
+```
+
+#### Predict on grid
+
+We previously loaded a prediction grid for the Meuse floodplain (`meuse_grid`). As this has a value of the three features at each grid point, we can use this to make predictions. As the `predict` function doesn't like `sf` objects, we convert this to a data frame by dropping the geometry, but store the predictions back in the `sf` object
+
+```{r}
+meuse_grid_df <- st_drop_geometry(meuse_grid)
+meuse_grid$yhat <- predict(zinc_rf, meuse_grid_df)$predictions
+```
+
+And now we can visualize the predictions
+
+```{r}
+plot(meuse_grid[, 'yhat'], pch = 16)
+```
+
+Or with **tmap**:
+
+```{r}
+tm_shape(meuse_grid) +
+  tm_symbols(col = 'yhat', border.lwd = NA, size = 0.25) +
+  tm_shape(meuse_riv) +
+  tm_borders() +
+  tm_scale_bar()
+```
+
+#### Get the model errors
+
+To get the model errors at the original locations, we need to first predict values at each site, then calculate the difference between observed and predicted
+
+```{r}
+meuse$yhat <- predict(zinc_rf, meuse_df)$predictions
+```
+
+```{r}
+meuse$error <- meuse$lzinc - meuse$yhat
+```
+
+```{r}
+tm_shape(meuse) +
+  tm_symbols(col = "error") + 
+  tm_shape(meuse_riv) +
+  tm_borders() +
+  tm_scale_bar()
+```
+
+#### Interpolate the model errors
+
+We now need to interpolate these errors to each location on the prediction grid. To do this, we'll update variogram we made earlier using the model errors:
+
+```{r}
+error_var <- variogram(error ~ 1, meuse)
+plot(error_var)
+```
+
+The goal here is to fit a curve to these points to show the changing dependency as a continuous function of distance. To start, we estimate by eye three reference points:
+
+- The *nugget*: the point at which a line through the points would intercept the y-axis (roughly 0.05)
+- The *partial sill*: the vertical height above the nugget where the points reach a plateau (roughly 0.1)
+- The *range*: the point on the x-axis where the points reach a plateau (roughly 700m)
+
+We can create a first model with these values and the `vgm` function, and plot it with the points
+
+```{r}
+error_vgm <- vgm(0.1, "Sph", 700, 0.05)
+plot(error_var, error_vgm)
+```
+
+This can then be adjusted to model using a weight least squares fitting method:
+
+```{r}
+error_vgm <- fit.variogram(error_var, error_vgm)
+plot(error_var, error_vgm)
+```
+
+Now we can interpolate to the grid using this model (`error_vgm`) and the `krige` function
+
+```{r}
+error_krige <- krige(error ~ 1, meuse, 
+                     newdata = meuse_grid, model = error_vgm, beta = 0)
+```
+
+We can now add these predictions back to the grid and visualize:
+
+```{r}
+meuse_grid$u <- error_krige$var1.pred
+plot(meuse_grid[,'u'], pch = 16)
+```
+
+Note that the errors tend to be positive along the river edge (where the model underpredicts) and negative on the floodplain
+
+#### Make the final predictions
+
+Our final predictions are now made by adding these errors to the original predictions and plot:
+
+```{r}
+meuse_grid$yhat_adj <- meuse_grid$yhat + meuse_grid$u
+```
+
+```{r}
+plot(meuse_grid[,'yhat_adj'])
+```
+
+As a comparison (with **tmap**):
+
+```{r}
+m1 <- tm_shape(meuse_grid) +
+  tm_symbols(col = 'yhat', size = 0.2, border.lwd = NA,
+             breaks = seq(4.5, 7.5, by = 0.25)) +
+  tm_shape(meuse_riv) +
+  tm_borders() +
+  tm_scale_bar() +
+  tm_layout(main.title = "RF prediction")
+
+m2 <- tm_shape(meuse_grid) +
+  tm_symbols(col = 'yhat_adj', size = 0.2, border.lwd = NA,
+             breaks = seq(4.5, 7.5, by = 0.25)) +
+  tm_shape(meuse_riv) +
+  tm_borders() +
+  tm_scale_bar() +
+  tm_layout(main.title = "RF-kriging prediction")
+
+tmap_arrange(m1, m2)
+```
+
