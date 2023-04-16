@@ -40,8 +40,7 @@ If you are using Python for today's lab, you'll need to download the Jupyter not
 
 You will need to make sure the following packages are installed on your computer (in addition to the packages we have used in previous labs). 
 
-- **xarray**: functions for working with regular arrays (`conda install xarray`)
-- **xgboost**: extreme gradient boosting (`conda install py-xgboost`)
+- **scikit-gstat**: functions for spatial interpolation (`conda install -c conda-forge scikit-gstat`)
 
 Once opened, change directory to the folder you just made, activate your conda environment
 
@@ -321,7 +320,7 @@ rr_crds = resample(task_zinc2, lrn_rf, rsmp_nonspatial)
 rr_crds$aggregate(msr_rmse)
 ```
 
-This results in a substantial increase in the RMSE (although this is based on the non-spatial resampling). It is possible with this approach to visualize the latent spatial field as a partial dependency plot. To do this, we'll train the full model, then use the **pdp** library to make this plot:
+This results in a substantial decrease in the RMSE (although this is based on the non-spatial resampling). It is possible with this approach to visualize the latent spatial field as a partial dependency plot. To do this, we'll train the full model, then use the **pdp** library to make this plot:
 
 
 ```{r}
@@ -409,7 +408,7 @@ tm_shape(meuse) +
 
 #### Interpolate the model errors
 
-We now need to interpolate these errors to each location on the prediction grid. To do this, we'll update variogram we made earlier using the model errors:
+We now need to interpolate these errors to each location on the prediction grid. To do this, we'll update the variogram we made earlier using the model errors:
 
 ```{r}
 error_var <- variogram(error ~ 1, meuse)
