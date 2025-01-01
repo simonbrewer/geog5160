@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.553">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Simon Brewer">
+<meta name="dcterms.date" content="2024-12-28">
+
+<title>GEOG 5160 6160 Lab 01</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="GEOG_5160_6160_lab01_files/libs/clipboard/clipboard.min.js"></script>
+<script src="GEOG_5160_6160_lab01_files/libs/quarto-html/quarto.js"></script>
+<script src="GEOG_5160_6160_lab01_files/libs/quarto-html/popper.min.js"></script>
+<script src="GEOG_5160_6160_lab01_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="GEOG_5160_6160_lab01_files/libs/quarto-html/anchor.min.js"></script>
+<link href="GEOG_5160_6160_lab01_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="GEOG_5160_6160_lab01_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="GEOG_5160_6160_lab01_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="GEOG_5160_6160_lab01_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="GEOG_5160_6160_lab01_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#introduction-to-r" id="toc-introduction-to-r" class="nav-link" data-scroll-target="#introduction-to-r">Introduction to R</a>
+  <ul class="collapse">
+  <li><a href="#a-quick-note-on-formatting" id="toc-a-quick-note-on-formatting" class="nav-link" data-scroll-target="#a-quick-note-on-formatting">A quick note on formatting</a></li>
+  <li><a href="#getting-started" id="toc-getting-started" class="nav-link" data-scroll-target="#getting-started">Getting started</a>
+  <ul class="collapse">
+  <li><a href="#rstudio-layout" id="toc-rstudio-layout" class="nav-link" data-scroll-target="#rstudio-layout">RStudio layout</a></li>
+  <li><a href="#working-with-r" id="toc-working-with-r" class="nav-link" data-scroll-target="#working-with-r">Working with R</a></li>
+  <li><a href="#workspace" id="toc-workspace" class="nav-link" data-scroll-target="#workspace">Workspace</a></li>
+  <li><a href="#working-directory" id="toc-working-directory" class="nav-link" data-scroll-target="#working-directory">Working directory</a></li>
+  <li><a href="#using-the-console" id="toc-using-the-console" class="nav-link" data-scroll-target="#using-the-console">Using the console</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#working-with-variables-in-r" id="toc-working-with-variables-in-r" class="nav-link" data-scroll-target="#working-with-variables-in-r">Working with variables in R</a>
+  <ul class="collapse">
+  <li><a href="#factors" id="toc-factors" class="nav-link" data-scroll-target="#factors">Factors</a></li>
+  </ul></li>
+  <li><a href="#functions-in-r" id="toc-functions-in-r" class="nav-link" data-scroll-target="#functions-in-r">Functions in R</a>
+  <ul class="collapse">
+  <li><a href="#univariate-statistics" id="toc-univariate-statistics" class="nav-link" data-scroll-target="#univariate-statistics">Univariate statistics</a>
+  <ul class="collapse">
+  <li><a href="#the-tapply-function" id="toc-the-tapply-function" class="nav-link" data-scroll-target="#the-tapply-function">The <code>tapply()</code> function</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#basic-plotting-in-r" id="toc-basic-plotting-in-r" class="nav-link" data-scroll-target="#basic-plotting-in-r">Basic plotting in R</a>
+  <ul class="collapse">
+  <li><a href="#index-plots" id="toc-index-plots" class="nav-link" data-scroll-target="#index-plots">Index plots</a></li>
+  <li><a href="#summary-plots" id="toc-summary-plots" class="nav-link" data-scroll-target="#summary-plots">Summary plots</a></li>
+  <li><a href="#bivariate-plots" id="toc-bivariate-plots" class="nav-link" data-scroll-target="#bivariate-plots">Bivariate plots</a></li>
+  <li><a href="#graphic-output" id="toc-graphic-output" class="nav-link" data-scroll-target="#graphic-output">Graphic output</a></li>
+  </ul></li>
+  <li><a href="#quitting-r" id="toc-quitting-r" class="nav-link" data-scroll-target="#quitting-r">Quitting R</a></li>
+  </ul>
+</nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">GEOG 5160 6160 Lab 01</h1>
+</div>
+
+
+<div class="quarto-title-meta-author">
+  <div class="quarto-title-meta-heading">Author</div>
+  <div class="quarto-title-meta-heading">Affiliation</div>
+  
+    <div class="quarto-title-meta-contents">
+    <p class="author">Simon Brewer <a href="mailto:simon.brewer@ess.utah.edu" class="quarto-title-author-email"><i class="bi bi-envelope"></i></a> </p>
+  </div>
+  <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            University of Utah
+          </p>
+      </div>
+  </div>
+
+<div class="quarto-title-meta">
+
+      
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">December 28, 2024</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+<p>In this lab, we will introduce the basic functionality of R, together with some simple plotting functions. We will be using the following files for these examples:</p>
+<ul>
+<li>A dataset of morphological measurements of three species of penguin from the file <em>penguins.csv</em></li>
+</ul>
+<p>More information about this dataset can be found here: <a href="https://allisonhorst.github.io/palmerpenguins/index.html">https://allisonhorst.github.io/palmerpenguins/index.html</a></p>
+</section>
+<section id="introduction-to-r" class="level1">
+<h1>Introduction to R</h1>
+<section id="a-quick-note-on-formatting" class="level2">
+<h2 class="anchored" data-anchor-id="a-quick-note-on-formatting">A quick note on formatting</h2>
+<p>In this and subsequent labs, code that can be entered into R will be high-lit, e.g.:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(x, y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>And R output will be formatted with <code>##</code> at the start of the line. File names will be given in <em>italics</em> and will be available in the ‘Datafiles’ directory on the course Canvas site.</p>
+</section>
+<section id="getting-started" class="level2">
+<h2 class="anchored" data-anchor-id="getting-started">Getting started</h2>
+<section id="rstudio-layout" class="level3">
+<h3 class="anchored" data-anchor-id="rstudio-layout">RStudio layout</h3>
+<p>The R Studio interface consists of several windows. Start R Studio from the ‘Start’ menu under Windows, and the following window should appear:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="./images/rstudio.png" class="img-fluid figure-img"></p>
+<figcaption>RStudio Interface</figcaption>
+</figure>
+</div>
+<ul>
+<li><em>Bottom left</em>: console window (also called command window). Here you can type simple commands after the <code>&gt;</code> prompt and R will then execute your command. This is the most important window, because this is where R actually does stuff.</li>
+<li><em>Top left</em>: editor window (also called script window). Collections of commands (scripts) can be edited and saved. When you don’t see this window, you can open it with [File <span class="math inline">\(&gt;\)</span> New <span class="math inline">\(&gt;\)</span> R script]. Just typing a command in the editor window is not enough, it has to get into the command window before R executes the command. If you want to run a line from the script window (or the whole script), copy and paste it to the console. Alternatively, you can click [Run] or press CTRL+ENTER to send it to the command window.</li>
+<li><em>Top right</em>: workspace / history window. In the workspace window you can see which data and values R has in its memory. You can view and edit the values by clicking on them. The history window shows what has been typed before.</li>
+<li><em>Bottom right</em>: Files / plots / packages / help window. Here you can open files, view plots (also previous plots), install and load packages or use the help function. You can change the size of the windows by dragging the grey bars between the windows.</li>
+</ul>
+</section>
+<section id="working-with-r" class="level3">
+<h3 class="anchored" data-anchor-id="working-with-r">Working with R</h3>
+<p>Much of your time spent with R will involve typing commands in at the console, and R Studio has some help with this.</p>
+<ul>
+<li>The up/down arrow keys allow you to cycle back through commands that have been previously entered. You can then modify or reuse these as necessary. The commands can also be accessed through the `History’ tab in the top-right panel</li>
+<li>The console has ‘tab-completion’, which allows you to enter the first few characters of a string or function name, press ‘Tab’, and R Studio will bring up a list of possible options that match the string you entered. Try typing <code>pri</code> and pressing ‘Tab’ - you should see <code>print</code> as part of the list, and you can click on this, or scroll down to use it from the list.</li>
+</ul>
+</section>
+<section id="workspace" class="level3">
+<h3 class="anchored" data-anchor-id="workspace">Workspace</h3>
+<p>R has a <em>workspace</em> where variables and data are stored as you use it. This is held in the memory of the computer, so if you are working from a file, you will need to read it in to the R workspace, and then work on the values held in memory. This means that you only access files to read in or write out data, the rest of the time you are working on a copy in the workspace.</p>
+</section>
+<section id="working-directory" class="level3">
+<h3 class="anchored" data-anchor-id="working-directory">Working directory</h3>
+<p>R defines the working directory as the folder in which it is currently working. When you ask R to open a certain file, it will look in the working directory for this file, and when you tell R to save a data file or plot, it will save it in the working directory.</p>
+<p>For this class, the labs will assume that you have your files organized according to the following structure:</p>
+<pre><code>+-- geog6160
+|   +-- datafiles
+|   +-- lab01
+|   +-- lab02
+|   +-- lab03
+...
+|   +-- lab15</code></pre>
+<p>To do this, go to your <code>Documents</code> folder, and create a new folder called <code>geog6160</code>. In this now create two new folders, one called <code>datafiles</code> (where we will store all the data used across all labs and one called <code>lab01</code>, which we will use for today’s lab.</p>
+<p>Once you have created these folders, we need to change R’s working directory so that it is pointing to <code>lab01</code>. The easiest way to do this is by going to the [Session] menu in RStudio, then [Change working directory]. This will open a file browser that you can use to browse through your computer and find the folder. (If you are using the base version of R, go to [File] <span class="math inline">\(&gt;\)</span> [Change dir…] in Windows, or [Misc] <span class="math inline">\(&gt;\)</span> [Change Working Directory] in Mac.)</p>
+<p>You can also change the working directory manually using the <code>setwd()</code> function in the console. To do this, you may need to know the full path to the folder on your computer. If you followed the instructions given above, this should be:</p>
+<ul>
+<li>On a Windows system: <code>C:/Users/username/Documents/geog6160/lab01</code></li>
+<li>On a Mac OSX system: <code>/Users/username/Documents/geog6160/lab01</code></li>
+</ul>
+<p>Where <code>username</code> is your name on the computer. You can also find this path by</p>
+<ul>
+<li>On a Windows system: <code>- Use the File Explorer to select the folder</code>lab01`
+<ul>
+<li>Right-click the folder and select ‘Properties’</li>
+<li>In the pop-up window, the path will be listed under ‘Location’</li>
+<li>Highlight this, and copy the path</li>
+</ul></li>
+<li>On a Mac OSX system:
+<ul>
+<li>Use the Finder app to select the folder <code>lab01</code></li>
+<li>Go to the “View” menu then “Show Path Bar”. THis will make the full path appear at the bottom of the Finder window</li>
+<li>Right-click the Path Bar file name</li>
+<li>Select “Copy as Pathname” You can now run the <code>setwd()</code> command. Go to the console window in RStudio and enter the following code:</li>
+</ul></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(<span class="st">""</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>And paste your directory. The code should look something like this:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(<span class="st">"C:/Users/username/Documents/geog6160/lab01"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Note that the slashes are forward slashes and don’t forget the quotations. R is case sensitive, so make sure you write capitals where necessary. To check that you have correctly changed directory, enter the following command, which will show you the current working directory:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">getwd</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>You can also use relative paths. If your current working directory is <code>geog6160</code> and you want to change to <code>lab01</code>, enter the following code (where the <code>./</code> changes the directory to a level higher than the current one).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(<span class="st">"./lab01"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>If your current working directory is <code>lab01</code> and you want to change to <code>geog6160</code>, enter the following code (where the <code>../</code> changes the directory to a level below the current one).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(<span class="st">"../"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Finally, if your current working directory is <code>lab01</code> and you want to change to <code>lab02</code>, which is at the same level as the current directory, enter the following code (where the <code>../</code> changes the directory to a level below the current one, and <code>lab02</code> then moves to the level above that).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(<span class="st">"../lab02"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Before proceeding with the rest of today’s lab, make sure to change your working directory back to <code>lab01</code>.</p>
+<p>If this all seems a little foreign to you, don’t worry - there will be plenty of opportunities to practice this over the semester. Understanding the directory structure is very important in being able to manage your files both for this class and any analysis you do.</p>
+</section>
+<section id="using-the-console" class="level3">
+<h3 class="anchored" data-anchor-id="using-the-console">Using the console</h3>
+<p>In the console, the ‘<code>&gt;</code>’ is the prompt, and your commands will be entered here. Click on the console window, then enter the following:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="dv">2</span><span class="sc">+</span><span class="dv">2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 4</code></pre>
+</div>
+</div>
+<p>And press ‘Enter’, and R will tell you, not too surprisingly, that 2+2=4. The spacing is not relevant, you could equally enter <code>2 + 2</code> or <code>2+ 2</code> and get the same result. The <code>[1]</code> before the output is a vector index. It refers to the first value in the vector (here a vector of length 1). We’ll be using this later.</p>
+<p>We can equally use standard math functions, for example, to take the natural log or square root of 2:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">log</span>(<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.6931472</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sqrt</span>(<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1.414214</code></pre>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="working-with-variables-in-r" class="level1">
+<h1>Working with variables in R</h1>
+<p>R can use many different file types, but csv files are recommended as the easiest way to transfer between R and Excel. Start by changing your working directory to the directory holding the two file listed above. Then get a list of files as follows (note the use of the pattern parameter to get only certain files):</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">list.files</span>(<span class="at">pattern=</span><span class="st">".csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "iris.csv"     "iris2.csv"    "penguins.csv"</code></pre>
+</div>
+</div>
+<p>Larger data sets will most commonly be read in from files. A recommended format to use are csv (comma-separated value) files, as these may be easily exchanged with spreadsheet software. Let’s read in the data from the Penguin datafile (<em>penguins.csv</em>). Download this file from Canvas, and move it from your <code>Download</code> folder to the <code>datafiles</code> folder you created earlier. CSV files can be read in using the <code>read.csv()</code> function:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>penguin <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"../datafiles/penguins.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Note that because this file is held in a different folder (<code>datafiles</code>) to your current working directory (<code>lab01</code>), you need to provide the relative path (<code>../datafiles</code>).</p>
+<p>The first part of this code (<code>penguin &lt;-</code>) tells R to store the data read in from the file in a <em>data frame</em> called <code>penguin</code>. To print out the contents of any object in R, simply type the name of that object at the command prompt. Other useful commands are <code>class()</code> to see what data class an object is, and <code>names()</code> to get a list of the column headers. The function <code>str()</code> is probably the most useful, describing the column names and the type of data stored in them.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>penguin</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(penguin)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(penguin)</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(penguin)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The variable <code>penguin</code> here represents the whole data frame. If you want to access subsets of the data frame or individual values, you will need to understand indexes in R. There are two main methods to access parts of a data frame, the <code>$</code> notation, and row/column indexes. The <code>$</code> notation allows you to access individual columns:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>penguin<span class="sc">$</span>bill_length_mm      <span class="co"># Extract single column</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The row/column notation is a more flexible approach, and allows you to access individual rows, columns or values, or to access a range of rows and columns</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>penguin[ ,<span class="dv">4</span>]   <span class="co"># 4th column</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>penguin[<span class="dv">10</span>, ]  <span class="co"># 10th row</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Alternatively, you can access a range of rows and columns using <code>:</code>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>penguin[ ,<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>]     <span class="co"># Columns 1 to 4</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>penguin[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>, ]    <span class="co"># First 10 rows</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>penguin[<span class="dv">1</span><span class="sc">:</span><span class="dv">50</span>,<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>]  <span class="co"># First 50 rows of the first two columns</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Note that the data frame can contain different data classes. Compare:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(penguin)          </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "data.frame"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(penguin<span class="sc">$</span>bill_length_mm)       </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "numeric"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(penguin<span class="sc">$</span>species)          </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "character"</code></pre>
+</div>
+</div>
+<p>To access specific values within a vector, use the index of that value:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>penguin<span class="sc">$</span>bill_length_mm[<span class="dv">3</span>]      <span class="co"># 3rd element</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>penguin<span class="sc">$</span>bill_length_mm[<span class="sc">-</span><span class="dv">3</span>]     <span class="co"># All but 3rd element</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>penguin<span class="sc">$</span>bill_length_mm[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>]   <span class="co"># First 10 elements</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Logical operators <span class="math inline">\(&lt;, &lt;=, &gt;, &gt;=, ==, !=\)</span> can be used to select parts of the data set by value. This is very useful if you only want to analyze part of your dataset</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>penguin<span class="sc">$</span>bill_length_mm[penguin<span class="sc">$</span>bill_length_mm <span class="sc">&gt;</span> <span class="dv">40</span>] <span class="co"># All bill lengths over 40 mm</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>penguin[penguin<span class="sc">$</span>bill_length_mm <span class="sc">&gt;</span> <span class="dv">40</span>, ]  <span class="co"># All columns with bill length length over 40 </span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>penguin<span class="sc">$</span>bill_length_mm[(penguin<span class="sc">$</span>species <span class="sc">==</span> <span class="st">'Adelie'</span>)]   <span class="co"># All "Adelie" penguins</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>penguin[(penguin<span class="sc">$</span>species <span class="sc">==</span> <span class="st">'Adelie'</span>), ]    <span class="co"># All columns for "Adelie" penguins</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>These operators can be combined, so to get all instances of “Adelie” species with bill lengths greater than 40:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>penguin[(penguin<span class="sc">$</span>species <span class="sc">==</span> <span class="st">'Adelie'</span>) <span class="sc">&amp;</span> (penguin<span class="sc">$</span>bill_length_mm <span class="sc">&gt;</span> <span class="dv">40</span>), ]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="factors" class="level2">
+<h2 class="anchored" data-anchor-id="factors">Factors</h2>
+<p>The vector of species names (<code>penguin$species</code>) is a set of character strings. R has another data type, a <strong>factor</strong> used to represent groups within your data. With a factor, R automatically assumes that every observation with the same name or <em>level</em> belongs to a single group, which can greatly facilitate comparing values between groups</p>
+<p>You can convert a vector of character strings to a factor with the <code>as.factor()</code> function. The following code replaces the original <code>species</code> string with factor:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>penguin<span class="sc">$</span>species <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(penguin<span class="sc">$</span>species)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now let’s recheck the class:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(penguin<span class="sc">$</span>species)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "factor"</code></pre>
+</div>
+</div>
+<p>If we now check the first 10 values, you will see some additional information showing the levels of the factor, i.e.&nbsp;the individual groups.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>penguin<span class="sc">$</span>species[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] Adelie Adelie Adelie Adelie Adelie Adelie Adelie Adelie Adelie Adelie
+Levels: Adelie Chinstrap Gentoo</code></pre>
+</div>
+</div>
+<p>R automatically sets the levels in alphabetical order, irrespective of the order in the vector. The first level is considered to be the reference level, which has some uses in regression model as we will see later. You can change the order of the levels using the <code>factor()</code> function. The following sets the species <code>Gentoo</code> as the reference:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">factor</span>(penguin<span class="sc">$</span>species, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"Gentoo"</span>, <span class="st">"Chinstrap"</span>, <span class="st">"Adelie"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We will look further at how factors work in a later lab.</p>
+</section>
+</section>
+<section id="functions-in-r" class="level1">
+<h1>Functions in R</h1>
+<p>Functions typically are comprised of the name of the function (<code>sqrt</code> for taking square roots) and a set of parentheses. The parentheses are used to pass data to the function as well as setting parameters to change the behavior of the function.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sqrt</span>(<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2.236068</code></pre>
+</div>
+</div>
+<p>Note that we can use the assignment operator to save the output from a function, allowing you to use this in subsequent functions and analyses.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="dv">5</span>)</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2</code></pre>
+</div>
+</div>
+<p>To save time and code, functions can be combined:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">sqrt</span>(<span class="dv">5</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2</code></pre>
+</div>
+</div>
+<p>The <code>seq()</code> function produces a series of numbers on a regular step. By default, it require 3 parameters, the starting number, the ending number and the step.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">seq</span>(<span class="at">from =</span> <span class="dv">0</span>, <span class="at">to =</span> <span class="dv">20</span>, <span class="at">by =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1]  0  2  4  6  8 10 12 14 16 18 20</code></pre>
+</div>
+</div>
+<p>If you include the parameter names, as in this example, the order does not matter. The parameter names can be omitted if you keep to the specified order of parameters. So <code>seq(0,20,2)</code> will give you the equivalent results.</p>
+<p>To find out what these parameters are, what they are called and what values they take, use the <code>help()</code> function, e.g.&nbsp;<code>help(seq)</code>. This will open a window with the help file for that function. If you do not know the name of a function, there is a search function <code>help.search()</code>, or use the help browser <code>help.start()</code>, browse to packages or use the search engine.</p>
+<section id="univariate-statistics" class="level2">
+<h2 class="anchored" data-anchor-id="univariate-statistics">Univariate statistics</h2>
+<p>Now create two new vectors in R containing the list of bill lengths and the list of species names. Note the use of the assignment operator <code>&lt;-</code>. You can also use the equal sign (<code>=</code>) here and elsewhere in these examples.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>bl <span class="ot">&lt;-</span> penguin<span class="sc">$</span>bill_length_mm</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>sp <span class="ot">&lt;-</span> penguin<span class="sc">$</span>species</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>R has a large number of inbuilt functions. This section is designed to simply introduce you to the some basic functions for describing data. We’ll start by simply calculating the mean of the bill length values</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(bl)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] NA</code></pre>
+</div>
+</div>
+<p>This returns the value <code>NA</code>, rather than a mean length. So what went wrong? In the original set of data, there are some missing values, also denoted by <code>NA</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>bl[<span class="dv">1</span><span class="sc">:</span><span class="dv">15</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] 39.1 39.5 40.3   NA 36.7 39.3 38.9 39.2 34.1 42.0 37.8 37.8 41.1 38.6 34.6</code></pre>
+</div>
+</div>
+<p>R’s default for most functions is to not calculate values when there are missing observations. This is really to alert you to the fact that the data are incomplete, and the value you would obtain might be biased. You can overrule this by adding the argument <code>na.rm=TRUE</code> to the following functions. This removes <code>NA</code>s and calculates the value with whatever is leftover.</p>
+<p>Functions to describe the central tendency:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(bl, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 43.92193</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">median</span>(bl, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 44.45</code></pre>
+</div>
+</div>
+<p>Functions to describe the dispersion (output not shown):</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sd</span>(bl, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a><span class="fu">var</span>(bl, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a><span class="fu">min</span>(bl, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a><span class="fu">max</span>(bl, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span>(bl, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Note that <code>quantile()</code> takes a parameter that allows you to choose the quantile to be calculated, e.g.&nbsp;<code>quantile(bl, c(0.1,0.9), na.rm = TRUE)</code>, will calculate the 10th and 90th percentile. Try adapting this to calculate the 25th and 75th percentile.</p>
+<p>Some other useful functions:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(bl, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(bl)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Note that we do not need to tell R to exclude <code>NA</code>s for the <code>summary()</code> function. This provides a set of summary statistics <em>and</em> lets you know how many values are missing.</p>
+<p>Some specific functions for categorical data</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="fu">levels</span>(sp)</span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(sp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>As R is object oriented, functions will adapt to different data types</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(bl) <span class="do">## Summary of numeric vector</span></span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(sp) <span class="do">## Summary of categorical vector</span></span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(penguin) <span class="do">## Summary of data frame</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="the-tapply-function" class="level3">
+<h3 class="anchored" data-anchor-id="the-tapply-function">The <code>tapply()</code> function</h3>
+<p>R has a set of <code>*apply</code> functions designed to help to do repetitive tasks. We will look at one of the simplest of these today, the <code>table</code> apply function. This <em>applies</em> a function (e.g.&nbsp;mean) to a vector, but calculates the function on subgroups defined by categories in a second vector. For example, to calculate the average bill length per species of penguin, we can do the following:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tapply</span>(penguin<span class="sc">$</span>bill_length_mm, penguin<span class="sc">$</span>species, mean, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Adelie Chinstrap    Gentoo 
+ 38.79139  48.83382  47.50488 </code></pre>
+</div>
+</div>
+<p>Repeat this and calculate the standard deviation per species.</p>
+</section>
+</section>
+</section>
+<section id="basic-plotting-in-r" class="level1">
+<h1>Basic plotting in R</h1>
+<p>We’ll now look quickly at the basic plotting functions in R. R has a wide range of plotting types, and we will look at some more complex methods later in this class. For now, we will concentrate on the basic plotting function (<code>plot()</code>) and how to simply modify this.</p>
+<section id="index-plots" class="level2">
+<h2 class="anchored" data-anchor-id="index-plots">Index plots</h2>
+<p>The simplest type of plot is an index plot, which simply plots values in the order they are recorded in the input vector. These are useful for examining the basic data structure and identifying errors and outliers. <code>plot</code> is a generic plotting command and will adapt to different data types. The parameter <code>type='p'</code> gives the plot type, here using points. Other options are <code>'l'</code> for lines, <code>'h'</code> for histogram lines, <code>'s'</code> for a stepped plot and <code>'b'</code> for both line and points. See <code>help(plot)</code> for more options and other parameters.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(penguin<span class="sc">$</span>bill_length_mm, <span class="at">type =</span> <span class="st">'p'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab01_files/figure-html/unnamed-chunk-37-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>As we have only asked to plot one variable, this is represented on the y-axis. The x-axis gives the index of the observation, in this case from 1 to 350. Other index plots include strip plots and dot plots (also known as Cleveland plots). Here we use a combination of species name and row number to label the plot.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="fu">stripchart</span>(penguin<span class="sc">$</span>bill_length_mm, <span class="at">method =</span> <span class="st">'stack'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab01_files/figure-html/unnamed-chunk-38-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dotchart</span>(penguin<span class="sc">$</span>bill_length_mm[<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>], </span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>         <span class="at">labels =</span> <span class="fu">paste</span>(penguin<span class="sc">$</span>species[<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>], <span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>, <span class="at">sep =</span> <span class="st">"_"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab01_files/figure-html/unnamed-chunk-38-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The final example of an index plot shown in class is the quantile-quantile or q-q plot. This compares the quantiles of the set of data values to equivalent quantiles from a standard normal distribution. The first function used here <code>qqnorm()</code> plots this comparison, and if the data set is normally distributed, there should be a linear correspondence between the observed and theoretical quantiles, i.e.&nbsp;they should form a straight line on the scatterplot. The second function, <code>qqline</code>, adds a line representing the match between two normal distributions. If the points from the first function fall mainly on this line, we can infer that our data set is close to being normally distributed.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(penguin<span class="sc">$</span>bill_length_mm)</span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a><span class="fu">qqline</span>(penguin<span class="sc">$</span>bill_length_mm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab01_files/figure-html/unnamed-chunk-39-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="summary-plots" class="level2">
+<h2 class="anchored" data-anchor-id="summary-plots">Summary plots</h2>
+<p>Summary plots attempt to describe the distribution of the data, giving some ideas about which values are most common and which are most rare. Histograms are commonly used for this method, values are ‘binned’ into a set of classes, and the histogram represents the frequency of occurrences in that bin. Bins are defined with the <code>breaks</code> parameter, which may be set to a constant number in which case the data range is split into that many bins, or as a sequence of numbers defining the intervals between bins. In this latter case, we can make use of the <code>seq()</code> function from earlier.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(penguin<span class="sc">$</span>bill_length_mm, <span class="at">breaks =</span> <span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab01_files/figure-html/unnamed-chunk-40-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(penguin<span class="sc">$</span>bill_length_mm, <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">30</span>, <span class="dv">60</span>, <span class="fl">2.5</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab01_files/figure-html/unnamed-chunk-40-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>An alternative to histograms are boxplots, which show information about the data quartiles. Here the box represents the interquartile data (25-75% of the data), the thick bar is the median, and the ‘whiskers’ show the data range.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="fu">boxplot</span>(penguin<span class="sc">$</span>bill_length_mm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab01_files/figure-html/unnamed-chunk-41-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>This is not hugely informative, but we will expand this plot below:</p>
+</section>
+<section id="bivariate-plots" class="level2">
+<h2 class="anchored" data-anchor-id="bivariate-plots">Bivariate plots</h2>
+<p>Bivariate plots are designed to show the relationship between two variables, and how this may vary. The simplest form is the scatter plot. We use the <code>plot()</code> function again, but now we give it two variables (x and y).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(penguin<span class="sc">$</span>bill_length_mm, penguin<span class="sc">$</span>bill_depth_mm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab01_files/figure-html/unnamed-chunk-42-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>As we know that these values come from three difference species, we can use this knowledge to add extra information to the plot, by using the <code>col</code> parameter. We first convert the <code>Species</code> vector to a factor class. R will then use the levels of the factor to assign colors to the points. We can also change the symbol type using the <code>pch</code> parameter.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a>penguin<span class="sc">$</span>species <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(penguin<span class="sc">$</span>species)</span>
+<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(penguin<span class="sc">$</span>bill_length_mm, penguin<span class="sc">$</span>bill_depth_mm,</span>
+<span id="cb68-4"><a href="#cb68-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">col =</span> penguin<span class="sc">$</span>species, <span class="at">pch =</span> <span class="dv">16</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab01_files/figure-html/unnamed-chunk-43-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Let’s clean up this plot a little by specifying the axis labels and a title:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(penguin<span class="sc">$</span>bill_length_mm, penguin<span class="sc">$</span>bill_depth_mm,</span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">col =</span> penguin<span class="sc">$</span>species, </span>
+<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">pch =</span> <span class="dv">16</span>, </span>
+<span id="cb69-4"><a href="#cb69-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"Bill length (mm)"</span>, </span>
+<span id="cb69-5"><a href="#cb69-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">"Bill depth (mm)"</span>,</span>
+<span id="cb69-6"><a href="#cb69-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Penguin size measurements (Palmer Archipelago)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We can also add a legend to our plot to explain the different colors and symbols. Unfortunately, R makes you do all the work for this, using the <code>legend()</code> function. Here, we add a legend to the top left of the plot, giving the labels for each color and the color used:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">"bottomleft"</span>,</span>
+<span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a>       <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">"Adelie"</span>,<span class="st">"Chinstrap"</span>,<span class="st">"Gentoo"</span>),</span>
+<span id="cb70-3"><a href="#cb70-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">col =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>), </span>
+<span id="cb70-4"><a href="#cb70-4" aria-hidden="true" tabindex="-1"></a>       <span class="at">pch =</span> <span class="dv">16</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab01_files/figure-html/unnamed-chunk-46-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Note that we can also use the <code>levels()</code> function introduced above to help - this will give us the list of labels to be used in the title:</p>
+<p>An alternative way to look at the association between factors and a variable is, again, to use boxplots. Note that this code uses a tilde (<span class="math inline">\(\sim\)</span>) between the variable and the set of factors. The tilde is often used to define dependency between two variables, and we will return to this again during the modeling part of this class.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="fu">boxplot</span>(penguin<span class="sc">$</span>bill_length_mm <span class="sc">~</span> penguin<span class="sc">$</span>species, </span>
+<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a>        <span class="at">ylab =</span> <span class="st">'Bill length (mm)'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab01_files/figure-html/unnamed-chunk-47-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>As the boxplot does not automatically label the y-axis, we add this with the <code>ylab</code> parameter. See <code>help(plot)</code> and <code>help(par)</code> for a complete list of the plotting parameters.</p>
+</section>
+<section id="graphic-output" class="level2">
+<h2 class="anchored" data-anchor-id="graphic-output">Graphic output</h2>
+<p>By default, R plots graphics to the screen, but has the ability to save figures in most of the standard graphic formats. In order to do this, you first need to open a file (a graphics <em>device</em>), then run the plotting functions, then close the device. Remember that you need to plot all the layers of a figure before closing the file. The following example plots the penguin bill length data to a pdf file. Alternatives include: png, jpeg, svg, etc.; type <code>help(Devices)</code> for more details.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pdf</span>(<span class="st">"penguin_bill_length.pdf"</span>)</span>
+<span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(penguin<span class="sc">$</span>bill_length_mm, penguin<span class="sc">$</span>bill_depth_mm,</span>
+<span id="cb72-3"><a href="#cb72-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">col =</span> penguin<span class="sc">$</span>species, </span>
+<span id="cb72-4"><a href="#cb72-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">pch =</span> <span class="dv">16</span>, </span>
+<span id="cb72-5"><a href="#cb72-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"Bill length (mm)"</span>, </span>
+<span id="cb72-6"><a href="#cb72-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">"Bill depth (mm)"</span>,</span>
+<span id="cb72-7"><a href="#cb72-7" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Penguin size measurements (Palmer Archipelago"</span>)</span>
+<span id="cb72-8"><a href="#cb72-8" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">"bottomleft"</span>,</span>
+<span id="cb72-9"><a href="#cb72-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">"Adelie"</span>,<span class="st">"Chinstrap"</span>,<span class="st">"Gentoo"</span>),</span>
+<span id="cb72-10"><a href="#cb72-10" aria-hidden="true" tabindex="-1"></a>       <span class="at">col =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>), </span>
+<span id="cb72-11"><a href="#cb72-11" aria-hidden="true" tabindex="-1"></a>       <span class="at">pch =</span> <span class="dv">16</span>)</span>
+<span id="cb72-12"><a href="#cb72-12" aria-hidden="true" tabindex="-1"></a><span class="fu">dev.off</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Alternatively, you can copy-paste directly into Word by going to [Export] -&gt; [Copy to clipboard…] in R Studio’s plotting window.</p>
+</section>
+</section>
+<section id="quitting-r" class="level1">
+<h1>Quitting R</h1>
+<p>When you are finished with R, exit by typing <code>q()</code> in the console (or going to [File] <span class="math inline">\(&gt;\)</span> [Quit R Studio]). You will be asked if you want to save your workspace. This is generally a good idea, as this will create a file containing all your current data (“.RData”), and the history (“.Rhistory”) of the commands you have used. If you restart R in the same directory, by clicking on an R script file, the workspace will be loaded automatically. If it doesn’t, you can load this by changing to the the correct working directory and typing:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="st">".RData"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
