@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.553">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2025-01-01">
+
+<title>GEOG 5160/6160: Introduction to git and GitHub: part 1</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+</head><body class="fullcontent">\usepackage{tabularx}
+
+
+
+
+
+
+<div id="quarto-search-results"></div>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">GEOG 5160/6160: Introduction to git and GitHub: part 1</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p> </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">January 1, 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="git" class="level1">
+<h1><strong>git</strong></h1>
+<p><strong>git</strong> is a version control system designed by the developers of the Linux kernel. It is primarily used to manage the development of source code, but can easily be used to manage any set of files. It is free to use and install and is particularly useful when managing files for collaborative work, including:</p>
+<ul>
+<li>version control to avoid overwriting new code with old</li>
+<li>version storage to find older modifications</li>
+<li>tracking for issues and bugs</li>
+<li>commenting system to make it clear(ish) what changes have been made and why</li>
+</ul>
+<p>The whole system works through repositories: a set of files dedicated to a given project. This is not restricted to R files, and can be used with most computer languages, documents and files. Repositories can be stored on your own computer (<em>local</em>) or hosted on a server (<em>remote</em>). In practice, most people use a combination of these, with your files being changed locally, then <em>committed</em> to the remote hosting service.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="intro_to_git_1_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>https://xkcd.com/1597/</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>We’re going to use the command line to start working with git, as it is the best way to get a feel for what is going on. If you start to use git more routinely, there are several excellent GUIs that will make your life easier (GitHub has a neat desktop application). The examples used here are based on the information available at <a href="https://happygitwithr.com">happygitwithr</a>. This website has much more extensive instructions on the use of git and R (and git on its own), and is a great place to follow up.</p>
+</section>
+<section id="github" class="level1">
+<h1>GitHub</h1>
+<p>While git provides the tools to start working with your code, you will likely also want an account with an online service to store your files. This makes it possible to access your code from multiple computers, and allows other to access, clone and modify your code. GitHub is one of several online hosting sites that provide cloud-based storage for your git repositories (other options include GitLab and Bitbucket).</p>
+<p>Here, we’ll go through the steps of setting up git and GitHub to play nicely together.</p>
+<p>The overall setup scheme is as follows:</p>
+<ol type="1">
+<li>Create an account at GitHub</li>
+<li>Install git</li>
+<li>Link git to your account</li>
+<li>Start working with your files</li>
+</ol>
+<p>In the next lab we’ll look at working with GitHub through RStudio, and finally look at ways that you can collaborate on projects through GitHub.</p>
+<section id="setting-up-a-github-account" class="level2">
+<h2 class="anchored" data-anchor-id="setting-up-a-github-account">Setting up a GitHub account</h2>
+<p>Go to this site: https://github.com and follow the instructions. Choose your username wisely - remember that this is way that potential employers can see your work!</p>
+<p>You will also need a personal access token (PAT) to be able to connect to your GitHub account. If you are not asked to create one when you set up your account, you can create one once it is set up. To do this:</p>
+<ul>
+<li>Log in to GitHub</li>
+<li>Click on the icon in the top-right hand corner of your GitHub homepage and go to ‘Settings’</li>
+<li>Scroll down and find ‘Developer settings’ on the left hand side</li>
+<li>Click on ‘Personal access token’ then ‘Generate new token’ or ‘Generate token’</li>
+<li>On the next screen given your token a name, and select its expiration period. (I’d suggest 90 days to last through this class). Don’t change any of the tickboxes. Now scroll down and click ‘Generate token’</li>
+<li>On the next screen, you should now see your PAT. This will be a long string of characters and numbers, starting with <code>ghp_</code>. Make sure to make a copy of this by clicking on the clipboard icon next to the strong, and copy this to a text file</li>
+</ul>
+<p>Your PAT will remain active until its expiration date. You’ll get a warning from GitHub as this date gets closer, at which point you’ll need to create a new one. To do this, just follow the steps above.</p>
+</section>
+<section id="install-git" class="level2">
+<h2 class="anchored" data-anchor-id="install-git">Install git</h2>
+<p><strong>git</strong> is the underlying software that manages the repositories, keeps files current and copies and sends files between computers, so we need to install this first so that R can use it.</p>
+<section id="windows" class="level3">
+<h3 class="anchored" data-anchor-id="windows">Windows</h3>
+<p>The easiest way to install git is using <a href="https://gitforwindows.org">Git for windows</a>. This is a self contained installer; download it, run it and accept the default settings (although feel free to switch to a more modern text editor than vim).</p>
+</section>
+<section id="mac-osx" class="level3">
+<h3 class="anchored" data-anchor-id="mac-osx">Mac OSX</h3>
+<p>The easiest way to install git on a Mac is by installing the XCode command line tools. Open a terminal and enter the following command to do so:</p>
+<pre><code>xcode-select --install</code></pre>
+<p>This can take a little time, but when finished will provide you with a wide range of useful tools for programming.</p>
+</section>
+<section id="linux" class="level3">
+<h3 class="anchored" data-anchor-id="linux">Linux</h3>
+<p>Use your favorite package manager to install git directly.</p>
+<p>Ubuntu or Debian Linux:</p>
+<pre><code>sudo apt-get install git</code></pre>
+<p>Fedora or RedHat Linux:</p>
+<pre><code>sudo yum install git</code></pre>
+<p>You can also get the latest version of git <a href="https://git-scm.com/downloads">here</a>.</p>
+</section>
+</section>
+<section id="setting-up-git" class="level2">
+<h2 class="anchored" data-anchor-id="setting-up-git">Setting up git</h2>
+<p>Once the installation is complete, open a terminal to check that git is working. On Mac or Linux, you can also use a regular terminal, as long as it is running bash or zsh. On Windows, you can access Git Bash from the Start menu, which will open a terminal (don’t try to use the PowerShell for this).</p>
+<p>If this works, the next steps are to tell git your name and email address. The email address should be the address that you registered with GitHub, but the name can be your real name. Type the following in your terminal:</p>
+<pre><code>git config --global user.name 'Grumpy Git'
+git config --global user.email 'grumpyoldgit@example.com'</code></pre>
+<p>To check that this has been correctly entered:</p>
+<pre><code>git config --global --list</code></pre>
+</section>
+</section>
+<section id="connect-to-github" class="level1">
+<h1>Connect to GitHub</h1>
+<p>In this section, we will walk through the steps of connecting to GitHub for the first time, and both pulling from and pushing to GitHub from your computer. Before doing anything else, make a new folder on your computer where you can store the files for these labs. I’d suggest making this on your desktop and calling it <code>github</code>. Make a note of where this is, and then go to your terminal and change to this directory. Note that in a terminal:</p>
+<ul>
+<li><code>pwd</code> prints the current directory</li>
+<li><code>cd</code> changes the directory
+<ul>
+<li><code>cd</code> will go to your home directory</li>
+<li><code>cd ..</code> will go up one level</li>
+<li><code>cd /path/to/my/files</code> will change to whatever path you have listed</li>
+</ul></li>
+<li><code>ls</code> will print a list of the files in the current directory</li>
+</ul>
+<p>Under Windows, you can change to a desktop folder by typing:</p>
+<pre><code>cd /c/User/USERNAME/Desktop/github</code></pre>
+<p>Under Mac OSX, you can change to a desktop folder by typing:</p>
+<pre><code>cd /Users/USERNAME/Desktop/github</code></pre>
+<p>Under Linux:</p>
+<pre><code>cd /home/USERNAME/Desktop/github</code></pre>
+<section id="make-a-repo-on-github" class="level2">
+<h2 class="anchored" data-anchor-id="make-a-repo-on-github">Make a repo on GitHub</h2>
+<p>Go to https://github.com and make sure you are logged in to your account. Click on [Repositories], then click the green [New] button.</p>
+<p>This will open a form with several options. Enter the following:</p>
+<ul>
+<li>Repository name: <code>myrepo</code> (or whatever name you will easily remember).</li>
+<li>Description: “<code>setup test</code>” (or something else, but it is good to get into practice of writing something descriptive in the README).</li>
+<li>Public. <code>YES</code></li>
+<li>Initialize this repository with a README.</li>
+<li>For everything else, just accept the default.</li>
+</ul>
+<p>Click button [Create repository.]</p>
+<p>This has created the remote copy of your repository. We now need to link this to a local copy on your computer. Click the green button [Code], and copy the HTTPS URL (if you click on the little clipboard icon this will get copied to your clipboard).</p>
+<p>Once you have changed directory to where you want the local files saved, make a clone of your repository by typing the following into the terminal:</p>
+<pre><code>git clone https://github.com/USERNAME/REPOSITORY.git</code></pre>
+<p>Replace the <code>https://</code> address with the URL copied from GitHub. git will now make a new directory with the name of your repository and copy all files from GitHub to this directory. You should see something similar to the following output if this has been successful:</p>
+<pre><code>Cloning into 'myrepo'...
+remote: Enumerating objects: 3, done.
+remote: Counting objects: 100% (3/3), done.
+remote: Total 3 (delta 0), reused 0 (delta 0), pack-reused 0
+Receiving objects: 100% (3/3), done.</code></pre>
+<p>This will create a new folder with the name of the repository (<code>myrepo</code>). Change directory now and take a look at its contents.</p>
+<pre><code>cd myrepo
+ls
+head README.md</code></pre>
+<p>The <code>head</code> command will show you the first few lines of the README file. This is a markdown file and is used as the default landing page for your repository. Although we’ve just downloaded this, so know where it is linked to, we can check the address of the remote repository as follows:</p>
+<pre><code>git remote show origin</code></pre>
+<p>Another very useful command is <code>git status</code>, which provides a summary of the current repository, including</p>
+<ul>
+<li>Which branch you are working on (more on this later)</li>
+<li>Whether or not files are being tracked (i.e.&nbsp;monitored for changes by git)</li>
+<li>Whether files are in sync with the remote repository</li>
+</ul>
+</section>
+<section id="make-a-local-change-commit-and-push" class="level2">
+<h2 class="anchored" data-anchor-id="make-a-local-change-commit-and-push">Make a local change, commit, and push</h2>
+<p>We will make a simple change to the <code>READ.md</code> file, and then check to see if we can push this to GitHub. You can open this file with a text editor, or run the following command line to insert some new text.</p>
+<pre><code>echo "This is my exciting first GitHub repo. Whoo." &gt;&gt; README.md</code></pre>
+<p>If you want to check that git has seen this change, type the following at the command line</p>
+<pre><code>git status</code></pre>
+<p>And this should tell you that one file (<code>README.md</code>) has been modified, but that it is <em>not</em> staged.</p>
+<pre><code>    modified:   README.md</code></pre>
+<p>Now let’s push this change to git. This is done in three parts.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="intro_to_git_1_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>git work flow (https://thenewstack.io/git-with-the-program-getting-started-with-github/)</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>First we <em>stage</em> the changes. This creates the package of modifications we have made. In this case, this includes adding the new file with <code>git add</code></li>
+<li>Second, we create a <em>commit</em>. This updates your <em>local</em> repository with the package of changes, along with a brief description of the modifications you made.</li>
+<li>Finally, we <em>push</em> this to the <em>remote</em> repository on GitHub. Here we’ll need to authorize git to connect to your account</li>
+</ul>
+<pre><code>git add -A
+git commit -m "My first commit"
+git push</code></pre>
+<p>When you run this last command, a new window should open asking you to sign in to GitHub. Click on the button ‘Sign in with your browser’.</p>
+<p>The description of changes is a key part of the way git works, and you will not be allowed to push changes without this. The goal here is to make the description brief but informative, and in turn the commits you make should be relatively small increments each time. Remember that the goal of these comments is to allow collaborators and other users to understand what is going on and how this is affecting the code.</p>
+<p>Depending on your operating system, you may get a prompt to enter your login details. For your password, enter or copy the PAT you saved earlier. Alternatively, this might open a browser page for GitHub’s credential manager, which can be used to store your login details. Here, you need to click the green button [Authorize GitCredentialManager], then enter your password/PAT. This may not work in certain browsers (e.g.&nbsp;Windows Edge). If the button is grayed out and you can’t click it, close the browser and stop the <code>push</code> command (press <code>Ctrl-C</code> in the terminal). Now set you default browser to something else (e.g.&nbsp;Chrome) and try and run the <code>git push</code> command again.</p>
+<p>If this has worked, you should see some output similar to this:</p>
+<pre><code>Enumerating objects: 5, done.
+Counting objects: 100% (5/5), done.
+Delta compression using up to 8 threads.
+Compressing objects: 100% (2/2), done.
+Writing objects: 100% (3/3), 311 bytes | 0 bytes/s, done.
+Total 3 (delta 0), reused 0 (delta 0), pack-reused 0
+To https://github.com/grumpy-old-git/myrepo.git
+   b4112c5..de669ba  main -&gt; main</code></pre>
+</section>
+<section id="confirm-the-commit" class="level2">
+<h2 class="anchored" data-anchor-id="confirm-the-commit">Confirm the commit</h2>
+<p>Now let’s check to see if the local change propagated to the GitHub repository. Go back to your GitHub page and refresh the repository page. You should now see the new line in the README file.</p>
+<p>While the README file is automatically shown when you access the directory, you can also look at the content of any other file you have added to the repository. Click on the name of the repository (<code>myrepo</code>), at the top of the page, then click on the name of any file (there will probably only be the README file for now). If the file is a text file, the content will be displayed in the window. This window allows you to track past changes in the file by clicking on the ‘History’ link on the right hand side. For now, this will just show the initial commit when the repository was made, and the update to the README file. At the far right hand side of this page is a small icon that looks like this <code>&lt;&gt;</code> for each commit. Clicking this will show you the content of the file following the commit, which allows you to track the changes made by yourself (and others).</p>
+<p>You can also see the local copy of your commits, by typing <code>git log</code> in the terminal to print out the author, date and comment for each one.</p>
+</section>
+</section>
+<section id="pulling-changes-from-github" class="level1">
+<h1>Pulling changes from GitHub</h1>
+<p>If there have been any changes to the remote repository, we need to update the local one to reflect these. To do this, we need to git’s <code>pull</code> function. To demonstrate how this works, first go to your remote repository on GitHub. Scroll down to where the contents of the README.md file are shown, and click on the pencil icon in the top right to edit this.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="intro_to_git_1_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Enter some text and then scroll down and click [Commit changes]. Go back to the main repository page and check that the new text is visible. No go back to your terminal and type</p>
+<pre><code>git pull</code></pre>
+<p>And your changes will be downloaded from the server. In the output from the command there should be a brief description of the changes:</p>
+<pre><code>    Fast-forward
+     README.md | 2 +-
+     1 file changed, 1 insertion(+), 1 deletion(-)</code></pre>
+<p>Note that if there are no changes, running <code>git pull</code> simply stop with the message <code>Already up to date</code>, and not modify anything. As a result, there’s little risk in running this command, and it’s good practice to pull every time that you start working on a repository, particularly if these are collaborative.</p>
+<blockquote class="blockquote">
+<p>Whether you haven’t opened [your code] in a month or you’ve just been away for a lunch break, pull. It might not be necessary, but it can save a lot of heartache later.</p>
+</blockquote>
+</section>
+<section id="adding-files" class="level1">
+<h1>Adding files</h1>
+<p>Next, we’ll add a file to the local repository and push this to GitHub. The example here uses a Netlogo model (<code>randomWalk4.nlogo</code>), but you can upload any file. Note that GitHub limits the size of the files you can upload to 100Mb, so it’s best to choose a small file for this. Copy the file to your local repository (e.g.&nbsp;<code>Desktop/rgithub/myrepo</code>). Once it is there, go back to the terminal and enter <code>git status</code> to check that git has seen the new file. It should tell you that you have an <em>untracked</em> file in the repository. This simply means that git has found the file, but is not tracking it as part of the repository. To fix this, we need to add the file:</p>
+<pre><code>git add randomWalk4.nlogo
+git status</code></pre>
+<p>You can also check the list of tracked files with <code>git ls-files</code>. The file will now be marked as a <em>new</em> file, and will be added the next time you make a commit. So let’s do that now.</p>
+<pre><code>git commit -m "Added model code"
+git push</code></pre>
+<p>If you want to add several files, then running <code>git add .</code> will add everything in the directory that is currently untracked, or you can use wildcards <code>git add '*.R'</code>. There may be files that you do not want to commit to GitHub, either because these are too large or because these include sensitive information. You can exclude these by adding them to a file called <code>.gitignore</code>. First check if this already exists in your repository</p>
+<pre><code>ls -a</code></pre>
+<p>If it doesn’t, you can create it using the Unix <code>touch</code> command:</p>
+<pre><code>touch .gitignore</code></pre>
+<p>As an example, we’ll now make a copy of the file that you just pushed to your repository (the new name doesn’t matter)</p>
+<pre><code>cp randomWalk4.nlogo allMySecrets.txt
+git status</code></pre>
+<p>Which lists the new file. Add this to the .gitignore file</p>
+<pre><code>echo allMySecrets.txt &gt;&gt; .gitignore
+git status</code></pre>
+<p>And this has now been dropped from the list of untracked files.</p>
+</section>
+<section id="cloning-a-repository" class="level1">
+<h1>Cloning a repository</h1>
+<p>In this section, we’ll look at how you can clone the code from someone else’s repository. This will make your own copy of the code that you can then go ahead and modify for your own use. Note that this copy is then independent of the source repository, and <em>any changes you make will only apply to your copy, not to the original source</em>. This is mainly used if you want to copy some code for your own purposes, and not collaborate on code development.</p>
+<p>For this part of the lab, you’ll need to work in pairs or a small group. Using the instructions from this lab, each person should:</p>
+<ul>
+<li>Make a new repository on GitHub. Make sure this has a different name to that of your working partner</li>
+<li>Clone your repository onto your computer</li>
+<li>Update your README with a message for your working partner. This doesn’t have to be polite, but at least try to use good grammar.</li>
+<li>Add a file to your local repository and use the add/commit process to push it to GitHub</li>
+</ul>
+<p>Once you have done this, clone your partner’s repository onto your computer. To do this:</p>
+<ul>
+<li>Go your partner’s GitHub page and find the correct repository.</li>
+<li>Click on the green [Code] button and copy the link</li>
+<li>Go to your terminal and type <code>cd ..</code> to change to the higher level directory</li>
+<li>Clone the repo: <code>git clone https://github.com/NAME/REPOSITORY.git</code> (but replace the https link with the link that you copied)</li>
+</ul>
+<p>If you have got to this point, you now have a successfully working git installation. In the next lab we will look at how to integrate this with R/RStudio.</p>
+</section>
+<section id="deleting-github-repositories" class="level1">
+<h1>Deleting GitHub repositories</h1>
+<p>If you would like to delete any git repository, you will need to both delete the local copy and the one hosted by GitHub. The local copy can be deleted like any normal folder on your computer. The remote copy can be deleted by going to the repository page on GitHub, clicking on [Settings], scrolling all the way down to the Danger Zone, and selecting [Delete this repository]. You will be asked to confirm this at least once, so do and your repository will be removed.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="intro_to_git_1_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Sterling Archer approves of GitHub</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="github-desktop" class="level1">
+<h1>GitHub Desktop</h1>
+<p>All the code above is to give you an idea of how git works. If you are going to use it a lot, it’s probably easier to use a GUI rather than the command line. If you are a R user, RStudio provides a pretty intuitive interface, which we will look at in a later lab. If you use git more widely, particularly with GitHub, you might want to try <a href="https://desktop.github.com">GitHub Desktop</a>. Download the installer, and go through the steps of signing in to GitHub. Authorize the Desktop app, and set up your name, etc. Now on the next screen you have options to create, clone or add repositories. We’ll simply add the local repository you made earlier. Click ‘Add an Existing Repository…’, and browse to the repository directory (in the example above this was ‘Desktop/github/myrepo’). This will open a window showing various information about your repository, which mostly be blank (as you haven’t changed anything from the previous commit).</p>
+<p>Now open your README.md file and add some text. Once you save it, the app will update to show the changes, including the file that has changed, and the additions or deletions in the right hand panel:</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="intro_to_git_1_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>GitHub Desktop</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Now to push your change back to GitHub, click on ‘Commit to main’ at the bottom to save the cahnegs locally, then click ‘Push origin’ on the next screen to send them to GitHub. Note that you can accumulate several commits before pushing. Try also adding a new file to see how that appears, and go through the steps of pushing that to GitHub too.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
