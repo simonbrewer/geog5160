@@ -44,10 +44,10 @@ The R Studio interface consists of several windows. Start R Studio from the 'Sta
 
 ![RStudio Interface](./images/rstudio.png)
 
--   *Bottom left*: console window (also called command window). Here you can type simple commands after the `>` prompt and R will then execute your command. This is the most important window, because this is where R actually does stuff.
--   *Top left*: editor window (also called script window). Collections of commands (scripts) can be edited and saved. When you don't see this window, you can open it with \[File $>$ New $>$ R script\]. Just typing a command in the editor window is not enough, it has to get into the command window before R executes the command. If you want to run a line from the script window (or the whole script), copy and paste it to the console. Alternatively, you can click \[Run\] or press CTRL+ENTER to send it to the command window.
--   *Top right*: workspace / history window. In the workspace window you can see which data and values R has in its memory. You can view and edit the values by clicking on them. The history window shows what has been typed before.
--   *Bottom right*: Files / plots / packages / help window. Here you can open files, view plots (also previous plots), install and load packages or use the help function. You can change the size of the windows by dragging the grey bars between the windows.
+- *Bottom left*: console window (also called command window). Here you can type simple commands after the `>` prompt and R will then execute your command. This is the most important window, because this is where R actually does stuff.
+- *Top left*: editor window (also called script window). Collections of commands (scripts) can be edited and saved. When you don't see this window, you can open it with \[File $>$ New $>$ R script\]. Just typing a command in the editor window is not enough, it has to get into the command window before R executes the command. If you want to run a line from the script window (or the whole script), copy and paste it to the console. Alternatively, you can click \[Run\] or press CTRL+ENTER to send it to the command window.
+- *Top right*: workspace / history window. In the workspace window you can see which data and values R has in its memory. You can view and edit the values by clicking on them. The history window shows what has been typed before.
+- *Bottom right*: Files / plots / packages / help window. Here you can open files, view plots (also previous plots), install and load packages or use the help function. You can change the size of the windows by dragging the grey bars between the windows.
 
 ### Working with R
 
