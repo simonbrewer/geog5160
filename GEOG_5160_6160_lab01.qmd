@@ -20,7 +20,7 @@ editor: visual
 
 In this lab, we will introduce the basic functionality of R, together with some simple plotting functions. We will be using the following files for these examples:
 
--   A dataset of morphological measurements of three species of penguin from the file *penguins.csv*
+- A dataset of morphological measurements of three species of penguin from the file *penguins.csv*
 
 More information about this dataset can be found here: <https://allisonhorst.github.io/palmerpenguins/index.html>
 
@@ -34,7 +34,7 @@ In this and subsequent labs, code that can be entered into R will be high-lit, e
 plot(x, y)
 ```
 
-And R output will be formatted with `##` at the start of the line. File names will be given in *italics* and will be available in the 'Datafiles' directory on the course Canvas site.
+And R output will be formatted with `##` at the start of the line. File names will be given in *italics* and will be available in the 'Datafiles' directory on the course Canvas site or through links on the class webpage.
 
 ## Getting started
 
@@ -44,10 +44,10 @@ The R Studio interface consists of several windows. Start R Studio from the 'Sta
 
 ![RStudio Interface](./images/rstudio.png)
 
-- *Bottom left*: console window (also called command window). Here you can type simple commands after the `>` prompt and R will then execute your command. This is the most important window, because this is where R actually does stuff.
-- *Top left*: editor window (also called script window). Collections of commands (scripts) can be edited and saved. When you don't see this window, you can open it with \[File $>$ New $>$ R script\]. Just typing a command in the editor window is not enough, it has to get into the command window before R executes the command. If you want to run a line from the script window (or the whole script), copy and paste it to the console. Alternatively, you can click \[Run\] or press CTRL+ENTER to send it to the command window.
-- *Top right*: workspace / history window. In the workspace window you can see which data and values R has in its memory. You can view and edit the values by clicking on them. The history window shows what has been typed before.
-- *Bottom right*: Files / plots / packages / help window. Here you can open files, view plots (also previous plots), install and load packages or use the help function. You can change the size of the windows by dragging the grey bars between the windows.
+-   *Bottom left*: console window (also called command window). Here you can type simple commands after the `>` prompt and R will then execute your command. This is the most important window, because this is where R actually does stuff.
+-   *Top left*: editor window (also called script window). Collections of commands (scripts) can be edited and saved. When you don't see this window, you can open it with \[File $>$ New $>$ R script\]. Just typing a command in the editor window is not enough, it has to get into the command window before R executes the command. If you want to run a line from the script window (or the whole script), copy and paste it to the console. Alternatively, you can click \[Run\] or press CTRL+ENTER to send it to the command window.
+-   *Top right*: workspace / history window. In the workspace window you can see which data and values R has in its memory. You can view and edit the values by clicking on them. The history window shows what has been typed before.
+-   *Bottom right*: Files / plots / packages / help window. Here you can open files, view plots (also previous plots), install and load packages or use the help function. You can change the size of the windows by dragging the grey bars between the windows.
 
 ### Working with R
 
@@ -88,14 +88,14 @@ You can also change the working directory manually using the `setwd()` function 
 Where `username` is your name on the computer. You can also find this path by
 
 -   On a Windows system: `- Use the File Explorer to select the folder`lab01\`
-    -   Right-click the folder and select 'Properties'
-    -   In the pop-up window, the path will be listed under 'Location'
-    -   Highlight this, and copy the path
+-   Right-click the folder and select 'Properties'
+-   In the pop-up window, the path will be listed under 'Location'
+-   Highlight this, and copy the path
 -   On a Mac OSX system:
-    -   Use the Finder app to select the folder `lab01`
-    -   Go to the "View" menu then "Show Path Bar". THis will make the full path appear at the bottom of the Finder window
-    -   Right-click the Path Bar file name
-    -   Select "Copy as Pathname" You can now run the `setwd()` command. Go to the console window in RStudio and enter the following code:
+-   Use the Finder app to select the folder `lab01`
+-   Go to the "View" menu then "Show Path Bar". THis will make the full path appear at the bottom of the Finder window
+-   Right-click the Path Bar file name
+-   Select "Copy as Pathname" You can now run the `setwd()` command. Go to the console window in RStudio and enter the following code:
 
 ```{r eval=FALSE}
 setwd("")
@@ -154,6 +154,18 @@ sqrt(2)
 
 # Working with variables in R
 
+In this class, we are largely going to use functions from the *tidyverse*, a set of add-on packages designed to make data manipulation a little easier. Before going any further, make sure that these packages are installed by running the following code in the console:
+
+```{r eval=FALSE}
+install.packages("tidyverse")
+```
+
+Now load the library so that you can access the functions:
+
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)
+```
+
 R can use many different file types, but csv files are recommended as the easiest way to transfer between R and Excel. Start by changing your working directory to the directory holding the two file listed above. Then get a list of files as follows (note the use of the pattern parameter to get only certain files):
 
 ```{r}
@@ -181,6 +193,13 @@ The variable `penguin` here represents the whole data frame. If you want to acce
 
 ```{r results='hide'}
 penguin$bill_length_mm  	# Extract single column
+```
+
+Alternatively, we can use the `select()` function to extract specific columns. The `|>` operator is a *pipe*, which chains the output of one function to the input of a second:
+
+```{r results='hide'}
+penguin |>
+  select(bill_length_mm)
 ```
 
 The row/column notation is a more flexible approach, and allows you to access individual rows, columns or values, or to access a range of rows and columns
@@ -214,19 +233,35 @@ penguin$bill_length_mm[-3]     # All but 3rd element
 penguin$bill_length_mm[1:10]   # First 10 elements
 ```
 
-Logical operators $<, <=, >, >=, ==, !=$ can be used to select parts of the data set by value. This is very useful if you only want to analyze part of your dataset
+Logical operators $<, <=, >, >=, ==, !=$ can be used to select parts of the data set by value in combination with the `filter` function. This is very useful if you only want to analyze a subset of your dataset
+
+All penguins with bill length length over 40 :
 
 ```{r results='hide'}
-penguin$bill_length_mm[penguin$bill_length_mm > 40]	# All bill lengths over 40 mm
-penguin[penguin$bill_length_mm > 40, ]	# All columns with bill length length over 40 
-penguin$bill_length_mm[(penguin$species == 'Adelie')] 	# All "Adelie" penguins
-penguin[(penguin$species == 'Adelie'), ] 	# All columns for "Adelie" penguins
+penguin |>
+  filter(bill_length_mm > 40)
 ```
 
-These operators can be combined, so to get all instances of "Adelie" species with bill lengths greater than 40:
+All bill lengths over 40 mm:
 
 ```{r results='hide'}
-penguin[(penguin$species == 'Adelie') & (penguin$bill_length_mm > 40), ]
+penguin |>
+  filter(bill_length_mm > 40) |>
+  select(bill_length_mm)
+```
+
+All "Adelie" penguins:
+
+```{r results='hide'}
+penguin |>
+  filter(species == 'Adelie')
+```
+
+You can add multiple conditions, , so to get all instances of "Adelie" species with bill lengths greater than 40:
+
+```{r results='hide'}
+penguin |>
+  filter(species == 'Adelie' & bill_length_mm > 40)
 ```
 
 ## Factors
@@ -356,13 +391,31 @@ summary(sp) ## Summary of categorical vector
 summary(penguin) ## Summary of data frame
 ```
 
-### The `tapply()` function
+### The `group_by()` function
 
-R has a set of `*apply` functions designed to help to do repetitive tasks. We will look at one of the simplest of these today, the `table` apply function. This *applies* a function (e.g. mean) to a vector, but calculates the function on subgroups defined by categories in a second vector. For example, to calculate the average bill length per species of penguin, we can do the following:
+The `group_by` function allows you to apply a function to different subsets of data, without having to first split it into the subsets. On it's own, this function simply creates the groups (here by species):
 
 ```{r}
-tapply(penguin$bill_length_mm, penguin$species, mean, na.rm = TRUE)
+penguin |>
+  group_by(species)
 ```
+
+We can use the pipe operator to chain this to the `summarize` function to calculate summary values:
+
+```{r}
+penguin |>
+  group_by(species) |>
+  summarize(mean_bill_length = mean(bill_length_mm, na.rm = TRUE))
+```
+
+Note that we can add more than one grouping, so to see the bill length by sex and species:
+
+```{r}
+penguin |>
+  group_by(sex, species) |>
+  summarize(mean_bill_length = mean(bill_length_mm, na.rm = TRUE))
+```
+
 
 Repeat this and calculate the standard deviation per species.
 
@@ -378,120 +431,119 @@ The simplest type of plot is an index plot, which simply plots values in the ord
 plot(penguin$bill_length_mm, type = 'p')
 ```
 
-As we have only asked to plot one variable, this is represented on the y-axis. The x-axis gives the index of the observation, in this case from 1 to 350. Other index plots include strip plots and dot plots (also known as Cleveland plots). Here we use a combination of species name and row number to label the plot.
-
-```{r}
-stripchart(penguin$bill_length_mm, method = 'stack')
-
-dotchart(penguin$bill_length_mm[1:20], 
-         labels = paste(penguin$species[1:20], 1:20, sep = "_"))
-```
-
-The final example of an index plot shown in class is the quantile-quantile or q-q plot. This compares the quantiles of the set of data values to equivalent quantiles from a standard normal distribution. The first function used here `qqnorm()` plots this comparison, and if the data set is normally distributed, there should be a linear correspondence between the observed and theoretical quantiles, i.e. they should form a straight line on the scatterplot. The second function, `qqline`, adds a line representing the match between two normal distributions. If the points from the first function fall mainly on this line, we can infer that our data set is close to being normally distributed.
-
-```{r}
-qqnorm(penguin$bill_length_mm)
-qqline(penguin$bill_length_mm)
-```
-
-## Summary plots
-
-Summary plots attempt to describe the distribution of the data, giving some ideas about which values are most common and which are most rare. Histograms are commonly used for this method, values are 'binned' into a set of classes, and the histogram represents the frequency of occurrences in that bin. Bins are defined with the `breaks` parameter, which may be set to a constant number in which case the data range is split into that many bins, or as a sequence of numbers defining the intervals between bins. In this latter case, we can make use of the `seq()` function from earlier.
-
-```{r}
-hist(penguin$bill_length_mm, breaks = 20)
-hist(penguin$bill_length_mm, breaks = seq(30, 60, 2.5))
-```
-
-An alternative to histograms are boxplots, which show information about the data quartiles. Here the box represents the interquartile data (25-75% of the data), the thick bar is the median, and the 'whiskers' show the data range.
-
-```{r}
-boxplot(penguin$bill_length_mm)
-```
-
-This is not hugely informative, but we will expand this plot below:
+As we have only asked to plot one variable, this is represented on the y-axis. The x-axis gives the index of the observation, in this case from 1 to 350. 
 
 ## Bivariate plots
 
-Bivariate plots are designed to show the relationship between two variables, and how this may vary. The simplest form is the scatter plot. We use the `plot()` function again, but now we give it two variables (x and y).
+More usefully, we can include a variable on both axis to show the relationship between them. We use the `plot()` function again, but now we give it two variables (x and y).
 
 ```{r}
 plot(penguin$bill_length_mm, penguin$bill_depth_mm)
 ```
 
-As we know that these values come from three difference species, we can use this knowledge to add extra information to the plot, by using the `col` parameter. We first convert the `Species` vector to a factor class. R will then use the levels of the factor to assign colors to the points. We can also change the symbol type using the `pch` parameter.
+The `tidyverse` equivalent to this is `ggplot`, which we will mainly use during this class as it provides a user-friendly interface for plotting. `ggplot` uses a series of functions to build up a plot. In it's simplest form, we can create the previous plot as follows:
 
 ```{r}
-penguin$species <- as.factor(penguin$species)
-
-plot(penguin$bill_length_mm, penguin$bill_depth_mm,
-     col = penguin$species, pch = 16)
+ggplot(penguin, aes(x = bill_length_mm, y = bill_depth_mm)) +
+  geom_point()
 ```
 
-Let's clean up this plot a little by specifying the axis labels and a title:
+Some things to note:
+
+- We define an *aesthetic* (`aes()`) which identifies the variables to be used on the x and y axes
+- We add a *geometry* to define the type of plot we want to make (a point or scatter plot)
+
+As we know that these values come from three difference species, we can use this knowledge to add extra information to the plot, by adding a `col` argument to the aestehtic (you can also display different symbols using the `shape` argument):
+
+```{r}
+ggplot(penguin, aes(x = bill_length_mm, 
+                    y = bill_depth_mm,
+                    col = species)) +
+  geom_point()
+```
+
+Let's clean up this plot a little by specifying the axis labels and a title. We'll also add a theme to remove the grey background. Note that we do this by adding (`+`) different plot elements sequentially:
 
 ```{r eval=FALSE}
-plot(penguin$bill_length_mm, penguin$bill_depth_mm,
-     col = penguin$species, 
-     pch = 16, 
-     xlab = "Bill length (mm)", 
-     ylab = "Bill depth (mm)",
-     main = "Penguin size measurements (Palmer Archipelago)")
+ggplot(penguin, aes(x = bill_length_mm, 
+                    y = bill_depth_mm,
+                    col = species)) +
+  geom_point() +
+  scale_x_continuous("Bill length (mm)") +
+  scale_y_continuous("Bill length (mm)") +
+  ggtitle("Penguins, penguins, penguins") +
+  theme_bw()
 ```
-
-We can also add a legend to our plot to explain the different colors and symbols. Unfortunately, R makes you do all the work for this, using the `legend()` function. Here, we add a legend to the top left of the plot, giving the labels for each color and the color used:
-
-```{r eval=FALSE}
-legend("bottomleft",
-       legend = c("Adelie","Chinstrap","Gentoo"),
-       col = c(1,2,3), 
-       pch = 16)
-```
-
-```{r echo=FALSE}
-plot(penguin$bill_length_mm, penguin$bill_depth_mm,
-     col = penguin$species, 
-     pch = 16, 
-     xlab = "Bill length (mm)", 
-     ylab = "Bill depth (mm)",
-     main = "Penguin size measurements (Palmer Archipelago)")
-legend("bottomleft",
-       legend = c("Adelie","Chinstrap","Gentoo"),
-       col = c(1,2,3), 
-       pch = 16)
-```
-
-Note that we can also use the `levels()` function introduced above to help - this will give us the list of labels to be used in the title:
 
 An alternative way to look at the association between factors and a variable is, again, to use boxplots. Note that this code uses a tilde ($\sim$) between the variable and the set of factors. The tilde is often used to define dependency between two variables, and we will return to this again during the modeling part of this class.
 
 ```{r}
-boxplot(penguin$bill_length_mm ~ penguin$species, 
-        ylab = 'Bill length (mm)')
+ggplot(penguin, aes(x = species, y = bill_length_mm)) +
+  geom_boxplot() +
+  theme_bw()
 ```
 
 As the boxplot does not automatically label the y-axis, we add this with the `ylab` parameter. See `help(plot)` and `help(par)` for a complete list of the plotting parameters.
 
-## Graphic output
+## Summary plots
 
-By default, R plots graphics to the screen, but has the ability to save figures in most of the standard graphic formats. In order to do this, you first need to open a file (a graphics *device*), then run the plotting functions, then close the device. Remember that you need to plot all the layers of a figure before closing the file. The following example plots the penguin bill length data to a pdf file. Alternatives include: png, jpeg, svg, etc.; type `help(Devices)` for more details.
+Summary plots attempt to describe the distribution of the data, giving some ideas about which values are most common and which are most rare. Histograms are commonly used for this method, values are 'binned' into a set of classes, and the histogram represents the frequency of occurrences in that bin. The size of the bins can be set with `binwidth`:
 
-```{r results='hide', eval=FALSE}
-pdf("penguin_bill_length.pdf")
-plot(penguin$bill_length_mm, penguin$bill_depth_mm,
-     col = penguin$species, 
-     pch = 16, 
-     xlab = "Bill length (mm)", 
-     ylab = "Bill depth (mm)",
-     main = "Penguin size measurements (Palmer Archipelago")
-legend("bottomleft",
-       legend = c("Adelie","Chinstrap","Gentoo"),
-       col = c(1,2,3), 
-       pch = 16)
-dev.off()
+```{r}
+ggplot(penguin, aes(x = bill_length_mm)) +
+  geom_histogram(binwidth = 1) + 
+  theme_bw()
 ```
 
-Alternatively, you can copy-paste directly into Word by going to \[Export\] -\> \[Copy to clipboard...\] in R Studio's plotting window.
+As before, we can use colors to define different groups of data. We'll use these to fill the histogram bars:
+
+```{r}
+ggplot(penguin, aes(x = bill_length_mm, fill = species)) +
+  geom_histogram(binwidth = 1) + 
+  theme_bw()
+```
+
+By default, these are show as stacked histogram bars (i.e. the height is the cumulative number of all species in a certain bin). We can change this to overlapping bins as follows (we'll also move the legend to underneath the plot):
+
+```{r}
+ggplot(penguin, aes(x = bill_length_mm, fill = species)) +
+  geom_histogram(binwidth = 1, position = 'identity', alpha = 0.6) + 
+  theme_bw() +
+  theme(legend.position = "bottom")
+```
+
+## Faceting
+
+You can add further information through the use of *facets*. These break the original plot into a series of small multiples according to some categorical variable. Here, we'll demonstrate this by plotting the bill measurements, colored by species and faceted by island
+
+```{r}
+ggplot(penguin, aes(x = bill_length_mm, 
+                    y = bill_depth_mm,
+                    col = species)) +
+  facet_wrap(~island) +
+  geom_point() +
+  theme_bw() +
+  theme(legend.position = "bottom")
+```
+
+## Graphic output
+
+By default, R plots graphics to the screen, but has the ability to save figures in most of the standard graphic formats. For a `ggplot` object, the easiest way is to save the output as an object, then use `ggsave()` to export:
+
+```{r results='hide', eval=FALSE}
+p1 <- ggplot(penguin, aes(x = bill_length_mm, 
+                    y = bill_depth_mm,
+                    col = species)) +
+  facet_wrap(~island) +
+  geom_point() +
+  theme_bw() +
+  theme(legend.position = "bottom")
+ggsave("test.png", p1)
+```
+
+This will also save into the majority of standard image formats simply by changing the file extension in the `ggsave()` command. 
+
+Alternatively, you can copy-paste directly into another file by going to \[Export\] -\> \[Copy to clipboard...\] in R Studio's plotting window.
 
 # Quitting R
 
