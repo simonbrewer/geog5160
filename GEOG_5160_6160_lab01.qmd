@@ -20,7 +20,7 @@ editor: visual
 
 In this lab, we will introduce the basic functionality of R, together with some simple plotting functions. We will be using the following files for these examples:
 
-- A dataset of morphological measurements of three species of penguin from the file *penguins.csv*
+-   A dataset of morphological measurements of three species of penguin from the file *penguins.csv*
 
 More information about this dataset can be found here: <https://allisonhorst.github.io/palmerpenguins/index.html>
 
@@ -416,7 +416,6 @@ penguin |>
   summarize(mean_bill_length = mean(bill_length_mm, na.rm = TRUE))
 ```
 
-
 Repeat this and calculate the standard deviation per species.
 
 # Basic plotting in R
@@ -431,7 +430,7 @@ The simplest type of plot is an index plot, which simply plots values in the ord
 plot(penguin$bill_length_mm, type = 'p')
 ```
 
-As we have only asked to plot one variable, this is represented on the y-axis. The x-axis gives the index of the observation, in this case from 1 to 350. 
+As we have only asked to plot one variable, this is represented on the y-axis. The x-axis gives the index of the observation, in this case from 1 to 350.
 
 ## Bivariate plots
 
@@ -450,8 +449,8 @@ ggplot(penguin, aes(x = bill_length_mm, y = bill_depth_mm)) +
 
 Some things to note:
 
-- We define an *aesthetic* (`aes()`) which identifies the variables to be used on the x and y axes
-- We add a *geometry* to define the type of plot we want to make (a point or scatter plot)
+-   We define an *aesthetic* (`aes()`) which identifies the variables to be used on the x and y axes
+-   We add a *geometry* to define the type of plot we want to make (a point or scatter plot)
 
 As we know that these values come from three difference species, we can use this knowledge to add extra information to the plot, by adding a `col` argument to the aestehtic (you can also display different symbols using the `shape` argument):
 
@@ -541,7 +540,7 @@ p1 <- ggplot(penguin, aes(x = bill_length_mm,
 ggsave("test.png", p1)
 ```
 
-This will also save into the majority of standard image formats simply by changing the file extension in the `ggsave()` command. 
+This will also save into the majority of standard image formats simply by changing the file extension in the `ggsave()` command.
 
 Alternatively, you can copy-paste directly into another file by going to \[Export\] -\> \[Copy to clipboard...\] in R Studio's plotting window.
 
@@ -552,3 +551,95 @@ When you are finished with R, exit by typing `q()` in the console (or going to \
 ```{r eval=FALSE}
 load(".RData")
 ```
+
+# Quarto documents
+
+RStudio has several ways to store and work with your R code, including scripts, Markdown, and Quarto documents. We'll take a quick look at the last of these here, as you will need to use these to submit your lab exercises. Quarto is a modifed markdown language that allows you to incorporate text, images, and R code and results in a single document. By default, it produces html documents (like the one you are reading), but can be modified to produce PDFs, books, websites etc. 
+
+To open a new Quarto document, go to the [File] menu, then [New File] -> [Quarto Document...]. This will open a dialog box where you can set the title and author name, as well as choose the output format. Add a title here (e.g. `Test Document`) and your name, and make sure that html is selected for the output type, then click [Create]. 
+
+A new file will open that should look like this:
+
+![Quarto](./images/quarto1.png)
+
+The top part of the file contains the header information (the YAML header), including the title and author, as well as the output format. There's a lot of other options that you can add here, but for the moment, we'll leave this alone. We'll now add some text. You can either use the Visual editor or the Source code editor (chosen from the two buttons in the top right). Select the [Source] button and you'll see the layout change slightly. (You can also do this with the Visual editor if you'd like.)
+
+Now, below the last line of the header (the `---`) add the following text:
+
+```
+This is a test Quarto document for the the first lab.
+```
+
+Now save the file and give it a suitable name (e.g. `lab01.qmd`), then click the [Render] button. You'll see some output appear as it converts this to html, and a file should open in your browser that looks like the following:
+
+![Quarto](./images/quarto_out.png)
+
+If the file doesn't open automatically, look in your current working directory for the file *lab01.html* and open this. 
+
+Now we'll add a little formatting. Change the text so that it looks like this:
+
+```
+# Introduction
+
+## Subtitle
+
+This is a test Quarto document for the the first lab. This is *italic text*, and this is **bold** text.
+
+This makes a list:
+
+- Item 1
+- Item 2
+- Etc.
+```
+
+Now click the [Render] button again. The html file will update (you may need to refresh or reopen the file to see this). You should see that the text is now formatted. As a quick overview:
+
+- Hashtags `#` indicate headers (one `#` for a main header, two for a subheader, etc)
+- Single asterixs (`*`) give emphasized text
+- Double asterixs give bold text
+- Hyphens produce lists
+
+See [here](https://quarto.org/docs/authoring/markdown-basics.html) for more formatting options. 
+
+We'll now add some simple R code to the document. In the Source editor, code needs to be wrapped in tags that define a code *chunk*. This will look like this:
+
+````markdown
+`r ''````{r}
+5 + 6
+```
+````
+
+Save the file and render it again, and you should see both the code and the results (`11`) appear.
+
+```{r}
+5 + 6
+```
+
+We'll now add a quick figure as well using the Penguins dataset. When making Quarto documents, it's important to understand that these work in a different memory workspace to your regular R session. So any data you have in memory will not be available to the document unless it is loaded specifically. Using the same format as above create a code chunk that reads in the Penguins dataset:
+
+````markdown
+`r ''````{r}
+library(tidyverse)
+penguin <- read.csv("./datafiles/penguins.csv")
+```
+````
+
+Now add code to make the scatter plot of bill sizes (from above):
+
+````markdown
+`r ''````{r}
+ggplot(penguin, aes(x = bill_length_mm, 
+                    y = bill_depth_mm,
+                    col = species)) +
+  geom_point()
+```
+````
+
+Save this and render it, and you should now see the figure appear in your output. 
+
+# Exercise
+
+For this lab, all you will need to do is add a second figure to your Quarto document and render it. You can choose any of the other figures introduced in this lab. You should submit the following through Canvas by January 27th:
+
+- The Quarto document
+- The rendered HTML page

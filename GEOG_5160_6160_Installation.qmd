@@ -197,7 +197,7 @@ Once this is installed, you should be able to open and create notebooks as you w
 
 # Introduction to R
 
-R is a high level programming language, principally designed for statstical analysis and modeling. It is an interpreted language, which allows you to write relatively straightforward code that is then compiled in order to be run. This means that the code you write can be easily transferred between computers and operating systems, and you can just let the R interpreter on the computer do all the work for you. In contrast to other programming languages it is dynamically typed, so you don't need to track and declare all your variables, which generally means that it is easier to set up and run Python code than most low-level languages (e.g. c++), but with a higher risk of encountering problems with the variables you use (although these are pretty rare).
+R is a high level programming language, principally designed for statistical analysis and modeling. It is an interpreted language, which allows you to write relatively straightforward code that is then compiled in order to be run. This means that the code you write can be easily transferred between computers and operating systems, and you can just let the R interpreter on the computer do all the work for you. In contrast to other programming languages it is dynamically typed, so you don't need to track and declare all your variables, which generally means that it is easier to set up and run Python code than most low-level languages (e.g. c++), but with a higher risk of encountering problems with the variables you use (although these are pretty rare).
 
 R also has a large number of add-on [packages](https://cran.r-project.org/web/packages/) that extend the basic function, and we'll be using several of these for machine learning. Today, we'll just use a couple of these for data manipulation and plotting.
 
@@ -215,7 +215,7 @@ To install R on a Mac, click the “Download R for Mac” link, then download th
 
 ### Linux
 
-R comes pre-installed on many Linux systems, but is often an older version, and you'll likely want to update this. Click on the “Download R for Linux.”, which will take you to a new page giving options for some of the more widely used Linux distros: Debian, Redhat, SUSE, and Ubuntu. Clicking on any of these will take you to a new page with detailed installation instructions for that system. Note that you can also download the source code from the first page and compile it yourself. This is relatively straightforward on most Unix-type operating systems. 
+R comes pre-installed on many Linux systems, but is often an older version, and you'll likely want to update this. Click on the "Download R for Linux", which will take you to a new page giving options for some of the more widely used Linux distros: Debian, Redhat, SUSE, and Ubuntu. Clicking on any of these will take you to a new page with detailed installation instructions for that system. Note that you can also download the source code from the first page and compile it yourself. This is relatively straightforward on most Unix-type operating systems. 
 
 ## RStudio
 

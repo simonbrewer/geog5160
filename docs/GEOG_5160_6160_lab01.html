@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Simon Brewer">
-<meta name="dcterms.date" content="2025-01-01">
+<meta name="dcterms.date" content="2025-01-12">
 
 <title>GEOG 5160 6160 Lab 01</title>
 <style>
@@ -179,6 +179,8 @@ window.Quarto = {
   <li><a href="#graphic-output" id="toc-graphic-output" class="nav-link" data-scroll-target="#graphic-output">Graphic output</a></li>
   </ul></li>
   <li><a href="#quitting-r" id="toc-quitting-r" class="nav-link" data-scroll-target="#quitting-r">Quitting R</a></li>
+  <li><a href="#quarto-documents" id="toc-quarto-documents" class="nav-link" data-scroll-target="#quarto-documents">Quarto documents</a></li>
+  <li><a href="#exercise" id="toc-exercise" class="nav-link" data-scroll-target="#exercise">Exercise</a></li>
   </ul>
 </nav>
     </div>
@@ -211,7 +213,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">January 1, 2025</p>
+      <p class="date">January 12, 2025</p>
     </div>
   </div>
   
@@ -833,6 +835,81 @@ argument.</code></pre>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb88"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb88-1"><a href="#cb88-1" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="st">".RData"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+</section>
+<section id="quarto-documents" class="level1">
+<h1>Quarto documents</h1>
+<p>RStudio has several ways to store and work with your R code, including scripts, Markdown, and Quarto documents. We’ll take a quick look at the last of these here, as you will need to use these to submit your lab exercises. Quarto is a modifed markdown language that allows you to incorporate text, images, and R code and results in a single document. By default, it produces html documents (like the one you are reading), but can be modified to produce PDFs, books, websites etc.</p>
+<p>To open a new Quarto document, go to the [File] menu, then [New File] -&gt; [Quarto Document…]. This will open a dialog box where you can set the title and author name, as well as choose the output format. Add a title here (e.g.&nbsp;<code>Test Document</code>) and your name, and make sure that html is selected for the output type, then click [Create].</p>
+<p>A new file will open that should look like this:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="./images/quarto1.png" class="img-fluid figure-img"></p>
+<figcaption>Quarto</figcaption>
+</figure>
+</div>
+<p>The top part of the file contains the header information (the YAML header), including the title and author, as well as the output format. There’s a lot of other options that you can add here, but for the moment, we’ll leave this alone. We’ll now add some text. You can either use the Visual editor or the Source code editor (chosen from the two buttons in the top right). Select the [Source] button and you’ll see the layout change slightly. (You can also do this with the Visual editor if you’d like.)</p>
+<p>Now, below the last line of the header (the <code>---</code>) add the following text:</p>
+<pre><code>This is a test Quarto document for the the first lab.</code></pre>
+<p>Now save the file and give it a suitable name (e.g.&nbsp;<code>lab01.qmd</code>), then click the [Render] button. You’ll see some output appear as it converts this to html, and a file should open in your browser that looks like the following:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="./images/quarto_out.png" class="img-fluid figure-img"></p>
+<figcaption>Quarto</figcaption>
+</figure>
+</div>
+<p>If the file doesn’t open automatically, look in your current working directory for the file <em>lab01.html</em> and open this.</p>
+<p>Now we’ll add a little formatting. Change the text so that it looks like this:</p>
+<pre><code># Introduction
+
+## Subtitle
+
+This is a test Quarto document for the the first lab. This is *italic text*, and this is **bold** text.
+
+This makes a list:
+
+- Item 1
+- Item 2
+- Etc.</code></pre>
+<p>Now click the [Render] button again. The html file will update (you may need to refresh or reopen the file to see this). You should see that the text is now formatted. As a quick overview:</p>
+<ul>
+<li>Hashtags <code>#</code> indicate headers (one <code>#</code> for a main header, two for a subheader, etc)</li>
+<li>Single asterixs (<code>*</code>) give emphasized text</li>
+<li>Double asterixs give bold text</li>
+<li>Hyphens produce lists</li>
+</ul>
+<p>See <a href="https://quarto.org/docs/authoring/markdown-basics.html">here</a> for more formatting options.</p>
+<p>We’ll now add some simple R code to the document. In the Source editor, code needs to be wrapped in tags that define a code <em>chunk</em>. This will look like this:</p>
+<div class="sourceCode" id="cb91"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb91-2"><a href="#cb91-2" aria-hidden="true" tabindex="-1"></a><span class="in">5 + 6</span></span>
+<span id="cb91-3"><a href="#cb91-3" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Save the file and render it again, and you should see both the code and the results (<code>11</code>) appear.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb92"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb92-1"><a href="#cb92-1" aria-hidden="true" tabindex="-1"></a><span class="dv">5</span> <span class="sc">+</span> <span class="dv">6</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 11</code></pre>
+</div>
+</div>
+<p>We’ll now add a quick figure as well using the Penguins dataset. When making Quarto documents, it’s important to understand that these work in a different memory workspace to your regular R session. So any data you have in memory will not be available to the document unless it is loaded specifically. Using the same format as above create a code chunk that reads in the Penguins dataset:</p>
+<div class="sourceCode" id="cb94"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb94-1"><a href="#cb94-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb94-2"><a href="#cb94-2" aria-hidden="true" tabindex="-1"></a><span class="in">library(tidyverse)</span></span>
+<span id="cb94-3"><a href="#cb94-3" aria-hidden="true" tabindex="-1"></a><span class="in">penguin &lt;- read.csv("./datafiles/penguins.csv")</span></span>
+<span id="cb94-4"><a href="#cb94-4" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Now add code to make the scatter plot of bill sizes (from above):</p>
+<div class="sourceCode" id="cb95"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb95-1"><a href="#cb95-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb95-2"><a href="#cb95-2" aria-hidden="true" tabindex="-1"></a><span class="in">ggplot(penguin, aes(x = bill_length_mm, </span></span>
+<span id="cb95-3"><a href="#cb95-3" aria-hidden="true" tabindex="-1"></a><span class="in">                    y = bill_depth_mm,</span></span>
+<span id="cb95-4"><a href="#cb95-4" aria-hidden="true" tabindex="-1"></a><span class="in">                    col = species)) +</span></span>
+<span id="cb95-5"><a href="#cb95-5" aria-hidden="true" tabindex="-1"></a><span class="in">  geom_point()</span></span>
+<span id="cb95-6"><a href="#cb95-6" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Save this and render it, and you should now see the figure appear in your output.</p>
+</section>
+<section id="exercise" class="level1">
+<h1>Exercise</h1>
+<p>For this lab, all you will need to do is add a second figure to your Quarto document and render it. You can choose any of the other figures introduced in this lab. You should submit the following through Canvas by January 27th:</p>
+<ul>
+<li>The Quarto document</li>
+<li>The rendered HTML page</li>
+</ul>
 
 
 </section>
