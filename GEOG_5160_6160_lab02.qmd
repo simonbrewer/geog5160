@@ -375,39 +375,51 @@ collect_metrics(results)
 
 # Changing model
 
-We're going to be looking a wide range of different algorithms for machine learning over the next few weeks. This section is just designed to show how easy it is to switch out the method you are using to try a different approach. Here, we'll try using a penalized linear model, the Lasso. To test this, we simply need to define a new learner using the appropriate function (here: `regr.glmnet`). One small addition here is that we set a couple of model parameters (we'll look more in detail at model parameters in the next lab):
+We're going to be looking a wide range of different algorithms for machine learning over the next few weeks. This section is just designed to show how easy it is to switch out the method you are using to try a different approach. Here, we'll try using a penalized linear model, the Lasso or L1 regression. To test this, we simply need to instantiate a new model. As this is also based on a linear model, we use the same function to instantiate, but set the computational engine to **glmnet** (which performs penalized regression). We can also set some hyperparameters:
 
--   `alpha`: this is the mixing ratio. `alpha = 1` provides the Lasso algorithm (`= 0` results in ridge regression)
--   `lambda`: this the penalty weight
+-   `penalty`: this the penalty weight ($\lambda$)
+-   `mixture`: this is the mixing ratio ($\alpha$). `1` provides the Lasso algorithm,  `0` results in ridge regression and between 0 and 1 results in elastic net.
 
 ```{r results='hide'}
-mlr_learners
-learner2 = mlr_learners$get("regr.glmnet")
-print(learner)
-learner2$param_set
-learner2$param_set$values = list(alpha = 1, lambda = 1e-3)
-learner$param_set$values
+# Specify a different model
+lasso_mod <- linear_reg(penalty = 0.001, mixture = 1) %>%
+  set_engine("glmnet")
 ```
 
-```{r echo=FALSE}
-learner$param_set$values
-```
-
-Now we've set this up, let's train it (using the previous training set)
+Now we can redefine the work flow with the new model, and re-run the cross-validation:
 
 ```{r}
-learner2$train(task_housing, row_ids = train_set)
+workflow <- workflow() %>%
+  add_recipe(rec) %>%
+  add_model(lasso_mod)
+
+# Fit and assess models using cross-validation
+results <- workflow %>%
+  fit_resamples(resamples = folds, metrics = metric_set(rmse))
+
+collect_metrics(results)
 ```
 
-To cross-validate, we can simply reuse the resampler we defined earlier:
+In this case, there is little improvement with this new algorithm, but hopefully this demonstrates how easy it is to test a set of ML approaches through the **tidymodels** API.
+
+# Logistic regression
+
+We'll quickly look at an example of working with a classification exercise using the same dataset. We'll create a new binary variable defined as simply whether or not a house has a high or low price (is the price above 5.5 million or not). To do this, we first:
+
+- Create a copy of the original data
+- Use `ifelse` to create a binary outcome (`low` vs. `high`)
+- Remove the original price variable
+- Rebuild the recipe 
 
 ```{r}
-rr = resample(task_housing, learner2, resampling, store_models = TRUE)
-print(rr)
-rr$aggregate(measure)
-```
+dat2 <- dat %>%
+  mutate(price_bin = ifelse(price > 5.5e6, 'high', 'low')) %>%
+  select(-price)
 
-In this case, there is little improvement with this new algorithm, but hopefully this demonstrates how easy it is to test a set of ML approaches through the API.
+rec <- recipe(price_bin ~ ., dat2) |>
+  step_log(c(area)) |>
+  step_dummy(all_nominal_predictors())
+```
 
 # Exercise
 
@@ -416,12 +428,12 @@ Use a word document to record your answers and output. Assignments, to include b
 As we noted during the lab, our original model some odd effects, and had pretty poor predictive power. We'll try to improve on this by adding in extra features. The following code recreates the `housing2` data frame with a larger set of data. Note that previously we used the `select` function to choose which variables to include, here we use it with `-` in from of the variables we wish to *exclude*:
 
 ```{r results='hide'}
-names(housing)
-housing2 = housing %>%
-  st_set_geometry(NULL) %>%
-  filter(median_house_value <= 500000) %>%
-  select(-total_rooms, -total_bedrooms, -ocean_proximity)
-names(housing2)
+# names(housing)
+# housing2 = housing %>%
+#   st_set_geometry(NULL) %>%
+#   filter(median_house_value <= 500000) %>%
+#   select(-total_rooms, -total_bedrooms, -ocean_proximity)
+# names(housing2)
 ```
 
 For the exercise, you need to
