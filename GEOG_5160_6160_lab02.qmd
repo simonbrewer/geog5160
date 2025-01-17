@@ -57,7 +57,7 @@ For today's lab, we will use a data set of house prices from the file *Housing_P
 
 The csv file contains the following columns most of which should be self-explanatory), with values for each California district taken from the 1990 census:
 
--   `price`: House price in $'s (possibly not dollars...)
+-   `price`: House price in \$'s (possibly not dollars...)
 -   `area`: House are in sq ft
 -   `bedrooms`: number of bedrooms
 -   `bathrooms`: number of bathrooms
@@ -75,16 +75,20 @@ The goal will be to build a model that can predict the price based on the other 
 
 ## Setting up your project
 
-Start by creating a working directory for today's lab (e.g. called 'lab02'), and move the *Housing_Price_Data.csv* and *ca.zip* files there. Unzip *ca.zip*. Next start RStudio (or R), and change your working directory to this directory. Check that you are in the correct place by typing the following in the console window:
+Start by creating a working directory for today's lab (e.g. called 'lab02'), and move the *Housing_Price_Data.csv* to your *datafiles* folder. Next start RStudio (or R), and change your working directory to this directory. Check that you are in the correct place by typing the following in the console window:
 
 ```{r eval=FALSE}
-list.files("./datafiles")
+list.files("../datafiles")
 ```
 
-And make sure that you see *housing.csv* listed. Now load the file into R:
+And make sure that you see *Housing_Price_Data.csv* listed. Now load the file into R:
 
-```{r}
-housing <- read.csv("./datafiles/housing.csv")
+```{r echo=FALSE}
+dat <- read.csv("./datafiles/Housing_Price_Data.csv")
+```
+
+```{r eval=FALSE}
+dat <- read.csv("../datafiles/Housing_Price_Data.csv")
 ```
 
 # Data pre-processing
@@ -95,119 +99,51 @@ Before starting building models, we need to check and clean the data. Some thing
 -   variable conversions
 -   outliers
 
-Here, we'll start by loading a library to help with data processing (**dplyr**):
+### Missing values 
+
+Here, we'll start by loading the tidyverse library to help with data processing:
 
 ```{r message=FALSE}
-library(dplyr)
+library(tidyverse)
 ```
 
 Now let's check to see which of the features contain missing values. The following code uses a logical comparison (`is.na()`) to check each value in the data frame to see if it is a missing value, then the function `colSums()` counts the number of `TRUE` (i.e. missing) values per column:
 
 ```{r}
-colSums(is.na(housing))
+colSums(is.na(dat))
 ```
 
-This tells us that the only column with missing values is `total_bedrooms`, with 207. We'll now remove these using the `filter()` function to remove the missing values. As the name might suggest, this function filters a dataset by one or more conditions (here if the `total_bedroom` value is not a missing value `na`). We're using **dplyr**'s `filter` function to select observations. The `%>%` operator acts as a pipe, and forwards data from the `housing` dataframe to the `filter` function:
+For this dataset, there are no missing values (it was cleaned before being put on Kaggle), so we don't need to do anything further here. In the future we'll tackle data with missing values.
+
+### Data transformations
+
+We'll make a few figures to visualize the data before starting. First, a histogram of `price`:
 
 ```{r}
-housing <- housing %>%
-  filter(!is.na(total_bedrooms))
+ggplot(dat, aes(x = price)) +
+  geom_histogram()
 ```
 
-## Data visualization
-
-We'll make a few figures to visualize the data before starting. First, a histogram of `median_house_value`:
+Next, the same for `area`:
 
 ```{r}
-hist(housing$median_house_value, 
-     xlab = "Median House Value", main = "CA Housing Data")
+ggplot(dat, aes(x = area)) +
+  geom_histogram()
 ```
 
-Note that the house value data is capped at \$500,000. Next, the same for `median_income`:
+We can also get a thorough overview of the data with the **skimr** package:
 
 ```{r}
-hist(housing$median_income, 
-     xlab = "Median Income", main = "CA Housing Data")
+library(skimr)
+skim(dat)
 ```
-
-Now try making additional histograms for the other variables in the `housing2` data frame. The R function `names()` will give you a list of the column names if you have forgotten.
 
 A few things to note here.
 
--   The `median_house_value` and `housing_median_age` are both clearly capped at an upper limit (about 50,000 and 50 respectively). We may want to remove observations at these values (or ideally find the correct values)
--   The data are on a variety of different scales
--   Several of the variables are right-skewed, and may need transforming to improve our models
+-   The `price` and `area` are both right-skewed, and may need transforming to improve our models
+- There are several categorical variables that we will need to encode
 
-The variables `total_rooms` and `total_bedrooms` represent the total number of rooms *per district*, but as the number of households vary among districts, we can't use them directly. Instead, we'll use these to create the average number of rooms per house, and the ratio of bedrooms to rooms.
 
-```{r}
-housing$avg_rooms = housing$total_rooms / housing$households
-housing$bedroom_ratio = housing$total_bedrooms / housing$total_rooms
-```
-
-Next, we'll visualize some of the data, starting with a quick map of the median house values. For this we first convert to an `sf` or [simple features](https://r-spatial.github.io/sf/articles/sf1.html) object. (The `crs` parameter defines the coordinate reference system or projection using an EPSG numeric code (4326 = WGS 84). For more detail on these codes, go [here](https://spatialreference.org/ref/epsg/).)
-
-```{r}
-library(sf)
-ca_sf = st_read("./datafiles/ca/ca.shp")
-st_crs(ca_sf) <- 4326
-
-housing <- st_as_sf(housing, 
-                    coords = c("longitude", "latitude"),
-                    crs = 4326)
-```
-
-You can map these values using R's `plot()` function as follows. First we map the geometry of the California border, then add symbols for the `median_house_value` variable.
-
-```{r}
-plot(st_geometry(ca_sf))
-plot(housing["median_house_value"], add = TRUE, pch = 16, alpha = 0.25)
-```
-
-And you should be able to clearly see the areas with high values around Los Angeles and the Bay Area.
-
-### The **tmap** package
-
-The **tmap** package is an add-on to R that makes thematic maps, which are generally a little nicer looking than the default `spplot()` maps. This works by using a series of layers (not unlike making a GIS map). First, we specify a spatial object that we want to plot with `tm_shape()`, then add a geometry to this (e.g. `tm_fill()`, `tm_symbols()`, etc. Here we make a 'bubble' plot, with the size of the symbols representing the `median_house_value`:
-
-```{r}
-library(tmap)
-tm_shape(ca_sf) + tm_borders() +
-  tm_shape(housing) + tm_symbols("median_house_value")
-```
-
-Here, we do the same, but specify a color palette to use shading rather than size to represent value. We also specify `alpha` to make the points a little transparent.
-
-```{r eval=FALSE}
-tm_shape(ca_sf) + tm_borders() +
-  tm_shape(housing) + tm_symbols("median_house_value", palette = "Reds", 
-                                    alpha = 0.75, size = 0.2, border.lwd = NA)
-```
-
-Here we remake the same map, but add a title and some background colors.
-
-```{r eval=TRUE}
-tm_shape(ca_sf) + tm_borders() + tm_fill(col = "lightyellow") +
-  tm_shape(housing) + tm_symbols("median_house_value", palette = "Reds", 
-                                    alpha = 0.75, size = 0.2, border.lwd = NA) +
-  tm_layout(bg = "grey85", legend.bg.color = "white", 
-            main.title = "CA Housing Data")
-```
-
-For our first model, we're only going to use a subset of the variables representing building characteristics (average number of rooms, bedroom ratio and age). There are several steps here:
-
--   The `geometry` column contains the coordinates for each district, and this can be removed by setting it to `NULL`
--   We use `filter` to remove all districts where the value is above \$500K. As the data is capped here, using these districts would bias our model at high values
--   We use the `select()` function to choose the columns that we want to include
-
-```{r}
-names(housing)
-housing2 = housing %>%
-  st_set_geometry(NULL) %>%
-  filter(median_house_value <= 500000) %>%
-  select(median_house_value, avg_rooms, bedroom_ratio, housing_median_age)
-names(housing2)
-```
 
 # Building a linear model
 
