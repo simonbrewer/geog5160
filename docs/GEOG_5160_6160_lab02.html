@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Simon Brewer">
-<meta name="dcterms.date" content="2025-01-17">
+<meta name="dcterms.date" content="2025-01-18">
 
 <title>GEOG 5160 6160 Lab 02</title>
 <style>
@@ -207,7 +207,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">January 17, 2025</p>
+      <p class="date">January 18, 2025</p>
     </div>
   </div>
   
@@ -301,7 +301,7 @@ window.Quarto = {
 ✖ dplyr::filter()  masks stats::filter()
 ✖ dplyr::lag()     masks stats::lag()
 ✖ recipes::step()  masks stats::step()
-• Search for functions across packages at https://www.tidymodels.org/find/</code></pre>
+• Use tidymodels_prefer() to resolve common conflicts.</code></pre>
 </div>
 </div>
 </section>
@@ -668,7 +668,7 @@ furnishingstatus
 </div>
 </div>
 </div>
-<p>Now let’s add a step to one-hot encode the categorical variables. Asa. reminder, this step allows variables that are recorded as strings (e.g.&nbsp;<code>yes</code> or <code>no</code>) to simple binary variables (<code>1</code> or <code>0</code>). As we have a number of categorical features, we can use a helper function to select all of these for encoding:</p>
+<p>Now let’s add a step to one-hot encode the categorical variables. As a reminder, this step allows variables that are recorded as strings (e.g.&nbsp;<code>yes</code> or <code>no</code>) to simple binary variables (<code>1</code> or <code>0</code>). As we have a number of categorical features, we can use a helper function to select all of these for encoding, and the <code>step_dummy</code> function to encode (One-hot encoded variables are also refered to as dummy variables, hence the name):</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>rec <span class="ot">&lt;-</span> <span class="fu">recipe</span>(price <span class="sc">~</span> ., dat) <span class="sc">|&gt;</span></span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_log</span>(<span class="fu">c</span>(area, price)) <span class="sc">|&gt;</span></span>
