@@ -301,7 +301,7 @@ window.Quarto = {
 ✖ dplyr::filter()  masks stats::filter()
 ✖ dplyr::lag()     masks stats::lag()
 ✖ recipes::step()  masks stats::step()
-• Use tidymodels_prefer() to resolve common conflicts.</code></pre>
+• Search for functions across packages at https://www.tidymodels.org/find/</code></pre>
 </div>
 </div>
 </section>
@@ -737,7 +737,7 @@ Multiple R-squared:  0.7088,    Adjusted R-squared:  0.7016
 F-statistic:  99.4 on 13 and 531 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
-<p>This output gives the coefficients (the slope values) for each of the variables used. Most of these are straightforward to interpret (e.g.&nbsp;house price increases with the age of the property), but others are less straightforward (e.g.&nbsp;house price decreases with the ratio of bedrooms to total rooms). In addition, the <code>R-squared</code> value here is pretty decent (<span class="math inline">\(\approx 0.7\)</span>), which suggests this explains the outcome well. Note that this is an indication of how well the model has been trained with the data, not how well it will predict for a new house.</p>
+<p>This output gives the coefficients (the slope values) for each of the variables used. Most of these are straightforward to interpret (e.g.&nbsp;house price increases with the number of bedrooms), but others are less straightforward (e.g.&nbsp;the furnishing status variables). In addition, the <code>R-squared</code> value here is pretty decent (<span class="math inline">\(\approx 0.7\)</span>), which suggests this explains the outcome well. Note that this is an indication of how well the model has been trained with the data, not how well it will predict for a new house.</p>
 </section>
 <section id="machine-learning-framework" class="level1">
 <h1>Machine learning framework</h1>
@@ -820,7 +820,7 @@ F-statistic:  99.4 on 13 and 531 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
 </div>
-<p>What we hope to see from this plot is that there is relatively scatter in the points, and that they follow the 1:1 line. You should likely see a little bias in the tails (very low or high prices), which is a common issue with any predictive model.</p>
+<p>What we hope to see from this plot is that there is relatively little scatter in the points, and that they follow the 1:1 line. You should likely see a little bias in the tails (very low or high prices), which is a common issue with any predictive model.</p>
 <p>Now let’s evaluate. The <strong>yardstick</strong> package (also installed with <strong>tidymodels</strong>) has a set of options for evaluation (more <a href="https://yardstick.tidymodels.org">here</a>). Here, we’ll calculate:</p>
 <ul>
 <li>The <span class="math inline">\(R^2\)</span> (the proportion of variation in the test set prices that was captured)</li>
@@ -871,7 +871,7 @@ MPE = (1/n) \times \sum_i{\frac{\hat{y}_i-y_i}{y_i}}\times 100
 </section>
 <section id="k-fold-cross-validation" class="level1">
 <h1><span class="math inline">\(k\)</span>-fold cross-validation</h1>
-<p>In the section above, we evaluated the model using a single holdout (i.e.&nbsp;a single testing set). More commonly, <span class="math inline">\(k\)</span>-fold cross-validation is used, which repeats the hold-out <span class="math inline">\(k\)</span> times. Each time 1/<span class="math inline">\(k\)</span> of the samples are added to the testing set and the remaining samples in the training set. We’ll use a 4-fold cross-validation here (this is usually in the range of 3-10). The function <code>vfold_cv</code> allows us to set this up, which takes the following arguments:</p>
+<p>In the section above, we evaluated the model using a single holdout (i.e.&nbsp;a single testing set). More commonly, <span class="math inline">\(k\)</span>-fold cross-validation is used, which repeats the hold-out <span class="math inline">\(k\)</span> times. Each time <span class="math inline">\(1/\)</span>k$ of the samples are added to the testing set and the remaining samples in the training set. We’ll use a 4-fold cross-validation here (this is usually in the range of 3-10). The function <code>vfold_cv</code> allows us to set this up, which takes the following arguments:</p>
 <ul>
 <li>The dataframe (<code>dat</code>)</li>
 <li>The number of folds (<code>v</code>)</li>
@@ -1026,7 +1026,7 @@ MPE = (1/n) \times \sum_i{\frac{\hat{y}_i-y_i}{y_i}}\times 100
 <li>Use a cutoff of 10,000 sq ft. (higher should be labeled as <code>high</code>)</li>
 <li>Use 4-fold cross-validation</li>
 <li>Report the accuracy, recall and specificity.</li>
-<li></li>
+<li>Optional: why do you think there is such a large difference between recall and specificity in this model?</li>
 </ul>
 
 
