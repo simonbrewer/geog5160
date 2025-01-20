@@ -346,7 +346,7 @@ pred_test %>%
 
 # $k$-fold cross-validation
 
-In the section above, we evaluated the model using a single holdout (i.e. a single testing set). More commonly, $k$-fold cross-validation is used, which repeats the hold-out $k$ times. Each time $1/$k$ of the samples are added to the testing set and the remaining samples in the training set. We'll use a 4-fold cross-validation here (this is usually in the range of 3-10). The function `vfold_cv` allows us to set this up, which takes the following arguments:
+In the section above, we evaluated the model using a single holdout (i.e. a single testing set). More commonly, $k$-fold cross-validation is used, which repeats the hold-out $k$ times. Each time $1/$k\$ of the samples are added to the testing set and the remaining samples in the training set. We'll use a 4-fold cross-validation here (this is usually in the range of 3-10). The function `vfold_cv` allows us to set this up, which takes the following arguments:
 
 -   The dataframe (`dat`)
 -   The number of folds (`v`)
@@ -467,7 +467,7 @@ collect_metrics(results)
 
 # Exercise
 
-Use a Quarto document to record your answers and output. Assignments, to include both the Quarto document and (ideally) the compiled HTML file, should be submitted to Canvas. Please use the following naming convention: `Lab02_lastname`.
+Use a Quarto document to record your answers and output. Assignments, to include both the Quarto document and (ideally) the compiled HTML file, should be submitted to Canvas by Feb 5th. Please use the following naming convention: `Lab02_lastname`.
 
 The goal of the exercise is to get you to build and evaluate the *area* of a house, rather than the price. A few things to note:
 
