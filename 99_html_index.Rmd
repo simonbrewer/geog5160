@@ -31,7 +31,7 @@ Spatial data science is a fast-growing discipline, with wide-ranging application
 - Week 2
     - [Lab notes (R)][lab02r]
     - [Lab notes (Python notebook)][lab01p]
-    - [Lab notes (Python colab)] [in prep.]
+    - [Lab notes (Python colab)][lab02c]
 
 # Data
 
@@ -45,6 +45,6 @@ Spatial data science is a fast-growing discipline, with wide-ranging application
 [lab01c]: https://colab.research.google.com/drive/18oHWVeZJs-tHIkNGjsHMOtx0IVGZtlec?usp=sharing
 [lab02r]: https://simonbrewer.github.io/geog5160/GEOG_5160_6160_lab02.html
 [lab02p]: https://github.com/simonbrewer/geog5160/blob/main/GEOG_5160_6160_lab02.ipynb
-
+[lab02c]: https://drive.google.com/file/d/1v6cTv3zA1YH7yvZHitBL5dstYRUgxOZq/view?usp=sharing
 [penguins]: https://drive.google.com/file/d/1Sb5uv2RP_gcNJDKmlEjBoSUOdETIq2Jf/view?usp=sharing
 [housing]: https://drive.google.com/file/d/1pTBKamvTk7ZLsRIFKRNQ37_XU2J5y9XT/view?usp=sharing
