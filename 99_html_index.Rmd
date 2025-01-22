@@ -38,7 +38,8 @@ Spatial data science is a fast-growing discipline, with wide-ranging application
 - Week 1
     - [Penguins Dataset][penguins]
 - Week 2
-
+    - [Housing Dataset][housing]
+    
 [install]: https://simonbrewer.github.io/geog5160/GEOG_5160_6160_Installation.html
 [lab01r]: https://simonbrewer.github.io/geog5160/GEOG_5160_6160_lab01.html
 [lab01p]: https://github.com/simonbrewer/geog5160/blob/main/GEOG_5160_6160_lab01.ipynb
