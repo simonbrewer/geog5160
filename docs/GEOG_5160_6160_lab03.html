@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Simon Brewer">
-<meta name="dcterms.date" content="2025-02-01">
+<meta name="dcterms.date" content="2025-02-02">
 
 <title>GEOG 5160 6160 Lab 03</title>
 <style>
@@ -167,9 +167,9 @@ window.Quarto = {
   <ul class="collapse">
   <li><a href="#predicting-with-new-data" id="toc-predicting-with-new-data" class="nav-link" data-scroll-target="#predicting-with-new-data">Predicting with new data</a></li>
   </ul></li>
+  </ul></li>
   <li><a href="#exercise" id="toc-exercise" class="nav-link" data-scroll-target="#exercise">Exercise</a></li>
   <li><a href="#appendix-1-bioclimate-variables" id="toc-appendix-1-bioclimate-variables" class="nav-link" data-scroll-target="#appendix-1-bioclimate-variables">Appendix 1: Bioclimate variables</a></li>
-  </ul></li>
   </ul>
 </nav>
     </div>
@@ -202,7 +202,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">February 1, 2025</p>
+      <p class="date">February 2, 2025</p>
     </div>
   </div>
   
@@ -1137,10 +1137,15 @@ env:  empty</code></pre>
 <h3 class="anchored" data-anchor-id="predicting-with-new-data">Predicting with new data</h3>
 <section id="current-climate" class="level4">
 <h4 class="anchored" data-anchor-id="current-climate">Current climate</h4>
-<p>Now we tested and tuned our models, we can use them for prediction. For species distribution models, we generally want to predict the suitability for our species using a gridded dataset of the environmental variables used to build the model. The data are available in a NetCDF file called <em>current.env.nc</em>, which you should have downloaded. We can read this in (and work with it) using the <code>rast</code> function from the <strong>terra</strong> package:</p>
+<p>Now we tested and tuned our models, we can use them for prediction. First, we’ll load a set of coastlines to use in plotting.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb99"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb99-1"><a href="#cb99-1" aria-hidden="true" tabindex="-1"></a>curr_env <span class="ot">=</span> <span class="fu">rast</span>(<span class="st">"./datafiles/current_env.nc"</span>)</span>
-<span id="cb99-2"><a href="#cb99-2" aria-hidden="true" tabindex="-1"></a>curr_env</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb99"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb99-1"><a href="#cb99-1" aria-hidden="true" tabindex="-1"></a>ne <span class="ot">=</span> <span class="fu">st_read</span>(<span class="st">"./datafiles/ne_50m_admin_0_countries/ne_50m_admin_0_countries.shp"</span>, <span class="at">quiet=</span><span class="cn">TRUE</span>)</span>
+<span id="cb99-2"><a href="#cb99-2" aria-hidden="true" tabindex="-1"></a>ne_geom <span class="ot">=</span> <span class="fu">st_geometry</span>(ne)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>For species distribution models, we generally want to predict the suitability for our species using a gridded dataset of the environmental variables used to build the model. The data are available in a NetCDF file called <em>current.env.nc</em>, which you should have downloaded. We can read this in (and work with it) using the <code>rast</code> function from the <strong>terra</strong> package:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb100"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb100-1"><a href="#cb100-1" aria-hidden="true" tabindex="-1"></a>curr_env <span class="ot">=</span> <span class="fu">rast</span>(<span class="st">"./datafiles/current_env.nc"</span>)</span>
+<span id="cb100-2"><a href="#cb100-2" aria-hidden="true" tabindex="-1"></a>curr_env</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>class       : SpatRaster 
 dimensions  : 480, 720, 19  (nrow, ncol, nlyr)
@@ -1152,35 +1157,38 @@ varname     : BIO
 names       : BIO_z=1, BIO_z=2, BIO_z=3, BIO_z=4, BIO_z=5, BIO_z=6, ... </code></pre>
 </div>
 </div>
-<p>There’s quite a bit there - but this is a spatial raster: 480 columns and 720 rows. There are 19 levels, corresponding to the 19 bioclimate variables we used as features in our model. Let’s plot the first level (<code>bio1</code>) to see what it looks like:</p>
+<p>There’s quite a bit there - but this is a spatial raster: 480 columns and 720 rows. There are 19 levels, corresponding to the 19 bioclimate variables we used as features in our model. Let’s plot the first level (<code>bio1</code>) to see what it looks like. The second and third lines of code overlay the coastline and sample points respectively.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb101"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb101-1"><a href="#cb101-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(curr_env[[<span class="dv">1</span>]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb102"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb102-1"><a href="#cb102-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(curr_env[[<span class="dv">1</span>]])</span>
+<span id="cb102-2"><a href="#cb102-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ne_geom, <span class="at">add =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb102-3"><a href="#cb102-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(pe_sf), <span class="at">add =</span> <span class="cn">TRUE</span>, <span class="at">pch =</span> <span class="dv">16</span>, <span class="at">cex =</span> <span class="fl">0.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="GEOG_5160_6160_lab03_files/figure-html/unnamed-chunk-61-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="GEOG_5160_6160_lab03_files/figure-html/unnamed-chunk-62-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>Currently, we can’t predict directly onto the grid, so as a work around, we’ll first extract all the gridded values into dataframe, then predict using that. Note we need to set the column names of the data frame to match the names of the features in the model:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb102"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb102-1"><a href="#cb102-1" aria-hidden="true" tabindex="-1"></a>curr_env_df <span class="ot">=</span> <span class="fu">as.data.frame</span>(curr_env, <span class="at">cells=</span><span class="cn">TRUE</span>)</span>
-<span id="cb102-2"><a href="#cb102-2" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(curr_env_df) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"cell"</span>, <span class="fu">colnames</span>(dat_train2)[<span class="sc">-</span><span class="dv">1</span>])</span>
-<span id="cb102-3"><a href="#cb102-3" aria-hidden="true" tabindex="-1"></a>prob_df <span class="ot">=</span> <span class="fu">predict</span>(rf_fit, curr_env_df, <span class="at">type=</span><span class="st">"prob"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb103"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb103-1"><a href="#cb103-1" aria-hidden="true" tabindex="-1"></a>curr_env_df <span class="ot">=</span> <span class="fu">as.data.frame</span>(curr_env, <span class="at">cells=</span><span class="cn">TRUE</span>)</span>
+<span id="cb103-2"><a href="#cb103-2" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(curr_env_df) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"cell"</span>, <span class="fu">colnames</span>(dat_train2)[<span class="sc">-</span><span class="dv">1</span>])</span>
+<span id="cb103-3"><a href="#cb103-3" aria-hidden="true" tabindex="-1"></a>prob_df <span class="ot">=</span> <span class="fu">predict</span>(rf_fit, curr_env_df, <span class="at">type=</span><span class="st">"prob"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Now we can create a new spatial raster, by a) copying one of the inputs, and b) replacing the values with the predicted probabilities:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb103"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb103-1"><a href="#cb103-1" aria-hidden="true" tabindex="-1"></a>curr_prob <span class="ot">=</span> curr_env[[<span class="dv">1</span>]]</span>
-<span id="cb103-2"><a href="#cb103-2" aria-hidden="true" tabindex="-1"></a>curr_prob[curr_env_df<span class="sc">$</span>cell] <span class="ot">&lt;-</span> prob_df<span class="sc">$</span>.pred_1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb104"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb104-1"><a href="#cb104-1" aria-hidden="true" tabindex="-1"></a>curr_prob <span class="ot">=</span> curr_env[[<span class="dv">1</span>]]</span>
+<span id="cb104-2"><a href="#cb104-2" aria-hidden="true" tabindex="-1"></a>curr_prob[curr_env_df<span class="sc">$</span>cell] <span class="ot">&lt;-</span> prob_df<span class="sc">$</span>.pred_1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>And finally, plot</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb104"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb104-1"><a href="#cb104-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(curr_prob)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb105"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb105-1"><a href="#cb105-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(curr_prob)</span>
+<span id="cb105-2"><a href="#cb105-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ne_geom, <span class="at">add =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="GEOG_5160_6160_lab03_files/figure-html/unnamed-chunk-64-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="GEOG_5160_6160_lab03_files/figure-html/unnamed-chunk-65-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -1188,12 +1196,13 @@ names       : BIO_z=1, BIO_z=2, BIO_z=3, BIO_z=4, BIO_z=5, BIO_z=6, ... </code><
 <p>This shows that model captures the current distribution well, but also predicts a large area of suitability in the north-west (suggesting that it is climatically suitable given the variables we’ve looked at).</p>
 <p>We can also use the threshold we calculated earlier to divide this map into a binary map of suitable and unsuitable areas:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb105"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb105-1"><a href="#cb105-1" aria-hidden="true" tabindex="-1"></a>curr_pa <span class="ot">=</span> curr_prob <span class="sc">&gt;</span> thr</span>
-<span id="cb105-2"><a href="#cb105-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(curr_pa)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb106"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb106-1"><a href="#cb106-1" aria-hidden="true" tabindex="-1"></a>curr_pa <span class="ot">=</span> curr_prob <span class="sc">&gt;</span> thr</span>
+<span id="cb106-2"><a href="#cb106-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(curr_pa)</span>
+<span id="cb106-3"><a href="#cb106-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ne_geom, <span class="at">add =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="GEOG_5160_6160_lab03_files/figure-html/unnamed-chunk-65-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="GEOG_5160_6160_lab03_files/figure-html/unnamed-chunk-66-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -1203,32 +1212,34 @@ names       : BIO_z=1, BIO_z=2, BIO_z=3, BIO_z=4, BIO_z=5, BIO_z=6, ... </code><
 <h4 class="anchored" data-anchor-id="future-climate">Future climate</h4>
 <p>The previous maps are based on current (or at least end of last century) estimates of climate. We can equally predict for other time periods when we have data available. We also have the same data for the future (2080 under a high emissions climate scenario), so let’s load that as well. We can go through the same steps to produce a map showing projected suitability for this species in 2080</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb106"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb106-1"><a href="#cb106-1" aria-hidden="true" tabindex="-1"></a>future_env <span class="ot">=</span> <span class="fu">rast</span>(<span class="st">"./datafiles/future_env.nc"</span>)</span>
-<span id="cb106-2"><a href="#cb106-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb106-3"><a href="#cb106-3" aria-hidden="true" tabindex="-1"></a>future_env_df <span class="ot">=</span> <span class="fu">as.data.frame</span>(future_env, <span class="at">cells=</span><span class="cn">TRUE</span>)</span>
-<span id="cb106-4"><a href="#cb106-4" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(future_env_df) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"cell"</span>, <span class="fu">colnames</span>(dat_train2)[<span class="sc">-</span><span class="dv">1</span>])</span>
-<span id="cb106-5"><a href="#cb106-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb106-6"><a href="#cb106-6" aria-hidden="true" tabindex="-1"></a>prob_df <span class="ot">=</span> <span class="fu">predict</span>(rf_fit, future_env_df, <span class="at">type=</span><span class="st">"prob"</span>)</span>
-<span id="cb106-7"><a href="#cb106-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb106-8"><a href="#cb106-8" aria-hidden="true" tabindex="-1"></a>future_prob <span class="ot">=</span> future_env[[<span class="dv">1</span>]]</span>
-<span id="cb106-9"><a href="#cb106-9" aria-hidden="true" tabindex="-1"></a>future_prob[future_env_df<span class="sc">$</span>cell] <span class="ot">&lt;-</span> prob_df<span class="sc">$</span>.pred_1</span>
-<span id="cb106-10"><a href="#cb106-10" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(future_prob)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb107"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb107-1"><a href="#cb107-1" aria-hidden="true" tabindex="-1"></a>future_env <span class="ot">=</span> <span class="fu">rast</span>(<span class="st">"./datafiles/future_env.nc"</span>)</span>
+<span id="cb107-2"><a href="#cb107-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb107-3"><a href="#cb107-3" aria-hidden="true" tabindex="-1"></a>future_env_df <span class="ot">=</span> <span class="fu">as.data.frame</span>(future_env, <span class="at">cells=</span><span class="cn">TRUE</span>)</span>
+<span id="cb107-4"><a href="#cb107-4" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(future_env_df) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"cell"</span>, <span class="fu">colnames</span>(dat_train2)[<span class="sc">-</span><span class="dv">1</span>])</span>
+<span id="cb107-5"><a href="#cb107-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb107-6"><a href="#cb107-6" aria-hidden="true" tabindex="-1"></a>prob_df <span class="ot">=</span> <span class="fu">predict</span>(rf_fit, future_env_df, <span class="at">type=</span><span class="st">"prob"</span>)</span>
+<span id="cb107-7"><a href="#cb107-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb107-8"><a href="#cb107-8" aria-hidden="true" tabindex="-1"></a>future_prob <span class="ot">=</span> future_env[[<span class="dv">1</span>]]</span>
+<span id="cb107-9"><a href="#cb107-9" aria-hidden="true" tabindex="-1"></a>future_prob[future_env_df<span class="sc">$</span>cell] <span class="ot">&lt;-</span> prob_df<span class="sc">$</span>.pred_1</span>
+<span id="cb107-10"><a href="#cb107-10" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(future_prob)</span>
+<span id="cb107-11"><a href="#cb107-11" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ne_geom, <span class="at">add =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="GEOG_5160_6160_lab03_files/figure-html/unnamed-chunk-66-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="GEOG_5160_6160_lab03_files/figure-html/unnamed-chunk-67-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>And again, we can threshold this to get areas of suitability/unsuitability</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb107"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb107-1"><a href="#cb107-1" aria-hidden="true" tabindex="-1"></a>future_pa <span class="ot">=</span> future_prob <span class="sc">&gt;</span> thr</span>
-<span id="cb107-2"><a href="#cb107-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(future_pa)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb108"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb108-1"><a href="#cb108-1" aria-hidden="true" tabindex="-1"></a>future_pa <span class="ot">=</span> future_prob <span class="sc">&gt;</span> thr</span>
+<span id="cb108-2"><a href="#cb108-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(future_pa)</span>
+<span id="cb108-3"><a href="#cb108-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ne_geom, <span class="at">add =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="GEOG_5160_6160_lab03_files/figure-html/unnamed-chunk-67-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="GEOG_5160_6160_lab03_files/figure-html/unnamed-chunk-68-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -1243,11 +1254,12 @@ names       : BIO_z=1, BIO_z=2, BIO_z=3, BIO_z=4, BIO_z=5, BIO_z=6, ... </code><
 <li>-1: loss of suitability</li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb108"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb108-1"><a href="#cb108-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(future_pa <span class="sc">-</span> curr_pa)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb109"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb109-1"><a href="#cb109-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(future_pa <span class="sc">-</span> curr_pa)</span>
+<span id="cb109-2"><a href="#cb109-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ne_geom, <span class="at">add =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="GEOG_5160_6160_lab03_files/figure-html/unnamed-chunk-68-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="GEOG_5160_6160_lab03_files/figure-html/unnamed-chunk-69-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -1255,19 +1267,23 @@ names       : BIO_z=1, BIO_z=2, BIO_z=3, BIO_z=4, BIO_z=5, BIO_z=6, ... </code><
 </section>
 </section>
 </section>
-<section id="exercise" class="level2">
-<h2 class="anchored" data-anchor-id="exercise">Exercise</h2>
-<p>The file <em>Sonar.csv</em> contains values of 208 sonar signals. The data have 60 features, each representing “the energy within a particular frequency band, integrated over a certain period of time”, and an outcome variable <code>Class</code>, which is coded <code>M</code> or <code>R</code>. The goal of the experiment is to discriminate between the sonar signals bounced of a rock <code>R</code> or a metal object (a mine <code>M</code>). The exercise for this lab is to use one of the ensemble methods (random forest <em>or</em> boosted regression trees) to produce a new model of these data. You should use <strong>mlr3</strong> package, and you need to do the following:</p>
-<ul>
-<li>Set up a task, learner, outer resampling strategy and performance measure</li>
-<li>Use the <code>AutoTuner</code> to tune your model</li>
-<li>Report the AUC score for the tuned model</li>
-<li>Produce a variable importance plot</li>
-</ul>
-<p>In addition, your answer should include your R code.</p>
 </section>
-<section id="appendix-1-bioclimate-variables" class="level2">
-<h2 class="anchored" data-anchor-id="appendix-1-bioclimate-variables">Appendix 1: Bioclimate variables</h2>
+<section id="exercise" class="level1">
+<h1>Exercise</h1>
+<p>For the exercise, you will need to submit two things:</p>
+<ul>
+<li>A table listing the AUC and accuracy for the three different algorithms (decision trees, random forest and boosted regression). You should give these values based on predictions for the <em>test</em> dataset using the final model.</li>
+<li>A map showing predicted <em>probability</em> of Pinus edulis presence under <em>current</em> environmental conditions using <em>either</em> the decision tree model or the boosted regression</li>
+</ul>
+<p>Students enrolled in 6160 should also provide</p>
+<ul>
+<li>A map showing predicted <em>probability</em> of Pinus edulis presence under <em>future</em> environmental conditions using the same model as in part 2</li>
+<li>A map showing the difference between the future and current predicted presence for the same model</li>
+</ul>
+<p>Use a Quarto document to record your answers and output. Assignments, to include both the Quarto document and (ideally) the compiled HTML file, should be submitted to Canvas by Feb 12th. Please use the following naming convention: <code>Lab03_lastname</code>.</p>
+</section>
+<section id="appendix-1-bioclimate-variables" class="level1">
+<h1>Appendix 1: Bioclimate variables</h1>
 <ul>
 <li>BIO1 = Annual Mean Temperature</li>
 <li>BIO2 = Mean Diurnal Range (Mean of monthly (max temp - min temp))</li>
@@ -1291,7 +1307,6 @@ names       : BIO_z=1, BIO_z=2, BIO_z=3, BIO_z=4, BIO_z=5, BIO_z=6, ... </code><
 </ul>
 
 
-</section>
 </section>
 
 </main> <!-- /main -->

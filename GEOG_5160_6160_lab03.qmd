@@ -605,17 +605,26 @@ thr
 
 #### Current climate
 
-Now we tested and tuned our models, we can use them for prediction. For species distribution models, we generally want to predict the suitability for our species using a gridded dataset of the environmental variables used to build the model. The data are available in a NetCDF file called *current.env.nc*, which you should have downloaded. We can read this in (and work with it) using the `rast` function from the **terra** package:
+Now we tested and tuned our models, we can use them for prediction. First, we'll load a set of coastlines to use in plotting.
+
+```{r}
+ne = st_read("./datafiles/ne_50m_admin_0_countries/ne_50m_admin_0_countries.shp", quiet=TRUE)
+ne_geom = st_geometry(ne)
+```
+
+For species distribution models, we generally want to predict the suitability for our species using a gridded dataset of the environmental variables used to build the model. The data are available in a NetCDF file called *current.env.nc*, which you should have downloaded. We can read this in (and work with it) using the `rast` function from the **terra** package:
 
 ```{r}
 curr_env = rast("./datafiles/current_env.nc")
 curr_env
 ```
 
-There's quite a bit there - but this is a spatial raster: 480 columns and 720 rows. There are 19 levels, corresponding to the 19 bioclimate variables we used as features in our model. Let's plot the first level (`bio1`) to see what it looks like:
+There's quite a bit there - but this is a spatial raster: 480 columns and 720 rows. There are 19 levels, corresponding to the 19 bioclimate variables we used as features in our model. Let's plot the first level (`bio1`) to see what it looks like. The second and third lines of code overlay the coastline and sample points respectively.
 
 ```{r}
 plot(curr_env[[1]])
+plot(ne_geom, add = TRUE)
+plot(st_geometry(pe_sf), add = TRUE, pch = 16, cex = 0.5)
 ```
 
 Currently, we can't predict directly onto the grid, so as a work around, we'll first extract all the gridded values into dataframe, then predict using that. Note we need to set the column names of the data frame to match the names of the features in the model:
@@ -637,6 +646,7 @@ And finally, plot
 
 ```{r}
 plot(curr_prob)
+plot(ne_geom, add = TRUE)
 ```
 
 This shows that model captures the current distribution well, but also predicts a large area of suitability in the north-west (suggesting that it is climatically suitable given the variables we've looked at). 
@@ -646,6 +656,7 @@ We can also use the threshold we calculated earlier to divide this map into a bi
 ```{r}
 curr_pa = curr_prob > thr
 plot(curr_pa)
+plot(ne_geom, add = TRUE)
 ```
 
 #### Future climate
@@ -663,6 +674,7 @@ prob_df = predict(rf_fit, future_env_df, type="prob")
 future_prob = future_env[[1]]
 future_prob[future_env_df$cell] <- prob_df$.pred_1
 plot(future_prob)
+plot(ne_geom, add = TRUE)
 ```
 
 And again, we can threshold this to get areas of suitability/unsuitability
@@ -670,6 +682,7 @@ And again, we can threshold this to get areas of suitability/unsuitability
 ```{r}
 future_pa = future_prob > thr
 plot(future_pa)
+plot(ne_geom, add = TRUE)
 ```
 
 #### Distribution change
@@ -682,21 +695,24 @@ As a final result, we can use the two binary maps to more easily visualize how t
 
 ```{r}
 plot(future_pa - curr_pa)
+plot(ne_geom, add = TRUE)
 ```
 
-## Exercise
+# Exercise
 
-The file *Sonar.csv* contains values of 208 sonar signals. The data have 60 features, each representing "the energy within a particular frequency band, integrated over a certain period of time", and an outcome variable `Class`, which is coded `M` or `R`. The goal of the experiment is to discriminate between the sonar signals bounced of a rock `R` or a metal object (a mine `M`). 
-The exercise for this lab is to use one of the ensemble methods (random forest *or* boosted regression trees) to produce a new model of these data. You should use **mlr3** package, and you need to do the following:
+For the exercise, you will need to submit two things:
 
-- Set up a task, learner, outer resampling strategy and performance measure
-- Use the `AutoTuner` to tune your model
-- Report the AUC score for the tuned model
-- Produce a variable importance plot
+- A table listing the AUC and accuracy for the three different algorithms (decision trees, random forest and boosted regression). You should give these values based on predictions for the *test* dataset using the final model.
+- A map showing predicted *probability* of Pinus edulis presence under *current* environmental conditions using *either* the decision tree model or the boosted regression
 
-In addition, your answer should include your R code. 
+Students enrolled in 6160 should also provide
 
-## Appendix 1: Bioclimate variables
+- A map showing predicted *probability* of Pinus edulis presence under *future* environmental conditions using the same model as in part 2
+- A map showing the difference between the future and current predicted presence for the same model
+
+Use a Quarto document to record your answers and output. Assignments, to include both the Quarto document and (ideally) the compiled HTML file, should be submitted to Canvas by Feb 12th. Please use the following naming convention: `Lab03_lastname`.
+
+# Appendix 1: Bioclimate variables
 
 - BIO1 = Annual Mean Temperature
 - BIO2 = Mean Diurnal Range (Mean of monthly (max temp - min temp))
