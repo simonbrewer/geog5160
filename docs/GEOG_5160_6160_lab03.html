@@ -1,0 +1,1712 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.553">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Simon Brewer">
+<meta name="dcterms.date" content="2025-02-01">
+
+<title>GEOG 5160 6160 Lab 03</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body>
+
+<div id="quarto-search-results"></div>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a>
+  <ul class="collapse">
+  <li><a href="#objectives" id="toc-objectives" class="nav-link" data-scroll-target="#objectives">Objectives</a></li>
+  <li><a href="#data-processing" id="toc-data-processing" class="nav-link" data-scroll-target="#data-processing">Data processing</a>
+  <ul class="collapse">
+  <li><a href="#training-and-testing" id="toc-training-and-testing" class="nav-link" data-scroll-target="#training-and-testing">Training and testing</a></li>
+  </ul></li>
+  <li><a href="#classification-and-regression-trees" id="toc-classification-and-regression-trees" class="nav-link" data-scroll-target="#classification-and-regression-trees">Classification and regression trees</a>
+  <ul class="collapse">
+  <li><a href="#tuning" id="toc-tuning" class="nav-link" data-scroll-target="#tuning">Tuning</a></li>
+  </ul></li>
+  <li><a href="#random-forest" id="toc-random-forest" class="nav-link" data-scroll-target="#random-forest">Random forest</a>
+  <ul class="collapse">
+  <li><a href="#variable-importance-scores" id="toc-variable-importance-scores" class="nav-link" data-scroll-target="#variable-importance-scores">Variable importance scores</a></li>
+  <li><a href="#partial-dependency-plots" id="toc-partial-dependency-plots" class="nav-link" data-scroll-target="#partial-dependency-plots">Partial dependency plots</a></li>
+  </ul></li>
+  <li><a href="#gradient-boosted-trees" id="toc-gradient-boosted-trees" class="nav-link" data-scroll-target="#gradient-boosted-trees">Gradient boosted trees</a></li>
+  <li><a href="#prediction" id="toc-prediction" class="nav-link" data-scroll-target="#prediction">Prediction</a>
+  <ul class="collapse">
+  <li><a href="#predicting-with-new-data" id="toc-predicting-with-new-data" class="nav-link" data-scroll-target="#predicting-with-new-data">Predicting with new data</a></li>
+  </ul></li>
+  <li><a href="#exercise" id="toc-exercise" class="nav-link" data-scroll-target="#exercise">Exercise</a></li>
+  <li><a href="#appendix-1-bioclimate-variables" id="toc-appendix-1-bioclimate-variables" class="nav-link" data-scroll-target="#appendix-1-bioclimate-variables">Appendix 1: Bioclimate variables</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">GEOG 5160 6160 Lab 03</h1>
+</div>
+
+
+<div class="quarto-title-meta-author">
+  <div class="quarto-title-meta-heading">Author</div>
+  <div class="quarto-title-meta-heading">Affiliation</div>
+  
+    <div class="quarto-title-meta-contents">
+    <p class="author">Simon Brewer <a href="mailto:simon.brewer@ess.utah.edu" class="quarto-title-author-email"><i class="bi bi-envelope"></i></a> </p>
+  </div>
+  <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            University of Utah
+          </p>
+      </div>
+  </div>
+
+<div class="quarto-title-meta">
+
+      
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">February 1, 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+<p>In this lab, we’ll look at how to implement a range of tree methods including basic classification and regression trees, random forests and boosted regression trees. We will also look at how to predict for new data and how to carry out hyperparameter tuning.</p>
+<p>We’ll illustrate these methods by using them to build a species distribution model for the pinon pine in the western United States. You will need the following datasets from Canvas, so download these to your datafiles folder (extract any zip files). Make a new folder for today’s class called lab07 and move these files to it (you’ll need to unzip one of them):</p>
+<ul>
+<li><em>pe_df.csv</em></li>
+<li><em>ne_50m_admin_0_countries.zip</em></li>
+<li><em>current.env.nc</em></li>
+<li><em>future.env.nc</em></li>
+</ul>
+<p>You will need to make sure the following packages are installed on your computer (in addition to the packages we have used in previous labs).</p>
+<ul>
+<li><strong>terra</strong>: working with raster data</li>
+<li><strong>sf</strong>: working with spatial data</li>
+<li><strong>tmap</strong>: making thematic maps</li>
+<li><strong>tree</strong>: simple classification and regression trees</li>
+<li><strong>rpart.plot</strong>: better CART graphics</li>
+<li><strong>vip</strong>: better variable importance plots</li>
+<li><strong>pdp</strong>: partial dependency plots</li>
+</ul>
+<p>As a reminder, packages can be installed in RStudio by going to the ‘Packages’ tab and clicking on the [Install] button, or from the menu [Tools]-&gt; [Install packages…]. You can also install these from the console window by typing</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"terra"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="objectives" class="level2">
+<h2 class="anchored" data-anchor-id="objectives">Objectives</h2>
+<ul>
+<li>Understand how to set use functions to train, test and examine tree-based models</li>
+<li>Use a validation dataset to tune model hyperparameters</li>
+<li>Make and visualize predictions</li>
+</ul>
+<p><strong>It is highly recommended to use scripts or Quarto documents to store your R code - this will allow you to easily change and modify it and submit the exercise.</strong></p>
+<p>Next load the libraries you will need for the lab. You should at this stage have most of these already installed. Add anything that is not installed using the <code>install.packages()</code> function.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidymodels)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'broom' was built under R version 4.4.1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(terra)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'sf' was built under R version 4.4.1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tmap)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(vip)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pdp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'pdp' was built under R version 4.4.1</code></pre>
+</div>
+</div>
+</section>
+<section id="data-processing" class="level2">
+<h2 class="anchored" data-anchor-id="data-processing">Data processing</h2>
+<p>Now, let’s read in the known locations of <em>Pinus edulis</em> trees together with a set of pseudo-absences (locations where the species is assumed to be absent). For each of these locations, we have one of a set of 19 bioclimatic variables that we will use as features in the model (see appendix for a description of these).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>pe <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"./datafiles/pe_df.csv"</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(pe)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      gbifid      species latitude longitude pa bio1 bio2 bio3  bio4 bio5  bio6
+1 1899816923 Pinus edulis 38.86601 -104.8967  1  8.0 16.6  4.2 789.0 28.7 -10.5
+2 1899815588 Pinus edulis 38.87549 -104.8832  1  6.4 16.7  4.2 778.1 27.0 -12.1
+3 1899814059 Pinus edulis 38.72277 -104.8393  1  5.8 16.2  4.2 778.0 26.1 -12.4
+4 1899813968 Pinus edulis 38.86471 -104.8972  1  8.0 16.6  4.2 789.0 28.7 -10.5
+5 1899812645 Pinus edulis 38.90846 -104.8550  1  8.2 16.4  4.1 792.9 28.9 -10.2
+6 1899777590 Pinus edulis 36.05780 -112.1357  1  7.8 16.2  4.4 721.5 27.8  -8.5
+  bio7 bio8 bio9 bio10 bio11 bio12 bio13 bio14 bio15 bio16 bio17 bio18 bio19
+1 39.2 18.5 -1.7  18.5  -1.7   427    73     9    60   194    34   194    34
+2 39.1 16.7 -3.2  16.7  -3.2   452    76    10    59   204    38   204    38
+3 38.5 16.1 -3.8  16.1  -3.8   474    81    11    58   214    43   214    43
+4 39.2 18.5 -1.7  18.5  -1.7   427    73     9    60   194    34   194    34
+5 39.1 18.8 -1.5  18.8  -1.5   426    72     9    60   194    34   194    34
+6 36.3 16.9 10.6  17.3  -0.9   411    55    14    32   133    57   115   112</code></pre>
+</div>
+</div>
+<p>We’ll also make up an array of feature names for use in modeling, plotting, etc</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>var_names <span class="ot">=</span> <span class="fu">colnames</span>(pe)[<span class="dv">6</span><span class="sc">:</span><span class="dv">24</span>]</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>var_names</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "bio1"  "bio2"  "bio3"  "bio4"  "bio5"  "bio6"  "bio7"  "bio8"  "bio9" 
+[10] "bio10" "bio11" "bio12" "bio13" "bio14" "bio15" "bio16" "bio17" "bio18"
+[19] "bio19"</code></pre>
+</div>
+</div>
+<p>And as a final processing step, we’ll convert the presence-absence column (<code>pa</code>) to a factor (basically forcing this to be recognized as a categorical variable).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>pe <span class="ot">&lt;-</span> pe <span class="sc">|&gt;</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">pa =</span> <span class="fu">as.factor</span>(pa))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Before moving on, we’ll convert this data frame to an <strong>sf</strong> object using <code>st_as_sf</code>. This requires for arguments the name of the data frame and the columns holding the coordinates. We’ll also specify the coordinate reference system using an EPSG code (WGS84 = 4326). <strong>sf</strong> objects are the standard format for spatial data in R, and allow us to make some quick maps of the presence/absence values and one of the associated environmental variables (<code>bio7</code>).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>pe_sf <span class="ot">=</span> <span class="fu">st_as_sf</span>(pe, <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"longitude"</span>, <span class="st">"latitude"</span>),</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">crs =</span> <span class="dv">4326</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We’ll plot the symbols using <strong>tmap</strong>. For this package, we can build up maps by specifying the <strong>sf</strong> object with <code>tm_shape</code>, and then the type of plot (we’ll see more of this below). First we’ll plot the sites colored by presence (1) and absence (0) which is contained in the column <code>pa</code></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(pe_sf) <span class="sc">+</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_symbols</span>(<span class="at">col=</span><span class="st">"pa"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab03_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>And we can equally plot the eAnd let’s plot the annual temperature range (BIO7) with a continuous color palette.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(pe_sf) <span class="sc">+</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_symbols</span>(<span class="at">col=</span><span class="st">"bio7"</span>, <span class="at">palette =</span> <span class="st">"viridis"</span>, <span class="at">style =</span> <span class="st">"cont"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab03_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<section id="training-and-testing" class="level3">
+<h3 class="anchored" data-anchor-id="training-and-testing">Training and testing</h3>
+<p>First, let’s set up the training and testing set using all 19 of the bioclimatic variables, first dividing into training and testing, using an 80/20 split:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>pe_split <span class="ot">&lt;-</span> <span class="fu">initial_split</span>(pe, <span class="at">prop =</span> <span class="fl">0.80</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>dat_train <span class="ot">&lt;-</span> <span class="fu">training</span>(pe_split)</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>dat_test  <span class="ot">&lt;-</span> <span class="fu">testing</span>(pe_split)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We’ll define a <code>recipe</code> to select only the bioclimatic variables for use in modeling (if you take a look at the file, you’ll see there are observation IDs and coordinates that we want to exclude).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>rec <span class="ot">&lt;-</span> <span class="fu">recipe</span>(pa <span class="sc">~</span>., <span class="at">data =</span> dat_train) <span class="sc">|&gt;</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_select</span>(pa, <span class="fu">starts_with</span>(<span class="st">"bio"</span>))</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>dat_train2 <span class="ot">=</span> <span class="fu">prep</span>(rec) <span class="sc">|&gt;</span> <span class="fu">bake</span>(dat_train)</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>dat_test2 <span class="ot">=</span> <span class="fu">prep</span>(rec) <span class="sc">|&gt;</span> <span class="fu">bake</span>(dat_test)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="classification-and-regression-trees" class="level2">
+<h2 class="anchored" data-anchor-id="classification-and-regression-trees">Classification and regression trees</h2>
+<p>Classification and Regression Trees (CART) are a non-linear, non-parametric modeling approach that can be used with a wide variety of data. Regression trees are used with continuous outcome data, and classification trees with binary or categorical data, but the interface for these is the same in scikit-learn. We’ll build a classification model for the <em>Pinus edulis</em> data set. The base function for this in <strong>tidymodels</strong> is <code>decision_tree</code>, which needs the type of task (classification or regression) defined. We’ll use the <strong>rpart</strong> <em>engine</em> to make the tree; this is the default option</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>tree <span class="ot">=</span> <span class="fu">decision_tree</span>(<span class="at">mode =</span> <span class="st">"classification"</span>,</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>                     <span class="at">engine =</span> <span class="st">"rpart"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Let’s now fit this to the training data:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>tree_fit <span class="ot">&lt;-</span> tree <span class="sc">|&gt;</span> </span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(pa <span class="sc">~</span> ., dat_train2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We can visualize the fitted tree with an additional package (<strong>rpart.plot</strong>). We can’t plot the <code>tree_fit</code> object directly, but we can pass it to the function <code>extract_fit_engine</code>, which extracts the necessary information, and then pass this to the plotting function:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rpart.plot)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: rpart</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'rpart'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:dials':
+
+    prune</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>tree_fit <span class="sc">|&gt;</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">extract_fit_engine</span>() <span class="sc">|&gt;</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rpart.plot</span>(<span class="at">roundint =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab03_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>We’ll now evaluate this model. First, we extract the predictions, and combine these with the <code>pa</code> column from the test set (i.e.&nbsp;the observed presence and absences)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>pred_test <span class="ot">&lt;-</span> <span class="fu">predict</span>(tree_fit, dat_test2) <span class="sc">|&gt;</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_cols</span>(dat_test2 <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">select</span>(pa))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>And we can use this to make a confusion matrix:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>pred_test <span class="sc">|&gt;</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">conf_mat</span>(pa, .pred_class)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>          Truth
+Prediction  0  1
+         0 57 11
+         1 12 40</code></pre>
+</div>
+</div>
+<p>And calculate the accuracy of predictions:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>pred_test <span class="sc">|&gt;</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">accuracy</span>(pa, .pred_class)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 3
+  .metric  .estimator .estimate
+  &lt;chr&gt;    &lt;chr&gt;          &lt;dbl&gt;
+1 accuracy binary         0.808</code></pre>
+</div>
+</div>
+<section id="tuning" class="level3">
+<h3 class="anchored" data-anchor-id="tuning">Tuning</h3>
+<p>Let’s try to improve on this model by tuning it to find the best set of hyperparameters to limit overfitting. You can get the list of available hyperparameters for any <strong>tidymodels</strong> model looking at the <code>args</code> of the original object. For a decision tree, there are three main hyperparameters:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>tree<span class="sc">$</span>args</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$cost_complexity
+&lt;quosure&gt;
+expr: ^NULL
+env:  empty
+
+$tree_depth
+&lt;quosure&gt;
+expr: ^NULL
+env:  empty
+
+$min_n
+&lt;quosure&gt;
+expr: ^NULL
+env:  empty</code></pre>
+</div>
+</div>
+<p>Tuning with tidymodels requries a series of steps:</p>
+<ul>
+<li>Define the tuning <em>specification</em></li>
+<li>Define the tuning grid</li>
+<li>Define a strategy for validation (i.e.&nbsp;validating different combinations of hyperparameter values)</li>
+<li>Run the tuning and explore the outcomes</li>
+</ul>
+<p>The goal of the tuning specification is to define which of the hyperparameters we want to tune. In <strong>tidymodels</strong>, we use the algorithm function (here: <code>decision_tree</code>) to set these. Here, we’ll tune the minimum number of samples to split a node (<code>min_n</code>) and the depth of the tree (the maximum number of splits in a single branch). Rather than set these to given value, we set them to the <code>tune()</code> function - essentially a placeholder to indicate that they will be tuned. In addition, we define the engine and mode of the tree.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>tune_spec <span class="ot">&lt;-</span> </span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">decision_tree</span>(</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">min_n =</span> <span class="fu">tune</span>(),</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">tree_depth =</span> <span class="fu">tune</span>()</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> </span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">"rpart"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_mode</span>(<span class="st">"classification"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Next, we’ll define the sampling grid. <strong>tidymodels</strong> comes with an additional package called <strong>dials</strong> that has functions to define potential values for common hyperparameters. For example, the function <code>min_n</code> has the following range:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">min_n</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Minimal Node Size (quantitative)
+Range: [2, 40]</code></pre>
+</div>
+</div>
+<p>And the default range for tree depth:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tree_depth</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Tree Depth (quantitative)
+Range: [1, 15]</code></pre>
+</div>
+</div>
+<p>We’ll now use these to set up a regular sampling grid. We’ll use 5 values for each of these, giving us 5 * 5 = 25 possible hyperparameter sets:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>tree_grid <span class="ot">&lt;-</span> <span class="fu">grid_regular</span>(<span class="fu">min_n</span>(),</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>                          <span class="fu">tree_depth</span>(),</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>                          <span class="at">levels =</span> <span class="dv">5</span>)</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>tree_grid</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 25 × 2
+   min_n tree_depth
+   &lt;int&gt;      &lt;int&gt;
+ 1     2          1
+ 2    11          1
+ 3    21          1
+ 4    30          1
+ 5    40          1
+ 6     2          4
+ 7    11          4
+ 8    21          4
+ 9    30          4
+10    40          4
+# ℹ 15 more rows</code></pre>
+</div>
+</div>
+<p>Next we’ll set up the validation strategy. We’ll use a 5-fold cross-validation, meaning that each combination of hyperparameters will be tested 5 times. As a reminder - this will not use the testing set we created earlier so that this remains independent.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>dat_folds <span class="ot">&lt;-</span> <span class="fu">vfold_cv</span>(dat_train2, <span class="at">v =</span> <span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>With all that set up, we can now run the tuning. There’s a fair amount going on here, so let’s step through it. The function to run the tuning is called <code>tune_grid</code>, and we use the following arguments</p>
+<ul>
+<li>The tuning specification <code>tune_spec</code></li>
+<li>A formula defining the target and features (<code>pa ~ .</code>, where the <code>.</code> indicates using all other variables as features)</li>
+<li>The grid of hyperparameter values to test</li>
+<li>The metrics to be calculated for each fold and each combination of hyperparameters</li>
+<li></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>tree_res <span class="ot">&lt;-</span> </span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tune_grid</span>(</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>    tune_spec,</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>    pa <span class="sc">~</span> .,</span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">grid =</span> tree_grid,</span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">resamples =</span> dat_folds,</span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">metrics =</span> <span class="fu">metric_set</span>(accuracy, roc_auc)</span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now we can start to explore the results. In their raw form, these contain all the values in a set of columns:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>tree_res</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># Tuning results
+# 5-fold cross-validation 
+# A tibble: 5 × 4
+  splits           id    .metrics          .notes          
+  &lt;list&gt;           &lt;chr&gt; &lt;list&gt;            &lt;list&gt;          
+1 &lt;split [382/96]&gt; Fold1 &lt;tibble [50 × 6]&gt; &lt;tibble [0 × 3]&gt;
+2 &lt;split [382/96]&gt; Fold2 &lt;tibble [50 × 6]&gt; &lt;tibble [0 × 3]&gt;
+3 &lt;split [382/96]&gt; Fold3 &lt;tibble [50 × 6]&gt; &lt;tibble [0 × 3]&gt;
+4 &lt;split [383/95]&gt; Fold4 &lt;tibble [50 × 6]&gt; &lt;tibble [0 × 3]&gt;
+5 &lt;split [383/95]&gt; Fold5 &lt;tibble [50 × 6]&gt; &lt;tibble [0 × 3]&gt;</code></pre>
+</div>
+</div>
+<p>But we can summarize these as follows</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">collect_metrics</span>(tree_res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 50 × 8
+   tree_depth min_n .metric  .estimator  mean     n std_err .config             
+        &lt;int&gt; &lt;int&gt; &lt;chr&gt;    &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt; &lt;chr&gt;               
+ 1          1     2 accuracy binary     0.672     5  0.0158 Preprocessor1_Model…
+ 2          1     2 roc_auc  binary     0.659     5  0.0107 Preprocessor1_Model…
+ 3          1    11 accuracy binary     0.672     5  0.0158 Preprocessor1_Model…
+ 4          1    11 roc_auc  binary     0.659     5  0.0107 Preprocessor1_Model…
+ 5          1    21 accuracy binary     0.672     5  0.0158 Preprocessor1_Model…
+ 6          1    21 roc_auc  binary     0.659     5  0.0107 Preprocessor1_Model…
+ 7          1    30 accuracy binary     0.672     5  0.0158 Preprocessor1_Model…
+ 8          1    30 roc_auc  binary     0.659     5  0.0107 Preprocessor1_Model…
+ 9          1    40 accuracy binary     0.672     5  0.0158 Preprocessor1_Model…
+10          1    40 roc_auc  binary     0.659     5  0.0107 Preprocessor1_Model…
+# ℹ 40 more rows</code></pre>
+</div>
+</div>
+<p>More usefully, we can plot these to show the changes in accuracy and AUC:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(tree_res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab03_files/figure-html/unnamed-chunk-27-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>These show that the biggest impact on performance is <code>tree_depth</code>, with better accuracy at depths of 4 or more. There’s is relatively less difference between the node size values, but values around 11 are probably optimal.</p>
+<p>[Note that we could carry out a second tuning at this point with a more precise grid (e.g.&nbsp;between 8 and 12 for <code>min_n</code>) to better identify the values.]</p>
+<p>Let’s see what came out as the optimal set of hyperparameter (the helper function <code>select_best</code> extracts the parameters with the highest value of a given metric):</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>best_param <span class="ot">&lt;-</span> <span class="fu">select_best</span>(tree_res, <span class="at">metric =</span> <span class="st">"accuracy"</span>) </span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>best_param</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 3
+  tree_depth min_n .config              
+       &lt;int&gt; &lt;int&gt; &lt;chr&gt;                
+1         11     2 Preprocessor1_Model16</code></pre>
+</div>
+</div>
+<p>We can then use another helper function <code>finalize_model</code> to create a final model with these parameters, and fit to the full training set:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>tree_final <span class="ot">&lt;-</span> <span class="fu">finalize_model</span>(tune_spec, best_param)</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>tree_fit <span class="ot">&lt;-</span> <span class="fu">fit</span>(tree_final, pa <span class="sc">~</span> ., dat_train2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>And now, we can calculate the accuracy for this model:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>pred_test <span class="ot">&lt;-</span> <span class="fu">predict</span>(tree_fit, dat_test2) <span class="sc">|&gt;</span></span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_cols</span>(dat_test2 <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">select</span>(pa))</span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>pred_test <span class="sc">|&gt;</span></span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">accuracy</span>(pa, .pred_class)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 3
+  .metric  .estimator .estimate
+  &lt;chr&gt;    &lt;chr&gt;          &lt;dbl&gt;
+1 accuracy binary           0.8</code></pre>
+</div>
+</div>
+<p>We’ll also calculate the ROC AUC. As this is not based on a confusion matrix (and associated threshold for defining 0’s and 1’s), we need to predict the <em>probabilities</em> not the classes. Note that for this outcome, this gives us two predictions - the probability of being a 0 <em>and</em> the probability of being a 1</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>pred_test <span class="ot">&lt;-</span> <span class="fu">predict</span>(tree_fit, dat_test2, <span class="at">type=</span><span class="st">'prob'</span>) <span class="sc">|&gt;</span></span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_cols</span>(dat_test2 <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">select</span>(pa))</span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>pred_test</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 120 × 3
+   .pred_0 .pred_1 pa   
+     &lt;dbl&gt;   &lt;dbl&gt; &lt;fct&gt;
+ 1  0.0959   0.904 1    
+ 2  0.0959   0.904 1    
+ 3  0.0959   0.904 1    
+ 4  0.0959   0.904 1    
+ 5  0.0959   0.904 1    
+ 6  0.0959   0.904 1    
+ 7  0.177    0.823 1    
+ 8  0.0959   0.904 1    
+ 9  0.0625   0.938 1    
+10  0.177    0.823 1    
+# ℹ 110 more rows</code></pre>
+</div>
+</div>
+<p>We can then use this get the AUC score. Rather confusingly, this expects that the first class is the ‘event’, by default. For our data, this means that it considers the 0 as the event of interest, not the 1. To fix this, we add the argument <code>event_level='second'</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">roc_auc</span>(pred_test, pa, .pred_1, <span class="at">event_level =</span> <span class="st">'second'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 3
+  .metric .estimator .estimate
+  &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
+1 roc_auc binary         0.821</code></pre>
+</div>
+</div>
+<p>And we get a final value of 0.8213.</p>
+<p>We can also plot the final tree:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>tree_fit <span class="sc">%&gt;%</span></span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">extract_fit_engine</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rpart.plot</span>(<span class="at">roundint =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab03_files/figure-html/unnamed-chunk-33-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="random-forest" class="level2">
+<h2 class="anchored" data-anchor-id="random-forest">Random forest</h2>
+<p>Next, we’ll build a random forest for the Pinus data using the <code>rad_forest</code> function. We’ll go straight to tuning this, so let’s set up a model and check the hyperparameters. Note that the default engine is <code>ranger</code> - this is usually a good choice as it is designed to run in parallel with a fairly notable speed up in computation time</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>rf <span class="ot">=</span> <span class="fu">rand_forest</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">"ranger"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_mode</span>(<span class="st">"classification"</span>)</span>
+<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-5"><a href="#cb56-5" aria-hidden="true" tabindex="-1"></a>rf<span class="sc">$</span>args</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$mtry
+&lt;quosure&gt;
+expr: ^NULL
+env:  empty
+
+$trees
+&lt;quosure&gt;
+expr: ^NULL
+env:  empty
+
+$min_n
+&lt;quosure&gt;
+expr: ^NULL
+env:  empty</code></pre>
+</div>
+</div>
+<p>We’ll now set up the tuning strategy. This will follow the same steps as above, but with a difference in the hyperparameters. We’ll tune</p>
+<ul>
+<li><code>mtry</code>: the number of features used for split in a tree in the forest</li>
+<li><code>trees</code>: the number of trees in the forest</li>
+<li><code>min_n</code>: the minimum number of samples for splitting</li>
+</ul>
+<p>Note that unlike the example above, where we used the default ranges for each hyperparameter, we manually set these while making the tuning grid using the <code>range</code> argument. Again, we’ll use 5 levels for each giving us <span class="math inline">\(5 \times 5 \times 5 = 125\)</span> combinations, which will be evaluated with a 5-fold cross-validation (a total of 625 random forests)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>tune_spec_rf <span class="ot">&lt;-</span> </span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rand_forest</span>(</span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">mtry =</span> <span class="fu">tune</span>(),</span>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">trees =</span> <span class="fu">tune</span>(),</span>
+<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">min_n =</span> <span class="fu">tune</span>()</span>
+<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb58-7"><a href="#cb58-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">"ranger"</span>, <span class="at">importance=</span><span class="st">"permutation"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb58-8"><a href="#cb58-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_mode</span>(<span class="st">"classification"</span>)</span>
+<span id="cb58-9"><a href="#cb58-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-10"><a href="#cb58-10" aria-hidden="true" tabindex="-1"></a><span class="do">## Tuning grid (see also grid_random)</span></span>
+<span id="cb58-11"><a href="#cb58-11" aria-hidden="true" tabindex="-1"></a>rf_grid <span class="ot">&lt;-</span> <span class="fu">grid_regular</span>(<span class="fu">mtry</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">10</span>)),</span>
+<span id="cb58-12"><a href="#cb58-12" aria-hidden="true" tabindex="-1"></a>                        <span class="fu">trees</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="dv">100</span>, <span class="dv">500</span>)),</span>
+<span id="cb58-13"><a href="#cb58-13" aria-hidden="true" tabindex="-1"></a>                        <span class="fu">min_n</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">8</span>)),</span>
+<span id="cb58-14"><a href="#cb58-14" aria-hidden="true" tabindex="-1"></a>                        <span class="at">levels =</span> <span class="dv">5</span>)</span>
+<span id="cb58-15"><a href="#cb58-15" aria-hidden="true" tabindex="-1"></a>rf_grid</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 125 × 3
+    mtry trees min_n
+   &lt;int&gt; &lt;int&gt; &lt;int&gt;
+ 1     2   100     2
+ 2     4   100     2
+ 3     6   100     2
+ 4     8   100     2
+ 5    10   100     2
+ 6     2   200     2
+ 7     4   200     2
+ 8     6   200     2
+ 9     8   200     2
+10    10   200     2
+# ℹ 115 more rows</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>dat_folds <span class="ot">&lt;-</span> <span class="fu">vfold_cv</span>(dat_train2, <span class="at">v =</span> <span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The following line of code will set up R to use multiple cores on your computer (you can skip this)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Set up for parallel processing</span></span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>doParallel<span class="sc">::</span><span class="fu">registerDoParallel</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>And finally, we can run the tuning:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Run tuning</span></span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>rf_res <span class="ot">&lt;-</span> </span>
+<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tune_grid</span>(</span>
+<span id="cb62-4"><a href="#cb62-4" aria-hidden="true" tabindex="-1"></a>    tune_spec_rf,</span>
+<span id="cb62-5"><a href="#cb62-5" aria-hidden="true" tabindex="-1"></a>    pa <span class="sc">~</span> .,</span>
+<span id="cb62-6"><a href="#cb62-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">grid =</span> rf_grid,</span>
+<span id="cb62-7"><a href="#cb62-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">resamples =</span> dat_folds,</span>
+<span id="cb62-8"><a href="#cb62-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">metrics =</span> <span class="fu">metric_set</span>(accuracy, roc_auc),</span>
+<span id="cb62-9"><a href="#cb62-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">control =</span> <span class="fu">control_grid</span>(<span class="at">save_workflow =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb62-10"><a href="#cb62-10" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb62-11"><a href="#cb62-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-12"><a href="#cb62-12" aria-hidden="true" tabindex="-1"></a>rf_res</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># Tuning results
+# 5-fold cross-validation 
+# A tibble: 5 × 4
+  splits           id    .metrics           .notes          
+  &lt;list&gt;           &lt;chr&gt; &lt;list&gt;             &lt;list&gt;          
+1 &lt;split [382/96]&gt; Fold1 &lt;tibble [250 × 7]&gt; &lt;tibble [0 × 3]&gt;
+2 &lt;split [382/96]&gt; Fold2 &lt;tibble [250 × 7]&gt; &lt;tibble [0 × 3]&gt;
+3 &lt;split [382/96]&gt; Fold3 &lt;tibble [250 × 7]&gt; &lt;tibble [0 × 3]&gt;
+4 &lt;split [383/95]&gt; Fold4 &lt;tibble [250 × 7]&gt; &lt;tibble [0 × 3]&gt;
+5 &lt;split [383/95]&gt; Fold5 &lt;tibble [250 × 7]&gt; &lt;tibble [0 × 3]&gt;</code></pre>
+</div>
+</div>
+<p>As before, we’ll summarize the results and plot them:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="fu">collect_metrics</span>(rf_res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 250 × 9
+    mtry trees min_n .metric  .estimator  mean     n std_err .config            
+   &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;chr&gt;    &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt; &lt;chr&gt;              
+ 1     2   100     2 accuracy binary     0.812     5 0.0101  Preprocessor1_Mode…
+ 2     2   100     2 roc_auc  binary     0.900     5 0.00688 Preprocessor1_Mode…
+ 3     4   100     2 accuracy binary     0.793     5 0.0141  Preprocessor1_Mode…
+ 4     4   100     2 roc_auc  binary     0.892     5 0.0107  Preprocessor1_Mode…
+ 5     6   100     2 accuracy binary     0.799     5 0.0125  Preprocessor1_Mode…
+ 6     6   100     2 roc_auc  binary     0.885     5 0.00841 Preprocessor1_Mode…
+ 7     8   100     2 accuracy binary     0.810     5 0.00975 Preprocessor1_Mode…
+ 8     8   100     2 roc_auc  binary     0.888     5 0.00602 Preprocessor1_Mode…
+ 9    10   100     2 accuracy binary     0.807     5 0.0138  Preprocessor1_Mode…
+10    10   100     2 roc_auc  binary     0.890     5 0.0104  Preprocessor1_Mode…
+# ℹ 240 more rows</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(rf_res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab03_files/figure-html/unnamed-chunk-39-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The results for accuracy are quite noisy, but there are some easier to spot trends in the AUC scores (botton panels). In general, the AUC scores are higher for small values of <code>mtry</code> (the x-axis) and for smaller node sizes (left panels). Let’s extract and print the best set:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a>best_param <span class="ot">&lt;-</span> <span class="fu">select_best</span>(rf_res, <span class="at">metric =</span> <span class="st">"roc_auc"</span>) </span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a>best_param</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 4
+   mtry trees min_n .config               
+  &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;chr&gt;                 
+1     2   100     2 Preprocessor1_Model001</code></pre>
+</div>
+</div>
+<p>Now, let’s make a final model with these values, and evaluate with the test set:</p>
+<ul>
+<li>Accuracy</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>rf_final <span class="ot">&lt;-</span> <span class="fu">finalize_model</span>(tune_spec_rf, best_param)</span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a>rf_fit <span class="ot">&lt;-</span> <span class="fu">fit</span>(rf_final, pa <span class="sc">~</span> ., dat_train2)</span>
+<span id="cb69-4"><a href="#cb69-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-5"><a href="#cb69-5" aria-hidden="true" tabindex="-1"></a>pred_test <span class="ot">&lt;-</span> <span class="fu">predict</span>(rf_fit, dat_test2) <span class="sc">|&gt;</span></span>
+<span id="cb69-6"><a href="#cb69-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_cols</span>(dat_test2 <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">select</span>(pa))</span>
+<span id="cb69-7"><a href="#cb69-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-8"><a href="#cb69-8" aria-hidden="true" tabindex="-1"></a>pred_test <span class="sc">|&gt;</span></span>
+<span id="cb69-9"><a href="#cb69-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">accuracy</span>(pa, .pred_class)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 3
+  .metric  .estimator .estimate
+  &lt;chr&gt;    &lt;chr&gt;          &lt;dbl&gt;
+1 accuracy binary           0.9</code></pre>
+</div>
+</div>
+<ul>
+<li>AUC</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a>pred_test <span class="ot">&lt;-</span> <span class="fu">predict</span>(rf_fit, dat_test2, <span class="at">type=</span><span class="st">'prob'</span>) <span class="sc">|&gt;</span></span>
+<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_cols</span>(dat_test2 <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">select</span>(pa))</span>
+<span id="cb71-3"><a href="#cb71-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb71-4"><a href="#cb71-4" aria-hidden="true" tabindex="-1"></a>pred_test <span class="sc">|&gt;</span></span>
+<span id="cb71-5"><a href="#cb71-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">roc_auc</span>(pa, .pred_1, <span class="at">event_level =</span> <span class="st">'second'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 3
+  .metric .estimator .estimate
+  &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
+1 roc_auc binary         0.966</code></pre>
+</div>
+</div>
+<section id="variable-importance-scores" class="level3">
+<h3 class="anchored" data-anchor-id="variable-importance-scores">Variable importance scores</h3>
+<p>Next we’ll plot the permutation-based variable importance for this model. As a reminder, variable importance is a measure of how much worse a model becomes when we scramble the values of one of the features. The model is used to predict the outcome for some test data (here the out-of-bag samples) twice: once with the original values of the feature and once with randomly shuffled values. If there is a large difference in the skill of the model, this feature is important in controlling the outcome.</p>
+<p>We’ll use the add-on library <strong>vip</strong> to plot these. This does not work with the <strong>tidymodels</strong> output directly, but we can again use <code>extract_fit_engine</code> to get the information we need:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a>rf_fit_2 <span class="ot">&lt;-</span> rf_fit <span class="sc">%&gt;%</span></span>
+<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">extract_fit_engine</span>() </span>
+<span id="cb73-3"><a href="#cb73-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-4"><a href="#cb73-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(vip)</span>
+<span id="cb73-5"><a href="#cb73-5" aria-hidden="true" tabindex="-1"></a><span class="fu">vip</span>(rf_fit_2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab03_files/figure-html/unnamed-chunk-43-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>This plot shows the score for the 10 most important features (you can change this with the <code>num_features</code> argument). Each bar represents a single feature, and the length of the bar it’s importance. High values indicate the features that were the most useful in predicting the outcome.</p>
+</section>
+<section id="partial-dependency-plots" class="level3">
+<h3 class="anchored" data-anchor-id="partial-dependency-plots">Partial dependency plots</h3>
+<p>The variable importace plot tells us which features are the most important, but not how these change our predictions. We can look at the form of the relationship between the occurrence of the pine and this feature (and any other one) using a partial dependency plot. This shows changes in the outcome across the range of some feature (with all other features effectively held constant). Here, we’ll use the <code>partial()</code> function from the the <strong>pdp</strong> package to produce the plot. As arguments, this requires the model, the DataFrame or array used to build the model, and the feature that you want to show. This will take an array of feature, allowing you to plot several dependency plots together. We’ll start with the dependency for the most important feature (<code>bio17</code>; precipitation of driest quarter). Again, we need to specify which of the two possible class values is the ‘event’. We want this to be the 1’s (the presences), which is the second class (again, very confusingly)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pdp)</span>
+<span id="cb74-2"><a href="#cb74-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb74-3"><a href="#cb74-3" aria-hidden="true" tabindex="-1"></a><span class="fu">partial</span>(rf_fit_2, <span class="st">"bio17"</span>, <span class="at">train =</span> dat_train2,</span>
+<span id="cb74-4"><a href="#cb74-4" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot =</span> <span class="cn">TRUE</span>, <span class="at">prob =</span> <span class="cn">TRUE</span>, <span class="at">which.class =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab03_files/figure-html/unnamed-chunk-44-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="fu">partial</span>(rf_fit_2, <span class="st">"bio1"</span>, <span class="at">train =</span> dat_train2,</span>
+<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot =</span> <span class="cn">TRUE</span>, <span class="at">prob =</span> <span class="cn">TRUE</span>, <span class="at">which.class =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab03_files/figure-html/unnamed-chunk-44-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>You can also plot the dependency over two features as a heatmap (not run here):</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a><span class="fu">partial</span>(rf_fit_2, <span class="fu">c</span>(<span class="st">"bio1"</span>, <span class="st">"bio17"</span>), <span class="at">train =</span> dat_train2,</span>
+<span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot =</span> <span class="cn">TRUE</span>, <span class="at">prob =</span> <span class="cn">TRUE</span>, <span class="at">which.class =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="gradient-boosted-trees" class="level2">
+<h2 class="anchored" data-anchor-id="gradient-boosted-trees">Gradient boosted trees</h2>
+<p>We will now build a gradient boosted tree model for the Pinus data. In contrast to random forests that build a set of individual weak trees, boosted regression trees (BRTs) start with a single weak tree and iteratively improve on this. This is done by targeting the residuals from the previous set of models and trying to model that in the next tree. While this can make these methods very powerful, it is easy for them to overfit the data, and hyperparameter tuning becomes very important here.</p>
+<p>With the exception of the different hyperparameters, the code follows the examples above. This is, hopefully, where using the <strong>tidymodels</strong> approach starts to shine - if you want to change algorithms, you can reuse and modify existing code easily.</p>
+<ul>
+<li>First get the hyperparameter list</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a>gbt <span class="ot">=</span> <span class="fu">boost_tree</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">"xgboost"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb77-3"><a href="#cb77-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_mode</span>(<span class="st">"classification"</span>)</span>
+<span id="cb77-4"><a href="#cb77-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb77-5"><a href="#cb77-5" aria-hidden="true" tabindex="-1"></a>gbt<span class="sc">$</span>args</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$mtry
+&lt;quosure&gt;
+expr: ^NULL
+env:  empty
+
+$trees
+&lt;quosure&gt;
+expr: ^NULL
+env:  empty
+
+$min_n
+&lt;quosure&gt;
+expr: ^NULL
+env:  empty
+
+$tree_depth
+&lt;quosure&gt;
+expr: ^NULL
+env:  empty
+
+$learn_rate
+&lt;quosure&gt;
+expr: ^NULL
+env:  empty
+
+$loss_reduction
+&lt;quosure&gt;
+expr: ^NULL
+env:  empty
+
+$sample_size
+&lt;quosure&gt;
+expr: ^NULL
+env:  empty
+
+$stop_iter
+&lt;quosure&gt;
+expr: ^NULL
+env:  empty</code></pre>
+</div>
+</div>
+<ul>
+<li>Set up tuning specification</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a>tune_spec_gbt <span class="ot">&lt;-</span> </span>
+<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">boost_tree</span>(</span>
+<span id="cb79-3"><a href="#cb79-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">learn_rate =</span> <span class="fu">tune</span>(),</span>
+<span id="cb79-4"><a href="#cb79-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">trees =</span> <span class="fu">tune</span>(),</span>
+<span id="cb79-5"><a href="#cb79-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">min_n =</span> <span class="fu">tune</span>()</span>
+<span id="cb79-6"><a href="#cb79-6" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb79-7"><a href="#cb79-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">"xgboost"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb79-8"><a href="#cb79-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_mode</span>(<span class="st">"classification"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ul>
+<li>Set up tuning grid</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb80"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a>gbt_grid <span class="ot">&lt;-</span> <span class="fu">grid_regular</span>(<span class="fu">learn_rate</span>(),</span>
+<span id="cb80-2"><a href="#cb80-2" aria-hidden="true" tabindex="-1"></a>                         <span class="fu">trees</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="dv">200</span>, <span class="dv">1000</span>)),</span>
+<span id="cb80-3"><a href="#cb80-3" aria-hidden="true" tabindex="-1"></a>                         <span class="fu">min_n</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">8</span>)),</span>
+<span id="cb80-4"><a href="#cb80-4" aria-hidden="true" tabindex="-1"></a>                         <span class="at">levels =</span> <span class="dv">5</span>)</span>
+<span id="cb80-5"><a href="#cb80-5" aria-hidden="true" tabindex="-1"></a>gbt_grid</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 125 × 3
+     learn_rate trees min_n
+          &lt;dbl&gt; &lt;int&gt; &lt;int&gt;
+ 1 0.0000000001   200     2
+ 2 0.0000000178   200     2
+ 3 0.00000316     200     2
+ 4 0.000562       200     2
+ 5 0.1            200     2
+ 6 0.0000000001   400     2
+ 7 0.0000000178   400     2
+ 8 0.00000316     400     2
+ 9 0.000562       400     2
+10 0.1            400     2
+# ℹ 115 more rows</code></pre>
+</div>
+</div>
+<ul>
+<li>Validation strategy</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb82"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb82-1"><a href="#cb82-1" aria-hidden="true" tabindex="-1"></a>dat_folds <span class="ot">&lt;-</span> <span class="fu">vfold_cv</span>(dat_train2, <span class="at">v =</span> <span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ul>
+<li>Run tuning</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a>gbt_res <span class="ot">&lt;-</span> </span>
+<span id="cb83-2"><a href="#cb83-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tune_grid</span>(</span>
+<span id="cb83-3"><a href="#cb83-3" aria-hidden="true" tabindex="-1"></a>    tune_spec_gbt,</span>
+<span id="cb83-4"><a href="#cb83-4" aria-hidden="true" tabindex="-1"></a>    pa <span class="sc">~</span> .,</span>
+<span id="cb83-5"><a href="#cb83-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">grid =</span> gbt_grid,</span>
+<span id="cb83-6"><a href="#cb83-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">resamples =</span> dat_folds,</span>
+<span id="cb83-7"><a href="#cb83-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">metrics =</span> <span class="fu">metric_set</span>(accuracy, roc_auc),</span>
+<span id="cb83-8"><a href="#cb83-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">control =</span> <span class="fu">control_grid</span>(<span class="at">save_workflow =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb83-9"><a href="#cb83-9" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb83-10"><a href="#cb83-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb83-11"><a href="#cb83-11" aria-hidden="true" tabindex="-1"></a>gbt_res</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># Tuning results
+# 5-fold cross-validation 
+# A tibble: 5 × 4
+  splits           id    .metrics           .notes          
+  &lt;list&gt;           &lt;chr&gt; &lt;list&gt;             &lt;list&gt;          
+1 &lt;split [382/96]&gt; Fold1 &lt;tibble [250 × 7]&gt; &lt;tibble [0 × 3]&gt;
+2 &lt;split [382/96]&gt; Fold2 &lt;tibble [250 × 7]&gt; &lt;tibble [0 × 3]&gt;
+3 &lt;split [382/96]&gt; Fold3 &lt;tibble [250 × 7]&gt; &lt;tibble [0 × 3]&gt;
+4 &lt;split [383/95]&gt; Fold4 &lt;tibble [250 × 7]&gt; &lt;tibble [0 × 3]&gt;
+5 &lt;split [383/95]&gt; Fold5 &lt;tibble [250 × 7]&gt; &lt;tibble [0 × 3]&gt;</code></pre>
+</div>
+</div>
+<ul>
+<li>Summarize</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb85"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a><span class="fu">collect_metrics</span>(gbt_res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 250 × 9
+   trees min_n   learn_rate .metric  .estimator  mean     n std_err .config     
+   &lt;int&gt; &lt;int&gt;        &lt;dbl&gt; &lt;chr&gt;    &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt; &lt;chr&gt;       
+ 1   200     2 0.0000000001 accuracy binary     0.481     5  0.0258 Preprocesso…
+ 2   200     2 0.0000000001 roc_auc  binary     0.5       5  0      Preprocesso…
+ 3   400     2 0.0000000001 accuracy binary     0.481     5  0.0258 Preprocesso…
+ 4   400     2 0.0000000001 roc_auc  binary     0.5       5  0      Preprocesso…
+ 5   600     2 0.0000000001 accuracy binary     0.481     5  0.0258 Preprocesso…
+ 6   600     2 0.0000000001 roc_auc  binary     0.652     5  0.0214 Preprocesso…
+ 7   800     2 0.0000000001 accuracy binary     0.481     5  0.0258 Preprocesso…
+ 8   800     2 0.0000000001 roc_auc  binary     0.713     5  0.0121 Preprocesso…
+ 9  1000     2 0.0000000001 accuracy binary     0.600     5  0.0455 Preprocesso…
+10  1000     2 0.0000000001 roc_auc  binary     0.763     5  0.0192 Preprocesso…
+# ℹ 240 more rows</code></pre>
+</div>
+</div>
+<ul>
+<li>Plot (note the impact of the learning rate)</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb87"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(gbt_res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab03_files/figure-html/unnamed-chunk-52-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>Pick best parameters and train final model</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb88"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb88-1"><a href="#cb88-1" aria-hidden="true" tabindex="-1"></a>best_param <span class="ot">&lt;-</span> <span class="fu">select_best</span>(gbt_res, <span class="at">metric =</span> <span class="st">"accuracy"</span>) </span>
+<span id="cb88-2"><a href="#cb88-2" aria-hidden="true" tabindex="-1"></a>gbt_final <span class="ot">&lt;-</span> <span class="fu">finalize_model</span>(tune_spec_gbt, best_param)</span>
+<span id="cb88-3"><a href="#cb88-3" aria-hidden="true" tabindex="-1"></a>gbt_fit <span class="ot">&lt;-</span> <span class="fu">fit</span>(gbt_final, pa <span class="sc">~</span> ., dat_train2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ul>
+<li>Evaluate (accuracy)</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb89"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb89-1"><a href="#cb89-1" aria-hidden="true" tabindex="-1"></a>pred_test <span class="ot">&lt;-</span> <span class="fu">predict</span>(gbt_fit, dat_test2) <span class="sc">|&gt;</span></span>
+<span id="cb89-2"><a href="#cb89-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_cols</span>(dat_test2 <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">select</span>(pa))</span>
+<span id="cb89-3"><a href="#cb89-3" aria-hidden="true" tabindex="-1"></a>pred_test <span class="sc">|&gt;</span></span>
+<span id="cb89-4"><a href="#cb89-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">accuracy</span>(pa, .pred_class)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 3
+  .metric  .estimator .estimate
+  &lt;chr&gt;    &lt;chr&gt;          &lt;dbl&gt;
+1 accuracy binary         0.842</code></pre>
+</div>
+</div>
+<ul>
+<li>Evaluate (AUC)</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb91"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a>pred_test <span class="ot">&lt;-</span> <span class="fu">predict</span>(rf_fit, dat_test2, <span class="at">type=</span><span class="st">'prob'</span>) <span class="sc">|&gt;</span></span>
+<span id="cb91-2"><a href="#cb91-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_cols</span>(dat_test2 <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">select</span>(pa))</span>
+<span id="cb91-3"><a href="#cb91-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb91-4"><a href="#cb91-4" aria-hidden="true" tabindex="-1"></a>pred_test <span class="sc">|&gt;</span></span>
+<span id="cb91-5"><a href="#cb91-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">roc_auc</span>(pa, .pred_1, <span class="at">event_level =</span> <span class="st">'second'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 3
+  .metric .estimator .estimate
+  &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
+1 roc_auc binary         0.966</code></pre>
+</div>
+</div>
+</section>
+<section id="prediction" class="level2">
+<h2 class="anchored" data-anchor-id="prediction">Prediction</h2>
+<p>In a final step, we’ll use this model to predict the probability of Pinus edulis occurring throughout western N. America (note that this is usually referred to as predicting the <em>suitability</em> for the species). We’ll use the random forest model for this (but feel free to switch it for any of the other ones).</p>
+<p>First, we’ll estimate the optimal threshold for prediction. As a reminder, the ROC curve assesses how well the model differentiates between 0’s and 1’s for different thresholds (the threshold is how a value of 0 or 1 is set from a value <em>between</em> 0 and 1).</p>
+<p>The ROC curve (used to calculate the AUC) can be used to define this. First, let’s calculate this (with <code>roc_curve</code>) and plot it. The plot is produced using the false positive rate on the x-axis (FPR; the number of 0’s incorrectly predicted) and the true positive rate on the y-axis (TPR; the number of 1’s correctly predicted)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb93"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb93-1"><a href="#cb93-1" aria-hidden="true" tabindex="-1"></a>pred_test <span class="ot">&lt;-</span> <span class="fu">predict</span>(rf_fit, dat_test2, <span class="at">type =</span> <span class="st">"prob"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb93-2"><a href="#cb93-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_cols</span>(dat_test <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">select</span>(pa))</span>
+<span id="cb93-3"><a href="#cb93-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-4"><a href="#cb93-4" aria-hidden="true" tabindex="-1"></a>roc_test <span class="ot">&lt;-</span> <span class="fu">roc_curve</span>(pred_test, pa, .pred_0)</span>
+<span id="cb93-5"><a href="#cb93-5" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(roc_test)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab03_files/figure-html/unnamed-chunk-56-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The optimal threshold is found where the TPR (sensitivity) is high and the FPR (1-specificity) is low. We can get these from the output of <code>roc_curve</code></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb94"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb94-1"><a href="#cb94-1" aria-hidden="true" tabindex="-1"></a>roc_test</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 79 × 3
+   .threshold specificity sensitivity
+        &lt;dbl&gt;       &lt;dbl&gt;       &lt;dbl&gt;
+ 1  -Inf            0               1
+ 2     0            0               1
+ 3     0.005        0.118           1
+ 4     0.01         0.137           1
+ 5     0.0125       0.157           1
+ 6     0.015        0.176           1
+ 7     0.02         0.216           1
+ 8     0.025        0.275           1
+ 9     0.03         0.314           1
+10     0.055        0.333           1
+# ℹ 69 more rows</code></pre>
+</div>
+</div>
+<p>And we can find the optimum as the maximum difference between TPR and FPR, i.e.&nbsp;<code>max(sensitivity - (1 - specificity))</code></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb96"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb96-1"><a href="#cb96-1" aria-hidden="true" tabindex="-1"></a>diff <span class="ot">=</span> roc_test<span class="sc">$</span>sensitivity <span class="sc">-</span> (<span class="dv">1</span><span class="sc">-</span>roc_test<span class="sc">$</span>specificity)</span>
+<span id="cb96-2"><a href="#cb96-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(roc_test<span class="sc">$</span>.threshold, diff)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab03_files/figure-html/unnamed-chunk-58-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb97"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb97-1"><a href="#cb97-1" aria-hidden="true" tabindex="-1"></a>thr <span class="ot">=</span> roc_test<span class="sc">$</span>.threshold[<span class="fu">which.max</span>(diff)]</span>
+<span id="cb97-2"><a href="#cb97-2" aria-hidden="true" tabindex="-1"></a>thr</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.445</code></pre>
+</div>
+</div>
+<section id="predicting-with-new-data" class="level3">
+<h3 class="anchored" data-anchor-id="predicting-with-new-data">Predicting with new data</h3>
+<section id="current-climate" class="level4">
+<h4 class="anchored" data-anchor-id="current-climate">Current climate</h4>
+<p>Now we tested and tuned our models, we can use them for prediction. For species distribution models, we generally want to predict the suitability for our species using a gridded dataset of the environmental variables used to build the model. The data are available in a NetCDF file called <em>current.env.nc</em>, which you should have downloaded. We can read this in (and work with it) using the <code>rast</code> function from the <strong>terra</strong> package:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb99"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb99-1"><a href="#cb99-1" aria-hidden="true" tabindex="-1"></a>curr_env <span class="ot">=</span> <span class="fu">rast</span>(<span class="st">"./datafiles/current_env.nc"</span>)</span>
+<span id="cb99-2"><a href="#cb99-2" aria-hidden="true" tabindex="-1"></a>curr_env</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>class       : SpatRaster 
+dimensions  : 480, 720, 19  (nrow, ncol, nlyr)
+resolution  : 0.04166667, 0.04166667  (x, y)
+extent      : -130, -100, 30, 50  (xmin, xmax, ymin, ymax)
+coord. ref. : lon/lat WGS 84 
+source      : current_env.nc 
+varname     : BIO 
+names       : BIO_z=1, BIO_z=2, BIO_z=3, BIO_z=4, BIO_z=5, BIO_z=6, ... </code></pre>
+</div>
+</div>
+<p>There’s quite a bit there - but this is a spatial raster: 480 columns and 720 rows. There are 19 levels, corresponding to the 19 bioclimate variables we used as features in our model. Let’s plot the first level (<code>bio1</code>) to see what it looks like:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb101"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb101-1"><a href="#cb101-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(curr_env[[<span class="dv">1</span>]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab03_files/figure-html/unnamed-chunk-61-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Currently, we can’t predict directly onto the grid, so as a work around, we’ll first extract all the gridded values into dataframe, then predict using that. Note we need to set the column names of the data frame to match the names of the features in the model:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb102"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb102-1"><a href="#cb102-1" aria-hidden="true" tabindex="-1"></a>curr_env_df <span class="ot">=</span> <span class="fu">as.data.frame</span>(curr_env, <span class="at">cells=</span><span class="cn">TRUE</span>)</span>
+<span id="cb102-2"><a href="#cb102-2" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(curr_env_df) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"cell"</span>, <span class="fu">colnames</span>(dat_train2)[<span class="sc">-</span><span class="dv">1</span>])</span>
+<span id="cb102-3"><a href="#cb102-3" aria-hidden="true" tabindex="-1"></a>prob_df <span class="ot">=</span> <span class="fu">predict</span>(rf_fit, curr_env_df, <span class="at">type=</span><span class="st">"prob"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now we can create a new spatial raster, by a) copying one of the inputs, and b) replacing the values with the predicted probabilities:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb103"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb103-1"><a href="#cb103-1" aria-hidden="true" tabindex="-1"></a>curr_prob <span class="ot">=</span> curr_env[[<span class="dv">1</span>]]</span>
+<span id="cb103-2"><a href="#cb103-2" aria-hidden="true" tabindex="-1"></a>curr_prob[curr_env_df<span class="sc">$</span>cell] <span class="ot">&lt;-</span> prob_df<span class="sc">$</span>.pred_1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>And finally, plot</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb104"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb104-1"><a href="#cb104-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(curr_prob)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab03_files/figure-html/unnamed-chunk-64-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>This shows that model captures the current distribution well, but also predicts a large area of suitability in the north-west (suggesting that it is climatically suitable given the variables we’ve looked at).</p>
+<p>We can also use the threshold we calculated earlier to divide this map into a binary map of suitable and unsuitable areas:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb105"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb105-1"><a href="#cb105-1" aria-hidden="true" tabindex="-1"></a>curr_pa <span class="ot">=</span> curr_prob <span class="sc">&gt;</span> thr</span>
+<span id="cb105-2"><a href="#cb105-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(curr_pa)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab03_files/figure-html/unnamed-chunk-65-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="future-climate" class="level4">
+<h4 class="anchored" data-anchor-id="future-climate">Future climate</h4>
+<p>The previous maps are based on current (or at least end of last century) estimates of climate. We can equally predict for other time periods when we have data available. We also have the same data for the future (2080 under a high emissions climate scenario), so let’s load that as well. We can go through the same steps to produce a map showing projected suitability for this species in 2080</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb106"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb106-1"><a href="#cb106-1" aria-hidden="true" tabindex="-1"></a>future_env <span class="ot">=</span> <span class="fu">rast</span>(<span class="st">"./datafiles/future_env.nc"</span>)</span>
+<span id="cb106-2"><a href="#cb106-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb106-3"><a href="#cb106-3" aria-hidden="true" tabindex="-1"></a>future_env_df <span class="ot">=</span> <span class="fu">as.data.frame</span>(future_env, <span class="at">cells=</span><span class="cn">TRUE</span>)</span>
+<span id="cb106-4"><a href="#cb106-4" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(future_env_df) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"cell"</span>, <span class="fu">colnames</span>(dat_train2)[<span class="sc">-</span><span class="dv">1</span>])</span>
+<span id="cb106-5"><a href="#cb106-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb106-6"><a href="#cb106-6" aria-hidden="true" tabindex="-1"></a>prob_df <span class="ot">=</span> <span class="fu">predict</span>(rf_fit, future_env_df, <span class="at">type=</span><span class="st">"prob"</span>)</span>
+<span id="cb106-7"><a href="#cb106-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb106-8"><a href="#cb106-8" aria-hidden="true" tabindex="-1"></a>future_prob <span class="ot">=</span> future_env[[<span class="dv">1</span>]]</span>
+<span id="cb106-9"><a href="#cb106-9" aria-hidden="true" tabindex="-1"></a>future_prob[future_env_df<span class="sc">$</span>cell] <span class="ot">&lt;-</span> prob_df<span class="sc">$</span>.pred_1</span>
+<span id="cb106-10"><a href="#cb106-10" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(future_prob)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab03_files/figure-html/unnamed-chunk-66-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>And again, we can threshold this to get areas of suitability/unsuitability</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb107"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb107-1"><a href="#cb107-1" aria-hidden="true" tabindex="-1"></a>future_pa <span class="ot">=</span> future_prob <span class="sc">&gt;</span> thr</span>
+<span id="cb107-2"><a href="#cb107-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(future_pa)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab03_files/figure-html/unnamed-chunk-67-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="distribution-change" class="level4">
+<h4 class="anchored" data-anchor-id="distribution-change">Distribution change</h4>
+<p>As a final result, we can use the two binary maps to more easily visualize how the distribution of suitable areas is projected to change. By subtracting the current binary distribution from the future binary distribution, we end up with a map with three values:</p>
+<ul>
+<li>1: new areas of suitability</li>
+<li>0: No change</li>
+<li>-1: loss of suitability</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb108"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb108-1"><a href="#cb108-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(future_pa <span class="sc">-</span> curr_pa)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab03_files/figure-html/unnamed-chunk-68-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="exercise" class="level2">
+<h2 class="anchored" data-anchor-id="exercise">Exercise</h2>
+<p>The file <em>Sonar.csv</em> contains values of 208 sonar signals. The data have 60 features, each representing “the energy within a particular frequency band, integrated over a certain period of time”, and an outcome variable <code>Class</code>, which is coded <code>M</code> or <code>R</code>. The goal of the experiment is to discriminate between the sonar signals bounced of a rock <code>R</code> or a metal object (a mine <code>M</code>). The exercise for this lab is to use one of the ensemble methods (random forest <em>or</em> boosted regression trees) to produce a new model of these data. You should use <strong>mlr3</strong> package, and you need to do the following:</p>
+<ul>
+<li>Set up a task, learner, outer resampling strategy and performance measure</li>
+<li>Use the <code>AutoTuner</code> to tune your model</li>
+<li>Report the AUC score for the tuned model</li>
+<li>Produce a variable importance plot</li>
+</ul>
+<p>In addition, your answer should include your R code.</p>
+</section>
+<section id="appendix-1-bioclimate-variables" class="level2">
+<h2 class="anchored" data-anchor-id="appendix-1-bioclimate-variables">Appendix 1: Bioclimate variables</h2>
+<ul>
+<li>BIO1 = Annual Mean Temperature</li>
+<li>BIO2 = Mean Diurnal Range (Mean of monthly (max temp - min temp))</li>
+<li>BIO3 = Isothermality (BIO2/BIO7) (* 100)</li>
+<li>BIO4 = Temperature Seasonality (standard deviation *100)</li>
+<li>BIO5 = Max Temperature of Warmest Month</li>
+<li>BIO6 = Min Temperature of Coldest Month</li>
+<li>BIO7 = Temperature Annual Range (BIO5-BIO6)</li>
+<li>BIO8 = Mean Temperature of Wettest Quarter</li>
+<li>BIO9 = Mean Temperature of Driest Quarter</li>
+<li>BIO10 = Mean Temperature of Warmest Quarter</li>
+<li>BIO11 = Mean Temperature of Coldest Quarter</li>
+<li>BIO12 = Annual Precipitation</li>
+<li>BIO13 = Precipitation of Wettest Month</li>
+<li>BIO14 = Precipitation of Driest Month</li>
+<li>BIO15 = Precipitation Seasonality (Coefficient of Variation)</li>
+<li>BIO16 = Precipitation of Wettest Quarter</li>
+<li>BIO17 = Precipitation of Driest Quarter</li>
+<li>BIO18 = Precipitation of Warmest Quarter</li>
+<li>BIO19 = Precipitation of Coldest Quarter</li>
+</ul>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
