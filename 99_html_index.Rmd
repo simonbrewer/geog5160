@@ -23,22 +23,30 @@ Spatial data science is a fast-growing discipline, with wide-ranging application
 
 # Classes
 
-- Week 1
+- Lab 1
     - [Installation instructions][install]
     - [Lab notes (R)][lab01r]
     - [Lab notes (Python notebook)][lab01p]
     - [Lab notes (Python colab)][lab01c]
-- Week 2
+- Lab 2
     - [Lab notes (R)][lab02r]
-    - [Lab notes (Python notebook)][lab01p]
+    - [Lab notes (Python notebook)][lab02p]
     - [Lab notes (Python colab)][lab02c]
+- Lab 3
+    - [Lab notes (R)][lab03r]
+    - [Lab notes (Python notebook)][lab03p]
+    - [Lab notes (Python colab)][lab03c]
 
 # Data
 
-- Week 1
+- Lab 1
     - [Penguins Dataset][penguins]
-- Week 2
+- Lab 2
     - [Housing Dataset][housing]
+- Lab 3
+    - [Pinus edulis dataset][pe_df]
+    - Current environmental data
+    - Future environmental data
     
 [install]: https://simonbrewer.github.io/geog5160/GEOG_5160_6160_Installation.html
 [lab01r]: https://simonbrewer.github.io/geog5160/GEOG_5160_6160_lab01.html
