@@ -45,6 +45,7 @@ Spatial data science is a fast-growing discipline, with wide-ranging application
     - [Housing Dataset][housing]
 - Lab 3
     - [Pinus edulis dataset][pe_df]
+    - [Natural Earth coastlines][ne_shp]
     - [Current environmental data][curr_env]
     - [Future environmental data][futr_env]
     
@@ -61,6 +62,7 @@ Spatial data science is a fast-growing discipline, with wide-ranging application
 [penguins]: https://drive.google.com/file/d/1Sb5uv2RP_gcNJDKmlEjBoSUOdETIq2Jf/view?usp=sharing
 [housing]: https://drive.google.com/file/d/1pTBKamvTk7ZLsRIFKRNQ37_XU2J5y9XT/view?usp=sharing
 [pe_df]: https://drive.google.com/file/d/1YUML4HEX1jLgpuiODJNMrxKlru8tCKJe/view?usp=sharing
+[ne_shp]: https://drive.google.com/file/d/1IF2GT05HggO2OncDbDnp9ZF1toggj54r/view?usp=sharing
 [curr_env]: https://drive.google.com/file/d/1tuyY7VFgkXWvppMwpTxYl-34lYa_4pyL/view?usp=sharing
 [futr_env]: https://drive.google.com/file/d/1at_RvzwRTVdiFInV03hXOuvvfeo1iJjv/view?usp=sharing
 
