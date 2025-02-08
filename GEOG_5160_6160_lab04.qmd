@@ -440,7 +440,86 @@ And we get a pretty substantial improvement in model performance, with around a 
 
 As a final step, we'll re-fit this model using spatial basis functions to represent location. As a reminder, these functions are designed to encode relative location (i.e. the proximity of each observation to the others) in a way that maximizes the signal-to-noise ratio in a memory efficient manner. These are best suited for large spatial and spatio-temporal datasets; we'll use them here more as a demonstration of how to create and use these. 
 
+We'll use these here to try and further improve our cancer model. R has an add-on library (**FRK**) that has a function to easily create these for spatial data. It currently only works with an oldr version of R's spatial objects, so first, let's convert our existing `sf` object to that format:
 
+```{r}
+atl_cancer_sp <- as_Spatial(atl_cancer)
+```
+
+Next, load the **FRK** library and use the `auto_basis` function to generate the basis functions for the cancer dataset:
+
+```{r}
+library(FRK)
+atl_basis <- auto_basis(data = atl_cancer_sp)
+```
+
+And we can quickly visualize the results:
+
+```{r}
+show_basis(atl_basis) +
+  coord_fixed() +
+  geom_sf(data = atl_cancer, fill = NA, color = "red")
+```
+
+By default, this places three levels of basis functions from low-resolution to capture large scale spatial patterns (large circles) to high-resolution to capture fine-scale patterns (smallest circles). The red polygons show the distribution of the counties from the cancer dataset.
+
+If you type the name of the basis object (`atl_basis`) it will give you an overview. This shows a total of 1428 functions that we could relate our observations too. We'll make some adjustments to this:
+
+- We'll only use two resolutions (`nres=2`)
+- We'll prune the basis functions. This removes all basis functions that have less than `prune` observations
+
+Note that you can also adjust the resolution of the functions. For example, adding the argument `regular=2` will double the resolution. Alternatively, setting `regular=0` will add irregular basis functions based on the data density. 
+
+```{r}
+atl_basis <- auto_basis(data = atl_cancer_sp, 
+                        nres = 2, prune = 2)
+
+show_basis(atl_basis) +
+  coord_fixed() +
+  geom_sf(data = atl_cancer, fill = NA, color = "red")
+```
+
+Now, we need to extract the value of each basis function for each observation. The closer an observation is, then the higher the value will be, and this is then used to spatially correlate observations (i.e. observations who have similar values on all basis functions must be close together). 
+
+We do this in two steps. First, we use the function `eval_basis` to get the values for each observation as a matrix. We add column names starting with `b` to this to identify each function
+
+```{r}
+basis_mat <- as.matrix(eval_basis(atl_basis, atl_cancer_sp))
+colnames(basis_mat) <- paste0("b", 1:ncol(basis_mat))
+dim(basis_mat)
+```
+
+The resulting matrix has the same nunber of rows as observations and same number of columns as basis functions. Next, we use R's `cbind` function to merge this with the original cancer dataset to make a new dataframe (`atl2`. Then we drop all unused predictors.
+
+```{r}
+atl2 <- cbind(cancer, basis_mat)
+
+atl2 <- atl2 |>
+  select(-FIPS, -x, -y, Smoking, Poverty)
+```
+
+Finally, we repeat out cross-validation exercise from above to estimate the predictive power of the model. Note that we use a much larger number of trees in the random forest, and a high number for the features used at each split, given the size of the new dataset
+
+```{r}
+rec <- recipe(Cancer ~ ., atl2)
+
+rf <- rand_forest(mode = "regression", trees = 2000, mtry = 20)
+
+nfolds = 5
+folds <- vfold_cv(atl2, v = nfolds)
+
+workflow <- workflow() |>
+  add_recipe(rec) |>
+  add_model(rf)
+
+results <- workflow |>
+  fit_resamples(resamples = folds, 
+                metrics = metric_set(rmse, rsq))
+
+collect_metrics(results)
+```
+
+And we get another small improvement in the model. Note that we have not tuned any of these models (or the basis functions), and it's is possible that better performance could be achieved in practice.
 
 # Exercise
 
