@@ -98,27 +98,6 @@ tm_shape(lsl_sf) +
   tm_compass(position = c("right", "top"))
 ```
 
-```{r}
-lsl = read.csv("./datafiles/lsl.csv")
-head(lsl)
-```
-
-```{r}
-lsl <- lsl |>
-  mutate(lslpts = as.factor(as.numeric(lslpts)))
-```
-
-```{r}
-lsl_sf <- st_as_sf(lsl, coords = c("x", "y"), crs = 32717)
-plot(st_geometry(lsl_sf))
-```
-
-```{r}
-tm_shape(lsl_sf) +
-  tm_symbols(col = "lslpts") +
-  tm_scale_bar(position = c("left", "top")) +
-  tm_compass(position = c("right", "top"))
-```
 
 Next let's load some environmental data to make predictions. This is in a multi-layer GeoTIFF file, and we can load it using the `rast` function from **terra**:
 
@@ -189,25 +168,33 @@ lsl_pred = terra::predict(env, model = rf_fit$fit,
                           type = "response", na.rm = TRUE)
 ```
 
-And plot. Note that this gives two rasters as output: a) the probability of the *absence* of a landslide and b) the probability of *presence*
+And plot. Note that this gives two rasters as output: a) the probability of the *absence* of a landslide and b) the probability of *presence*, so we'll plot the second one here (`X1`)
 
 ```{r}
-plot(lsl_pred[["X1"]])
+tm_shape(lsl_pred[["X1"]]) + 
+  tm_raster() + 
+  tm_shape(lsl_sf) + 
+  tm_dots()
 ```
 
 # Spatial cross-validation
 
-## Non-spatial XV
+Now let's dig a little further into the cross-validation of this model. The AUC value we got above is from a single hold-out, ignoring the spatial distribution of the observations. 
+
+First, let's re-run this as a 5-fold cross-validation to get a more robust estimate. For this we:
+
+- Define a recipe using the formula from above
+- Instantiate a random forest (we could simply reuse the code above, but adding this here helps clarify what is going on)
+- Define and create the folds
+- Link all of this together into a workflow
+- Run the cross-validation and check the results
 
 ```{r}
-library(tidymodels)
-
 rec <- recipe(lslpts ~ slope + cplan + cprof + elev + log10_carea, lsl)
 
 rf <- rand_forest(mode = "classification")
 
 nfolds = 5
-
 folds <- vfold_cv(lsl, v = nfolds)
 
 workflow <- workflow() |>
@@ -221,14 +208,40 @@ results <- workflow |>
 collect_metrics(results)
 ```
 
-## Spatial XV
+And we get a slightly lower, but more robust AUC estimate. However, we still haven't accounted for the spatial dependency in the data. This means that the value we have is somewhat reliant on the spatial correlation between the training and test set, as the observations are mixed. This means that our AUC value is really telling us about how well the model predicts *within* existing observations, in other words, how well it can interpolate.
+
+A different test is how well our model would work in an area where we know the features, but we don't have any observations of landslides (or non-landslides). This will tell us how well the model works at predicting *outside* existing observations, or how well it can extrapolate. To test this, we need to use a spatial sampling method that will divide the data into contiguous training and testing regions. In a spatial $k$-fold, we divide the data into $k$ regions, set one as testing and the others as training, fit and evaluate a model and repeat. 
+
+We'll use the **spatialsample** library to create the sampling scheme. This has a number of options - we'll use a clustering approach, where clusters of locations are made based on the distance between them.
+
+Let's go ahead and build this now. Note that we have to pass the `sf` object we made earlier (so that the function can find the coordinates):
 
 ```{r}
 library(spatialsample)
 spfolds <- spatial_clustering_cv(data = lsl_sf, 
                                  v = nfolds)
+```
+
+This library comes with an `autoplot` function to quickly visualize the results:
+
+```{r}
 autoplot(spfolds)
 ```
+
+An alternative is spatial block sampling, where the study region is divided into regular grid. All observations in a grid box are considered as part of a fold, with several boxes making the entire fold:
+
+```{r}
+spblock <- spatial_block_cv(data = lsl_sf, 
+                            v = nfolds)
+autoplot(spblock)
+```
+
+We'll now use the first set of folds (the cluster sampling) to cross-validate the model. This integrates well with the **tidymodels** approach we have used so far, with the only difference that
+
+- We need to specify the `sf` object in the recipe, not the data frame
+- We use `spfolds` in the resampling.
+
+I've copied the full code again here, so that it is easier to see what is going on. 
 
 ```{r}
 rec <- recipe(lslpts ~ slope + cplan + cprof + elev + log10_carea, lsl_sf)
@@ -245,6 +258,187 @@ results <- workflow |>
 
 collect_metrics(results)
 ```
+
+You should see here that the AUC decreases substantially, indicating less predictive power when extrapolating. 
+
+# Using location in machine learning
+
+We'll now move on to exploring the use of location in machine learning. We'll look at this in three ways
+
+- Geographical random forest (GRF)
+- Using coordinates as features
+- Spatial basis functions
+
+We'll also use a different data set here, with a continuous outcome, as the current GRF implementation does not work (well) with with binary outcomes. 
+
+The file *data_atlantic_1998_2012.csv* contains information on cancer rates from around 660 counties in the eastern part of the US. Let's load that here as well as a shapefile containing the county polygons:
+
+```{r}
+atl <- st_read("./datafiles/COUNTY_ATLANTIC.shp")
+atl
+```
+
+```{r}
+cancer <- read.csv("./datafiles/data_atlantic_1998_2012.csv")
+head(cancer)
+```
+
+Both the shapefile and the cancer data have the county FIPS code, so we can use this to merge the two datasets together, which allows us to map out the cancer rates, showing high rates in the south and western part of the region:
+
+```{r}
+atl_cancer <- merge(atl, cancer, by = "FIPS")
+```
+
+```{r}
+tm_shape(atl_cancer) +
+  tm_fill("Cancer", palette = "viridis") +
+  tm_scale_bar() + tm_compass()
+```
+
+
+## Geographical random forest
+
+Let's start this section by building a GRF with these data. To keep things simple here and below, we'll just use the pollutant variables as features (`PM25`, `NO2` and `SO2`). The GRF function does not use the `sf` object that we made earlier, but instead uses the original `cancer` dataframe and a second dataframe with the coordinates of each spatial location. We'll extract this from the `sf` object by finding the centroids, and then the coordinates of these
+
+```{r}
+atl_crds <- st_coordinates(st_centroid(atl_cancer))
+```
+
+Now we can fit the model. We won't try and tune this here, but instead run it with an adaptive kernel that uses the 50 closest locations to build each model in a moving window (you might want to try playing with the `bw` argument to see how this affects the results). Note the other arguments:
+
+- The formula defining the relationship between variables
+- The dataframes holding the data (`dframe`) and coordinates (`coords`)
+
+```{r warning=FALSE, results='hide', message=FALSE}
+library(SpatialML)
+cancer_grf <- grf(Cancer ~ PM25 + NO2 + SO2,
+    dframe = cancer, kernel = 'adaptive', bw = 50,
+    coords = atl_crds)
+```
+
+The function will give you quite a lot of output (you can turn this off with `print.results=FALSE`). The routine starts by fitting a global model (i.e. with all the observations) and then fits local models to each observation using the kernel we defined in the function. The output contains a summary of both of these, and we can use this contrast the global and local approaches. Two useful numbers are a) the global and local R2 and b) the global and local MSE.
+
+More usefully, we can start to visualize the results. First we'll explore the importance of the three features we used in the model. As a remidner, this is a measure of the loss of predictive power when one of the variables is randomly shuffled. Let's start by plotting the importance scores for the global model:
+
+```{r}
+library(vip)
+cancer_grf$Global.Model
+vip(cancer_grf$Global.Model)
+```
+
+Next, let's get the local importance scores. In the model output, there is a dataframe called `Local.Variable.Importance` which (unsurprisingly) holds the importance scores for each model (for each location). A second dataframe (`LGofFit`) holds goodness of fit scores for each location and we'll use this to visualize variations in the R2:
+
+```{r}
+head(cancer_grf$Local.Variable.Importance)
+head(cancer_grf$LGofFit)
+```
+
+Let's extract these and add them to our `sf` object:
+
+```{r}
+atl_cancer$localR2 <- cancer_grf$LGofFit$LM_Rsq100 
+atl_cancer$vip_PM25 <- cancer_grf$Local.Variable.Importance$PM25
+atl_cancer$vip_NO2 <- cancer_grf$Local.Variable.Importance$NO2
+atl_cancer$vip_SO2 <- cancer_grf$Local.Variable.Importance$SO2
+```
+
+And finally map everything:
+
+```{r message=FALSE, warning=FALSE}
+tm_shape(atl_cancer) + 
+  tm_fill(c("localR2", 
+            "vip_PM25", "vip_NO2", "vip_SO2"))
+```
+
+A few things to note from these maps:
+
+- The local R2 values vary a lot (with some regions that have negative values). This can be interpreted as a map of where the model is doing a reasonable job (green) and where it fails (red). The low values indicate that other variables may be important in producing this model
+- The importance scores for the three features largely follow the same pattern (high importance around metropolitan centers, low elsewhere). This is not too surprising as pollutant values tend to correlate pretty strongly. 
+
+We'll explore this a little further in the exercise. 
+
+## Using coordinates as features
+
+Next, we'll explore the use of coordinates as features. Conceptually, we are trying to improve the model outcome by incorporating some measure of spatial dependency or autocorrelation between locations. This helps to address models that tend to over- or under-estimate systematically in space. To illustrate this point, we'll first make a random forest model using all the data:
+
+
+```{r}
+rf <- rand_forest(mode = "regression")
+
+rf_fit <- rf |> 
+  fit(Cancer ~ PM25 + NO2 + SO2, cancer)
+```
+
+Now predict and merge into the `sf` object:
+
+```{r}
+atl_cancer$y_hat = predict(rf_fit, cancer)$.pred
+```
+
+Calculate the error as prediction - observation and plot:
+
+```{r}
+atl_cancer$error = atl_cancer$y_hat - atl_cancer$Cancer
+tm_shape(atl_cancer) +
+  tm_fill("error") +
+  tm_scale_bar() + tm_compass()
+```
+
+And these results show that systematic error in the model (note the region of negative values in the west and south, and positive values in the north-west). Before including the coordinates in a model, let's run a 5-fold cross-validation on this model to get a reference RMSE and $R^2$. I've listed all the steps in the next block of code for clarity:
+
+- Set up the recipe (no data processing)
+- Instantiate the model
+- Define the cross-validation strategy
+- Combine this into a workflow
+- Run the cross-validation and print results
+
+```{r}
+rec <- recipe(Cancer ~ PM25 + NO2 + SO2, cancer)
+
+rf <- rand_forest(mode = "regression")
+
+nfolds = 5
+folds <- vfold_cv(cancer, v = nfolds)
+
+workflow <- workflow() |>
+  add_recipe(rec) |>
+  add_model(rf)
+
+results <- workflow |>
+  fit_resamples(resamples = folds, 
+                metrics = metric_set(rmse, rsq))
+
+collect_metrics(results)
+```
+
+Giving us an RMSE of around `r round(collect_metrics(results)$mean[1], 2)`, and an $R^2$ of `r round(collect_metrics(results)$mean[2], 2)`. 
+
+Now let's re-run this with coordinates included (these are in the `x` and `y` columns or we could use the centroid coordinates we extracted earlier):
+
+```{r}
+rec <- recipe(Cancer ~ PM25 + NO2 + SO2 + x + y, cancer)
+
+rf <- rand_forest(mode = "regression")
+
+nfolds = 5
+folds <- vfold_cv(cancer, v = nfolds)
+
+workflow <- workflow() |>
+  add_recipe(rec) |>
+  add_model(rf)
+
+results <- workflow |>
+  fit_resamples(resamples = folds, 
+                metrics = metric_set(rmse, rsq))
+
+collect_metrics(results)
+```
+
+And we get a pretty substantial improvement in model performance, with around a 2 point drop in RMSE and a doubling of $R^2$. 
+
+## Spatial basis functions
+
+As a final step, we'll re-fit this model using spatial basis functions to represent location. As a reminder, these functions are designed to encode relative location (i.e. the proximity of each observation to the others) in a way that maximizes the signal-to-noise ratio in a memory efficient manner. These are best suited for large spatial and spatio-temporal datasets; we'll use them here more as a demonstration of how to create and use these. 
 
 
 
