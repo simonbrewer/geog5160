@@ -523,17 +523,13 @@ And we get another small improvement in the model. Note that we have not tuned a
 
 # Exercise
 
-For the exercise, you will need to submit two things:
+In the cancer dataset, there are two possible predictor variables that we did not use above (poverty rates `Poverty` and smoking rates `Smoking`). For the exercise, you will need run a new analysis that includes these. There are three options given below; students in GEOG 5160 will need to do one of these, students in GEOG 6160 will need to do two. 
 
--   A table listing the AUC and accuracy for the three different algorithms (decision trees, random forest and boosted regression). You should give these values based on predictions for the *test* dataset using the final model.
--   A map showing predicted *probability* of Pinus edulis presence under *current* environmental conditions using *either* the decision tree model or the boosted regression
+1. Use the cancer dataset to carry out a non-spatial and spatial cross-validation, following the example above. This will be a regression task, and you should include all the possible predictors (poverty, smoking and air pollutants). You can use a random forest, or any of the other algorithms we have looked at so far. Report the RMSE and $R^2$ for both cross-validation methods, and write a short statement that explains in simple terms what these mean (1-2 sentences)
+2. Make a new geographical random forest model that includes the variables mentioned above. Your answer should include a) a variable importance plot based on the global model; b) maps of the importance scores for all variables and the local $R^2$; c) a short description (2-4 sentences) of the spatial patterns you observe
+3. Make a new model with spatial basis functions that includes the variables mentioned above. You should try at least two different basis functions setups (I'd recommend that at least one uses the irregular basis functions described in the section above). Your answer should include a) a figure showing the distribution of the basis functions you used; b) cross-validated RMSE and $R^2$ values; c) a short statement as to whether the basis functions have improved the model (1-2 sentences)
 
-Students enrolled in 6160 should also provide
-
--   A map showing predicted *probability* of Pinus edulis presence under *future* environmental conditions using the same model as in part 2
--   A map showing the difference between the future and current predicted presence for the same model
-
-Use a Quarto document to record your answers and output. Assignments, to include both the Quarto document and (ideally) the compiled HTML file, should be submitted to Canvas by Feb 12th. Please use the following naming convention: `Lab04_lastname`.
+Use a Quarto document to record your answers and output. Assignments, to include both the Quarto document and (ideally) the compiled HTML file, should be submitted to Canvas by Feb 19th. Please use the following naming convention: `Lab04_lastname`.
 
 # Appendix 1: Datafiles
 
