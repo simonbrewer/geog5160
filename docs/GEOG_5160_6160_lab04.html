@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Simon Brewer">
-<meta name="dcterms.date" content="2025-02-08">
+<meta name="dcterms.date" content="2025-02-09">
 
 <title>GEOG 5160 6160 Lab 04</title>
 <style>
@@ -198,7 +198,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">February 8, 2025</p>
+      <p class="date">February 9, 2025</p>
     </div>
   </div>
   
@@ -284,7 +284,7 @@ window.Quarto = {
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>lsl <span class="ot">&lt;-</span> lsl <span class="sc">|&gt;</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">lslpts =</span> <span class="fu">as.factor</span>(<span class="fu">as.numeric</span>(lslpts)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>We can use the <code>st_as_sf</code> function from the <strong>sf</strong> package to conver these to a simple features spatial object and plot:</p>
+<p>We can use the <code>st_as_sf</code> function from the <strong>sf</strong> package to convert these to a simple features spatial object and plot. The data are from UTM 17S, so we can use the EPSG code of 32717 to set the correct reference system:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>lsl_sf <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(lsl, <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>), <span class="at">crs =</span> <span class="dv">32717</span>)</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(lsl_sf))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -719,7 +719,6 @@ R squared (OOB):                  0.206582 </code></pre>
 <li>The local R2 values vary a lot (with some regions that have negative values). This can be interpreted as a map of where the model is doing a reasonable job (green) and where it fails (red). The low values indicate that other variables may be important in producing this model</li>
 <li>The importance scores for the three features largely follow the same pattern (high importance around metropolitan centers, low elsewhere). This is not too surprising as pollutant values tend to correlate pretty strongly.</li>
 </ul>
-<p>We’ll explore this a little further in the exercise.</p>
 </section>
 <section id="using-coordinates-as-features" class="level2">
 <h2 class="anchored" data-anchor-id="using-coordinates-as-features">Using coordinates as features</h2>
@@ -970,6 +969,17 @@ replace the existing one.</code></pre>
 </section>
 <section id="data_atlantic_1998_2012.csv" class="level2">
 <h2 class="anchored" data-anchor-id="data_atlantic_1998_2012.csv"><em>data_atlantic_1998_2012.csv</em></h2>
+<ul>
+<li><code>FIPS</code>: County FIPS code</li>
+<li><code>x</code>: Easting (m)</li>
+<li><code>y</code>: Northing (m)</li>
+<li><code>Cancer</code>: Cancer mortality rate / 100,000</li>
+<li><code>Poverty</code>: Poverty rate (% below poverty level)</li>
+<li><code>Smoking</code>: Smoking rate (%)</li>
+<li><code>PM25</code>: Annual mean PM2.5 concentration</li>
+<li><code>NO2</code>: Annual mean NO2 concentration</li>
+<li><code>SO2</code>: Annual mean SO2 concentration</li>
+</ul>
 
 
 </section>

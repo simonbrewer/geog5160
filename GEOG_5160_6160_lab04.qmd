@@ -258,7 +258,7 @@ results <- workflow |>
 collect_metrics(results)
 ```
 
-  You should see here that the AUC decreases substantially, indicating less predictive power when extrapolating.
+You should see here that the AUC decreases substantially, indicating less predictive power when extrapolating.
 
 # Using location in machine learning
 
@@ -544,3 +544,14 @@ Use a Quarto document to record your answers and output. Assignments, to include
 Raster dataset with same predictor variables as *lsl.csv*
 
 ## *data_atlantic_1998_2012.csv*
+
+- `FIPS`: County FIPS code
+- `x`: Easting (m)
+- `y`: Northing (m)
+- `Cancer`: Cancer mortality rate / 100,000
+- `Poverty`: Poverty rate (% below poverty level)
+- `Smoking`: Smoking rate (%)
+- `PM25`: Annual mean PM2.5 concentration
+- `NO2`: Annual mean NO2 concentration
+- `SO2`: Annual mean SO2 concentration
+
