@@ -453,17 +453,17 @@ The variable importace plot tells us which features are the most important, but 
 ```{r}
 library(pdp)
 
-partial(rf_fit_2, "bio17", train = dat_train2,
+pdp::partial(rf_fit_2, "bio17", train = dat_train2,
         plot = TRUE, prob = TRUE, which.class = 2)
 
-partial(rf_fit_2, "bio1", train = dat_train2,
+pdp::partial(rf_fit_2, "bio1", train = dat_train2,
         plot = TRUE, prob = TRUE, which.class = 2)
 ```
 
 You can also plot the dependency over two features as a heatmap (not run here):
 
 ```{r eval=FALSE}
-partial(rf_fit_2, c("bio1", "bio17"), train = dat_train2,
+pdp::partial(rf_fit_2, c("bio1", "bio17"), train = dat_train2,
         plot = TRUE, prob = TRUE, which.class = 2)
 ```
 
