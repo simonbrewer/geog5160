@@ -36,6 +36,10 @@ Spatial data science is a fast-growing discipline, with wide-ranging application
     - [Lab notes (R)][lab03r]
     - [Lab notes (Python notebook)][lab03p]
     - [Lab notes (Python colab)][lab03c]
+- Lab 4
+    - [Lab notes (R)][lab04r]
+    - [Lab notes (Python notebook)][lab04p]
+    - Lab notes (Python colab)
 
 # Data
 
@@ -48,7 +52,13 @@ Spatial data science is a fast-growing discipline, with wide-ranging application
     - [Natural Earth coastlines][ne_shp]
     - [Current environmental data][curr_env]
     - [Future environmental data][futr_env]
+- Lab 4
+    - [Landslide locations from Ecuador][lslpts]
+    - [Environmental data for landslide predictions][lsl_ta]
+    - [Cancer mortality rates][cancer]
+    - [Atlantic county shapefile][atl_shp]
     
+
 [install]: https://simonbrewer.github.io/geog5160/GEOG_5160_6160_Installation.html
 [lab01r]: https://simonbrewer.github.io/geog5160/GEOG_5160_6160_lab01.html
 [lab01p]: https://github.com/simonbrewer/geog5160/blob/main/GEOG_5160_6160_lab01.ipynb
@@ -59,10 +69,16 @@ Spatial data science is a fast-growing discipline, with wide-ranging application
 [lab03r]: https://simonbrewer.github.io/geog5160/GEOG_5160_6160_lab03.html
 [lab03p]: https://github.com/simonbrewer/geog5160/blob/main/GEOG_5160_6160_lab03.ipynb
 [lab03c]: https://drive.google.com/file/d/1SlhPrshvdMKUpi0gfmEobvlNwGuZmmec/view?usp=sharing
+[lab04r]: https://simonbrewer.github.io/geog5160/GEOG_5160_6160_lab04.html
+[lab04p]: https://github.com/simonbrewer/geog5160/blob/main/GEOG_5160_6160_lab04.ipynb
 [penguins]: https://drive.google.com/file/d/1Sb5uv2RP_gcNJDKmlEjBoSUOdETIq2Jf/view?usp=sharing
 [housing]: https://drive.google.com/file/d/1pTBKamvTk7ZLsRIFKRNQ37_XU2J5y9XT/view?usp=sharing
 [pe_df]: https://drive.google.com/file/d/1YUML4HEX1jLgpuiODJNMrxKlru8tCKJe/view?usp=sharing
 [ne_shp]: https://drive.google.com/file/d/1IF2GT05HggO2OncDbDnp9ZF1toggj54r/view?usp=sharing
 [curr_env]: https://drive.google.com/file/d/1tuyY7VFgkXWvppMwpTxYl-34lYa_4pyL/view?usp=sharing
 [futr_env]: https://drive.google.com/file/d/1at_RvzwRTVdiFInV03hXOuvvfeo1iJjv/view?usp=sharing
+[atl_shp]: https://drive.google.com/file/d/123_jTvrCbA80Gl0GmKCmLylB5RZf-1_5/view?usp=sharing
+[cancer]: https://drive.google.com/file/d/1cgplF41EKtQ32vkDOf-y1W9lnwbAGg_u/view?usp=sharing
+[lslpts]: https://drive.google.com/file/d/1x9bZXR86J-kFxufFvmNpbrid66krbONI/view?usp=sharing
+[lsl_ta]: https://drive.google.com/file/d/1DO6eyL-N48rM-2pU4ddwMn4YFRoouYtM/view?usp=sharing
 
