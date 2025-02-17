@@ -322,19 +322,89 @@ ale$plot()
 
 ### Feature interaction
 
+We can also measure feature interaction. For any given feature, this shows how much of the response is due to interactions or modifications by other features. We can calculate the total interaction with `Interaction`:
 
-
+```{r}
 interact <- Interaction$new(predictor, grid.size = 15)
 plot(interact)
+```
 
-interact <- Interaction$new(predictor, feature = "hum", grid.size = 15)
+For the bike data, approximately 35% of the temperature drive variation in rental numbers is due to interactions with other features We can break this down further by looking at the two-way interactions - this gives the proportion of the temperature response that is modified by each of the other features. This uses the same function, but we specify the name of the feature we want to test (humidity):
+
+```{r}
+interact <- Interaction$new(predictor, 
+                            feature = "hum", 
+                            grid.size = 15)
 plot(interact)
+```
 
+This shows a strong interaction between windspeed and humidity. We can then visualize this using a 2D PD plot (not too surprisingly, rentals are lower on humid days with low wind speed)
+
+```{r}
+pdp$set.feature(c("hum", "windspeed"))
+plot(pdp) +
+  scale_fill_viridis_c(option = "magma")
+```
+
+R has an additional package called **vivid** that allows you to integrate both the importance and interactions in a single figure. Let's load this and make a `vivi` object:
+
+```{r}
 library(vivid)
+bike_vivi = vivi(rf_fit2, data = bike, response = "count")
+```
 
-bike_vivi = vivi(rf_fit_2, data = bike, response = "cnt")
+And we can now visualize this as 
+
+- A heatmap (the diagonal values show the importance (green) and the off-diagonal values show the interaction (purple))
+- A network (the nodes show the importance (green) and the links show the interaction (purple))
+
+```{r}
 viviHeatmap(bike_vivi)
+```
+
+```{r}
 viviNetwork(bike_vivi)
+```
+
+## Local measures
+
+We'll now look at methods for local interpretation. These methods explore how the model predicts for an individual observation. For the bike data, an individual observation is a single day of bike rentals, so these methods help shed some light on the factors driving rental numbers for any given day:
+
+### Individual conditional expectancy (ICE) plots
+
+We'll start with ICE plots. These are similar to partial dependency plots, as they show the changing response to a given feature. The difference is that these show this response for each individual observation. These use the same function as before (`FeatureEffect`), but we set the method to `ice`:
+
+```{r}
+ice <- FeatureEffect$new(predictor, 
+                         feature = "hum", 
+                         grid.size = 20,
+                         method = "ice")
+ice$plot()
+```
+
+Note that the partial dependency is simply the average of these individual curves, and we can add this by changing the method again:
+
+```{r}
+ice <- FeatureEffect$new(predictor, 
+                         feature = "hum", 
+                         grid.size = 20,
+                         method = "pdp+ice")
+ice$plot()
+```
+
+You should now see that some curves show a much stronger drop in rentals at higher humidity - this is likely due to the interactions with temperature and wind speed noted above. The ICE plots can also be *centered* to a particular value. This now shows the increase or decrease uin rentals for each observation relative to a set value of humidity. We'll set this here to 65% (roughly where the decline starts):
+
+```{r}
+ice <- FeatureEffect$new(predictor, 
+                         feature = "hum", 
+                         grid.size = 20,
+                         center.at = 65,
+                         method = "pdp+ice")
+ice$plot()
+```
+
+This should now emphasize the variation in rentals at high humidity, with some days exhibiting very low changes. 
+
 
 # Exercise
 
