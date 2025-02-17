@@ -192,10 +192,149 @@ best_param
 
 # Interpretable machine learning
 
-We'll now explore our random forest. For the exploration, we'll first build a new model using all the data. This is optional, and we could equally use the best fit model from the tuning step using the `finalize_model` function. We'll use the full dataset here for a number of reasons:
+We'll now explore our random forest. For the exploration, we'll first build a new model using all the rental data. This is optional, and we could equally use the best fit model from the tuning step using the `finalize_model` function. We'll use the full dataset here for a number of reasons:
 
-- We're aiming to use this in an exploratory mode. If we were looking to interpret a model for prediction, we'd stick with the tuning output
-- We need to cal
+- We need to fit the model again so that it calculates the importance scores (we omitted this above)
+- We use the original categorical variables rather than the one-hot encoded values, as this will make visualizing the results easier (note this means that we set `mtry` to the total number of features (9) rather than the value obtained above)
+
+```{r}
+rf <- rand_forest(mode = "regression", 
+                  mtry = 9, trees = 100, min_n = 2) |> 
+  set_engine("ranger", importance="permutation")
+
+rf_fit <- rf |> 
+  fit(count ~ ., bike)
+```
+
+We'll also extract the trained model for use the following sections:
+
+```{r}
+rf_fit2 <- rf_fit %>%
+  extract_fit_engine() 
+```
+
+## IML setup
+
+R has a couple of packages for interpretable ML, including **iml** and **DALEX**. These work in a fairly similar way, which we'll illustrate here with the **iml** package. Rather than using the model output direct, we need to create a `Predictor` object. This holds all the information we need for subsequent analysis: the model, the features (`data`) and the target (`y`):
+
+```{r warning=FALSE}
+library(iml)
+X <- bike[which(names(bike) != "count")]
+predictor <- Predictor$new(rf_fit2, 
+                           data = X, y = bike$count)
+str(predictor)
+```
+
+## Global measures
+
+We'll start by looking at global methods for ML interpretation. As a reminder, these are methods that evaluate the model in aggregate across the full set of observations and features. 
+
+### Feature/variable importance
+
+We've looked at feature importance scores in the last two labs. These are measures of how useful a variable is in predicting the target. The most common form, permutation importance, is a model-agnostic approach, that can be used with any algorithm. Here, each feature is randomly shuffled in turn, and the loss in predictive power is calculated. Bigger losses indicate that a higher level of importance. Previously, we've visualized these with the **vip** package, and we can do that again here:
+
+```{r message=FALSE, warning=FALSE}
+library(vip)
+vip(rf_fit2)
+```
+
+This clearly shows temperature as being the most influential feature for bike rentals. 
+
+Now let's remake this with the **iml** package:
+
+```{r warning=FALSE}
+imp <- FeatureImp$new(predictor, loss = "mse")
+plot(imp)
+```
+
+By default, this runs 5 different permutations for each feature to get an idea of how much the importance score varies (you'll see this as line representing the variation around the mean importance on this plot). You can set this to higher number by setting `n.repetitions`.
+
+Note that the plotting is just a **ggplot2** object, so you can add themes and text:
+
+```{r}
+plot(imp) +
+  ggtitle("Feature Importance (bike rentals)") +
+  theme_minimal()
+```
+
+### Partial dependence
+
+We previously looked at partial dependency curves with the tree-based methods. These are considered to be a global interpretation method as they show the *average* response of the model over the range of a given feature. We can make these with the **iml** package using the `FeatureEffect` function. This takes as input:
+
+- The `Predictor` object
+- The feature to be plotted
+- The grid size (this is the resolution of the curve, larger values will give more detail but be slower to run)
+- The type of curve (`pdp` makes partial dependence plots)
+
+We'll start by plotting the PDP for temperature as this was the most important feature:
+
+```{r warning=FALSE}
+pdp <- FeatureEffect$new(predictor, 
+                         feature = "temp", 
+                         grid.size = 20,
+                         method = "pdp")
+```
+
+And we can plot the results
+
+```{r}
+plot(pdp)
+```
+
+The response seems pretty logical. Rentals increase as temperatures increase up to a maximum around 25 celsius. Beyond this, there is a slight decline at hotter temperatures. Let's look at the response to humidity. Note that we do not need to remake the `FeatureEffect` object, but just supply the name of another feature:
+
+```{r}
+pdp$set.feature("hum")
+pdp$plot()
+```
+
+Here we can see that humidity values below about 60% have little impact on the rentals, but there is a fairly sharp drop off above this value. We can look at the combined effect of temperature and humidity with the same object, which clearly shows the sweet spot for bike rentals when temperatures are around 25 degrees and humidity around 55% (and the low rentals at low temp/high humidity)
+
+```{r}
+pdp$set.feature(c("temp", "hum"))
+plot(pdp) +
+  scale_fill_viridis_c(option = "magma")
+```
+
+We can also plot the response for categorical variables. For example to show the difference between seasons:
+
+```{r}
+pdp$set.feature("season")
+pdp$plot()
+```
+
+A second function (`FeatureEffects`) allows you to plot the response of all features. It's worth keeping the grid size low here, at least while testing this method
+
+```{r}
+effs <- FeatureEffects$new(predictor, grid.size = 10)
+plot(effs)
+```
+
+This function also allows the calculation of accumulated local effect plots. These show the *difference* in predictions as a results of changing a feature. This has the advantage of limiting bias from correlations between features, and may be a clearer way to visualize impact (i.e. positive or negative):
+
+```{r}
+ale <- FeatureEffect$new(predictor, 
+                         feature = "temp", 
+                         grid.size = 20,
+                         method = "ale")
+ale$plot()
+```
+
+### Feature interaction
+
+
+
+interact <- Interaction$new(predictor, grid.size = 15)
+plot(interact)
+
+interact <- Interaction$new(predictor, feature = "hum", grid.size = 15)
+plot(interact)
+
+library(vivid)
+
+bike_vivi = vivi(rf_fit_2, data = bike, response = "cnt")
+viviHeatmap(bike_vivi)
+viviNetwork(bike_vivi)
 
 # Exercise
 
