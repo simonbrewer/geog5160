@@ -405,6 +405,53 @@ ice$plot()
 
 This should now emphasize the variation in rentals at high humidity, with some days exhibiting very low changes. 
 
+### Shapely values
+
+We can go a little further in examining individual observations with Shapley values. These show, for an individual, the impact of each feature. So for an individual day's rentals, this would show the impact of that day's temperature, humidity, season, etc. This can be particularly useful in establishing which factors led to particularly positive (or negative) outcomes. 
+
+Let's start by finding the day with the lowest and the day with the highest rentals:
+
+```{r}
+day_lo <- which.min(bike$count)
+day_hi <- which.max(bike$count)
+
+print(paste("Lowest :", day_lo, bike$count[day_lo]))
+print(paste("Highest:", day_hi, bike$count[day_hi]))
+```
+
+Now, let's look at the factors impacting the lowest rentals:
+
+```{r}
+shapley <- Shapley$new(predictor, x.interest = X[day_lo, ],
+                       sample.size = 50)
+plot(shapley) +
+  ggtitle("Shapley values (lowest rentals)")
+```
+
+The combination of high humidity, high wind and rain or snow appears to be the key limiting factors. Note that temperature, despite being overall the most important factor (see above) has relatively little effect on this day.
+
+And now let's look at the value for the day with the highest rentals:
+
+```{r}
+shapley <- Shapley$new(predictor, x.interest = X[day_hi, ],
+                       sample.size = 50)
+plot(shapley) +
+  ggtitle("Shapley values (highest rentals)")
+```
+
+For this day, the combination of season and warm temperatures appears to be the biggest drivers.
+
+### LIME plots
+
+As a last approach, we'll calculate a local model using Local Interpretable Model-agnostic Explanations or LIME plots. The idea behind this method is that the 'local' or small-scale relationships between features and the target can be approximated with simple, linear models. To put this in terms of this dataset, if we take a given day in June, the changes in rentals for small variations in (say) temperature should be linear. Based on this, the method simulates a small amount of artificial data around the observation (i.e. minor variations in temperature, humidity, etc), and then fits a simple model. This simple model is usually built in a way that allows it to select only the factors that are meaningful for that observation. Let's fit this now with a single day (day 100):
+
+```{r}
+lime.explain <- LocalModel$new(predictor, x.interest = X[100, ])
+lime.explain$results
+plot(lime.explain)
+```
+
+On this day, the warm weather increased rentals, and the high wind speeds decreased them slightly.
 
 # Exercise
 
