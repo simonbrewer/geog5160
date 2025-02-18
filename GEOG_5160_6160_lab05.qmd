@@ -24,9 +24,9 @@ set.seed(42)
 
 # Introduction
 
-A frequent accusation of machine models is that they are 'black-box'; that they are so complex, it is difficult or impossible to understand how they work. In response to this, there is a growth of *interpretable* or explainable machine learning methods, designed to shed some light on the inner workings of these models. These methods provide a way to understand biases in models, but can also be useful explanatory methods to help understand your dataset. 
+A frequent accusation of machine models is that they are 'black-box'; that they are so complex, it is difficult or impossible to understand how they work. In response to this, there is a growth of *interpretable* or explainable machine learning methods, designed to shed some light on the inner workings of these models. These methods provide a way to understand biases in models, but can also be useful explanatory methods to help understand your dataset.
 
-In this lab, we'll explore the use of the methods for both global and local interpretation using a data set of bike rentals. The goal of this exercise is to predict the number of expected rentals for any given day based on a series of factors, including season, day of the week, weather, etc. (full details in appendix 1). The data are in the file *bike.csv*, which you should download and move to a working folder for this lab. 
+In this lab, we'll explore the use of the methods for both global and local interpretation using a data set of bike rentals. The goal of this exercise is to predict the number of expected rentals for any given day based on a series of factors, including season, day of the week, weather, etc. (full details in appendix 1). The data are in the file *bike.csv*, which you should download and move to a working folder for this lab.
 
 You will need to make sure the following packages are installed on your computer (some of these you may have already installed). Other packages for IML include **shapley** and **DALEX**
 
@@ -41,8 +41,8 @@ install.packages("iml")
 
 ## Objectives
 
-- Understand how to convert **tidymodels** output for use in interpretable machine learning
-- Use methods for global and local interpretation 
+-   Understand how to convert **tidymodels** output for use in interpretable machine learning
+-   Use methods for global and local interpretation
 
 We'll also revisit tuning models in this lab.
 
@@ -87,22 +87,21 @@ ggplot(bike, aes(x = days_since_2011, y = count)) +
   theme_minimal()
 ```
 
-
-There's a fairly upward trend in the data, as the rental service became more popular over time. To avoid this, we'll just work with the second year of data (2012). We'll also drop the year and `days_since_2011` columns
+There's a fairly upward trend in the data, as the rental service became more popular over time. To avoid this, we'll just work with the second year of data (2012). We'll also drop the year and `days_since_2011` columns. The data also contain both a `season` and month (`mnth`) feature, which are likely redundant. We'll drop the month here.
 
 ```{r}
 bike <- bike |>
   filter(yr == 2012) |>
-  dplyr::select(-days_since_2011, -yr)
+  dplyr::select(-days_since_2011, -yr, -mnth)
 ```
 
 # A base model
 
 Next, let's develop a model for these data. We'll use a random forest here. First, let's set up and train a model without tuning. We'll go through the usual steps to set up:
 
-- Define a recipe to one hot encode the categorical values
-- Split the data into training and testing
-- Use the recipe to process these datasets
+-   Define a recipe to one hot encode the categorical values
+-   Split the data into training and testing
+-   Use the recipe to process these datasets
 
 ```{r}
 rec <- recipe(count ~ ., bike) |>
@@ -130,15 +129,16 @@ pred_test <- predict(rf_fit, bike_test) |>
 pred_test |>
   yardstick::rmse(count, .pred)
 ```
+
 Giving an RMSE of a little over 800 (your value will likely be different).
 
 ## Tuning
 
 Now let's tune this model to get the optimal hyperparameter set. Here are the steps to set this up:
 
-- Define the tuning specification (the model and hyperparameters)
-- Define the grid (the values of each hyperparameter to test). We'll use a very similar grid to the previous example
-- Define the cross-validation strategy for tuning
+-   Define the tuning specification (the model and hyperparameters)
+-   Define the grid (the values of each hyperparameter to test). We'll use a very similar grid to the previous example
+-   Define the cross-validation strategy for tuning
 
 ```{r}
 ## Tuning specification
@@ -179,11 +179,12 @@ rf_res
 ```
 
 Once run, let's explore the results
+
 ```{r}
 autoplot(rf_res)
 ```
 
-The key hyperparameter here appears to be the number of variables used in each split, with higher values being preferred. To check this, let's get the best set of hyperparameters: 
+The key hyperparameter here appears to be the number of variables used in each split, with higher values being preferred. To check this, let's get the best set of hyperparameters:
 
 ```{r}
 best_param <- select_best(rf_res, metric = "rmse") 
@@ -194,12 +195,12 @@ best_param
 
 We'll now explore our random forest. For the exploration, we'll first build a new model using all the rental data. This is optional, and we could equally use the best fit model from the tuning step using the `finalize_model` function. We'll use the full dataset here for a number of reasons:
 
-- We need to fit the model again so that it calculates the importance scores (we omitted this above)
-- We use the original categorical variables rather than the one-hot encoded values, as this will make visualizing the results easier (note this means that we set `mtry` to the total number of features (9) rather than the value obtained above)
+-   We need to fit the model again so that it calculates the importance scores (we omitted this above)
+-   We use the original categorical variables rather than the one-hot encoded values, as this will make visualizing the results easier 
 
 ```{r}
 rf <- rand_forest(mode = "regression", 
-                  mtry = 9, trees = 100, min_n = 2) |> 
+                  mtry = 7, trees = 300, min_n = 4) |> 
   set_engine("ranger", importance="permutation")
 
 rf_fit <- rf |> 
@@ -227,7 +228,7 @@ str(predictor)
 
 ## Global measures
 
-We'll start by looking at global methods for ML interpretation. As a reminder, these are methods that evaluate the model in aggregate across the full set of observations and features. 
+We'll start by looking at global methods for ML interpretation. As a reminder, these are methods that evaluate the model in aggregate across the full set of observations and features.
 
 ### Feature/variable importance
 
@@ -238,7 +239,7 @@ library(vip)
 vip(rf_fit2)
 ```
 
-This clearly shows temperature as being the most influential feature for bike rentals. 
+This clearly shows temperature as being the most influential feature for bike rentals.
 
 Now let's remake this with the **iml** package:
 
@@ -261,10 +262,10 @@ plot(imp) +
 
 We previously looked at partial dependency curves with the tree-based methods. These are considered to be a global interpretation method as they show the *average* response of the model over the range of a given feature. We can make these with the **iml** package using the `FeatureEffect` function. This takes as input:
 
-- The `Predictor` object
-- The feature to be plotted
-- The grid size (this is the resolution of the curve, larger values will give more detail but be slower to run)
-- The type of curve (`pdp` makes partial dependence plots)
+-   The `Predictor` object
+-   The feature to be plotted
+-   The grid size (this is the resolution of the curve, larger values will give more detail but be slower to run)
+-   The type of curve (`pdp` makes partial dependence plots)
 
 We'll start by plotting the PDP for temperature as this was the most important feature:
 
@@ -353,10 +354,10 @@ library(vivid)
 bike_vivi = vivi(rf_fit2, data = bike, response = "count")
 ```
 
-And we can now visualize this as 
+And we can now visualize this as
 
-- A heatmap (the diagonal values show the importance (green) and the off-diagonal values show the interaction (purple))
-- A network (the nodes show the importance (green) and the links show the interaction (purple))
+-   A heatmap (the diagonal values show the importance (green) and the off-diagonal values show the interaction (purple))
+-   A network (the nodes show the importance (green) and the links show the interaction (purple))
 
 ```{r}
 viviHeatmap(bike_vivi)
@@ -403,11 +404,11 @@ ice <- FeatureEffect$new(predictor,
 ice$plot()
 ```
 
-This should now emphasize the variation in rentals at high humidity, with some days exhibiting very low changes. 
+This should now emphasize the variation in rentals at high humidity, with some days exhibiting very low changes.
 
 ### Shapely values
 
-We can go a little further in examining individual observations with Shapley values. These show, for an individual, the impact of each feature. So for an individual day's rentals, this would show the impact of that day's temperature, humidity, season, etc. This can be particularly useful in establishing which factors led to particularly positive (or negative) outcomes. 
+We can go a little further in examining individual observations with Shapley values. These show, for an individual, the impact of each feature. So for an individual day's rentals, this would show the impact of that day's temperature, humidity, season, etc. This can be particularly useful in establishing which factors led to particularly positive (or negative) outcomes.
 
 Let's start by finding the day with the lowest and the day with the highest rentals:
 
@@ -463,23 +464,22 @@ In the cancer dataset, there are two possible predictor variables that we did no
 
 Use a Quarto document to record your answers and output. Assignments, to include both the Quarto document and (ideally) the compiled HTML file, should be submitted to Canvas by Feb 19th. Please use the following naming convention: `Lab04_lastname`.
 
-## Appendix 1: Bike rental dataset
+# Appendix 1: Bike rental dataset
 
 Bike rental dataset from https://christophm.github.io/interpretable-ml-book/bike-data.html:
 
-- `season`: The season, either spring, summer, fall or winter.
-- `year`: The year, either 2011 or 2012.
-- `mnth`: The month
-- `holiday`: Indicator whether the day was a holiday or not.
-- `weekday`: Day of week
-- `workingday`: Indicator whether the day was a working day or weekend.
-- `weathersit`: The weather situation on that day. One of:
-  - clear, few clouds, partly cloudy, cloudy
-  - mist + clouds, mist + broken clouds, mist + few clouds, mist, light snow, light rain + thunderstorm + scattered clouds, light rain + scattered clouds
-  - heavy rain + ice pallets + thunderstorm + mist, snow + mist
-- `temp`: Temperature in degrees Celsius.
-- `hum`: Relative humidity in percent (0 to 100).
-- `windspeed`: Wind speed in km per hour.
-- `count`: Count of bicycles including both casual and registered users. The count is used as the target in the regression task.
-- `days_since_2011`: Number of days since the 01.01.2011 (the first day in the dataset). This feature was introduced to take account of the trend over time.
-
+-   `season`: The season, either spring, summer, fall or winter.
+-   `year`: The year, either 2011 or 2012.
+-   `mnth`: The month
+-   `holiday`: Indicator whether the day was a holiday or not.
+-   `weekday`: Day of week
+-   `workingday`: Indicator whether the day was a working day or weekend.
+-   `weathersit`: The weather situation on that day. One of:
+    -   clear, few clouds, partly cloudy, cloudy
+    -   mist + clouds, mist + broken clouds, mist + few clouds, mist, light snow, light rain + thunderstorm + scattered clouds, light rain + scattered clouds
+    -   heavy rain + ice pallets + thunderstorm + mist, snow + mist
+-   `temp`: Temperature in degrees Celsius.
+-   `hum`: Relative humidity in percent (0 to 100).
+-   `windspeed`: Wind speed in km per hour.
+-   `count`: Count of bicycles including both casual and registered users. The count is used as the target in the regression task.
+-   `days_since_2011`: Number of days since the 01.01.2011 (the first day in the dataset). This feature was introduced to take account of the trend over time.

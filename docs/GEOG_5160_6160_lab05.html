@@ -1,0 +1,1578 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.553">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Simon Brewer">
+<meta name="dcterms.date" content="2025-02-18">
+
+<title>GEOG 5160 6160 Lab 05</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body>
+
+<div id="quarto-search-results"></div>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a>
+  <ul class="collapse">
+  <li><a href="#objectives" id="toc-objectives" class="nav-link" data-scroll-target="#objectives">Objectives</a></li>
+  <li><a href="#data-processing" id="toc-data-processing" class="nav-link" data-scroll-target="#data-processing">Data processing</a></li>
+  </ul></li>
+  <li><a href="#a-base-model" id="toc-a-base-model" class="nav-link" data-scroll-target="#a-base-model">A base model</a>
+  <ul class="collapse">
+  <li><a href="#tuning" id="toc-tuning" class="nav-link" data-scroll-target="#tuning">Tuning</a></li>
+  </ul></li>
+  <li><a href="#interpretable-machine-learning" id="toc-interpretable-machine-learning" class="nav-link" data-scroll-target="#interpretable-machine-learning">Interpretable machine learning</a>
+  <ul class="collapse">
+  <li><a href="#iml-setup" id="toc-iml-setup" class="nav-link" data-scroll-target="#iml-setup">IML setup</a></li>
+  <li><a href="#global-measures" id="toc-global-measures" class="nav-link" data-scroll-target="#global-measures">Global measures</a>
+  <ul class="collapse">
+  <li><a href="#featurevariable-importance" id="toc-featurevariable-importance" class="nav-link" data-scroll-target="#featurevariable-importance">Feature/variable importance</a></li>
+  <li><a href="#partial-dependence" id="toc-partial-dependence" class="nav-link" data-scroll-target="#partial-dependence">Partial dependence</a></li>
+  <li><a href="#feature-interaction" id="toc-feature-interaction" class="nav-link" data-scroll-target="#feature-interaction">Feature interaction</a></li>
+  </ul></li>
+  <li><a href="#local-measures" id="toc-local-measures" class="nav-link" data-scroll-target="#local-measures">Local measures</a>
+  <ul class="collapse">
+  <li><a href="#individual-conditional-expectancy-ice-plots" id="toc-individual-conditional-expectancy-ice-plots" class="nav-link" data-scroll-target="#individual-conditional-expectancy-ice-plots">Individual conditional expectancy (ICE) plots</a></li>
+  <li><a href="#shapely-values" id="toc-shapely-values" class="nav-link" data-scroll-target="#shapely-values">Shapely values</a></li>
+  <li><a href="#lime-plots" id="toc-lime-plots" class="nav-link" data-scroll-target="#lime-plots">LIME plots</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#exercise" id="toc-exercise" class="nav-link" data-scroll-target="#exercise">Exercise</a></li>
+  <li><a href="#appendix-1-bike-rental-dataset" id="toc-appendix-1-bike-rental-dataset" class="nav-link" data-scroll-target="#appendix-1-bike-rental-dataset">Appendix 1: Bike rental dataset</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">GEOG 5160 6160 Lab 05</h1>
+</div>
+
+
+<div class="quarto-title-meta-author">
+  <div class="quarto-title-meta-heading">Author</div>
+  <div class="quarto-title-meta-heading">Affiliation</div>
+  
+    <div class="quarto-title-meta-contents">
+    <p class="author">Simon Brewer <a href="mailto:simon.brewer@ess.utah.edu" class="quarto-title-author-email"><i class="bi bi-envelope"></i></a> </p>
+  </div>
+  <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            University of Utah
+          </p>
+      </div>
+  </div>
+
+<div class="quarto-title-meta">
+
+      
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">February 18, 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+<p>A frequent accusation of machine models is that they are ‘black-box’; that they are so complex, it is difficult or impossible to understand how they work. In response to this, there is a growth of <em>interpretable</em> or explainable machine learning methods, designed to shed some light on the inner workings of these models. These methods provide a way to understand biases in models, but can also be useful explanatory methods to help understand your dataset.</p>
+<p>In this lab, we’ll explore the use of the methods for both global and local interpretation using a data set of bike rentals. The goal of this exercise is to predict the number of expected rentals for any given day based on a series of factors, including season, day of the week, weather, etc. (full details in appendix 1). The data are in the file <em>bike.csv</em>, which you should download and move to a working folder for this lab.</p>
+<p>You will need to make sure the following packages are installed on your computer (some of these you may have already installed). Other packages for IML include <strong>shapley</strong> and <strong>DALEX</strong></p>
+<ul>
+<li><strong>iml</strong>: interpretable machine learning</li>
+<li><strong>vip</strong>: variable importance plots</li>
+</ul>
+<p>As a reminder, packages can be installed in RStudio by going to the ‘Packages’ tab and clicking on the [Install] button, or from the menu [Tools]-&gt; [Install packages…]. You can also install these from the console window by typing</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"iml"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="objectives" class="level2">
+<h2 class="anchored" data-anchor-id="objectives">Objectives</h2>
+<ul>
+<li>Understand how to convert <strong>tidymodels</strong> output for use in interpretable machine learning</li>
+<li>Use methods for global and local interpretation</li>
+</ul>
+<p>We’ll also revisit tuning models in this lab.</p>
+<p><strong>It is highly recommended to use scripts or Quarto documents to store your R code - this will allow you to easily change and modify it and submit the exercise.</strong></p>
+<p>Next load the libraries you will need for the lab. You should at this stage have most of these already installed. Add anything that is not installed using the <code>install.packages()</code> function.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidymodels)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'broom' was built under R version 4.4.1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(iml)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="data-processing" class="level2">
+<h2 class="anchored" data-anchor-id="data-processing">Data processing</h2>
+<p>Let’s load the bike rental data first and take a look at the content:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>bike <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"./datafiles/bike.csv"</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(bike)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  season   yr mnth    holiday weekday     workingday weathersit     temp
+1 WINTER 2011  JAN NO HOLIDAY     SAT NO WORKING DAY      MISTY 8.175849
+2 WINTER 2011  JAN NO HOLIDAY     SUN NO WORKING DAY      MISTY 9.083466
+3 WINTER 2011  JAN NO HOLIDAY     MON    WORKING DAY       GOOD 1.229108
+4 WINTER 2011  JAN NO HOLIDAY     TUE    WORKING DAY       GOOD 1.400000
+5 WINTER 2011  JAN NO HOLIDAY     WED    WORKING DAY       GOOD 2.666979
+6 WINTER 2011  JAN NO HOLIDAY     THU    WORKING DAY       GOOD 1.604356
+      hum windspeed count days_since_2011
+1 80.5833 10.749882   985               0
+2 69.6087 16.652113   801               1
+3 43.7273 16.636703  1349               2
+4 59.0435 10.739832  1562               3
+5 43.6957 12.522300  1600               4
+6 51.8261  6.000868  1606               5</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(bike)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    season                yr           mnth             holiday         
+ Length:731         Min.   :2011   Length:731         Length:731        
+ Class :character   1st Qu.:2011   Class :character   Class :character  
+ Mode  :character   Median :2012   Mode  :character   Mode  :character  
+                    Mean   :2012                                        
+                    3rd Qu.:2012                                        
+                    Max.   :2012                                        
+   weekday           workingday         weathersit             temp       
+ Length:731         Length:731         Length:731         Min.   :-5.221  
+ Class :character   Class :character   Class :character   1st Qu.: 7.843  
+ Mode  :character   Mode  :character   Mode  :character   Median :15.422  
+                                                          Mean   :15.283  
+                                                          3rd Qu.:22.805  
+                                                          Max.   :32.498  
+      hum          windspeed          count      days_since_2011
+ Min.   : 0.00   Min.   : 1.500   Min.   :  22   Min.   :  0.0  
+ 1st Qu.:52.00   1st Qu.: 9.042   1st Qu.:3152   1st Qu.:182.5  
+ Median :62.67   Median :12.125   Median :4548   Median :365.0  
+ Mean   :62.79   Mean   :12.763   Mean   :4504   Mean   :365.0  
+ 3rd Qu.:73.02   3rd Qu.:15.625   3rd Qu.:5956   3rd Qu.:547.5  
+ Max.   :97.25   Max.   :34.000   Max.   :8714   Max.   :730.0  </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(skimr)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">skim</span>(bike)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<caption>Data summary</caption>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Name</td>
+<td style="text-align: left;">bike</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Number of rows</td>
+<td style="text-align: left;">731</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Number of columns</td>
+<td style="text-align: left;">12</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">_______________________</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Column type frequency:</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">character</td>
+<td style="text-align: left;">6</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">numeric</td>
+<td style="text-align: left;">6</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">________________________</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Group variables</td>
+<td style="text-align: left;">None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: character</strong></p>
+<table class="table table-sm table-striped small">
+<colgroup>
+<col style="width: 19%">
+<col style="width: 13%">
+<col style="width: 19%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 8%">
+<col style="width: 12%">
+<col style="width: 15%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">skim_variable</th>
+<th style="text-align: right;">n_missing</th>
+<th style="text-align: right;">complete_rate</th>
+<th style="text-align: right;">min</th>
+<th style="text-align: right;">max</th>
+<th style="text-align: right;">empty</th>
+<th style="text-align: right;">n_unique</th>
+<th style="text-align: right;">whitespace</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">season</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">mnth</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">holiday</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">weekday</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">workingday</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">weathersit</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: numeric</strong></p>
+<table class="table table-sm table-striped small">
+<colgroup>
+<col style="width: 15%">
+<col style="width: 9%">
+<col style="width: 13%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 5%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">skim_variable</th>
+<th style="text-align: right;">n_missing</th>
+<th style="text-align: right;">complete_rate</th>
+<th style="text-align: right;">mean</th>
+<th style="text-align: right;">sd</th>
+<th style="text-align: right;">p0</th>
+<th style="text-align: right;">p25</th>
+<th style="text-align: right;">p50</th>
+<th style="text-align: right;">p75</th>
+<th style="text-align: right;">p100</th>
+<th style="text-align: left;">hist</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">yr</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2011.50</td>
+<td style="text-align: right;">0.50</td>
+<td style="text-align: right;">2011.00</td>
+<td style="text-align: right;">2011.00</td>
+<td style="text-align: right;">2012.00</td>
+<td style="text-align: right;">2012.00</td>
+<td style="text-align: right;">2012.00</td>
+<td style="text-align: left;">▇▁▁▁▇</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">temp</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">15.28</td>
+<td style="text-align: right;">8.60</td>
+<td style="text-align: right;">-5.22</td>
+<td style="text-align: right;">7.84</td>
+<td style="text-align: right;">15.42</td>
+<td style="text-align: right;">22.80</td>
+<td style="text-align: right;">32.50</td>
+<td style="text-align: left;">▂▇▇▇▅</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">hum</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">62.79</td>
+<td style="text-align: right;">14.24</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">52.00</td>
+<td style="text-align: right;">62.67</td>
+<td style="text-align: right;">73.02</td>
+<td style="text-align: right;">97.25</td>
+<td style="text-align: left;">▁▁▆▇▂</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">windspeed</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">12.76</td>
+<td style="text-align: right;">5.19</td>
+<td style="text-align: right;">1.50</td>
+<td style="text-align: right;">9.04</td>
+<td style="text-align: right;">12.13</td>
+<td style="text-align: right;">15.63</td>
+<td style="text-align: right;">34.00</td>
+<td style="text-align: left;">▃▇▅▁▁</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">count</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">4504.35</td>
+<td style="text-align: right;">1937.21</td>
+<td style="text-align: right;">22.00</td>
+<td style="text-align: right;">3152.00</td>
+<td style="text-align: right;">4548.00</td>
+<td style="text-align: right;">5956.00</td>
+<td style="text-align: right;">8714.00</td>
+<td style="text-align: left;">▂▅▇▅▃</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">days_since_2011</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">365.00</td>
+<td style="text-align: right;">211.17</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">182.50</td>
+<td style="text-align: right;">365.00</td>
+<td style="text-align: right;">547.50</td>
+<td style="text-align: right;">730.00</td>
+<td style="text-align: left;">▇▇▇▇▇</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Before starting, we’ll convert all categorical columns to factors and all integer columns to numeric:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>bike <span class="ot">&lt;-</span> bike <span class="sc">%&gt;%</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate_if</span>(is.character, as.factor) <span class="sc">%&gt;%</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate_if</span>(is.integer, as.numeric) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now let’s make a couple of figures. First, we’ll plot the rentals over time (<code>days_since_2011</code>)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(bike, <span class="fu">aes</span>(<span class="at">x =</span> days_since_2011, <span class="at">y =</span> count)) <span class="sc">+</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab05_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>There’s a fairly upward trend in the data, as the rental service became more popular over time. To avoid this, we’ll just work with the second year of data (2012). We’ll also drop the year and <code>days_since_2011</code> columns. The data also contain both a <code>season</code> and month (<code>mnth</code>) feature, which are likely redundant. We’ll drop the month here.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>bike <span class="ot">&lt;-</span> bike <span class="sc">|&gt;</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(yr <span class="sc">==</span> <span class="dv">2012</span>) <span class="sc">|&gt;</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>days_since_2011, <span class="sc">-</span>yr, <span class="sc">-</span>mnth)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="a-base-model" class="level1">
+<h1>A base model</h1>
+<p>Next, let’s develop a model for these data. We’ll use a random forest here. First, let’s set up and train a model without tuning. We’ll go through the usual steps to set up:</p>
+<ul>
+<li>Define a recipe to one hot encode the categorical values</li>
+<li>Split the data into training and testing</li>
+<li>Use the recipe to process these datasets</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>rec <span class="ot">&lt;-</span> <span class="fu">recipe</span>(count <span class="sc">~</span> ., bike) <span class="sc">|&gt;</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_dummy</span>(<span class="fu">all_nominal_predictors</span>())</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>bike_split <span class="ot">&lt;-</span> <span class="fu">initial_split</span>(bike, <span class="at">prop =</span> <span class="fl">0.80</span>)</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>bike_train <span class="ot">&lt;-</span> <span class="fu">training</span>(bike_split)</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>bike_train <span class="ot">=</span> <span class="fu">prep</span>(rec) <span class="sc">|&gt;</span> <span class="fu">bake</span>(bike_train)</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>bike_test  <span class="ot">&lt;-</span> <span class="fu">testing</span>(bike_split)</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>bike_test <span class="ot">=</span> <span class="fu">prep</span>(rec) <span class="sc">|&gt;</span> <span class="fu">bake</span>(bike_test)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now, we’ll build a base, untuned model, and calculate the RMSE on the test set:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>rf <span class="ot">&lt;-</span> <span class="fu">rand_forest</span>(<span class="at">mode =</span> <span class="st">"regression"</span>)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>rf_fit <span class="ot">&lt;-</span> rf <span class="sc">|&gt;</span> </span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(count <span class="sc">~</span> ., bike_train)</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>pred_test <span class="ot">&lt;-</span> <span class="fu">predict</span>(rf_fit, bike_test) <span class="sc">|&gt;</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_cols</span>(bike_test <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">select</span>(count))</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>pred_test <span class="sc">|&gt;</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>  yardstick<span class="sc">::</span><span class="fu">rmse</span>(count, .pred)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 3
+  .metric .estimator .estimate
+  &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
+1 rmse    standard        829.</code></pre>
+</div>
+</div>
+<p>Giving an RMSE of a little over 800 (your value will likely be different).</p>
+<section id="tuning" class="level2">
+<h2 class="anchored" data-anchor-id="tuning">Tuning</h2>
+<p>Now let’s tune this model to get the optimal hyperparameter set. Here are the steps to set this up:</p>
+<ul>
+<li>Define the tuning specification (the model and hyperparameters)</li>
+<li>Define the grid (the values of each hyperparameter to test). We’ll use a very similar grid to the previous example</li>
+<li>Define the cross-validation strategy for tuning</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Tuning specification</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>tune_spec_rf <span class="ot">&lt;-</span> </span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rand_forest</span>(</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">mtry =</span> <span class="fu">tune</span>(),</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">trees =</span> <span class="fu">tune</span>(),</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">min_n =</span> <span class="fu">tune</span>()</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">"ranger"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_mode</span>(<span class="st">"regression"</span>)</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a><span class="do">## Tuning grid</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>rf_grid <span class="ot">&lt;-</span> <span class="fu">grid_regular</span>(<span class="fu">mtry</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">10</span>)),</span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>                        <span class="fu">trees</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="dv">100</span>, <span class="dv">500</span>)),</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>                        <span class="fu">min_n</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">10</span>)),</span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>                        <span class="at">levels =</span> <span class="dv">5</span>)</span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a><span class="do">## Cross-validation</span></span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>bike_folds <span class="ot">&lt;-</span> <span class="fu">vfold_cv</span>(bike_train, <span class="at">v =</span> <span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now, we’ll run the tuning, using <strong>doParallel</strong> to run this in parallel:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>doParallel<span class="sc">::</span><span class="fu">registerDoParallel</span>()</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>rf_res <span class="ot">&lt;-</span> </span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tune_grid</span>(</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    tune_spec_rf,</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    count <span class="sc">~</span> .,</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">grid =</span> rf_grid,</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">resamples =</span> bike_folds,</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">metrics =</span> <span class="fu">metric_set</span>(rmse, rsq),</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">control =</span> <span class="fu">control_grid</span>(<span class="at">save_workflow =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>rf_res</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># Tuning results
+# 5-fold cross-validation 
+# A tibble: 5 × 4
+  splits           id    .metrics           .notes          
+  &lt;list&gt;           &lt;chr&gt; &lt;list&gt;             &lt;list&gt;          
+1 &lt;split [233/59]&gt; Fold1 &lt;tibble [250 × 7]&gt; &lt;tibble [0 × 3]&gt;
+2 &lt;split [233/59]&gt; Fold2 &lt;tibble [250 × 7]&gt; &lt;tibble [0 × 3]&gt;
+3 &lt;split [234/58]&gt; Fold3 &lt;tibble [250 × 7]&gt; &lt;tibble [0 × 3]&gt;
+4 &lt;split [234/58]&gt; Fold4 &lt;tibble [250 × 7]&gt; &lt;tibble [0 × 3]&gt;
+5 &lt;split [234/58]&gt; Fold5 &lt;tibble [250 × 7]&gt; &lt;tibble [0 × 3]&gt;</code></pre>
+</div>
+</div>
+<p>Once run, let’s explore the results</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(rf_res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab05_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The key hyperparameter here appears to be the number of variables used in each split, with higher values being preferred. To check this, let’s get the best set of hyperparameters:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>best_param <span class="ot">&lt;-</span> <span class="fu">select_best</span>(rf_res, <span class="at">metric =</span> <span class="st">"rmse"</span>) </span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>best_param</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 4
+   mtry trees min_n .config               
+  &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;chr&gt;                 
+1     7   300     4 Preprocessor1_Model039</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="interpretable-machine-learning" class="level1">
+<h1>Interpretable machine learning</h1>
+<p>We’ll now explore our random forest. For the exploration, we’ll first build a new model using all the rental data. This is optional, and we could equally use the best fit model from the tuning step using the <code>finalize_model</code> function. We’ll use the full dataset here for a number of reasons:</p>
+<ul>
+<li>We need to fit the model again so that it calculates the importance scores (we omitted this above)</li>
+<li>We use the original categorical variables rather than the one-hot encoded values, as this will make visualizing the results easier</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>rf <span class="ot">&lt;-</span> <span class="fu">rand_forest</span>(<span class="at">mode =</span> <span class="st">"regression"</span>, </span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>                  <span class="at">mtry =</span> <span class="dv">7</span>, <span class="at">trees =</span> <span class="dv">300</span>, <span class="at">min_n =</span> <span class="dv">4</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">"ranger"</span>, <span class="at">importance=</span><span class="st">"permutation"</span>)</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>rf_fit <span class="ot">&lt;-</span> rf <span class="sc">|&gt;</span> </span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(count <span class="sc">~</span> ., bike)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We’ll also extract the trained model for use the following sections:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>rf_fit2 <span class="ot">&lt;-</span> rf_fit <span class="sc">%&gt;%</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">extract_fit_engine</span>() </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="iml-setup" class="level2">
+<h2 class="anchored" data-anchor-id="iml-setup">IML setup</h2>
+<p>R has a couple of packages for interpretable ML, including <strong>iml</strong> and <strong>DALEX</strong>. These work in a fairly similar way, which we’ll illustrate here with the <strong>iml</strong> package. Rather than using the model output direct, we need to create a <code>Predictor</code> object. This holds all the information we need for subsequent analysis: the model, the features (<code>data</code>) and the target (<code>y</code>):</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(iml)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> bike[<span class="fu">which</span>(<span class="fu">names</span>(bike) <span class="sc">!=</span> <span class="st">"count"</span>)]</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>predictor <span class="ot">&lt;-</span> Predictor<span class="sc">$</span><span class="fu">new</span>(rf_fit2, </span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>                           <span class="at">data =</span> X, <span class="at">y =</span> bike<span class="sc">$</span>count)</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(predictor)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Classes 'Predictor', 'R6' &lt;Predictor&gt;
+  Public:
+    batch.size: 1000
+    class: NULL
+    clone: function (deep = FALSE) 
+    data: Data, R6
+    initialize: function (model = NULL, data = NULL, predict.function = NULL, 
+    model: ranger
+    predict: function (newdata) 
+    prediction.colnames: NULL
+    prediction.function: function (newdata) 
+    print: function () 
+    task: unknown
+  Private:
+    predictionChecked: FALSE </code></pre>
+</div>
+</div>
+</section>
+<section id="global-measures" class="level2">
+<h2 class="anchored" data-anchor-id="global-measures">Global measures</h2>
+<p>We’ll start by looking at global methods for ML interpretation. As a reminder, these are methods that evaluate the model in aggregate across the full set of observations and features.</p>
+<section id="featurevariable-importance" class="level3">
+<h3 class="anchored" data-anchor-id="featurevariable-importance">Feature/variable importance</h3>
+<p>We’ve looked at feature importance scores in the last two labs. These are measures of how useful a variable is in predicting the target. The most common form, permutation importance, is a model-agnostic approach, that can be used with any algorithm. Here, each feature is randomly shuffled in turn, and the loss in predictive power is calculated. Bigger losses indicate that a higher level of importance. Previously, we’ve visualized these with the <strong>vip</strong> package, and we can do that again here:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(vip)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">vip</span>(rf_fit2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab05_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>This clearly shows temperature as being the most influential feature for bike rentals.</p>
+<p>Now let’s remake this with the <strong>iml</strong> package:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>imp <span class="ot">&lt;-</span> FeatureImp<span class="sc">$</span><span class="fu">new</span>(predictor, <span class="at">loss =</span> <span class="st">"mse"</span>)</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(imp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab05_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>By default, this runs 5 different permutations for each feature to get an idea of how much the importance score varies (you’ll see this as line representing the variation around the mean importance on this plot). You can set this to higher number by setting <code>n.repetitions</code>.</p>
+<p>Note that the plotting is just a <strong>ggplot2</strong> object, so you can add themes and text:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(imp) <span class="sc">+</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Feature Importance (bike rentals)"</span>) <span class="sc">+</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab05_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="partial-dependence" class="level3">
+<h3 class="anchored" data-anchor-id="partial-dependence">Partial dependence</h3>
+<p>We previously looked at partial dependency curves with the tree-based methods. These are considered to be a global interpretation method as they show the <em>average</em> response of the model over the range of a given feature. We can make these with the <strong>iml</strong> package using the <code>FeatureEffect</code> function. This takes as input:</p>
+<ul>
+<li>The <code>Predictor</code> object</li>
+<li>The feature to be plotted</li>
+<li>The grid size (this is the resolution of the curve, larger values will give more detail but be slower to run)</li>
+<li>The type of curve (<code>pdp</code> makes partial dependence plots)</li>
+</ul>
+<p>We’ll start by plotting the PDP for temperature as this was the most important feature:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>pdp <span class="ot">&lt;-</span> FeatureEffect<span class="sc">$</span><span class="fu">new</span>(predictor, </span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>                         <span class="at">feature =</span> <span class="st">"temp"</span>, </span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>                         <span class="at">grid.size =</span> <span class="dv">20</span>,</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>                         <span class="at">method =</span> <span class="st">"pdp"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>And we can plot the results</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(pdp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab05_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The response seems pretty logical. Rentals increase as temperatures increase up to a maximum around 25 celsius. Beyond this, there is a slight decline at hotter temperatures. Let’s look at the response to humidity. Note that we do not need to remake the <code>FeatureEffect</code> object, but just supply the name of another feature:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>pdp<span class="sc">$</span><span class="fu">set.feature</span>(<span class="st">"hum"</span>)</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>pdp<span class="sc">$</span><span class="fu">plot</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab05_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Here we can see that humidity values below about 60% have little impact on the rentals, but there is a fairly sharp drop off above this value. We can look at the combined effect of temperature and humidity with the same object, which clearly shows the sweet spot for bike rentals when temperatures are around 25 degrees and humidity around 55% (and the low rentals at low temp/high humidity)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>pdp<span class="sc">$</span><span class="fu">set.feature</span>(<span class="fu">c</span>(<span class="st">"temp"</span>, <span class="st">"hum"</span>))</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(pdp) <span class="sc">+</span></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_c</span>(<span class="at">option =</span> <span class="st">"magma"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Scale for fill is already present.
+Adding another scale for fill, which will replace the existing scale.</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab05_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>We can also plot the response for categorical variables. For example to show the difference between seasons:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>pdp<span class="sc">$</span><span class="fu">set.feature</span>(<span class="st">"season"</span>)</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>pdp<span class="sc">$</span><span class="fu">plot</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab05_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>A second function (<code>FeatureEffects</code>) allows you to plot the response of all features. It’s worth keeping the grid size low here, at least while testing this method</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>effs <span class="ot">&lt;-</span> FeatureEffects<span class="sc">$</span><span class="fu">new</span>(predictor, <span class="at">grid.size =</span> <span class="dv">10</span>)</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(effs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab05_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>This function also allows the calculation of accumulated local effect plots. These show the <em>difference</em> in predictions as a results of changing a feature. This has the advantage of limiting bias from correlations between features, and may be a clearer way to visualize impact (i.e.&nbsp;positive or negative):</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>ale <span class="ot">&lt;-</span> FeatureEffect<span class="sc">$</span><span class="fu">new</span>(predictor, </span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>                         <span class="at">feature =</span> <span class="st">"temp"</span>, </span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>                         <span class="at">grid.size =</span> <span class="dv">20</span>,</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>                         <span class="at">method =</span> <span class="st">"ale"</span>)</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>ale<span class="sc">$</span><span class="fu">plot</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab05_files/figure-html/unnamed-chunk-27-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="feature-interaction" class="level3">
+<h3 class="anchored" data-anchor-id="feature-interaction">Feature interaction</h3>
+<p>We can also measure feature interaction. For any given feature, this shows how much of the response is due to interactions or modifications by other features. We can calculate the total interaction with <code>Interaction</code>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>interact <span class="ot">&lt;-</span> Interaction<span class="sc">$</span><span class="fu">new</span>(predictor, <span class="at">grid.size =</span> <span class="dv">15</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'patchwork' was built under R version 4.4.1</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'patchwork'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:MASS':
+
+    area</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(interact)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab05_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>For the bike data, approximately 35% of the temperature drive variation in rental numbers is due to interactions with other features We can break this down further by looking at the two-way interactions - this gives the proportion of the temperature response that is modified by each of the other features. This uses the same function, but we specify the name of the feature we want to test (humidity):</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>interact <span class="ot">&lt;-</span> Interaction<span class="sc">$</span><span class="fu">new</span>(predictor, </span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>                            <span class="at">feature =</span> <span class="st">"hum"</span>, </span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>                            <span class="at">grid.size =</span> <span class="dv">15</span>)</span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(interact)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab05_files/figure-html/unnamed-chunk-29-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>This shows a strong interaction between windspeed and humidity. We can then visualize this using a 2D PD plot (not too surprisingly, rentals are lower on humid days with low wind speed)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>pdp<span class="sc">$</span><span class="fu">set.feature</span>(<span class="fu">c</span>(<span class="st">"hum"</span>, <span class="st">"windspeed"</span>))</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(pdp) <span class="sc">+</span></span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_c</span>(<span class="at">option =</span> <span class="st">"magma"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Scale for fill is already present.
+Adding another scale for fill, which will replace the existing scale.</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab05_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>R has an additional package called <strong>vivid</strong> that allows you to integrate both the importance and interactions in a single figure. Let’s load this and make a <code>vivi</code> object:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(vivid)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Registered S3 method overwritten by 'seriation':
+  method         from 
+  reorder.hclust gclus</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Registered S3 method overwritten by 'GGally':
+  method from   
+  +.gg   ggplot2</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Registered S3 methods overwritten by 'ggalt':
+  method                  from   
+  grid.draw.absoluteGrob  ggplot2
+  grobHeight.absoluteGrob ggplot2
+  grobWidth.absoluteGrob  ggplot2
+  grobX.absoluteGrob      ggplot2
+  grobY.absoluteGrob      ggplot2</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>bike_vivi <span class="ot">=</span> <span class="fu">vivi</span>(rf_fit2, <span class="at">data =</span> bike, <span class="at">response =</span> <span class="st">"count"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Agnostic variable importance method used.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Calculating interactions...</code></pre>
+</div>
+</div>
+<p>And we can now visualize this as</p>
+<ul>
+<li>A heatmap (the diagonal values show the importance (green) and the off-diagonal values show the interaction (purple))</li>
+<li>A network (the nodes show the importance (green) and the links show the interaction (purple))</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">viviHeatmap</span>(bike_vivi)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab05_files/figure-html/unnamed-chunk-32-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">viviNetwork</span>(bike_vivi)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab05_files/figure-html/unnamed-chunk-33-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="local-measures" class="level2">
+<h2 class="anchored" data-anchor-id="local-measures">Local measures</h2>
+<p>We’ll now look at methods for local interpretation. These methods explore how the model predicts for an individual observation. For the bike data, an individual observation is a single day of bike rentals, so these methods help shed some light on the factors driving rental numbers for any given day:</p>
+<section id="individual-conditional-expectancy-ice-plots" class="level3">
+<h3 class="anchored" data-anchor-id="individual-conditional-expectancy-ice-plots">Individual conditional expectancy (ICE) plots</h3>
+<p>We’ll start with ICE plots. These are similar to partial dependency plots, as they show the changing response to a given feature. The difference is that these show this response for each individual observation. These use the same function as before (<code>FeatureEffect</code>), but we set the method to <code>ice</code>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>ice <span class="ot">&lt;-</span> FeatureEffect<span class="sc">$</span><span class="fu">new</span>(predictor, </span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>                         <span class="at">feature =</span> <span class="st">"hum"</span>, </span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>                         <span class="at">grid.size =</span> <span class="dv">20</span>,</span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a>                         <span class="at">method =</span> <span class="st">"ice"</span>)</span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a>ice<span class="sc">$</span><span class="fu">plot</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab05_files/figure-html/unnamed-chunk-34-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Note that the partial dependency is simply the average of these individual curves, and we can add this by changing the method again:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>ice <span class="ot">&lt;-</span> FeatureEffect<span class="sc">$</span><span class="fu">new</span>(predictor, </span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>                         <span class="at">feature =</span> <span class="st">"hum"</span>, </span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>                         <span class="at">grid.size =</span> <span class="dv">20</span>,</span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>                         <span class="at">method =</span> <span class="st">"pdp+ice"</span>)</span>
+<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a>ice<span class="sc">$</span><span class="fu">plot</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab05_files/figure-html/unnamed-chunk-35-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>You should now see that some curves show a much stronger drop in rentals at higher humidity - this is likely due to the interactions with temperature and wind speed noted above. The ICE plots can also be <em>centered</em> to a particular value. This now shows the increase or decrease uin rentals for each observation relative to a set value of humidity. We’ll set this here to 65% (roughly where the decline starts):</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>ice <span class="ot">&lt;-</span> FeatureEffect<span class="sc">$</span><span class="fu">new</span>(predictor, </span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>                         <span class="at">feature =</span> <span class="st">"hum"</span>, </span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>                         <span class="at">grid.size =</span> <span class="dv">20</span>,</span>
+<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a>                         <span class="at">center.at =</span> <span class="dv">65</span>,</span>
+<span id="cb56-5"><a href="#cb56-5" aria-hidden="true" tabindex="-1"></a>                         <span class="at">method =</span> <span class="st">"pdp+ice"</span>)</span>
+<span id="cb56-6"><a href="#cb56-6" aria-hidden="true" tabindex="-1"></a>ice<span class="sc">$</span><span class="fu">plot</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab05_files/figure-html/unnamed-chunk-36-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>This should now emphasize the variation in rentals at high humidity, with some days exhibiting very low changes.</p>
+</section>
+<section id="shapely-values" class="level3">
+<h3 class="anchored" data-anchor-id="shapely-values">Shapely values</h3>
+<p>We can go a little further in examining individual observations with Shapley values. These show, for an individual, the impact of each feature. So for an individual day’s rentals, this would show the impact of that day’s temperature, humidity, season, etc. This can be particularly useful in establishing which factors led to particularly positive (or negative) outcomes.</p>
+<p>Let’s start by finding the day with the lowest and the day with the highest rentals:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>day_lo <span class="ot">&lt;-</span> <span class="fu">which.min</span>(bike<span class="sc">$</span>count)</span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>day_hi <span class="ot">&lt;-</span> <span class="fu">which.max</span>(bike<span class="sc">$</span>count)</span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste</span>(<span class="st">"Lowest :"</span>, day_lo, bike<span class="sc">$</span>count[day_lo]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Lowest : 303 22"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste</span>(<span class="st">"Highest:"</span>, day_hi, bike<span class="sc">$</span>count[day_hi]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Highest: 259 8714"</code></pre>
+</div>
+</div>
+<p>Now, let’s look at the factors impacting the lowest rentals:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>shapley <span class="ot">&lt;-</span> Shapley<span class="sc">$</span><span class="fu">new</span>(predictor, <span class="at">x.interest =</span> X[day_lo, ],</span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>                       <span class="at">sample.size =</span> <span class="dv">50</span>)</span>
+<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(shapley) <span class="sc">+</span></span>
+<span id="cb61-4"><a href="#cb61-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Shapley values (lowest rentals)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab05_files/figure-html/unnamed-chunk-38-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The combination of high humidity, high wind and rain or snow appears to be the key limiting factors. Note that temperature, despite being overall the most important factor (see above) has relatively little effect on this day.</p>
+<p>And now let’s look at the value for the day with the highest rentals:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>shapley <span class="ot">&lt;-</span> Shapley<span class="sc">$</span><span class="fu">new</span>(predictor, <span class="at">x.interest =</span> X[day_hi, ],</span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>                       <span class="at">sample.size =</span> <span class="dv">50</span>)</span>
+<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(shapley) <span class="sc">+</span></span>
+<span id="cb62-4"><a href="#cb62-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Shapley values (highest rentals)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab05_files/figure-html/unnamed-chunk-39-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>For this day, the combination of season and warm temperatures appears to be the biggest drivers.</p>
+</section>
+<section id="lime-plots" class="level3">
+<h3 class="anchored" data-anchor-id="lime-plots">LIME plots</h3>
+<p>As a last approach, we’ll calculate a local model using Local Interpretable Model-agnostic Explanations or LIME plots. The idea behind this method is that the ‘local’ or small-scale relationships between features and the target can be approximated with simple, linear models. To put this in terms of this dataset, if we take a given day in June, the changes in rentals for small variations in (say) temperature should be linear. Based on this, the method simulates a small amount of artificial data around the observation (i.e.&nbsp;minor variations in temperature, humidity, etc), and then fits a simple model. This simple model is usually built in a way that allows it to select only the factors that are meaningful for that observation. Let’s fit this now with a single day (day 100):</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>lime.explain <span class="ot">&lt;-</span> LocalModel<span class="sc">$</span><span class="fu">new</span>(predictor, <span class="at">x.interest =</span> X[<span class="dv">100</span>, ])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: glmnet</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loaded glmnet 4.1-8</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>lime.explain<span class="sc">$</span>results</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                      beta x.recoded     effect x.original         feature
+weathersit=GOOD 251.369017   1.00000  251.36902       GOOD weathersit=GOOD
+temp            116.577421  14.99085 1747.59451  14.990849            temp
+windspeed        -1.193761  23.99913  -28.64923  23.999132       windspeed
+                      feature.value
+weathersit=GOOD     weathersit=GOOD
+temp                 temp=14.990849
+windspeed       windspeed=23.999132</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(lime.explain)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab05_files/figure-html/unnamed-chunk-40-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>On this day, the warm weather increased rentals, and the high wind speeds decreased them slightly.</p>
+</section>
+</section>
+</section>
+<section id="exercise" class="level1">
+<h1>Exercise</h1>
+<p>In the cancer dataset, there are two possible predictor variables that we did not use above (poverty rates <code>Poverty</code> and smoking rates <code>Smoking</code>). For the exercise, you will need run a new analysis that includes these. There are three options given below; students in GEOG 5160 will need to do one of these, students in GEOG 6160 will need to do two.</p>
+<ol type="1">
+<li>Use the cancer dataset to carry out a non-spatial and spatial cross-validation, following the example above. This will be a regression task, and you should include all the possible predictors (poverty, smoking and air pollutants). You can use a random forest, or any of the other algorithms we have looked at so far. Report the RMSE and <span class="math inline">\(R^2\)</span> for both cross-validation methods, and write a short statement that explains in simple terms what these mean (1-2 sentences)</li>
+<li>Make a new geographical random forest model that includes the variables mentioned above. Your answer should include a) a variable importance plot based on the global model; b) maps of the importance scores for all variables and the local <span class="math inline">\(R^2\)</span>; c) a short description (2-4 sentences) of the spatial patterns you observe</li>
+<li>Make a new model with spatial basis functions that includes the variables mentioned above. You should try at least two different basis functions setups (I’d recommend that at least one uses the irregular basis functions described in the section above). Your answer should include a) a figure showing the distribution of the basis functions you used; b) cross-validated RMSE and <span class="math inline">\(R^2\)</span> values; c) a short statement as to whether the basis functions have improved the model (1-2 sentences)</li>
+</ol>
+<p>Use a Quarto document to record your answers and output. Assignments, to include both the Quarto document and (ideally) the compiled HTML file, should be submitted to Canvas by Feb 19th. Please use the following naming convention: <code>Lab04_lastname</code>.</p>
+</section>
+<section id="appendix-1-bike-rental-dataset" class="level1">
+<h1>Appendix 1: Bike rental dataset</h1>
+<p>Bike rental dataset from https://christophm.github.io/interpretable-ml-book/bike-data.html:</p>
+<ul>
+<li><code>season</code>: The season, either spring, summer, fall or winter.</li>
+<li><code>year</code>: The year, either 2011 or 2012.</li>
+<li><code>mnth</code>: The month</li>
+<li><code>holiday</code>: Indicator whether the day was a holiday or not.</li>
+<li><code>weekday</code>: Day of week</li>
+<li><code>workingday</code>: Indicator whether the day was a working day or weekend.</li>
+<li><code>weathersit</code>: The weather situation on that day. One of:
+<ul>
+<li>clear, few clouds, partly cloudy, cloudy</li>
+<li>mist + clouds, mist + broken clouds, mist + few clouds, mist, light snow, light rain + thunderstorm + scattered clouds, light rain + scattered clouds</li>
+<li>heavy rain + ice pallets + thunderstorm + mist, snow + mist</li>
+</ul></li>
+<li><code>temp</code>: Temperature in degrees Celsius.</li>
+<li><code>hum</code>: Relative humidity in percent (0 to 100).</li>
+<li><code>windspeed</code>: Wind speed in km per hour.</li>
+<li><code>count</code>: Count of bicycles including both casual and registered users. The count is used as the target in the regression task.</li>
+<li><code>days_since_2011</code>: Number of days since the 01.01.2011 (the first day in the dataset). This feature was introduced to take account of the trend over time.</li>
+</ul>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
