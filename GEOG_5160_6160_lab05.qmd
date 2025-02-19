@@ -420,7 +420,7 @@ print(paste("Lowest :", day_lo, bike$count[day_lo]))
 print(paste("Highest:", day_hi, bike$count[day_hi]))
 ```
 
-Now, let's look at the factors impacting the lowest rentals:
+Now, let's look at the factors impacting the day with the lowest rentals:
 
 ```{r}
 shapley <- Shapley$new(predictor, x.interest = X[day_lo, ],
@@ -456,11 +456,16 @@ On this day, the warm weather increased rentals, and the high wind speeds decrea
 
 # Exercise
 
-In the cancer dataset, there are two possible predictor variables that we did not use above (poverty rates `Poverty` and smoking rates `Smoking`). For the exercise, you will need run a new analysis that includes these. There are three options given below; students in GEOG 5160 will need to do one of these, students in GEOG 6160 will need to do two.
+## Exercise
 
-1.  Use the cancer dataset to carry out a non-spatial and spatial cross-validation, following the example above. This will be a regression task, and you should include all the possible predictors (poverty, smoking and air pollutants). You can use a random forest, or any of the other algorithms we have looked at so far. Report the RMSE and $R^2$ for both cross-validation methods, and write a short statement that explains in simple terms what these mean (1-2 sentences)
-2.  Make a new geographical random forest model that includes the variables mentioned above. Your answer should include a) a variable importance plot based on the global model; b) maps of the importance scores for all variables and the local $R^2$; c) a short description (2-4 sentences) of the spatial patterns you observe
-3.  Make a new model with spatial basis functions that includes the variables mentioned above. You should try at least two different basis functions setups (I'd recommend that at least one uses the irregular basis functions described in the section above). Your answer should include a) a figure showing the distribution of the basis functions you used; b) cross-validated RMSE and $R^2$ values; c) a short statement as to whether the basis functions have improved the model (1-2 sentences)
+In a previous lab, we built a simple linear model of house prices using the data set (*Housing_Price_Data.csv*). For this exercise you will make a new model based on a random forest (or boosted regression tree if you;d prefer) and explore it using interpretable machine learning methods. You will need to do the following:
+
+- Load and preprocess the data. Use the `price` variable as the target. Remember to log transform the area and price variables and one-hot encode the categorical variables (see lab 2 for code)
+- Split this dataset into training and testing and build a random forest or boosted regression tree
+- Plot the variable importance scores using the code in this lab (lab5)
+- Plot a partial dependency curve for the effect of area
+- GEOG6160 Students: plot ICE curves for the effect of area
+- GEOG6160 Students: calculate and plot Shapley values for two observations (e.g. the cheapest and most expensive house)
 
 Use a Quarto document to record your answers and output. Assignments, to include both the Quarto document and (ideally) the compiled HTML file, should be submitted to Canvas by Feb 19th. Please use the following naming convention: `Lab04_lastname`.
 
