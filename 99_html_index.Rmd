@@ -40,13 +40,17 @@ Spatial data science is a fast-growing discipline, with wide-ranging application
     - [Lab notes (R)][lab04r]
     - [Lab notes (Python notebook)][lab04p]
     - [Lab notes (Python colab)][lab04c]
+- Lab 5
+    - [Lab notes (R)][lab05r]
+    - [Lab notes (Python notebook)][lab05p]
+    - [Lab notes (Python colab)][lab05c]
 
 # Data
 
 - Lab 1
-    - [Penguins Dataset][penguins]
+    - [Penguins dataset][penguins]
 - Lab 2
-    - [Housing Dataset][housing]
+    - [Housing dataset][housing]
 - Lab 3
     - [Pinus edulis dataset][pe_df]
     - [Natural Earth coastlines][ne_shp]
@@ -57,6 +61,9 @@ Spatial data science is a fast-growing discipline, with wide-ranging application
     - [Environmental data for landslide predictions][lsl_ta]
     - [Cancer mortality rates][cancer]
     - [Atlantic county shapefile][atl_shp]
+- Lab 5
+    - [Bike rental dataset][bike]
+    - [Housing dataset][housing]
     
 
 [install]: https://simonbrewer.github.io/geog5160/GEOG_5160_6160_Installation.html
@@ -72,6 +79,9 @@ Spatial data science is a fast-growing discipline, with wide-ranging application
 [lab04r]: https://simonbrewer.github.io/geog5160/GEOG_5160_6160_lab04.html
 [lab04p]: https://github.com/simonbrewer/geog5160/blob/main/GEOG_5160_6160_lab04.ipynb
 [lab04c]: https://colab.research.google.com/drive/11buvWJVZ3GPZasCv0wNlfqSzjLreTEQA?usp=sharing
+[lab05r]: https://simonbrewer.github.io/geog5160/GEOG_5160_6160_lab05.html
+[lab05p]: https://github.com/simonbrewer/geog5160/blob/main/GEOG_5160_6160_lab05.ipynb
+
 [penguins]: https://drive.google.com/file/d/1Sb5uv2RP_gcNJDKmlEjBoSUOdETIq2Jf/view?usp=sharing
 [housing]: https://drive.google.com/file/d/1pTBKamvTk7ZLsRIFKRNQ37_XU2J5y9XT/view?usp=sharing
 [pe_df]: https://drive.google.com/file/d/1YUML4HEX1jLgpuiODJNMrxKlru8tCKJe/view?usp=sharing
@@ -82,4 +92,4 @@ Spatial data science is a fast-growing discipline, with wide-ranging application
 [cancer]: https://drive.google.com/file/d/1cgplF41EKtQ32vkDOf-y1W9lnwbAGg_u/view?usp=sharing
 [lslpts]: https://drive.google.com/file/d/1x9bZXR86J-kFxufFvmNpbrid66krbONI/view?usp=sharing
 [lsl_ta]: https://drive.google.com/file/d/1DO6eyL-N48rM-2pU4ddwMn4YFRoouYtM/view?usp=sharing
-
+[bike]: https://drive.google.com/file/d/1vuFJPShROaRHSc_rJrRkskTiIQONjLzk/view?usp=sharing
