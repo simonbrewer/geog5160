@@ -1,5 +1,5 @@
 ---
-title: "GEOG 5160 6160 Lab 05"
+title: "GEOG 5160 6160 Lab 06"
 author: 
   - name: "Simon Brewer"
     email: simon.brewer@ess.utah.edu
@@ -24,467 +24,485 @@ set.seed(42)
 
 # Introduction
 
-A frequent accusation of machine models is that they are 'black-box'; that they are so complex, it is difficult or impossible to understand how they work. In response to this, there is a growth of *interpretable* or explainable machine learning methods, designed to shed some light on the inner workings of these models. These methods provide a way to understand biases in models, but can also be useful explanatory methods to help understand your dataset.
+In this lab, we'll look at how to implement three unsupervised classification methods:
 
-In this lab, we'll explore the use of the methods for both global and local interpretation using a data set of bike rentals. The goal of this exercise is to predict the number of expected rentals for any given day based on a series of factors, including season, day of the week, weather, etc. (full details in appendix 1). The data are in the file *bike.csv*, which you should download and move to a working folder for this lab.
+- $k$-means clustering
+- Hierarchical clustering
+- Self-organizing maps
 
-You will need to make sure the following packages are installed on your computer (some of these you may have already installed). Other packages for IML include **shapley** and **DALEX**
+The data we will use is from the [Gap Minder project][gapID]. While you can download the individual variables from the web site, we will use a preprocessed set of the data covering the period 1801-2018, in the file *gapminder_1800_2018.csv*. Download this to your `datafiles` folder and make a new folder for today's class called `lab06`. You will also need the shapefile of country borders: `ne_50m_admin_0_countries.shp` (you should have this from a previous lab).
 
--   **iml**: interpretable machine learning
--   **vip**: variable importance plots
+Start RStudio and set the working directory to this directory (This can be changed by going to the [Session] menu and selecting [Set working directory] -> [Choose directory...], then browsing to the folder). 
 
-As a reminder, packages can be installed in RStudio by going to the 'Packages' tab and clicking on the \[Install\] button, or from the menu \[Tools\]-\> \[Install packages...\]. You can also install these from the console window by typing
+You will need the following packages for today's lab, so make sure to install anything that is missing before proceeding.
 
-```{r eval=FALSE}
-install.packages("iml")
+- **tidyverse**
+- **ggpubr**
+- **RColorBrewer**
+- **countrycode**
+- **sf**
+- **kohonen**
+- **tmap**
+
+# Data
+
+Once you have set everything up, we can start by reading in the data. 
+
+```{r}
+gap_df = read.csv("./datafiles/gapminder_1800_2018.csv")
+head(gap_df)
 ```
 
-## Objectives
+Now load the following directories to process and visualize the data:
 
--   Understand how to convert **tidymodels** output for use in interpretable machine learning
--   Use methods for global and local interpretation
-
-We'll also revisit tuning models in this lab.
-
-**It is highly recommended to use scripts or Quarto documents to store your R code - this will allow you to easily change and modify it and submit the exercise.**
-
-Next load the libraries you will need for the lab. You should at this stage have most of these already installed. Add anything that is not installed using the `install.packages()` function.
-
-```{r message=FALSE}
+```{r}
 library(tidyverse)
-library(tidymodels)
-library(iml)
+library(ggpubr)
+library(RColorBrewer)
 ```
 
-## Data processing
+We can now make some plots to look at the data. First, histograms of the three variables in the data (child mortality, fertility, per capita CO2 emissions, GDP per capita, life expectancy and population size):
 
-Let's load the bike rental data first and take a look at the content:
+```{r warning=FALSE}
+names(gap_df)
+h1 <- gap_df %>%
+  gghistogram(x = "child_mortality")
+h2 <- gap_df %>%
+  gghistogram(x = "fertility")
+h3 <- gap_df %>%
+  gghistogram(x = "per_cap_co2")
+h4 <- gap_df %>%
+  gghistogram(x = "income")
+h5 <- gap_df %>%
+  gghistogram(x = "life_expectancy")
+h6 <- gap_df %>%
+  gghistogram(x = "population")
+ggarrange(h1, h2, h3, h4, h5, h6)
+```
+
+The histograms clearly show skew in most of the variables, and we will need to transform the data before analyzing it. We'll do this in two steps. First, we'll log transform all variables to remove the skew, then use the `scale()` function, which in R scales data to $z$-scores by subtracting the mean and dividing by the standard deviation. To simplify things, we do all this in a single step by nesting the `log()` function in the `scale()` function. 
+
+Note that we remove rows with missing observations (we could potentially impute these, but that is a little more difficult for time series data). We also remove any row where the per capita CO2 emissions are zero, partly because this would cause problems when log-transforming and partly because this is clearly not true. 
 
 ```{r}
-bike <- read.csv("./datafiles/bike.csv")
-head(bike)
-summary(bike)
-```
-
-```{r}
-library(skimr)
-skim(bike)
-```
-
-Before starting, we'll convert all categorical columns to factors and all integer columns to numeric:
-
-```{r}
-bike <- bike %>%
-  mutate_if(is.character, as.factor) %>%
-  mutate_if(is.integer, as.numeric) 
-```
-
-Now let's make a couple of figures. First, we'll plot the rentals over time (`days_since_2011`)
-
-```{r}
-ggplot(bike, aes(x = days_since_2011, y = count)) +
-  geom_line() +
-  theme_minimal()
-```
-
-There's a fairly upward trend in the data, as the rental service became more popular over time. To avoid this, we'll just work with the second year of data (2012). We'll also drop the year and `days_since_2011` columns. The data also contain both a `season` and month (`mnth`) feature, which are likely redundant. We'll drop the month here.
-
-```{r}
-bike <- bike |>
-  filter(yr == 2012) |>
-  dplyr::select(-days_since_2011, -yr, -mnth)
-```
-
-# A base model
-
-Next, let's develop a model for these data. We'll use a random forest here. First, let's set up and train a model without tuning. We'll go through the usual steps to set up:
-
--   Define a recipe to one hot encode the categorical values
--   Split the data into training and testing
--   Use the recipe to process these datasets
-
-```{r}
-rec <- recipe(count ~ ., bike) |>
-  step_dummy(all_nominal_predictors())
-
-bike_split <- initial_split(bike, prop = 0.80)
-
-bike_train <- training(bike_split)
-bike_train = prep(rec) |> bake(bike_train)
-
-bike_test  <- testing(bike_split)
-bike_test = prep(rec) |> bake(bike_test)
-```
-
-Now, we'll build a base, untuned model, and calculate the RMSE on the test set:
-
-```{r}
-rf <- rand_forest(mode = "regression")
-rf_fit <- rf |> 
-  fit(count ~ ., bike_train)
-
-pred_test <- predict(rf_fit, bike_test) |>
-  bind_cols(bike_test |> dplyr::select(count))
-
-pred_test |>
-  yardstick::rmse(count, .pred)
-```
-
-Giving an RMSE of a little over 800 (your value will likely be different).
-
-## Tuning
-
-Now let's tune this model to get the optimal hyperparameter set. Here are the steps to set this up:
-
--   Define the tuning specification (the model and hyperparameters)
--   Define the grid (the values of each hyperparameter to test). We'll use a very similar grid to the previous example
--   Define the cross-validation strategy for tuning
-
-```{r}
-## Tuning specification
-tune_spec_rf <- 
-  rand_forest(
-    mtry = tune(),
-    trees = tune(),
-    min_n = tune()
-  ) |> 
-  set_engine("ranger") |>
-  set_mode("regression")
-
-## Tuning grid
-rf_grid <- grid_regular(mtry(range = c(1, 10)),
-                        trees(range = c(100, 500)),
-                        min_n(range = c(2, 10)),
-                        levels = 5)
-
-## Cross-validation
-bike_folds <- vfold_cv(bike_train, v = 5)
-```
-
-Now, we'll run the tuning, using **doParallel** to run this in parallel:
-
-```{R}
-doParallel::registerDoParallel()
-
-rf_res <- 
-  tune_grid(
-    tune_spec_rf,
-    count ~ .,
-    grid = rf_grid,
-    resamples = bike_folds,
-    metrics = metric_set(rmse, rsq),
-    control = control_grid(save_workflow = TRUE)
+gap_df_scale <- gap_df %>% 
+  drop_na() %>%
+  filter(per_cap_co2 > 0) %>%
+  mutate(
+    child_mortality = scale(log(child_mortality)),
+    fertility = scale(log(fertility)),
+    per_cap_co2 = scale(log(per_cap_co2)),
+    income = scale(log(income)),
+    life_expectancy = scale(log(life_expectancy)),
+    population = scale(log(population))
   )
-rf_res
 ```
 
-Once run, let's explore the results
+The very last thing we'll do is to extract a single year of data for the first part of the lab (just 2018):
 
 ```{r}
-autoplot(rf_res)
+gap_df_scale2 <- gap_df_scale %>%
+  filter(year == 2018)
 ```
 
-The key hyperparameter here appears to be the number of variables used in each split, with higher values being preferred. To check this, let's get the best set of hyperparameters:
+# $k$-means cluster analysis
+
+We'll next use these data with the $k$-means cluster algorithm. The default function for this in R is `kmeans()`, and we need to pass the data we are going to use, and the number of requested clusters to this function. First let's figure out which columns we need:
 
 ```{r}
-best_param <- select_best(rf_res, metric = "rmse") 
-best_param
-```
-
-# Interpretable machine learning
-
-We'll now explore our random forest. For the exploration, we'll first build a new model using all the rental data. This is optional, and we could equally use the best fit model from the tuning step using the `finalize_model` function. We'll use the full dataset here for a number of reasons:
-
--   We need to fit the model again so that it calculates the importance scores (we omitted this above)
--   We use the original categorical variables rather than the one-hot encoded values, as this will make visualizing the results easier 
-
-```{r}
-rf <- rand_forest(mode = "regression", 
-                  mtry = 7, trees = 300, min_n = 4) |> 
-  set_engine("ranger", importance="permutation")
-
-rf_fit <- rf |> 
-  fit(count ~ ., bike)
-```
-
-We'll also extract the trained model for use the following sections:
-
-```{r}
-rf_fit2 <- rf_fit %>%
-  extract_fit_engine() 
-```
-
-## IML setup
-
-R has a couple of packages for interpretable ML, including **iml** and **DALEX**. These work in a fairly similar way, which we'll illustrate here with the **iml** package. Rather than using the model output direct, we need to create a `Predictor` object. This holds all the information we need for subsequent analysis: the model, the features (`data`) and the target (`y`):
-
-```{r warning=FALSE}
-library(iml)
-X <- bike[which(names(bike) != "count")]
-predictor <- Predictor$new(rf_fit2, 
-                           data = X, y = bike$count)
-str(predictor)
-```
-
-## Global measures
-
-We'll start by looking at global methods for ML interpretation. As a reminder, these are methods that evaluate the model in aggregate across the full set of observations and features.
-
-### Feature/variable importance
-
-We've looked at feature importance scores in the last two labs. These are measures of how useful a variable is in predicting the target. The most common form, permutation importance, is a model-agnostic approach, that can be used with any algorithm. Here, each feature is randomly shuffled in turn, and the loss in predictive power is calculated. Bigger losses indicate that a higher level of importance. Previously, we've visualized these with the **vip** package, and we can do that again here:
-
-```{r message=FALSE, warning=FALSE}
-library(vip)
-vip(rf_fit2)
-```
-
-This clearly shows temperature as being the most influential feature for bike rentals.
-
-Now let's remake this with the **iml** package:
-
-```{r warning=FALSE}
-imp <- FeatureImp$new(predictor, loss = "mse")
-plot(imp)
-```
-
-By default, this runs 5 different permutations for each feature to get an idea of how much the importance score varies (you'll see this as line representing the variation around the mean importance on this plot). You can set this to higher number by setting `n.repetitions`.
-
-Note that the plotting is just a **ggplot2** object, so you can add themes and text:
-
-```{r}
-plot(imp) +
-  ggtitle("Feature Importance (bike rentals)") +
-  theme_minimal()
-```
-
-### Partial dependence
-
-We previously looked at partial dependency curves with the tree-based methods. These are considered to be a global interpretation method as they show the *average* response of the model over the range of a given feature. We can make these with the **iml** package using the `FeatureEffect` function. This takes as input:
-
--   The `Predictor` object
--   The feature to be plotted
--   The grid size (this is the resolution of the curve, larger values will give more detail but be slower to run)
--   The type of curve (`pdp` makes partial dependence plots)
-
-We'll start by plotting the PDP for temperature as this was the most important feature:
-
-```{r warning=FALSE}
-pdp <- FeatureEffect$new(predictor, 
-                         feature = "temp", 
-                         grid.size = 20,
-                         method = "pdp")
-```
-
-And we can plot the results
-
-```{r}
-plot(pdp)
-```
-
-The response seems pretty logical. Rentals increase as temperatures increase up to a maximum around 25 celsius. Beyond this, there is a slight decline at hotter temperatures. Let's look at the response to humidity. Note that we do not need to remake the `FeatureEffect` object, but just supply the name of another feature:
-
-```{r}
-pdp$set.feature("hum")
-pdp$plot()
-```
-
-Here we can see that humidity values below about 60% have little impact on the rentals, but there is a fairly sharp drop off above this value. We can look at the combined effect of temperature and humidity with the same object, which clearly shows the sweet spot for bike rentals when temperatures are around 25 degrees and humidity around 55% (and the low rentals at low temp/high humidity)
-
-```{r}
-pdp$set.feature(c("temp", "hum"))
-plot(pdp) +
-  scale_fill_viridis_c(option = "magma")
-```
-
-We can also plot the response for categorical variables. For example to show the difference between seasons:
-
-```{r}
-pdp$set.feature("season")
-pdp$plot()
-```
-
-A second function (`FeatureEffects`) allows you to plot the response of all features. It's worth keeping the grid size low here, at least while testing this method
-
-```{r}
-effs <- FeatureEffects$new(predictor, grid.size = 10)
-plot(effs)
-```
-
-This function also allows the calculation of accumulated local effect plots. These show the *difference* in predictions as a results of changing a feature. This has the advantage of limiting bias from correlations between features, and may be a clearer way to visualize impact (i.e. positive or negative):
-
-```{r}
-ale <- FeatureEffect$new(predictor, 
-                         feature = "temp", 
-                         grid.size = 20,
-                         method = "ale")
-ale$plot()
-```
-
-### Feature interaction
-
-We can also measure feature interaction. For any given feature, this shows how much of the response is due to interactions or modifications by other features. We can calculate the total interaction with `Interaction`:
-
-```{r}
-interact <- Interaction$new(predictor, grid.size = 15)
-plot(interact)
-```
-
-For the bike data, approximately 35% of the temperature drive variation in rental numbers is due to interactions with other features We can break this down further by looking at the two-way interactions - this gives the proportion of the temperature response that is modified by each of the other features. This uses the same function, but we specify the name of the feature we want to test (humidity):
-
-```{r}
-interact <- Interaction$new(predictor, 
-                            feature = "hum", 
-                            grid.size = 15)
-plot(interact)
-```
-
-This shows a strong interaction between windspeed and humidity. We can then visualize this using a 2D PD plot (not too surprisingly, rentals are lower on humid days with low wind speed)
-
-```{r}
-pdp$set.feature(c("hum", "windspeed"))
-plot(pdp) +
-  scale_fill_viridis_c(option = "magma")
-```
-
-R has an additional package called **vivid** that allows you to integrate both the importance and interactions in a single figure. Let's load this and make a `vivi` object:
-
-```{r}
-library(vivid)
-bike_vivi = vivi(rf_fit2, data = bike, response = "count")
-```
-
-And we can now visualize this as
-
--   A heatmap (the diagonal values show the importance (green) and the off-diagonal values show the interaction (purple))
--   A network (the nodes show the importance (green) and the links show the interaction (purple))
-
-```{r}
-viviHeatmap(bike_vivi)
+names(gap_df_scale2)
 ```
 
 ```{r}
-viviNetwork(bike_vivi)
+gap_kmeans = kmeans(gap_df_scale2[,3:8], centers = 6)
 ```
 
-## Local measures
-
-We'll now look at methods for local interpretation. These methods explore how the model predicts for an individual observation. For the bike data, an individual observation is a single day of bike rentals, so these methods help shed some light on the factors driving rental numbers for any given day:
-
-### Individual conditional expectancy (ICE) plots
-
-We'll start with ICE plots. These are similar to partial dependency plots, as they show the changing response to a given feature. The difference is that these show this response for each individual observation. These use the same function as before (`FeatureEffect`), but we set the method to `ice`:
+There output of this algorithm provides information about the cluster solution. We can see the size of each cluster (the number of observations assigned to each cluster)
 
 ```{r}
-ice <- FeatureEffect$new(predictor, 
-                         feature = "hum", 
-                         grid.size = 20,
-                         method = "ice")
-ice$plot()
+gap_kmeans$size
 ```
 
-Note that the partial dependency is simply the average of these individual curves, and we can add this by changing the method again:
+And we can see the cluster assignments for each country:
 
 ```{r}
-ice <- FeatureEffect$new(predictor, 
-                         feature = "hum", 
-                         grid.size = 20,
-                         method = "pdp+ice")
-ice$plot()
+gap_kmeans$cluster
 ```
 
-You should now see that some curves show a much stronger drop in rentals at higher humidity - this is likely due to the interactions with temperature and wind speed noted above. The ICE plots can also be *centered* to a particular value. This now shows the increase or decrease uin rentals for each observation relative to a set value of humidity. We'll set this here to 65% (roughly where the decline starts):
+And finally the cluster `centers`. These are the prototypes; the average value of each variable for all the observations assigned to a given cluster (note these are the log-transformed and scaled data)
+```{r}
+gap_kmeans$centers
+```
+
+Here, we can see that cluster 6, for example, has the lowest life expectancy and GDP, as well as high infant mortality and fertility rates. 
+
+## Maps
+
+As these are spatial data, we can now plot the distribution of the clusters. First, we'll load the world shapefile in the `ne_50m_admin_0_countries` folder (we used this in a previous lab:)
 
 ```{r}
-ice <- FeatureEffect$new(predictor, 
-                         feature = "hum", 
-                         grid.size = 20,
-                         center.at = 65,
-                         method = "pdp+ice")
-ice$plot()
+library(sf)
+borders = st_read("./datafiles/ne_50m_admin_0_countries/ne_50m_admin_0_countries.shp")
 ```
 
-This should now emphasize the variation in rentals at high humidity, with some days exhibiting very low changes.
+Next, we add the cluster assignments to the `gap_df_scale2` data frame:
+```{r}
+gap_df_scale2$kmeans <- as.factor(gap_kmeans$cluster)
+```
 
-### Shapely values
-
-We can go a little further in examining individual observations with Shapley values. These show, for an individual, the impact of each feature. So for an individual day's rentals, this would show the impact of that day's temperature, humidity, season, etc. This can be particularly useful in establishing which factors led to particularly positive (or negative) outcomes.
-
-Let's start by finding the day with the lowest and the day with the highest rentals:
+Now we need to merge the `gap_df_scale2` data frame with the world borders spatial object. To do this, we add a new column to the data frame containing the ISO3 standard country codes, using the **countrycode** package (you'll need to install this).
 
 ```{r}
-day_lo <- which.min(bike$count)
-day_hi <- which.max(bike$count)
-
-print(paste("Lowest :", day_lo, bike$count[day_lo]))
-print(paste("Highest:", day_hi, bike$count[day_hi]))
+library(countrycode)
+gap_df_scale2 <- gap_df_scale2 %>% 
+  mutate(ISO3 = countrycode(country, "country.name", "iso3c"))
 ```
 
-Now, let's look at the factors impacting the day with the lowest rentals:
+Finally, we use these ISO codes to merge the two datasets. We need to specify the column name for each dataset that contains the label to be used in merging, which we do with `by.x` and `by.y`. 
+```{r}
+cluster_sf = merge(borders, gap_df_scale2, by.x = "ADM0_A3", by.y = "ISO3")
+```
+
+Finally, we can plot out the clusters using the **tmap** package, which highlights the position of this poorer cluster 6 in Saharan and sub-Saharan Africa:
 
 ```{r}
-shapley <- Shapley$new(predictor, x.interest = X[day_lo, ],
-                       sample.size = 50)
-plot(shapley) +
-  ggtitle("Shapley values (lowest rentals)")
+library(tmap)
+tm_shape(cluster_sf) + 
+  tm_fill("kmeans", palette = "Set2") +
+  tm_legend(legend.position = c("left", "bottom"))
 ```
 
-The combination of high humidity, high wind and rain or snow appears to be the key limiting factors. Note that temperature, despite being overall the most important factor (see above) has relatively little effect on this day.
+# Hierarchical cluster analysis
 
-And now let's look at the value for the day with the highest rentals:
+We'll briefly demonstrate the use of hierarchical clustering here. This works a little differently in R, as it requires you to first calculate a dissimilarity matrix (the aggregate difference between each pair of observations), and then use this for clustering. 
+
+The R function `dist()` will calculate this, based on simple Euclidean dissimiarity between samples:
 
 ```{r}
-shapley <- Shapley$new(predictor, x.interest = X[day_hi, ],
-                       sample.size = 50)
-plot(shapley) +
-  ggtitle("Shapley values (highest rentals)")
+gap_d <- dist(gap_df_scale2[,3:8])
 ```
 
-For this day, the combination of season and warm temperatures appears to be the biggest drivers.
-
-### LIME plots
-
-As a last approach, we'll calculate a local model using Local Interpretable Model-agnostic Explanations or LIME plots. The idea behind this method is that the 'local' or small-scale relationships between features and the target can be approximated with simple, linear models. To put this in terms of this dataset, if we take a given day in June, the changes in rentals for small variations in (say) temperature should be linear. Based on this, the method simulates a small amount of artificial data around the observation (i.e. minor variations in temperature, humidity, etc), and then fits a simple model. This simple model is usually built in a way that allows it to select only the factors that are meaningful for that observation. Let's fit this now with a single day (day 100):
+We can now use this to carry out hierarchical clustering using the `hclust()` function:
 
 ```{r}
-lime.explain <- LocalModel$new(predictor, x.interest = X[100, ])
-lime.explain$results
-plot(lime.explain)
+gap_hclust <- hclust(gap_d)
 ```
 
-On this day, the warm weather increased rentals, and the high wind speeds decreased them slightly.
+And you can then plot the resulting dendrogram with:
+
+```{r}
+plot(gap_hclust)
+```
+
+To actually get a cluster assigment for each observation, we need to 'cut' the tree in a way that it will result in the desired number of groups, using the well-named `cutree()` function, To get 6 clusters:
+
+```{r}
+gap_cluster <- cutree(gap_hclust, 6)
+head(gap_cluster)
+```
+
+To see what this has done, you can overlay the clusters on the dendogram as follows:
+
+```{r}
+plot(gap_hclust)
+rect.hclust(gap_hclust, k = 6)
+```
+
+The clusters that you obtain from the `cutree()` function can be used in the same way that we used the $k$-means clusters. Here, we'll append them to the spatial object (`cluster_sf`) and map them out:
+
+```{r}
+gap_df_scale2$hclust <- as.factor(gap_cluster)
+cluster_sf = merge(borders, gap_df_scale2, by.x = "ADM0_A3", by.y = "ISO3")
+
+tm_shape(cluster_sf) + 
+  tm_fill("hclust", palette = "Set2") +
+  tm_legend(legend.position = c("left", "bottom"))
+```
+
+# Self-organizing maps
+
+We'll now repeat this analysis with a self-organizing map (SOM), but using the full dataset. For this we'll use the **kohonen** package, which allows the construction of unsupervised and supervised SOMs. 
+
+```{r}
+library(kohonen)
+```
+
+Building the SOM is relatively simple: first we construct the grid of nodes (30x20) using the `somgrid()` function. Note the `topo` argument that controls the neighborhood shape (rectangular or hexagonal):
+
+```{r}
+som_grid = somgrid(xdim = 30, ydim = 20, topo = "hexagonal")
+```
+
+You can plot the empty grid to see the layout with (`plot(som_grid)`). 
+
+Now we'll train the SOM. The function we use is `som()`, and we need to specify the data to be used as well as the SOM grid. The function requires the data to be as a matrix rather than an R data frame, so we first convert this, then pass it to the function:
+
+```{r}
+gap_mat = as.matrix(gap_df_scale[,3:8])
+gap_som = som(gap_mat, som_grid)
+```
+
+Once finished, we need to see if the algorithm has converged. We can do this by plotting the change in the loss function as a function of the iterations. As a reminder, the loss function here is the mean distance between the node weights and the observations assigned to that node:
+
+```{r}
+plot(gap_som, type = "changes")
+```
+
+We can see here that the loss function has decreased, but not stabilized suggesting that the algorithm has converged. We'll re-run it for a larger number of iterations by setting `rlen` to 1000 (this may take a couple of minutes to run):
+
+```{r}
+gap_som = som(gap_mat, som_grid, rlen = 1000)
+plot(gap_som, type = "changes")
+```
+
+This plot shows a series of step like drops in the loss function, finally stabilizing at approximately iteration 900-1000. 
+
+## Plots
+
+Next we'll go through some visualizations of the data. We've already see then loss function changes, so next we'll make a couple of plots to show how the SOM has trained. First a plot of distances between nodes, which can be useful to identify outliers:
+
+```{r}
+plot(gap_som, type = "dist")
+```
+
+Next, we plot the number of observations per cluster to look for empty nodes. 
+
+```{r}
+plot(gap_som, type = "counts")
+```
+
+THe map has a couple of empty nodes. Empty nodes can be common when using larger grid sizes, and can be taken to represent a part of the parameter space that is missing in the observations. 
+
+Next, we'll plot the codebook vectors. These are the weights associated with each feature, and can be used to interpret the organization of the SOM. For each node, there is a radial plot showing the value of each feature associated with it. Note that the type of plot can change here. If you have a large number of features, this will plot as a line plot rather than a radial plot.
+
+```{r}
+plot(gap_som, type = "code")
+```
+
+The map shows a clear gradient from richer regions (`income`, orange) on the top left to poorer on the right, and a gradient from smaller populations at the top to smaller at the bottom. Note that the life expectancy follows the gradient of GDP fairly well, and the poorer regions tend to have higher infant mortality and fertility rates. 
+
+It is also possible to plot out the individual feature weights as a heatmap to illustrate the gradient using `type = "property"`. The codebook vectors of weights are contained within the `gap_som` object. The syntax to extract them is a little complicated, and some examples are given below
+
+- Population
+
+```{r}
+plot(gap_som, type = "property", property = gap_som$codes[[1]][,"population"],
+     main = "Pop")
+```
+
+- Life expectancy
+
+```{r}
+plot(gap_som, type = "property", property = gap_som$codes[[1]][,"life_expectancy"],
+     main = "Life Exp.")
+```
+
+- Income (per capita GDP)
+
+```{r}
+plot(gap_som, type = "property", property = gap_som$codes[[1]][,"income"],
+     main = "Income")
+```
+
+- Per capita CO2 emissions
+
+```{r}
+plot(gap_som, type = "property", property = gap_som$codes[[1]][,"per_cap_co2"],
+     main = "Per capita CO2")
+```
+
+## Cluster analysis
+
+As a next step, we'll cluster the nodes of the map to try and identify homogenous regions to simplify the interpretation of the SOM. While $k$-means is often used here, we'll use a hierarchical algorithm (for reasons that will be clear shortly) to form 6 clusters. Again, we first calculate the dissimilarity matrix, but this time between the values (`codes`) of each of the SOM nodes. Then we use the `cutree()` and `hclust()` function to form the clusters
+
+```{r}
+dist_codes <- dist(gap_som$codes[[1]])
+som_cluster <- cutree(hclust(dist_codes), 6)
+```
+
+We can now show this on the SOM grid using the `plot()` function, setting `type` to `mapping` and using the cluster values in `som_cluster` to set the colors. The cluster boundaries can also be overlaid with `add.cluster.boundaries()`
+
+```{r}
+# Define a color palette
+mypal = brewer.pal(6, "Set2")
+plot(gap_som, type="mapping", bgcol = mypal[som_cluster], 
+     main = "Clusters", pch = '.') 
+add.cluster.boundaries(gap_som, som_cluster)
+```
+
+The main problem with this is that the clusters are not-contiguous on the SOM grid. This reflects the non-linear mapping that a SOM carries out (and may also suggest that 6 clusters is too high). We can force the clusters to be contiguous by including the distance between the nodes on the SOM grid as well as the dissimilarity between codebook values. We've already calulated this latter value above (as `codes_dist`), so let's get the distance between the nodes using the handy helper function `unit.distances()`:
+
+```{r}
+dist_grid <- unit.distances(som_grid)
+```
+
+We then multiply these two distance/dissimilarity matrices together:
+
+```{r}
+dist_adj <- as.matrix(dist_codes) * dist_grid
+```
+
+If we now repeat the clustering, the inclusion of the distances between nodes now forces these clusters to be contguous:
+
+```{r}
+clust_adj = hclust(as.dist(dist_adj), 'ward.D2')
+som_cluster_adj = cutree(clust_adj, 6)
+
+plot(gap_som, type="mapping", bgcol = mypal[som_cluster_adj], 
+     main = "Clusters", pch = '.') 
+add.cluster.boundaries(gap_som, som_cluster_adj)
+```
+
+Next, we obtain aggregate values for each cluster. While we can get these values from the `gap_som` object, we can also work back to get values from the original data (in `gap_df`). In the following code we:
+
+- Extract a vector with the node assignments for each country
+- Use this to get the cluster number for the node that the country is assigned to
+- Attach this to the original `gap2_df` dataframe as a factor (rather than an integer)
+
+```{r}
+nodeByCountry <- gap_som$unit.classif
+gap_df_scale$somclust <- as.factor(som_cluster_adj[nodeByCountry])
+```
+
+To get the values for each cluster on the original, non-transformed scale, we need to merge `gap_df_scale` which contains the cluster assignments with the original data (`gap_df`)
+
+```{r}
+gap_df_clus <- merge(gap_df, gap_df_scale, by = c("country", "year"))
+```
+
+Now we can use this list of clusters by country to aggregate the variables:
+
+```{r}
+cluster.vals <- aggregate(gap_df_clus[,3:8], 
+                         by = list(gap_df_scale$somclust), mean)
+```
+
+Which gives the following table:
+
+```{r echo=FALSE}
+knitr::kable(cluster.vals)
+```
+
+This shows the approximate characteristics for the clusters:
+
+1. High life expectancy and GDP, low mortality and fertility rates, medium population
+2. Low life expectancy and GDP, very high mortality and fertility rates, medium population
+3. Low life expectancy and GDP, high mortality and fertility rates, small population
+4. Medium life expectancy, low GDP, medium mortality and fertility rates, large population
+5. High life expectancy and GDP, lower mortality and fertility rates, large population
+6. High life expectancy and medium GDP, medium mortality and fertility rates, small population
+
+As we have data over multiple years, we can also use the results of the SOM analysis to track the change made by an individual country over time. To do this, we need to know which node a country was assigned to for each of it's time steps. To do this we 
+
+- Find all the observation/row numbers belonging to a country (e.g. here for the United States)
+- Find the node assigned to each of those observations
+- Find the node coordinates (on the grid) for each of those nodes
+
+```{r}
+country_id <- which(gap_df_scale$country == "United States")
+country_nodes <- gap_som$unit.classif[country_id]
+country_crds <- som_grid$pts[country_nodes, ]
+```
+
+Now we plot out the grid again, shaded with the cluster assignments. Then we use R's `line()` function to overlay the country's trajectory. In the last couple lines, we make up a vector of years to label the trajectory. As there will be a lot of these, we only keep the label for 20 year increments. Then we add these to the plot
+
+```{r}
+plot(gap_som, type="mapping", bgcol = mypal[som_cluster_adj], 
+     main = "Clusters", pch = '', keepMargins = TRUE) 
+#add.cluster.boundaries(gap_som, som_cluster_adj)
+lines(country_crds, lwd=2)
+
+years <- ifelse(gap_df_scale$year[country_id] %% 20 == 0, as.character(gap_df_scale$year[country_id]), "")
+text(jitter(country_crds), labels = years, cex = 0.75)
+```
+
+And finally, we can plot out the spatial distribution of these clusters for any given year in the dataset. First we need to assign the country codes to link to the shapefile:
+
+```{r}
+gap_df_scale <- gap_df_scale %>% 
+  mutate(ISO3 = countrycode(country, "country.name", "iso3c"))
+```
+
+Next we'll extract a single year and merge it to our spatial object (`cluster_sf`):
+
+```{r eval = TRUE}
+myyear <- 2000
+tmp.df <- gap_df_scale %>%
+  filter(year == myyear)
+cluster_sf = merge(borders, tmp.df, 
+                   by.x = "ADM0_A3", by.y = "ISO3",
+                   all.x = TRUE)
+```
+
+```{r echo=FALSE, eval=TRUE}
+load("cluster_sf.RData")
+```
+
+And finally, plot it:
+
+```{r}
+tm_shape(cluster_sf) +
+  tm_fill("somclust", palette = "Set2") +
+  tm_layout(main.title = paste("GAPMinder data",  myyear))
+```
+
 
 # Exercise
 
-## Exercise
+For the exercise, you will need to build use an unsupervised classification method with the California housing dataset using a self-organizing map. Your answer should use the following variables (you can use code from a previous example to create the average number of rooms per house, and the ratio of bedrooms to rooms):
 
-In a previous lab, we built a simple linear model of house prices using the data set (*Housing_Price_Data.csv*). For this exercise you will make a new model based on a random forest (or boosted regression tree if you;d prefer) and explore it using interpretable machine learning methods. You will need to do the following:
+- `housing_median_age` 
+- `population`
+- `median_income`
+- `median_house_value` 
+- `avg_rooms`
+- `bedroom_ratio`
 
-- Load and preprocess the data. Use the `price` variable as the target. Remember to log transform the area and price variables and one-hot encode the categorical variables (see lab 2 for code)
-- Split this dataset into training and testing and build a random forest or boosted regression tree
-- Plot the variable importance scores using the code in this lab (lab5)
-- Plot a partial dependency curve for the effect of area
-- GEOG6160 Students: plot ICE curves for the effect of area
-- GEOG6160 Students: calculate and plot Shapley values for two observations (e.g. the cheapest and most expensive house)
+Your answer should consist of the following:
 
-Use a Quarto document to record your answers and output. Assignments, to include both the Quarto document and (ideally) the compiled HTML file, should be submitted to Canvas by Feb 19th. Please use the following naming convention: `Lab04_lastname`.
+- Your R code
+- A plot showing that the loss function has stabilized
+- A plot of the counts per nodes
+- A plot of the codebook vectors
+- One or more heatmaps of the individual features on the SOM
+- A set of clusters constructed from the SOM nodes using the method in the lab (and a figure showing these on the SOM grid)
+- A table given the average values of each feature per cluster
 
-# Appendix 1: Bike rental dataset
+You do not need to provide a map of the SOM clusters, but if you do, the following code will be useful:
 
-Bike rental dataset from https://christophm.github.io/interpretable-ml-book/bike-data.html:
+- Run this before selecting the subset of features for use in the classification. This makes a copy of the district coordinates
+```{r eval=FALSE}
+housing.crds = housing %>%
+  select(longitude, latitude)
+```
 
--   `season`: The season, either spring, summer, fall or winter.
--   `year`: The year, either 2011 or 2012.
--   `mnth`: The month
--   `holiday`: Indicator whether the day was a holiday or not.
--   `weekday`: Day of week
--   `workingday`: Indicator whether the day was a working day or weekend.
--   `weathersit`: The weather situation on that day. One of:
-    -   clear, few clouds, partly cloudy, cloudy
-    -   mist + clouds, mist + broken clouds, mist + few clouds, mist, light snow, light rain + thunderstorm + scattered clouds, light rain + scattered clouds
-    -   heavy rain + ice pallets + thunderstorm + mist, snow + mist
--   `temp`: Temperature in degrees Celsius.
--   `hum`: Relative humidity in percent (0 to 100).
--   `windspeed`: Wind speed in km per hour.
--   `count`: Count of bicycles including both casual and registered users. The count is used as the target in the regression task.
--   `days_since_2011`: Number of days since the 01.01.2011 (the first day in the dataset). This feature was introduced to take account of the trend over time.
+- Run this after the cluster analysis to add the clusters and coordinates back to the `housing` data frame, and convert to a Spatial* object. This assumes that the SOM output is stored in `housing.som` and the cluster assignment in `som.cluster`:
+
+```{r eval=FALSE}
+housing$cluster = as.factor(som.cluster[housing.som$unit.classif])
+housing = cbind(housing, housing.crds)
+coordinates(housing) = ~longitude+latitude
+```
+
+
+Use a Quarto document to record your answers and output. Assignments, to include both the Quarto document and (ideally) the compiled HTML file, should be submitted to Canvas by Mar 12th. Please use the following naming convention: `Lab06_lastname`.
+
+# Appendix
+
+## Gap Minder Dataset
+
+GapMinder dataset on global inequality (1800 to 2018): *gapminder_1800_2018.csv*
+
+| Column header | Variable |
+| --- | --- |
+| country | Country name |
+| year | Year |
+| pop | Population |
+| child_mortality | Child mortality rate (1000 births) |
+| fertility | Birth rate |
+| per_cap_co2 | Per capita CO2 emissions |
+| income | Mean income ($) |
+| life_expectancy | Mean life expectancy |
+| population | Population size |
+
+[gapID]: https://www.gapminder.org
