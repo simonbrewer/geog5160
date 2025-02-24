@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.553">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Simon Brewer">
+<meta name="dcterms.date" content="2025-02-24">
+
+<title>GEOG 5160 6160 Lab 06</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body>
+
+<div id="quarto-search-results"></div>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a>
+  <ul class="collapse">
+  <li><a href="#objectives" id="toc-objectives" class="nav-link" data-scroll-target="#objectives">Objectives</a></li>
+  </ul></li>
+  <li><a href="#set-up" id="toc-set-up" class="nav-link" data-scroll-target="#set-up">Set up</a></li>
+  <li><a href="#k-means-cluster-analysis" id="toc-k-means-cluster-analysis" class="nav-link" data-scroll-target="#k-means-cluster-analysis"><span class="math inline">\(k\)</span>-means cluster analysis</a>
+  <ul class="collapse">
+  <li><a href="#maps" id="toc-maps" class="nav-link" data-scroll-target="#maps">Maps</a></li>
+  </ul></li>
+  <li><a href="#hierarchical-cluster-analysis" id="toc-hierarchical-cluster-analysis" class="nav-link" data-scroll-target="#hierarchical-cluster-analysis">Hierarchical cluster analysis</a></li>
+  <li><a href="#self-organizing-maps" id="toc-self-organizing-maps" class="nav-link" data-scroll-target="#self-organizing-maps">Self-organizing maps</a>
+  <ul class="collapse">
+  <li><a href="#plots" id="toc-plots" class="nav-link" data-scroll-target="#plots">Plots</a></li>
+  <li><a href="#cluster-analysis" id="toc-cluster-analysis" class="nav-link" data-scroll-target="#cluster-analysis">Cluster analysis</a></li>
+  </ul></li>
+  <li><a href="#exercise" id="toc-exercise" class="nav-link" data-scroll-target="#exercise">Exercise</a></li>
+  <li><a href="#appendix" id="toc-appendix" class="nav-link" data-scroll-target="#appendix">Appendix</a>
+  <ul class="collapse">
+  <li><a href="#gap-minder-dataset" id="toc-gap-minder-dataset" class="nav-link" data-scroll-target="#gap-minder-dataset">Gap Minder Dataset</a></li>
+  <li><a href="#atlantic-county-cancer-rates" id="toc-atlantic-county-cancer-rates" class="nav-link" data-scroll-target="#atlantic-county-cancer-rates">Atlantic county cancer rates</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">GEOG 5160 6160 Lab 06</h1>
+</div>
+
+
+<div class="quarto-title-meta-author">
+  <div class="quarto-title-meta-heading">Author</div>
+  <div class="quarto-title-meta-heading">Affiliation</div>
+  
+    <div class="quarto-title-meta-contents">
+    <p class="author">Simon Brewer <a href="mailto:simon.brewer@ess.utah.edu" class="quarto-title-author-email"><i class="bi bi-envelope"></i></a> </p>
+  </div>
+  <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            University of Utah
+          </p>
+      </div>
+  </div>
+
+<div class="quarto-title-meta">
+
+      
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">February 24, 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+<p>In previous labs, we’ve explore supervised machine learning, where we have a <em>target</em>: a variable (<code>y</code>) that we want to predict as a function of a set of features (<code>X</code>). In this lab, we’ll explore unsupervised learning, where there is no distinct target. These methods are generally used to explore complex data by reducing it in some way; either by reducing the number of variables or dimensions, or by grouping observations into clusters. Here, we’ll look at three clustering methods:</p>
+<ul>
+<li><span class="math inline">\(k\)</span>-means clustering</li>
+<li>Hierarchical clustering</li>
+<li>Self-organizing maps</li>
+</ul>
+<p>The data we will use is from the <a href="https://www.gapminder.org">Gap Minder project</a>. While you can download the individual variables from the web site, we will use a preprocessed set of the data covering the period 1801-2018, in the file <em>gapminder_1800_2018.csv</em>. Download this to your <code>datafiles</code> folder and make a new folder for today’s class called <code>lab06</code>. You will also need the shapefile of country borders: <code>ne_50m_admin_0_countries.shp</code> (you should have this from a previous lab).</p>
+<section id="objectives" class="level2">
+<h2 class="anchored" data-anchor-id="objectives">Objectives</h2>
+<ul>
+<li>Set up data to run different unsupervised classification methods</li>
+<li>Understand and work with the output</li>
+<li>Use self-organizing maps with geographical data</li>
+</ul>
+</section>
+</section>
+<section id="set-up" class="level1">
+<h1>Set up</h1>
+<p>Start RStudio and set the working directory to this directory (This can be changed by going to the [Session] menu and selecting [Set working directory] -&gt; [Choose directory…], then browsing to the folder).</p>
+<p>You will need the following packages for today’s lab, so make sure to install anything that is missing before proceeding.</p>
+<ul>
+<li><strong>tidyverse</strong></li>
+<li><strong>ggpubr</strong></li>
+<li><strong>RColorBrewer</strong></li>
+<li><strong>countrycode</strong></li>
+<li><strong>sf</strong></li>
+<li><strong>kohonen</strong></li>
+<li><strong>tmap</strong></li>
+</ul>
+<p>Once you have set everything up, we can start by reading in the data.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>gap_df <span class="ot">=</span> <span class="fu">read.csv</span>(<span class="st">"./datafiles/gapminder_1800_2018.csv"</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(gap_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      country year child_mortality fertility per_cap_co2 income life_expectancy
+1 Afghanistan 1800             469         7          NA    603            28.2
+2 Afghanistan 1801             469         7          NA    603            28.2
+3 Afghanistan 1802             469         7          NA    603            28.2
+4 Afghanistan 1803             469         7          NA    603            28.2
+5 Afghanistan 1804             469         7          NA    603            28.2
+6 Afghanistan 1805             469         7          NA    603            28.2
+  population
+1    3280000
+2    3280000
+3    3280000
+4    3280000
+5    3280000
+6    3280000</code></pre>
+</div>
+</div>
+<p>Now load the following directories to process and visualize the data:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.1.4     ✔ readr     2.1.5
+✔ forcats   1.0.0     ✔ stringr   1.5.1
+✔ ggplot2   3.5.1     ✔ tibble    3.2.1
+✔ lubridate 1.9.3     ✔ tidyr     1.3.1
+✔ purrr     1.0.2     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggpubr)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(RColorBrewer)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We can now make some plots to look at the data. First, histograms of the three variables in the data (child mortality, fertility, per capita CO2 emissions, GDP per capita, life expectancy and population size):</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(gap_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "country"         "year"            "child_mortality" "fertility"      
+[5] "per_cap_co2"     "income"          "life_expectancy" "population"     </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>h1 <span class="ot">&lt;-</span> gap_df <span class="sc">%&gt;%</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gghistogram</span>(<span class="at">x =</span> <span class="st">"child_mortality"</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>h2 <span class="ot">&lt;-</span> gap_df <span class="sc">%&gt;%</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gghistogram</span>(<span class="at">x =</span> <span class="st">"fertility"</span>)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>h3 <span class="ot">&lt;-</span> gap_df <span class="sc">%&gt;%</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gghistogram</span>(<span class="at">x =</span> <span class="st">"per_cap_co2"</span>)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>h4 <span class="ot">&lt;-</span> gap_df <span class="sc">%&gt;%</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gghistogram</span>(<span class="at">x =</span> <span class="st">"income"</span>)</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>h5 <span class="ot">&lt;-</span> gap_df <span class="sc">%&gt;%</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gghistogram</span>(<span class="at">x =</span> <span class="st">"life_expectancy"</span>)</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>h6 <span class="ot">&lt;-</span> gap_df <span class="sc">%&gt;%</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gghistogram</span>(<span class="at">x =</span> <span class="st">"population"</span>)</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="fu">ggarrange</span>(h1, h2, h3, h4, h5, h6)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab06_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The histograms clearly show skew in most of the variables, and we will need to transform the data before analyzing it. We’ll do this in two steps. First, we’ll log transform all variables to remove the skew, then use the <code>scale()</code> function, which in R scales data to <span class="math inline">\(z\)</span>-scores by subtracting the mean and dividing by the standard deviation. To simplify things, we do all this in a single step by nesting the <code>log()</code> function in the <code>scale()</code> function.</p>
+<p>Note that we remove rows with missing observations (we could potentially impute these, but that is a little more difficult for time series data). We also remove any row where the per capita CO2 emissions are zero, partly because this would cause problems when log-transforming and partly because this is clearly not true.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>gap_df_scale <span class="ot">&lt;-</span> gap_df <span class="sc">%&gt;%</span> </span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(per_cap_co2 <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">child_mortality =</span> <span class="fu">scale</span>(<span class="fu">log</span>(child_mortality)),</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">fertility =</span> <span class="fu">scale</span>(<span class="fu">log</span>(fertility)),</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">per_cap_co2 =</span> <span class="fu">scale</span>(<span class="fu">log</span>(per_cap_co2)),</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">income =</span> <span class="fu">scale</span>(<span class="fu">log</span>(income)),</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">life_expectancy =</span> <span class="fu">scale</span>(<span class="fu">log</span>(life_expectancy)),</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">population =</span> <span class="fu">scale</span>(<span class="fu">log</span>(population))</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The very last thing we’ll do is to extract a single year of data for the first part of the lab (just 2018):</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>gap_df_scale2 <span class="ot">&lt;-</span> gap_df_scale <span class="sc">%&gt;%</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">==</span> <span class="dv">2018</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="k-means-cluster-analysis" class="level1">
+<h1><span class="math inline">\(k\)</span>-means cluster analysis</h1>
+<p>We’ll next use these data with the <span class="math inline">\(k\)</span>-means cluster algorithm. The default function for this in R is <code>kmeans()</code>, and we need to pass the data we are going to use, and the number of requested clusters to this function. First let’s figure out which columns we need:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(gap_df_scale2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "country"         "year"            "child_mortality" "fertility"      
+[5] "per_cap_co2"     "income"          "life_expectancy" "population"     </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>gap_kmeans <span class="ot">=</span> <span class="fu">kmeans</span>(gap_df_scale2[,<span class="dv">3</span><span class="sc">:</span><span class="dv">8</span>], <span class="at">centers =</span> <span class="dv">6</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>There output of this algorithm provides information about the cluster solution. We can see the size of each cluster (the number of observations assigned to each cluster)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>gap_kmeans<span class="sc">$</span>size</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 42 43 26 16 35 22</code></pre>
+</div>
+</div>
+<p>And we can see the cluster assignments for each country:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>gap_kmeans<span class="sc">$</span>cluster</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  [1] 1 2 2 1 4 3 2 5 5 2 4 5 2 4 5 5 6 1 6 2 5 6 3 4 5 1 1 2 1 3 6 1 1 3 3 2 6
+ [38] 1 1 2 1 5 2 5 5 5 6 2 2 2 2 6 1 5 6 1 6 5 3 6 1 2 3 1 5 4 2 1 1 6 1 2 5 4
+ [75] 3 3 3 2 5 5 3 2 3 2 3 1 6 5 2 2 5 2 6 1 2 5 5 1 1 3 4 1 4 1 4 3 6 2 2 4 2
+[112] 1 2 6 2 5 5 2 1 1 2 4 5 5 1 6 2 1 2 2 2 3 5 5 3 3 1 6 6 3 1 5 4 1 5 5 5 6
+[149] 1 2 3 1 3 2 4 4 1 4 5 5 2 1 1 3 6 1 6 4 2 3 2 1 3 5 3 3 5 2 6 2 2 1 1 1</code></pre>
+</div>
+</div>
+<p>And finally the cluster <code>centers</code>. These are the prototypes; the average value of each variable for all the observations assigned to a given cluster (note these are the log-transformed and scaled data)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>gap_kmeans<span class="sc">$</span>centers</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  child_mortality  fertility per_cap_co2     income life_expectancy  population
+1      -0.2135397  0.2508325  -0.5619774 -0.6742557       0.5406377  0.65150700
+2      -1.2176250 -1.1331366   0.4401329  0.5665461       1.0229025  0.54896157
+3      -1.9473491 -1.6328683   0.9989426  1.5077763       1.1685297  1.51000287
+4      -1.7015927 -1.5924306   0.8550030  1.3815787       1.1089142 -1.50372248
+5      -2.3799327 -1.7212418   1.0982521  1.8836793       1.2555884 -0.02263112
+6      -0.7514008 -0.4333723   0.1496250  0.2282332       0.7655885 -1.15643953</code></pre>
+</div>
+</div>
+<p>Here, we can see that cluster 6, for example, has the lowest life expectancy and GDP, as well as high infant mortality and fertility rates.</p>
+<section id="maps" class="level2">
+<h2 class="anchored" data-anchor-id="maps">Maps</h2>
+<p>As these are spatial data, we can now plot the distribution of the clusters. First, we’ll load the world shapefile in the <code>ne_50m_admin_0_countries</code> folder (we used this in a previous lab:)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'sf' was built under R version 4.4.1</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Linking to GEOS 3.11.0, GDAL 3.5.3, PROJ 9.1.0; sf_use_s2() is TRUE</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>borders <span class="ot">=</span> <span class="fu">st_read</span>(<span class="st">"./datafiles/ne_50m_admin_0_countries/ne_50m_admin_0_countries.shp"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Reading layer `ne_50m_admin_0_countries' from data source 
+  `/Users/u0784726/Dropbox/Data/devtools/geog5160/datafiles/ne_50m_admin_0_countries/ne_50m_admin_0_countries.shp' 
+  using driver `ESRI Shapefile'
+Simple feature collection with 241 features and 94 fields
+Geometry type: MULTIPOLYGON
+Dimension:     XY
+Bounding box:  xmin: -180 ymin: -89.99893 xmax: 180 ymax: 83.59961
+Geodetic CRS:  WGS 84</code></pre>
+</div>
+</div>
+<p>Next, we add the cluster assignments to the <code>gap_df_scale2</code> data frame:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>gap_df_scale2<span class="sc">$</span>kmeans <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(gap_kmeans<span class="sc">$</span>cluster)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now we need to merge the <code>gap_df_scale2</code> data frame with the world borders spatial object. To do this, we add a new column to the data frame containing the ISO3 standard country codes, using the <strong>countrycode</strong> package (you’ll need to install this).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(countrycode)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>gap_df_scale2 <span class="ot">&lt;-</span> gap_df_scale2 <span class="sc">%&gt;%</span> </span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">ISO3 =</span> <span class="fu">countrycode</span>(country, <span class="st">"country.name"</span>, <span class="st">"iso3c"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Finally, we use these ISO codes to merge the two datasets. We need to specify the column name for each dataset that contains the label to be used in merging, which we do with <code>by.x</code> and <code>by.y</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>cluster_sf <span class="ot">=</span> <span class="fu">merge</span>(borders, gap_df_scale2, <span class="at">by.x =</span> <span class="st">"ADM0_A3"</span>, <span class="at">by.y =</span> <span class="st">"ISO3"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Finally, we can plot out the clusters using the <strong>tmap</strong> package, which highlights the position of this poorer cluster 6 in Saharan and sub-Saharan Africa:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tmap)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Breaking News: tmap 3.x is retiring. Please test v4, e.g. with
+remotes::install_github('r-tmap/tmap')</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(cluster_sf) <span class="sc">+</span> </span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_fill</span>(<span class="st">"kmeans"</span>, <span class="at">palette =</span> <span class="st">"Set2"</span>) <span class="sc">+</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_legend</span>(<span class="at">legend.position =</span> <span class="fu">c</span>(<span class="st">"left"</span>, <span class="st">"bottom"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab06_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="hierarchical-cluster-analysis" class="level1">
+<h1>Hierarchical cluster analysis</h1>
+<p>We’ll briefly demonstrate the use of hierarchical clustering here. This works a little differently in R, as it requires you to first calculate a dissimilarity matrix (the aggregate difference between each pair of observations), and then use this for clustering.</p>
+<p>The R function <code>dist()</code> will calculate this, based on simple Euclidean dissimiarity between samples:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>gap_d <span class="ot">&lt;-</span> <span class="fu">dist</span>(gap_df_scale2[,<span class="dv">3</span><span class="sc">:</span><span class="dv">8</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We can now use this to carry out hierarchical clustering using the <code>hclust()</code> function:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>gap_hclust <span class="ot">&lt;-</span> <span class="fu">hclust</span>(gap_d)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>And you can then plot the resulting dendrogram with:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(gap_hclust)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab06_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>To actually get a cluster assigment for each observation, we need to ‘cut’ the tree in a way that it will result in the desired number of groups, using the well-named <code>cutree()</code> function, To get 6 clusters:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>gap_cluster <span class="ot">&lt;-</span> <span class="fu">cutree</span>(gap_hclust, <span class="dv">6</span>)</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(gap_cluster)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1 2 3 4 5 3</code></pre>
+</div>
+</div>
+<p>To see what this has done, you can overlay the clusters on the dendogram as follows:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(gap_hclust)</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rect.hclust</span>(gap_hclust, <span class="at">k =</span> <span class="dv">6</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab06_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The clusters that you obtain from the <code>cutree()</code> function can be used in the same way that we used the <span class="math inline">\(k\)</span>-means clusters. Here, we’ll append them to the spatial object (<code>cluster_sf</code>) and map them out:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>gap_df_scale2<span class="sc">$</span>hclust <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(gap_cluster)</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>cluster_sf <span class="ot">=</span> <span class="fu">merge</span>(borders, gap_df_scale2, <span class="at">by.x =</span> <span class="st">"ADM0_A3"</span>, <span class="at">by.y =</span> <span class="st">"ISO3"</span>)</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(cluster_sf) <span class="sc">+</span> </span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_fill</span>(<span class="st">"hclust"</span>, <span class="at">palette =</span> <span class="st">"Set2"</span>) <span class="sc">+</span></span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_legend</span>(<span class="at">legend.position =</span> <span class="fu">c</span>(<span class="st">"left"</span>, <span class="st">"bottom"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab06_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="self-organizing-maps" class="level1">
+<h1>Self-organizing maps</h1>
+<p>We’ll now repeat this analysis with a self-organizing map (SOM), but using the full dataset. For this we’ll use the <strong>kohonen</strong> package, which allows the construction of unsupervised and supervised SOMs.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(kohonen)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'kohonen'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:purrr':
+
+    map</code></pre>
+</div>
+</div>
+<p>Building the SOM is relatively simple: first we construct the grid of nodes (30x20) using the <code>somgrid()</code> function. Note the <code>topo</code> argument that controls the neighborhood shape (rectangular or hexagonal):</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>som_grid <span class="ot">=</span> <span class="fu">somgrid</span>(<span class="at">xdim =</span> <span class="dv">30</span>, <span class="at">ydim =</span> <span class="dv">20</span>, <span class="at">topo =</span> <span class="st">"hexagonal"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>You can plot the empty grid to see the layout with (<code>plot(som_grid)</code>).</p>
+<p>Now we’ll train the SOM. The function we use is <code>som()</code>, and we need to specify the data to be used as well as the SOM grid. The function requires the data to be as a matrix rather than an R data frame, so we first convert this, then pass it to the function:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>gap_mat <span class="ot">=</span> <span class="fu">as.matrix</span>(gap_df_scale[,<span class="dv">3</span><span class="sc">:</span><span class="dv">8</span>])</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>gap_som <span class="ot">=</span> <span class="fu">som</span>(gap_mat, som_grid)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Once finished, we need to see if the algorithm has converged. We can do this by plotting the change in the loss function as a function of the iterations. As a reminder, the loss function here is the mean distance between the node weights and the observations assigned to that node:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(gap_som, <span class="at">type =</span> <span class="st">"changes"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab06_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>We can see here that the loss function has decreased, but not stabilized suggesting that the algorithm has converged. We’ll re-run it for a larger number of iterations by setting <code>rlen</code> to 1000 (this may take a couple of minutes to run):</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>gap_som <span class="ot">=</span> <span class="fu">som</span>(gap_mat, som_grid, <span class="at">rlen =</span> <span class="dv">1000</span>)</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(gap_som, <span class="at">type =</span> <span class="st">"changes"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab06_files/figure-html/unnamed-chunk-27-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>This plot shows a series of step like drops in the loss function, finally stabilizing at approximately iteration 900-1000.</p>
+<section id="plots" class="level2">
+<h2 class="anchored" data-anchor-id="plots">Plots</h2>
+<p>Next we’ll go through some visualizations of the data. We’ve already see then loss function changes, so next we’ll make a couple of plots to show how the SOM has trained. First a plot of distances between nodes, which can be useful to identify outliers:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(gap_som, <span class="at">type =</span> <span class="st">"dist"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab06_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Next, we plot the number of observations per cluster to look for empty nodes.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(gap_som, <span class="at">type =</span> <span class="st">"counts"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab06_files/figure-html/unnamed-chunk-29-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>THe map has a couple of empty nodes. Empty nodes can be common when using larger grid sizes, and can be taken to represent a part of the parameter space that is missing in the observations.</p>
+<p>Next, we’ll plot the codebook vectors. These are the weights associated with each feature, and can be used to interpret the organization of the SOM. For each node, there is a radial plot showing the value of each feature associated with it. Note that the type of plot can change here. If you have a large number of features, this will plot as a line plot rather than a radial plot.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(gap_som, <span class="at">type =</span> <span class="st">"code"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab06_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The map shows a clear gradient from richer regions (<code>income</code>, orange) on the top left to poorer on the right, and a gradient from smaller populations at the top to smaller at the bottom. Note that the life expectancy follows the gradient of GDP fairly well, and the poorer regions tend to have higher infant mortality and fertility rates.</p>
+<p>It is also possible to plot out the individual feature weights as a heatmap to illustrate the gradient using <code>type = "property"</code>. The codebook vectors of weights are contained within the <code>gap_som</code> object. The syntax to extract them is a little complicated, and some examples are given below</p>
+<ul>
+<li>Population</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(gap_som, <span class="at">type =</span> <span class="st">"property"</span>, <span class="at">property =</span> gap_som<span class="sc">$</span>codes[[<span class="dv">1</span>]][,<span class="st">"population"</span>],</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Pop"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab06_files/figure-html/unnamed-chunk-31-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>Life expectancy</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(gap_som, <span class="at">type =</span> <span class="st">"property"</span>, <span class="at">property =</span> gap_som<span class="sc">$</span>codes[[<span class="dv">1</span>]][,<span class="st">"life_expectancy"</span>],</span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Life Exp."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab06_files/figure-html/unnamed-chunk-32-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>Income (per capita GDP)</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(gap_som, <span class="at">type =</span> <span class="st">"property"</span>, <span class="at">property =</span> gap_som<span class="sc">$</span>codes[[<span class="dv">1</span>]][,<span class="st">"income"</span>],</span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Income"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab06_files/figure-html/unnamed-chunk-33-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>Per capita CO2 emissions</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(gap_som, <span class="at">type =</span> <span class="st">"property"</span>, <span class="at">property =</span> gap_som<span class="sc">$</span>codes[[<span class="dv">1</span>]][,<span class="st">"per_cap_co2"</span>],</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Per capita CO2"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab06_files/figure-html/unnamed-chunk-34-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="cluster-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="cluster-analysis">Cluster analysis</h2>
+<p>As a next step, we’ll cluster the nodes of the map to try and identify homogenous regions to simplify the interpretation of the SOM. While <span class="math inline">\(k\)</span>-means is often used here, we’ll use a hierarchical algorithm (for reasons that will be clear shortly) to form 6 clusters. Again, we first calculate the dissimilarity matrix, but this time between the values (<code>codes</code>) of each of the SOM nodes. Then we use the <code>cutree()</code> and <code>hclust()</code> function to form the clusters</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>dist_codes <span class="ot">&lt;-</span> <span class="fu">dist</span>(gap_som<span class="sc">$</span>codes[[<span class="dv">1</span>]])</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>som_cluster <span class="ot">&lt;-</span> <span class="fu">cutree</span>(<span class="fu">hclust</span>(dist_codes), <span class="dv">6</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We can now show this on the SOM grid using the <code>plot()</code> function, setting <code>type</code> to <code>mapping</code> and using the cluster values in <code>som_cluster</code> to set the colors. The cluster boundaries can also be overlaid with <code>add.cluster.boundaries()</code></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define a color palette</span></span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>mypal <span class="ot">=</span> <span class="fu">brewer.pal</span>(<span class="dv">6</span>, <span class="st">"Set2"</span>)</span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(gap_som, <span class="at">type=</span><span class="st">"mapping"</span>, <span class="at">bgcol =</span> mypal[som_cluster], </span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Clusters"</span>, <span class="at">pch =</span> <span class="st">'.'</span>) </span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a><span class="fu">add.cluster.boundaries</span>(gap_som, som_cluster)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab06_files/figure-html/unnamed-chunk-36-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The main problem with this is that the clusters are not-contiguous on the SOM grid. This reflects the non-linear mapping that a SOM carries out (and may also suggest that 6 clusters is too high). We can force the clusters to be contiguous by including the distance between the nodes on the SOM grid as well as the dissimilarity between codebook values. We’ve already calulated this latter value above (as <code>codes_dist</code>), so let’s get the distance between the nodes using the handy helper function <code>unit.distances()</code>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>dist_grid <span class="ot">&lt;-</span> <span class="fu">unit.distances</span>(som_grid)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We then multiply these two distance/dissimilarity matrices together:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>dist_adj <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(dist_codes) <span class="sc">*</span> dist_grid</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>If we now repeat the clustering, the inclusion of the distances between nodes now forces these clusters to be contguous:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>clust_adj <span class="ot">=</span> <span class="fu">hclust</span>(<span class="fu">as.dist</span>(dist_adj), <span class="st">'ward.D2'</span>)</span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>som_cluster_adj <span class="ot">=</span> <span class="fu">cutree</span>(clust_adj, <span class="dv">6</span>)</span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(gap_som, <span class="at">type=</span><span class="st">"mapping"</span>, <span class="at">bgcol =</span> mypal[som_cluster_adj], </span>
+<span id="cb56-5"><a href="#cb56-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Clusters"</span>, <span class="at">pch =</span> <span class="st">'.'</span>) </span>
+<span id="cb56-6"><a href="#cb56-6" aria-hidden="true" tabindex="-1"></a><span class="fu">add.cluster.boundaries</span>(gap_som, som_cluster_adj)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab06_files/figure-html/unnamed-chunk-39-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Next, we obtain aggregate values for each cluster. While we can get these values from the <code>gap_som</code> object, we can also work back to get values from the original data (in <code>gap_df</code>). In the following code we:</p>
+<ul>
+<li>Extract a vector with the node assignments for each country</li>
+<li>Use this to get the cluster number for the node that the country is assigned to</li>
+<li>Attach this to the original <code>gap2_df</code> dataframe as a factor (rather than an integer)</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>nodeByCountry <span class="ot">&lt;-</span> gap_som<span class="sc">$</span>unit.classif</span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>gap_df_scale<span class="sc">$</span>somclust <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(som_cluster_adj[nodeByCountry])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>To get the values for each cluster on the original, non-transformed scale, we need to merge <code>gap_df_scale</code> which contains the cluster assignments with the original data (<code>gap_df</code>)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>gap_df_clus <span class="ot">&lt;-</span> <span class="fu">merge</span>(gap_df, gap_df_scale, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"country"</span>, <span class="st">"year"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now we can use this list of clusters by country to aggregate the variables:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>cluster.vals <span class="ot">&lt;-</span> <span class="fu">aggregate</span>(gap_df_clus[,<span class="dv">3</span><span class="sc">:</span><span class="dv">8</span>], </span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>                         <span class="at">by =</span> <span class="fu">list</span>(gap_df_scale<span class="sc">$</span>somclust), mean)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Which gives the following table:</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<colgroup>
+<col style="width: 8%">
+<col style="width: 19%">
+<col style="width: 12%">
+<col style="width: 15%">
+<col style="width: 10%">
+<col style="width: 19%">
+<col style="width: 13%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Group.1</th>
+<th style="text-align: right;">child_mortality.x</th>
+<th style="text-align: right;">fertility.x</th>
+<th style="text-align: right;">per_cap_co2.x</th>
+<th style="text-align: right;">income.x</th>
+<th style="text-align: right;">life_expectancy.x</th>
+<th style="text-align: right;">population.x</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">118.96125</td>
+<td style="text-align: right;">5.826206</td>
+<td style="text-align: right;">0.5049441</td>
+<td style="text-align: right;">3145.728</td>
+<td style="text-align: right;">59.31463</td>
+<td style="text-align: right;">1298878</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2</td>
+<td style="text-align: right;">99.64548</td>
+<td style="text-align: right;">3.809533</td>
+<td style="text-align: right;">5.5510347</td>
+<td style="text-align: right;">11448.308</td>
+<td style="text-align: right;">61.74218</td>
+<td style="text-align: right;">9547215</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">3</td>
+<td style="text-align: right;">283.86847</td>
+<td style="text-align: right;">5.579415</td>
+<td style="text-align: right;">1.2744792</td>
+<td style="text-align: right;">3220.601</td>
+<td style="text-align: right;">41.54806</td>
+<td style="text-align: right;">13131777</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">4</td>
+<td style="text-align: right;">352.43571</td>
+<td style="text-align: right;">6.205379</td>
+<td style="text-align: right;">0.1424450</td>
+<td style="text-align: right;">1570.781</td>
+<td style="text-align: right;">32.51656</td>
+<td style="text-align: right;">5011473</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">5</td>
+<td style="text-align: right;">20.93516</td>
+<td style="text-align: right;">2.226624</td>
+<td style="text-align: right;">7.4168836</td>
+<td style="text-align: right;">20542.906</td>
+<td style="text-align: right;">73.64817</td>
+<td style="text-align: right;">31372872</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">6</td>
+<td style="text-align: right;">235.60596</td>
+<td style="text-align: right;">5.990510</td>
+<td style="text-align: right;">0.2415364</td>
+<td style="text-align: right;">1793.558</td>
+<td style="text-align: right;">47.66782</td>
+<td style="text-align: right;">63568415</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>This shows the approximate characteristics for the clusters:</p>
+<ol type="1">
+<li>High life expectancy and GDP, low mortality and fertility rates, medium population</li>
+<li>Low life expectancy and GDP, very high mortality and fertility rates, medium population</li>
+<li>Low life expectancy and GDP, high mortality and fertility rates, small population</li>
+<li>Medium life expectancy, low GDP, medium mortality and fertility rates, large population</li>
+<li>High life expectancy and GDP, lower mortality and fertility rates, large population</li>
+<li>High life expectancy and medium GDP, medium mortality and fertility rates, small population</li>
+</ol>
+<p>As we have data over multiple years, we can also use the results of the SOM analysis to track the change made by an individual country over time. To do this, we need to know which node a country was assigned to for each of it’s time steps. To do this we</p>
+<ul>
+<li>Find all the observation/row numbers belonging to a country (e.g.&nbsp;here for the United States)</li>
+<li>Find the node assigned to each of those observations</li>
+<li>Find the node coordinates (on the grid) for each of those nodes</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>country_id <span class="ot">&lt;-</span> <span class="fu">which</span>(gap_df_scale<span class="sc">$</span>country <span class="sc">==</span> <span class="st">"United States"</span>)</span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>country_nodes <span class="ot">&lt;-</span> gap_som<span class="sc">$</span>unit.classif[country_id]</span>
+<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a>country_crds <span class="ot">&lt;-</span> som_grid<span class="sc">$</span>pts[country_nodes, ]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now we plot out the grid again, shaded with the cluster assignments. Then we use R’s <code>line()</code> function to overlay the country’s trajectory. In the last couple lines, we make up a vector of years to label the trajectory. As there will be a lot of these, we only keep the label for 20 year increments. Then we add these to the plot</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(gap_som, <span class="at">type=</span><span class="st">"mapping"</span>, <span class="at">bgcol =</span> mypal[som_cluster_adj], </span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Clusters"</span>, <span class="at">pch =</span> <span class="st">''</span>, <span class="at">keepMargins =</span> <span class="cn">TRUE</span>) </span>
+<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a><span class="co">#add.cluster.boundaries(gap_som, som_cluster_adj)</span></span>
+<span id="cb61-4"><a href="#cb61-4" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(country_crds, <span class="at">lwd=</span><span class="dv">2</span>)</span>
+<span id="cb61-5"><a href="#cb61-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb61-6"><a href="#cb61-6" aria-hidden="true" tabindex="-1"></a>years <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(gap_df_scale<span class="sc">$</span>year[country_id] <span class="sc">%%</span> <span class="dv">20</span> <span class="sc">==</span> <span class="dv">0</span>, <span class="fu">as.character</span>(gap_df_scale<span class="sc">$</span>year[country_id]), <span class="st">""</span>)</span>
+<span id="cb61-7"><a href="#cb61-7" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="fu">jitter</span>(country_crds), <span class="at">labels =</span> years, <span class="at">cex =</span> <span class="fl">0.75</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab06_files/figure-html/unnamed-chunk-45-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>And finally, we can plot out the spatial distribution of these clusters for any given year in the dataset. First we need to assign the country codes to link to the shapefile:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>gap_df_scale <span class="ot">&lt;-</span> gap_df_scale <span class="sc">%&gt;%</span> </span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">ISO3 =</span> <span class="fu">countrycode</span>(country, <span class="st">"country.name"</span>, <span class="st">"iso3c"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Next we’ll extract a single year and merge it to our spatial object (<code>cluster_sf</code>):</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>myyear <span class="ot">&lt;-</span> <span class="dv">2000</span></span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a>tmp.df <span class="ot">&lt;-</span> gap_df_scale <span class="sc">%&gt;%</span></span>
+<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">==</span> myyear)</span>
+<span id="cb63-4"><a href="#cb63-4" aria-hidden="true" tabindex="-1"></a>cluster_sf <span class="ot">=</span> <span class="fu">merge</span>(borders, tmp.df, </span>
+<span id="cb63-5"><a href="#cb63-5" aria-hidden="true" tabindex="-1"></a>                   <span class="at">by.x =</span> <span class="st">"ADM0_A3"</span>, <span class="at">by.y =</span> <span class="st">"ISO3"</span>,</span>
+<span id="cb63-6"><a href="#cb63-6" aria-hidden="true" tabindex="-1"></a>                   <span class="at">all.x =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>And finally, plot it:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(cluster_sf) <span class="sc">+</span></span>
+<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_fill</span>(<span class="st">"somclust"</span>, <span class="at">palette =</span> <span class="st">"Set2"</span>) <span class="sc">+</span></span>
+<span id="cb64-3"><a href="#cb64-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_layout</span>(<span class="at">main.title =</span> <span class="fu">paste</span>(<span class="st">"GAPMinder data"</span>,  myyear))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab06_files/figure-html/unnamed-chunk-49-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="exercise" class="level1">
+<h1>Exercise</h1>
+<p>For the exercise, you will need to build use an unsupervised classification method with the Cancer dataset from the lab 4 (<em>data_atlantic_1998_2012.csv</em>). As a reminder, this file contains information on cancer rates from around 660 counties in the eastern part of the US. There is also a shapefile with the polygons for each county (<em>COUNTY_ATLANTIC.shp</em>).</p>
+<p>For the exercise, you will need to cluster these data and map out the resulting clusters. You will need to carry out the following steps:</p>
+<ul>
+<li>Read in the data and select the columns: <code>Cancer</code>, <code>Smoking</code>, <code>Poverty</code>, <code>PM25</code>, <code>SO2</code> and <code>NO2</code></li>
+<li>Scale the data using a <span class="math inline">\(z\)</span>-score transform</li>
+<li>Cluster the data using <em>either</em> <span class="math inline">\(k\)</span>-means <em>or</em> a self-organizing map</li>
+<li>Extract the cluster number for each county and add it to the shapefile</li>
+<li>Make a map of the clusters</li>
+<li></li>
+</ul>
+<p>Use a Quarto document to record your answers and output. Assignments, to include both the Quarto document and (ideally) the compiled HTML file, should be submitted to Canvas by Mar 12th. Please use the following naming convention: <code>Lab06_lastname</code>.</p>
+</section>
+<section id="appendix" class="level1">
+<h1>Appendix</h1>
+<section id="gap-minder-dataset" class="level2">
+<h2 class="anchored" data-anchor-id="gap-minder-dataset">Gap Minder Dataset</h2>
+<p>GapMinder dataset on global inequality (1800 to 2018): <em>gapminder_1800_2018.csv</em></p>
+<table class="table">
+<thead>
+<tr class="header">
+<th>Column header</th>
+<th>Variable</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>country</code></td>
+<td>Country name</td>
+</tr>
+<tr class="even">
+<td><code>year</code></td>
+<td>Year</td>
+</tr>
+<tr class="odd">
+<td><code>pop</code></td>
+<td>Population</td>
+</tr>
+<tr class="even">
+<td><code>child_mortality</code></td>
+<td>Child mortality rate (1000 births)</td>
+</tr>
+<tr class="odd">
+<td><code>fertility</code></td>
+<td>Birth rate</td>
+</tr>
+<tr class="even">
+<td><code>per_cap_co2</code></td>
+<td>Per capita CO2 emissions</td>
+</tr>
+<tr class="odd">
+<td><code>income</code></td>
+<td>Mean income ($)</td>
+</tr>
+<tr class="even">
+<td><code>life_expectancy</code></td>
+<td>Mean life expectancy</td>
+</tr>
+<tr class="odd">
+<td><code>population</code></td>
+<td>Population size</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="atlantic-county-cancer-rates" class="level2">
+<h2 class="anchored" data-anchor-id="atlantic-county-cancer-rates">Atlantic county cancer rates</h2>
+<p><em>data_atlantic_1998_2012.csv</em></p>
+<table class="table">
+<thead>
+<tr class="header">
+<th>Column header</th>
+<th>Variable</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>FIPS</code></td>
+<td>Country name</td>
+</tr>
+<tr class="even">
+<td><code>x</code></td>
+<td>Year</td>
+</tr>
+<tr class="odd">
+<td><code>y</code></td>
+<td>Population</td>
+</tr>
+<tr class="even">
+<td><code>Cancer</code></td>
+<td>Cancer mortality rate / 100,000</td>
+</tr>
+<tr class="odd">
+<td><code>Poverty</code></td>
+<td>Poverty rate (% below poverty level)</td>
+</tr>
+<tr class="even">
+<td><code>Smoking</code></td>
+<td>Smoking rate (%)</td>
+</tr>
+<tr class="odd">
+<td><code>PM25</code></td>
+<td>Annual mean PM2.5 concentration</td>
+</tr>
+<tr class="even">
+<td><code>NO2</code></td>
+<td>Annual mean NO2 concentration</td>
+</tr>
+<tr class="odd">
+<td><code>SO2</code></td>
+<td>Annual mean SO2 concentration</td>
+</tr>
+</tbody>
+</table>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
