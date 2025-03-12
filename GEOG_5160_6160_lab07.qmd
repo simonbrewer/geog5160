@@ -229,6 +229,260 @@ grad_of_y_wrt_x <- tape$gradient(y, x)
 grad_of_y_wrt_x
 ```
 
+# Putting it together: a linear classifier
+
+We'll now illustrate how all of this comes together with a really simple example. This is a dataset with two features (`x1` and `x2`) and a binary target (`class`):
+
+```{r}
+df = read.csv("./datafiles/slc.csv")
+head(df)
+```
+
+As tensorflow really wants values as an array, we'll create two of these, one for the features (`inputs`) and one for the targets:
+
+```{r}
+inputs <- cbind(df$x1, df$x2)
+
+targets <- array(ifelse(df$class == "neg", 0, 1), dim = c(nrow(df),1))
+```
+
+Let's plot these out to see the distribution:
+
+```{r}
+plot(x = inputs[, 1], y = inputs[, 2],
+    col = ifelse(targets[, 1] == 0, "purple", "green"))
+```
+
+From the plot, you should be able to already visualize where you would place a line to separate the two groups. We'll now create a linear classifier that can find this line as the following equation (if you look closely, you'll see that this is just a linear model with slopes (`W`) and intercept (`b`)). 
+
+$$
+\mbox{prediction} = W \times input + b
+$$
+
+
+
+
+This is trained to minimize the square of the difference between predictions and the targets. As you’ll see, it’s actually a much simpler example than the end-to-end example of a toy two-layer neural network you saw at the end of chapter 2. However, this time you should be able to understand everything about the code, line by line.
+
+Next, we'll initialize values for `W` and `b`, using random values and with zeros, respectively.
+
+```{r}
+input_dim <- 2
+output_dim <- 1
+W <- tf$Variable(initial_value =
+                   tf$random$uniform(shape(input_dim, output_dim)))
+print(W)
+b <- tf$Variable(initial_value = tf$zeros(shape(output_dim)))
+print(b)
+```
+
+
+As we have two inputs, `W` is just two scalar coefficients, `w1` and `w2`. `b` is a single scalar coefficient representing the intercept. So the full, expanded model is:
+
+$$
+\mbox{prediction} = [w_1,w_2] \times [x_1, x_2] + b = w_1 \times x_1 + w_2 \times x_2 + b
+$$
+
+
+Let's create a function that performs a forward pass by calculating the above equation (note this uses the `matmul` function to get the weighted output). Normally, this would use a sigmoid activation function as the outcome is binary, but to keep things simple, we won't transform the output. Note that we use a function to calculate this so that we can reuse this easily in the training loop below
+
+```{r}
+model <- function(inputs)
+ tf$matmul(inputs, W) + b
+```
+
+To illustrate what this does, let's just run this with the first row of inputs:
+
+```{r}
+input1 = as_tensor(array(inputs[1, ], c(1,2)), dtype = 'float32')
+model(input1)
+```
+
+Giving the predicted value for the first observation (which is a `0`). This is obviously with random weights, so there's really no expectation that it will be close to the actual value. Next, we need to calculate how close it is through a loss function. For this example, we'll use a simple mean squared error, and we'll create a function to calculate that:
+
+```{r}
+square_loss <- function(targets, predictions) { 
+  per_sample_losses <- tf$square(tf$subtract(targets, predictions))
+  tf$reduce_mean(per_sample_losses)
+}
+```
+
+Now let's put these together with the gradient tape function to calculate the update to the weights through backpropagation. In this function, it uses the `GradientTape` to store the results of the forward pass and loss calculation. Then the tape is used to get the gradients or derivatives of the weights relative to the loss. Finally, the update is calculated by multiplying the gradient by a learning rate. This is a value less than one, which limits the update at each step. 
+
+```{r}
+learning_rate <- 0.1
+training_step <- function(inputs, targets) {
+  with(tf$GradientTape() %as% tape, {
+    predictions <- model(inputs)
+    loss <- square_loss(predictions, targets)
+  })
+  grad_loss_wrt <- tape$gradient(loss, list(W = W, b = b))
+  W$assign_sub(grad_loss_wrt$W * learning_rate)
+  b$assign_sub(grad_loss_wrt$b * learning_rate)
+  loss
+}
+```
+
+After all that preparation, we're ready to train the model. We convert the inputs to a tensor, then run a loop 40 times, each time calling the `training_step` function to update the weights
+
+```{r}
+inputs <- as_tensor(inputs, dtype = "float32")
+ for (step in seq(40)) {
+   loss <- training_step(inputs, targets)
+   cat(sprintf("Loss at step %s: %.4f\n", step, loss))
+ }
+```
+
+Once trained, we can predict for each of the original observations and plot the predicted values. We'll use a simple threshold of 0.5 (i.e. predictions above 0.5 are classed as `1`, below 0.5 as `0`). We can also plot the classifier by using the trained values of `W` and `b` to get the slope and intercept:
+
+```{r}
+predictions <- model(inputs)
+inputs <- as.array(inputs)
+predictions <- as.array(predictions)
+
+plot(x = inputs[, 1], y = inputs[, 2],
+    col = ifelse(predictions[, 1] <= 0.5, "purple", "green"))
+
+slope <- -W[1, ] / W[2, ]
+intercept <- (0.5 - b) / W[2, ]
+abline(as.array(intercept), as.array(slope), col = "red")
+```
+
+# The **keras** API
+
+The examples above show how to work with the low-level **tensorflow** interface. In practice, you can skip a lot of the detail by using the **keras** API. In the code below, we'll build a multi-layer neural network 
+
+
+```{r}
+library(tidyverse)
+df = read.csv("./datafiles/credit_data.csv")
+head(df)
+```
+
+```{r}
+df = df |>
+  # mutate(Status = as.factor(Status)) |>
+  mutate(Status = ifelse(Status == 'bad', 1, 0)) |>
+  drop_na()
+```
+
+
+```{r}
+library(tidymodels)
+
+df_split = initial_split(df, prop = 0.8)
+
+df_train = training(df_split)
+df_test  = testing(df_split)
+```
+
+```{r}
+table(df_train$Status)
+table(df_test$Status)
+```
+
+
+```{r}
+rec = recipe(Status ~ ., df_train) |>
+  step_normalize(all_numeric_predictors()) |>
+  step_dummy(all_nominal_predictors())
+
+df_train = rec |>
+  prep() |>
+  bake(df_train)
+
+df_test = rec |>
+  prep() |>
+  bake(df_test)
+```
+
+
+```{r}
+feature_names = colnames(df_train) |> 
+  setdiff("Status")
+feature_names
+```
+
+
+
+
+
+```{r}
+train_features = as.matrix(df_train[,feature_names])
+train_targets <- as.matrix(df_train$Status)
+
+test_features = as.matrix(df_test[,feature_names])
+test_targets <- as.matrix(df_test$Status)
+
+```
+
+## Keras
+
+```{r}
+model <-
+  keras_model_sequential(input_shape = ncol(train_features)) |>
+  layer_dense(256, activation = "relu") |>
+  layer_dense(256, activation = "relu") |>
+  layer_dropout(0.3) |>
+  layer_dense(256, activation = "relu") |>
+  layer_dropout(0.3) |>
+  layer_dense(1, activation = "sigmoid")
+
+model
+```
+
+
+```{r}
+metrics <- list(
+  metric_precision(name = "accuracy")
+  # metric_precision(name = "precision"),
+  # metric_recall(name = "recall")
+)
+model |> compile(
+  optimizer = optimizer_adam(1e-4),
+  loss = "binary_crossentropy",
+  metrics = metrics
+)
+```
+
+
+
+```{r}
+model |> fit(
+  train_features, train_targets,
+  validation_data = list(test_features, test_targets),
+  batch_size = 256,
+  epochs = 30,
+  # callbacks = callbacks,
+  verbose = 2
+)
+```
+
+```{r}
+plot(model$history$epoch, model$history$history$loss, type = 'l')
+lines(model$history$epoch, model$history$history$val_loss, col = 2)
+```
+
+```{r}
+plot(model$history$epoch, model$history$history$accuracy, type = 'l')
+lines(model$history$epoch, model$history$history$val_accuracy, col = 2)
+```
+
+```{r}
+y_pred_test <- model |>
+  predict(test_features)
+
+y_pred_test <- ifelse(y_pred_test > 0.5, 1, 0)
+```
+
+```{r}
+table(test_targets, y_pred_test)
+```
+
+```{r}
+pred_correct <- df_test$Status == y_pred_test
+cat(sprintf("Validation accuracy: %.2f", mean(pred_correct)))
+```
 
 
 # Exercise
