@@ -1,0 +1,121 @@
+---
+title: "GEOG 5160 6160 Lab 07"
+author: 
+  - name: "Simon Brewer"
+    email: simon.brewer@ess.utah.edu
+    affiliations:
+      - name: University of Utah
+        address: 260 S Central Campus Drive
+        city: Salt Lake City
+        state: UT
+        postal-code: 84112
+date: last-modified
+format:
+  html:
+    toc: true
+editor: visual
+---
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+library(png)
+library(grid)
+set.seed(42)
+```
+
+# Introduction
+
+For the next few labs, we'll be looking at deep learning models. As these are computationally costly models, they are generally built using specialized software to make them as efficient as possible. The full software stack is a little complicated, but in short, it consists of:
+
+- The backend deep learning software. This includes **tensorflow**, **torch** and **jax**. 
+- The **keras** API. This is written in Python and tries to act as a unified interface to the different types of software
+- The R **keras** package. This uses the **reticulate** package to call **keras** functions from R
+
+If at this point, this seems excessively complicated, well, it is. But there is a reason for this, which is to allow a great amount of flexibility. If you want to develop very complex models, you can work directly with the deep learning package. If you need only to use standard functions, then you can use **keras**. And if you want to use R as the front-end to all of this, you can do that too.
+
+We'll mainly be using a combination of **keras** and **tensorflow** in this class, so the goals of this lab are to introduce these are get them running with a couple of simple examples. 
+
+## Objectives
+
+- Set up **keras** and **tensorflow** on your computer
+- Understand the basic operations in a neural network
+- Build a simple classification model using standard network layers
+- Train and evaluate this model
+
+# Installation
+
+Installing deep learning software can be quite complicated. The backend software is in continual and rapid development, so that the libraries change often. In addition, these often are set up to use any available GPU power rather than (or in addition to) CPU power, and this requires an extra step of installing drivers for this. Here, we'll try to use the simplest approach in R, which is to install the **keras** package, and then let it take care of the backend. So start by installing this package:
+
+```{r eval=FALSE}
+install.packages("keras")
+```
+
+If everything went ok, then load the library and run the following command to install the backend
+
+```{r eval=FALSE}
+library(keras)
+install_keras()
+```
+
+This should create a specific virtualk environment called `r-tensorflow`, and install some additional packages (this may take a few minutes). If you get any errors with this, please let me know.
+
+## Installing into a virtual environment
+
+You can also change the name of the virtual environment as follows (this allows you to install different backends or versions in different environments). Don't worry about this step if the first installation went well
+
+```{eval=FALSE}
+library(reticulate)
+virtualenv_create("r-keras", python=install_python())
+library(keras)
+install_keras(envname = "r-keras")
+use_virtualenv("r-keras")
+```
+
+
+# Exercise
+
+For the exercise, you will need to build use an unsupervised classification method with the Cancer dataset from the lab 4 (*data_atlantic_1998_2012.csv*). As a reminder, this file contains information on cancer rates from around 660 counties in the eastern part of the US. There is also a shapefile with the polygons for each county (*COUNTY_ATLANTIC.shp*).
+
+For the exercise, you will need to cluster these data and map out the resulting clusters. You will need to carry out the following steps:
+
+-   Read in the data and select the columns: `Cancer`, `Smoking`, `Poverty`, `PM25`, `SO2` and `NO2`
+-   Scale the data using a $z$-score transform
+-   Cluster the data using *either* $k$-means *or* a self-organizing map
+-   Extract the cluster number for each county and add it to the shapefile
+-   Make a map of the clusters
+-   
+
+Use a Quarto document to record your answers and output. Assignments, to include both the Quarto document and (ideally) the compiled HTML file, should be submitted to Canvas by Mar 17th. Please use the following naming convention: `Lab06_lastname`.
+
+# Appendix
+
+## Gap Minder Dataset
+
+GapMinder dataset on global inequality (1800 to 2018): *gapminder_1800_2018.csv*
+
+| Column header     | Variable                           |
+|-------------------|------------------------------------|
+| `country`         | Country name                       |
+| `year`            | Year                               |
+| `pop`             | Population                         |
+| `child_mortality` | Child mortality rate (1000 births) |
+| `fertility`       | Birth rate                         |
+| `per_cap_co2`     | Per capita CO2 emissions           |
+| `income`          | Mean income (\$)                   |
+| `life_expectancy` | Mean life expectancy               |
+| `population`      | Population size                    |
+
+## Atlantic county cancer rates
+
+*data_atlantic_1998_2012.csv*
+
+| Column header | Variable                             |
+|---------------|--------------------------------------|
+| `FIPS`        | Country name                         |
+| `x`           | Year                                 |
+| `y`           | Population                           |
+| `Cancer`      | Cancer mortality rate / 100,000      |
+| `Poverty`     | Poverty rate (% below poverty level) |
+| `Smoking`     | Smoking rate (%)                     |
+| `PM25`        | Annual mean PM2.5 concentration      |
+| `NO2`         | Annual mean NO2 concentration        |
+| `SO2`         | Annual mean SO2 concentration        |
