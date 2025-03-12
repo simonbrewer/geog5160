@@ -26,20 +26,20 @@ set.seed(42)
 
 For the next few labs, we'll be looking at deep learning models. As these are computationally costly models, they are generally built using specialized software to make them as efficient as possible. The full software stack is a little complicated, but in short, it consists of:
 
-- The backend deep learning software. This includes **tensorflow**, **torch** and **jax**. 
-- The **keras** API. This is written in Python and tries to act as a unified interface to the different types of software
-- The R **keras** package. This uses the **reticulate** package to call **keras** functions from R
+-   The backend deep learning software. This includes **tensorflow**, **torch** and **jax**.
+-   The **keras** API. This is written in Python and tries to act as a unified interface to the different types of software
+-   The R **keras** package. This uses the **reticulate** package to call **keras** functions from R
 
 If at this point, this seems excessively complicated, well, it is. But there is a reason for this, which is to allow a great amount of flexibility. If you want to develop very complex models, you can work directly with the deep learning package. If you need only to use standard functions, then you can use **keras**. And if you want to use R as the front-end to all of this, you can do that too.
 
-We'll mainly be using a combination of **keras** and **tensorflow** in this class, so the goals of this lab are to introduce these are get them running with a couple of simple examples. 
+We'll mainly be using a combination of **keras** and **tensorflow** in this class, so the goals of this lab are to introduce these are get them running with a couple of simple examples.
 
 ## Objectives
 
-- Set up **keras** and **tensorflow** on your computer
-- Understand the basic operations in a neural network
-- Build a simple classification model using standard network layers
-- Train and evaluate this model
+-   Set up **keras** and **tensorflow** on your computer
+-   Understand the basic operations in a neural network
+-   Build a simple classification model using standard network layers
+-   Train and evaluate this model
 
 # Installation
 
@@ -56,19 +56,179 @@ library(keras)
 install_keras()
 ```
 
-This should create a specific virtualk environment called `r-tensorflow`, and install some additional packages (this may take a few minutes). If you get any errors with this, please let me know.
+This should create a specific virtual environment called `r-tensorflow`, and install some additional packages (this may take a few minutes). If you get any errors with this, please let me know.
 
 ## Installing into a virtual environment
 
 You can also change the name of the virtual environment as follows (this allows you to install different backends or versions in different environments). Don't worry about this step if the first installation went well
 
-```{eval=FALSE}
+``` {eval="FALSE"}
 library(reticulate)
 virtualenv_create("r-keras", python=install_python())
 library(keras)
 install_keras(envname = "r-keras")
 use_virtualenv("r-keras")
 ```
+
+# **Tensorflow**
+
+## Tensors
+
+Let's start by looking at the building blocks of these networks, *tensors*. This is the standard data object, and describes an array of numbers with a certain number of dimensions. If that sounds a lot like matrices and arrays, it is because this is just a highly efficient way of storing these. Start by loading the libraries:
+
+```{r}
+library(keras)
+library(tensorflow)
+```
+
+Now we can make a simple 2D tensor with 2 rows and 3 columns as follows. This uses R's `array` function to create the data, then converts it to a tensor:
+
+```{r}
+r_array <- array(1:6, c(2, 3))
+tf_tensor_2D <- as_tensor(r_array)
+tf_tensor_2D
+```
+
+And here's a 1D tensor
+
+```{r}
+r_array <- array(1:4, c(4))
+tf_tensor_1D <- as_tensor(r_array)
+tf_tensor_1D
+```
+
+And a 3D tensor
+
+```{r}
+r_array <- array(1:12, c(2,3,2))
+tf_tensor_3D <- as_tensor(r_array)
+tf_tensor_3D
+```
+
+You can use a lot of the basic R functions with these. For example, to see the size of the tensor
+
+```{r}
+dim(tf_tensor_2D)
+```
+
+or
+
+```{r}
+tf_tensor_2D$ndim
+```
+
+You can also add two tensors (as long as they have the same shape)
+
+```{r}
+tf_tensor_2D + tf_tensor_2D
+```
+
+There are also functions to create tensors with specific values
+
+```{r}
+## Tensor of 1s
+tf$ones(shape(1, 3))
+## Tensor of 0s
+tf$zeros(shape(1, 3))
+## Tensor of random numbers (normally distributed)
+tf$random$normal(shape(1, 3), mean = 0, stddev = 1)
+## Tensor of random numbers (uniformly distributed)
+tf$random$uniform(shape(1, 3))
+```
+**tensorflow** also defines a `variable` data type:
+
+```{r}
+W <- tf$Variable(array(0, dim = c(2,2)))
+W
+```
+
+While this will look a lot like a tensor, this is used to store values that change during training including model weights and parameters
+
+## Basic operations
+
+**tensorflow** comes with a lot of basic math functions. Let's start by creating a 2D random tensor:
+
+```{r}
+tensor_rnd = tf$random$normal(shape(2, 3), mean = 10, stddev = 1)
+```
+
+Then we can calcualte the square or square root:
+
+```{r}
+tf$square(tensor_rnd)
+```
+
+```{r}
+tf$sqrt(tensor_rnd)
+```
+
+There are also specific functions that are key to train a neural netwok. You might recall from the lecture that there are three main calculate steps. 
+
+1) In the forward pass, the output of every neuron in the network is calculated as the weighted sum of the inputs, plus a bias term $y = W \cdot x + b$. The first part of this equation is the dot product of two matrices, the array of weights ($W$) and the input values ($x$). In tensorflow, this calculated using the `matmul` function.
+
+For example, here we create tensors of weights and random input values and multiply them together:
+
+```{r}
+W <- tf$Variable(array(runif(4), c(2,2)))
+print(W)
+
+x <- as_tensor(array(rnorm(4), c(2, 2)))
+print(x)
+
+tf$matmul(x, W)
+```
+
+If we also create a *bias* (a constant additive term), we can create the basic weighted sum
+
+```{r}
+b <- tf$Variable(array(1, dim = c(2)))
+print(b)
+
+tf$matmul(x, W) + b
+```
+
+2. Activation function
+
+The next step in the forward pass is to send the output of node (above) through an activation function. There are several of these, and the code below simply illustrates how they convert a vector of randomly generated values (`x`)
+
+- Linear activation
+
+```{r}
+x <- as_tensor(array(rnorm(100), c(100, 1)))
+x_act <- activation_linear(x)
+plot(x, x_act)
+```
+
+- Sigmoid activation. Note that this requires a second column of zeros added to it
+
+```{r}
+xs <- k_concatenate(list(x, 
+                         as_tensor(rep(0, length(x)), shape = c(length(x),1))))
+x_act <- activation_sigmoid(xs)
+plot(x[,1], x_act[,1])
+
+```
+
+- ReLu activation. This is a widely used activation function in deep learning, which sets all output below zero to zero, and uses a linear transform for the values above 0
+
+```{r}
+x_act <- activation_relu(x)
+plot(x, x_act)
+```
+
+3. Backpropagation
+
+Following the forward pass, neural networks are trained using backpropagation. In this step, a gradient is calculated for each weight relatively to the loss or error. This gradient tells the network how much to update each weight (steep gradients mean that the error is large and a larger update is needed), as well as the direction of change (positive or negative). This becomes very complicated in larger networks, where this has to be (back)propagated through multiple layers and across mulitple nodes. Tensorflow uses the concept of a gradient *tape* to help in this. This records all the necessary steps to estimate these gradients by tracking all the connections in the network. Once set up, it can then estimate the gradient of any output in the network relative to any variable or set of variables. To illustrate this, the following code uses a simple model of $y = 2 \times x + 3$. This is used to create a `GradientTape` object, and then we can estimate the gradient. As this is just a simple linear model, the gradient is, of course, the slope of 2:
+
+```{r}
+x <- tf$Variable(0)
+with(tf$GradientTape() %as% tape, {
+  y <- 2 * x + 3
+})
+grad_of_y_wrt_x <- tape$gradient(y, x)
+grad_of_y_wrt_x
+```
+
 
 
 # Exercise
