@@ -350,7 +350,20 @@ abline(as.array(intercept), as.array(slope), col = "red")
 
 # The **keras** API
 
-The examples above show how to work with the low-level **tensorflow** interface. In practice, you can skip a lot of the detail by using the **keras** API. In the code below, we'll build a multi-layer neural network 
+The examples above show how to work with the low-level **tensorflow** interface. In practice, you can skip a lot of the detail by using the **keras** API. In the code below, we'll build a multi-layer neural network to perform a classification exercise. 
+
+## Keras workflow
+
+Building a deep learning model through Keras requires a series of steps:
+
+1. Create training data as tensors. This should include the input features and the target as separate tensors. For the simple models we are looking at in this lab, this is fairly straightforward, but for the more complex models, careful attention is required to the size and shape of these tensors.
+2. Create the network architecture. This consists of the set of layers that link the inputs to the target(s)
+3. Define the loss function, the optimizer and the performance metrics to be used to test the progress of the training
+4. Train the model using the training data, with part of the training data left out as validation data
+
+## Dataset
+
+The data are from the file *credit_data.csv*, and represent a number of bank clients who have been tagged as having good or bad credit. The goal is to use the other variables in the file to predict this. Let's start by reading in the data. 
 
 
 ```{r}
@@ -360,12 +373,22 @@ head(df)
 ```
 
 ```{r}
+library(skimr)
+skim(df)
+```
+
+There are about 4400 observations in the set, and a number of these have missing values. We'll use the **tidyverse** `drop_na` function to remove all rows with missing values, and also convert the `Status` column to a binary variable. This is an important step - deep learning models need all features and targets to be numerical. 
+
+
+```{r}
 df = df |>
   # mutate(Status = as.factor(Status)) |>
   mutate(Status = ifelse(Status == 'bad', 1, 0)) |>
   drop_na()
 ```
 
+
+Next, we'll split the data into the usual set of training and testing. 
 
 ```{r}
 library(tidymodels)
@@ -380,6 +403,8 @@ df_test  = testing(df_split)
 table(df_train$Status)
 table(df_test$Status)
 ```
+
+Now, we'll set up a recipe to transform the data. As noted above, all the inputs need to be numeric, so we'll need to one hot encode or dummy transform all the categorical variables with `step_dummy`. We'll also normalize all variables to the same range (this subtracts the mean and divides by the standard deviation). Neural networks are *very* sensitive to the range of values, so it is standard practice to transform data to $z$-scores (as here) or to a 0-1 range. 
 
 
 ```{r}
@@ -396,6 +421,7 @@ df_test = rec |>
   bake(df_test)
 ```
 
+We'll get a list of all the transformed features for later selection:
 
 ```{r}
 feature_names = colnames(df_train) |> 
@@ -403,8 +429,7 @@ feature_names = colnames(df_train) |>
 feature_names
 ```
 
-
-
+As a final processing step, we'll convert all the datasets to R's matrix (or array) format. **keras** assumes that all data are in this format, which cuts down on internal processing when the model trains:
 
 
 ```{r}
@@ -416,7 +441,27 @@ test_targets <- as.matrix(df_test$Status)
 
 ```
 
-## Keras
+## Model architecture
+
+### Defining the network architecture
+
+Now we'll turn to designing the model. The first step is to create the architecture. **keras** has two methods to create the network. The simplest is to use the `keras_model_sequential()` function. This takes as input the definition of the hidden layers, as well as any parameters that are used to modify these during training. 
+
+For example, to create a simple, two layer model with a single output, one hidden layer with 10 nodes, you would run the following command. Note that the first function takes the argument `input_shape` which describes the expected shape of the tensor holding the features (here 20 input features), and that we specify a ReLU activation function for the output. 
+
+The basic layer used here is a *dense* layer. This is one where every node connects to each incoming input and to each output. In this case, each of the twenty input features would connect to the 10 nodes in the hidden layer, and each of those will connect to the single output node. Each of these connections will have a weight to it, as well as a bias added to each node. Overall this gives us $20 \times 10 + 10 = 210$ from the input to the hidden layer, and $10 \times 1 + 1 = 11$, giving 221 parameters overall. 
+
+```{r eval=TRUE}
+model <- keras_model_sequential(input_shape = c(20)) |>
+  layer_dense(units = 10, activation = "relu") |>
+  layer_dense(units = 1, activation = "relu")
+```
+
+The other method to define the architecture uses the Keras API. This is a much more flexible approach based on graph theory and can be used to create networks that are much more complex. 
+
+For our model, we'll create something a little more complex. This will have three hidden layers, each with 256 nodes. The final layer will give the prediction. As we only need to predict one thing (the credit risk), we only need one node. We'll use ReLu activation functions throughout, except for the final layer where we use a sigmoid activation function to constrain the output to the range [0-1]. 
+
+We'll add a couple of dropout layers as well. These are layers where a proportion of the weights are set to zero, effectively removing them from any prediction. This has the effect of penalizing the model, making it slower to train, but reducing the risk of overfitting.
 
 ```{r}
 model <-
@@ -428,8 +473,10 @@ model <-
   layer_dropout(0.3) |>
   layer_dense(1, activation = "sigmoid")
 
-model
+summary(model)
 ```
+
+The `summary` function gives an overview of the model architecture. You'll see that it has automatically named each layer (e.g. `dense_1`) as well as the overall model (you can add names if useful). Note that the increase in the number of layers and nodes has had a large effect in the total number of parameters to be estimated, now at around 137,000 parameters.
 
 
 ```{r}
