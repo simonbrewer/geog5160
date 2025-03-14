@@ -1,0 +1,1803 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.553">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Simon Brewer">
+<meta name="dcterms.date" content="2025-03-13">
+
+<title>GEOG 5160 6160 Lab 07</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body>
+
+<div id="quarto-search-results"></div>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a>
+  <ul class="collapse">
+  <li><a href="#objectives" id="toc-objectives" class="nav-link" data-scroll-target="#objectives">Objectives</a></li>
+  </ul></li>
+  <li><a href="#installation" id="toc-installation" class="nav-link" data-scroll-target="#installation">Installation</a>
+  <ul class="collapse">
+  <li><a href="#installing-into-a-virtual-environment" id="toc-installing-into-a-virtual-environment" class="nav-link" data-scroll-target="#installing-into-a-virtual-environment">Installing into a virtual environment</a></li>
+  </ul></li>
+  <li><a href="#tensorflow" id="toc-tensorflow" class="nav-link" data-scroll-target="#tensorflow"><strong>Tensorflow</strong></a>
+  <ul class="collapse">
+  <li><a href="#tensors" id="toc-tensors" class="nav-link" data-scroll-target="#tensors">Tensors</a></li>
+  <li><a href="#basic-operations" id="toc-basic-operations" class="nav-link" data-scroll-target="#basic-operations">Basic operations</a></li>
+  </ul></li>
+  <li><a href="#putting-it-together-a-linear-classifier" id="toc-putting-it-together-a-linear-classifier" class="nav-link" data-scroll-target="#putting-it-together-a-linear-classifier">Putting it together: a linear classifier</a></li>
+  <li><a href="#the-keras-api" id="toc-the-keras-api" class="nav-link" data-scroll-target="#the-keras-api">The <strong>keras</strong> API</a>
+  <ul class="collapse">
+  <li><a href="#keras-workflow" id="toc-keras-workflow" class="nav-link" data-scroll-target="#keras-workflow">Keras workflow</a></li>
+  <li><a href="#dataset" id="toc-dataset" class="nav-link" data-scroll-target="#dataset">Dataset</a></li>
+  <li><a href="#model-architecture" id="toc-model-architecture" class="nav-link" data-scroll-target="#model-architecture">Model architecture</a>
+  <ul class="collapse">
+  <li><a href="#defining-the-network-architecture" id="toc-defining-the-network-architecture" class="nav-link" data-scroll-target="#defining-the-network-architecture">Defining the network architecture</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#exercise" id="toc-exercise" class="nav-link" data-scroll-target="#exercise">Exercise</a></li>
+  <li><a href="#appendix" id="toc-appendix" class="nav-link" data-scroll-target="#appendix">Appendix</a>
+  <ul class="collapse">
+  <li><a href="#credit-risk-data-set" id="toc-credit-risk-data-set" class="nav-link" data-scroll-target="#credit-risk-data-set">Credit risk data set</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">GEOG 5160 6160 Lab 07</h1>
+</div>
+
+
+<div class="quarto-title-meta-author">
+  <div class="quarto-title-meta-heading">Author</div>
+  <div class="quarto-title-meta-heading">Affiliation</div>
+  
+    <div class="quarto-title-meta-contents">
+    <p class="author">Simon Brewer <a href="mailto:simon.brewer@ess.utah.edu" class="quarto-title-author-email"><i class="bi bi-envelope"></i></a> </p>
+  </div>
+  <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            University of Utah
+          </p>
+      </div>
+  </div>
+
+<div class="quarto-title-meta">
+
+      
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">March 13, 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+<p>For the next few labs, we’ll be looking at deep learning models. As these are computationally costly models, they are generally built using specialized software to make them as efficient as possible. The full software stack is a little complicated, but in short, it consists of:</p>
+<ul>
+<li>The backend deep learning software. This includes <strong>tensorflow</strong>, <strong>torch</strong> and <strong>jax</strong>.</li>
+<li>The <strong>keras</strong> API. This is written in Python and tries to act as a unified interface to the different types of software</li>
+<li>The R <strong>keras</strong> package. This uses the <strong>reticulate</strong> package to call <strong>keras</strong> functions from R</li>
+</ul>
+<p>If at this point, this seems excessively complicated, well, it is. But there is a reason for this, which is to allow a great amount of flexibility. If you want to develop very complex models, you can work directly with the deep learning package. If you need only to use standard functions, then you can use <strong>keras</strong>. And if you want to use R as the front-end to all of this, you can do that too.</p>
+<p>We’ll mainly be using a combination of <strong>keras</strong> and <strong>tensorflow</strong> in this class, so the goals of this lab are to introduce these are get them running with a couple of simple examples.</p>
+<section id="objectives" class="level2">
+<h2 class="anchored" data-anchor-id="objectives">Objectives</h2>
+<ul>
+<li>Set up <strong>keras</strong> and <strong>tensorflow</strong> on your computer</li>
+<li>Understand the basic operations in a neural network</li>
+<li>Build a simple classification model using standard network layers</li>
+<li>Train and evaluate this model</li>
+</ul>
+</section>
+</section>
+<section id="installation" class="level1">
+<h1>Installation</h1>
+<p>Installing deep learning software can be quite complicated. The backend software is in continual and rapid development, so that the libraries change often. In addition, these often are set up to use any available GPU power rather than (or in addition to) CPU power, and this requires an extra step of installing drivers for this. Here, we’ll try to use the simplest approach in R, which is to install the <strong>keras</strong> package, and then let it take care of the backend. So start by installing this package:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"keras"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>If everything went ok, then load the library and run the following command to install the backend</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(keras)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">install_keras</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>This should create a specific virtual environment called <code>r-tensorflow</code>, and install some additional packages (this may take a few minutes). If you get any errors with this, please let me know.</p>
+<section id="installing-into-a-virtual-environment" class="level2">
+<h2 class="anchored" data-anchor-id="installing-into-a-virtual-environment">Installing into a virtual environment</h2>
+<p>You can also change the name of the virtual environment as follows (this allows you to install different backends or versions in different environments). Don’t worry about this step if the first installation went well</p>
+<pre data-eval="FALSE"><code>library(reticulate)
+virtualenv_create("r-keras", python=install_python())
+library(keras)
+install_keras(envname = "r-keras")
+use_virtualenv("r-keras")</code></pre>
+</section>
+</section>
+<section id="tensorflow" class="level1">
+<h1><strong>Tensorflow</strong></h1>
+<section id="tensors" class="level2">
+<h2 class="anchored" data-anchor-id="tensors">Tensors</h2>
+<p>Let’s start by looking at the building blocks of these networks, <em>tensors</em>. This is the standard data object, and describes an array of numbers with a certain number of dimensions. If that sounds a lot like matrices and arrays, it is because this is just a highly efficient way of storing these. Start by loading the libraries:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(keras)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tensorflow)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now we can make a simple 2D tensor with 2 rows and 3 columns as follows. This uses R’s <code>array</code> function to create the data, then converts it to a tensor:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>r_array <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>, <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">3</span>))</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>tf_tensor_2D <span class="ot">&lt;-</span> <span class="fu">as_tensor</span>(r_array)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>tf_tensor_2D</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>tf.Tensor(
+[[1 3 5]
+ [2 4 6]], shape=(2, 3), dtype=int32)</code></pre>
+</div>
+</div>
+<p>And here’s a 1D tensor</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>r_array <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="fu">c</span>(<span class="dv">4</span>))</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>tf_tensor_1D <span class="ot">&lt;-</span> <span class="fu">as_tensor</span>(r_array)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>tf_tensor_1D</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>tf.Tensor([1 2 3 4], shape=(4), dtype=int32)</code></pre>
+</div>
+</div>
+<p>And a 3D tensor</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>r_array <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>, <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">2</span>))</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>tf_tensor_3D <span class="ot">&lt;-</span> <span class="fu">as_tensor</span>(r_array)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>tf_tensor_3D</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>tf.Tensor(
+[[[ 1  7]
+  [ 3  9]
+  [ 5 11]]
+
+ [[ 2  8]
+  [ 4 10]
+  [ 6 12]]], shape=(2, 3, 2), dtype=int32)</code></pre>
+</div>
+</div>
+<p>You can use a lot of the basic R functions with these. For example, to see the size of the tensor</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(tf_tensor_2D)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2 3</code></pre>
+</div>
+</div>
+<p>or</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>tf_tensor_2D<span class="sc">$</span>ndim</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2</code></pre>
+</div>
+</div>
+<p>You can also add two tensors (as long as they have the same shape)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>tf_tensor_2D <span class="sc">+</span> tf_tensor_2D</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>tf.Tensor(
+[[ 2  6 10]
+ [ 4  8 12]], shape=(2, 3), dtype=int32)</code></pre>
+</div>
+</div>
+<p>There are also functions to create tensors with specific values</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Tensor of 1s</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>tf<span class="sc">$</span><span class="fu">ones</span>(<span class="fu">shape</span>(<span class="dv">1</span>, <span class="dv">3</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>tf.Tensor([[1. 1. 1.]], shape=(1, 3), dtype=float32)</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Tensor of 0s</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>tf<span class="sc">$</span><span class="fu">zeros</span>(<span class="fu">shape</span>(<span class="dv">1</span>, <span class="dv">3</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>tf.Tensor([[0. 0. 0.]], shape=(1, 3), dtype=float32)</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Tensor of random numbers (normally distributed)</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>tf<span class="sc">$</span>random<span class="sc">$</span><span class="fu">normal</span>(<span class="fu">shape</span>(<span class="dv">1</span>, <span class="dv">3</span>), <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">stddev =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>tf.Tensor([[ 0.06901879  1.7105858  -0.4723271 ]], shape=(1, 3), dtype=float32)</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Tensor of random numbers (uniformly distributed)</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>tf<span class="sc">$</span>random<span class="sc">$</span><span class="fu">uniform</span>(<span class="fu">shape</span>(<span class="dv">1</span>, <span class="dv">3</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>tf.Tensor([[0.1366911  0.44991148 0.48229814]], shape=(1, 3), dtype=float32)</code></pre>
+</div>
+</div>
+<p><strong>tensorflow</strong> also defines a <code>variable</code> data type:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>W <span class="ot">&lt;-</span> tf<span class="sc">$</span><span class="fu">Variable</span>(<span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>)))</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>W</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;tf.Variable 'Variable:0' shape=(2, 2) dtype=float64, numpy=
+array([[0., 0.],
+       [0., 0.]])&gt;</code></pre>
+</div>
+</div>
+<p>While this will look a lot like a tensor, this is used to store values that change during training including model weights and parameters</p>
+</section>
+<section id="basic-operations" class="level2">
+<h2 class="anchored" data-anchor-id="basic-operations">Basic operations</h2>
+<p><strong>tensorflow</strong> comes with a lot of basic math functions. Let’s start by creating a 2D random tensor:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>tensor_rnd <span class="ot">=</span> tf<span class="sc">$</span>random<span class="sc">$</span><span class="fu">normal</span>(<span class="fu">shape</span>(<span class="dv">2</span>, <span class="dv">3</span>), <span class="at">mean =</span> <span class="dv">10</span>, <span class="at">stddev =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Then we can calcualte the square or square root:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>tf<span class="sc">$</span><span class="fu">square</span>(tensor_rnd)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>tf.Tensor(
+[[89.538086 92.906456 84.85223 ]
+ [93.91021  87.249054 86.6687  ]], shape=(2, 3), dtype=float32)</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>tf<span class="sc">$</span><span class="fu">sqrt</span>(tensor_rnd)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>tf.Tensor(
+[[3.0761106 3.1046417 3.0350497]
+ [3.1129935 3.0562592 3.0511642]], shape=(2, 3), dtype=float32)</code></pre>
+</div>
+</div>
+<p>There are also specific functions that are key to train a neural netwok. You might recall from the lecture that there are three main calculate steps.</p>
+<ol type="1">
+<li>In the forward pass, the output of every neuron in the network is calculated as the weighted sum of the inputs, plus a bias term <span class="math inline">\(y = W \cdot x + b\)</span>. The first part of this equation is the dot product of two matrices, the array of weights (<span class="math inline">\(W\)</span>) and the input values (<span class="math inline">\(x\)</span>). In tensorflow, this calculated using the <code>matmul</code> function.</li>
+</ol>
+<p>For example, here we create tensors of weights and random input values and multiply them together:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>W <span class="ot">&lt;-</span> tf<span class="sc">$</span><span class="fu">Variable</span>(<span class="fu">array</span>(<span class="fu">runif</span>(<span class="dv">4</span>), <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>)))</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(W)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;tf.Variable 'Variable:0' shape=(2, 2) dtype=float64, numpy=
+array([[0.91480604, 0.28613953],
+       [0.93707541, 0.83044763]])&gt;</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">as_tensor</span>(<span class="fu">array</span>(<span class="fu">rnorm</span>(<span class="dv">4</span>), <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>)))</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>tf.Tensor(
+[[ 0.36312841  0.40426832]
+ [ 0.6328626  -0.10612452]], shape=(2, 2), dtype=float64)</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>tf<span class="sc">$</span><span class="fu">matmul</span>(x, W)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>tf.Tensor(
+[[0.71102197 0.43962906]
+ [0.47949986 0.09295616]], shape=(2, 2), dtype=float64)</code></pre>
+</div>
+</div>
+<p>If we also create a <em>bias</em> (a constant additive term), we can create the basic weighted sum</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> tf<span class="sc">$</span><span class="fu">Variable</span>(<span class="fu">array</span>(<span class="dv">1</span>, <span class="at">dim =</span> <span class="fu">c</span>(<span class="dv">2</span>)))</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(b)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;tf.Variable 'Variable:0' shape=(2,) dtype=float64, numpy=array([1., 1.])&gt;</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>tf<span class="sc">$</span><span class="fu">matmul</span>(x, W) <span class="sc">+</span> b</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>tf.Tensor(
+[[1.71102197 1.43962906]
+ [1.47949986 1.09295616]], shape=(2, 2), dtype=float64)</code></pre>
+</div>
+</div>
+<ol start="2" type="1">
+<li>Activation function</li>
+</ol>
+<p>The next step in the forward pass is to send the output of node (above) through an activation function. There are several of these, and the code below simply illustrates how they convert a vector of randomly generated values (<code>x</code>)</p>
+<ul>
+<li>Linear activation</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">as_tensor</span>(<span class="fu">array</span>(<span class="fu">rnorm</span>(<span class="dv">100</span>), <span class="fu">c</span>(<span class="dv">100</span>, <span class="dv">1</span>)))</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>x_act <span class="ot">&lt;-</span> <span class="fu">activation_linear</span>(x)</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(x, x_act)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab07_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>Sigmoid activation. Note that this requires a second column of zeros added to it</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>xs <span class="ot">&lt;-</span> <span class="fu">k_concatenate</span>(<span class="fu">list</span>(x, </span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>                         <span class="fu">as_tensor</span>(<span class="fu">rep</span>(<span class="dv">0</span>, <span class="fu">length</span>(x)), <span class="at">shape =</span> <span class="fu">c</span>(<span class="fu">length</span>(x),<span class="dv">1</span>))))</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>x_act <span class="ot">&lt;-</span> <span class="fu">activation_sigmoid</span>(xs)</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(x[,<span class="dv">1</span>], x_act[,<span class="dv">1</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab07_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>ReLu activation. This is a widely used activation function in deep learning, which sets all output below zero to zero, and uses a linear transform for the values above 0</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>x_act <span class="ot">&lt;-</span> <span class="fu">activation_relu</span>(x)</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(x, x_act)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab07_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<ol start="3" type="1">
+<li>Backpropagation</li>
+</ol>
+<p>Following the forward pass, neural networks are trained using backpropagation. In this step, a gradient is calculated for each weight relatively to the loss or error. This gradient tells the network how much to update each weight (steep gradients mean that the error is large and a larger update is needed), as well as the direction of change (positive or negative). This becomes very complicated in larger networks, where this has to be (back)propagated through multiple layers and across mulitple nodes. Tensorflow uses the concept of a gradient <em>tape</em> to help in this. This records all the necessary steps to estimate these gradients by tracking all the connections in the network. Once set up, it can then estimate the gradient of any output in the network relative to any variable or set of variables. To illustrate this, the following code uses a simple model of <span class="math inline">\(y = 2 \times x + 3\)</span>. This is used to create a <code>GradientTape</code> object, and then we can estimate the gradient. As this is just a simple linear model, the gradient is, of course, the slope of 2:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> tf<span class="sc">$</span><span class="fu">Variable</span>(<span class="dv">0</span>)</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a><span class="fu">with</span>(tf<span class="sc">$</span><span class="fu">GradientTape</span>() <span class="sc">%as%</span> tape, {</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>  y <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="sc">*</span> x <span class="sc">+</span> <span class="dv">3</span></span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>grad_of_y_wrt_x <span class="ot">&lt;-</span> tape<span class="sc">$</span><span class="fu">gradient</span>(y, x)</span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>grad_of_y_wrt_x</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>tf.Tensor(2.0, shape=(), dtype=float32)</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="putting-it-together-a-linear-classifier" class="level1">
+<h1>Putting it together: a linear classifier</h1>
+<p>We’ll now illustrate how all of this comes together with a really simple example. This is a dataset with two features (<code>x1</code> and <code>x2</code>) and a binary target (<code>class</code>):</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">=</span> <span class="fu">read.csv</span>(<span class="st">"./datafiles/slc.csv"</span>)</span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>           x1       x2 class
+1  0.76600976 1.984742   neg
+2 -0.14333258 2.976064   neg
+3  0.86628515 2.447990   neg
+4  1.34465664 4.420691   neg
+5 -0.06044813 2.278719   neg
+6 -0.63563344 2.258861   neg</code></pre>
+</div>
+</div>
+<p>As tensorflow really wants values as an array, we’ll create two of these, one for the features (<code>inputs</code>) and one for the targets:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>inputs <span class="ot">&lt;-</span> <span class="fu">cbind</span>(df<span class="sc">$</span>x1, df<span class="sc">$</span>x2)</span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>targets <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="fu">ifelse</span>(df<span class="sc">$</span>class <span class="sc">==</span> <span class="st">"neg"</span>, <span class="dv">0</span>, <span class="dv">1</span>), <span class="at">dim =</span> <span class="fu">c</span>(<span class="fu">nrow</span>(df),<span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Let’s plot these out to see the distribution:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="at">x =</span> inputs[, <span class="dv">1</span>], <span class="at">y =</span> inputs[, <span class="dv">2</span>],</span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">col =</span> <span class="fu">ifelse</span>(targets[, <span class="dv">1</span>] <span class="sc">==</span> <span class="dv">0</span>, <span class="st">"purple"</span>, <span class="st">"green"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab07_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>From the plot, you should be able to already visualize where you would place a line to separate the two groups. We’ll now create a linear classifier that can find this line as the following equation (if you look closely, you’ll see that this is just a linear model with slopes (<code>W</code>) and intercept (<code>b</code>)).</p>
+<p><span class="math display">\[
+\mbox{prediction} = W \times input + b
+\]</span></p>
+<p>This is trained to minimize the square of the difference between predictions and the targets. As you’ll see, it’s actually a much simpler example than the end-to-end example of a toy two-layer neural network you saw at the end of chapter 2. However, this time you should be able to understand everything about the code, line by line.</p>
+<p>Next, we’ll initialize values for <code>W</code> and <code>b</code>, using random values and with zeros, respectively.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>input_dim <span class="ot">&lt;-</span> <span class="dv">2</span></span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>output_dim <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>W <span class="ot">&lt;-</span> tf<span class="sc">$</span><span class="fu">Variable</span>(<span class="at">initial_value =</span></span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>                   tf<span class="sc">$</span>random<span class="sc">$</span><span class="fu">uniform</span>(<span class="fu">shape</span>(input_dim, output_dim)))</span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(W)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;tf.Variable 'Variable:0' shape=(2, 1) dtype=float32, numpy=
+array([[0.03435946],
+       [0.9805056 ]], dtype=float32)&gt;</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> tf<span class="sc">$</span><span class="fu">Variable</span>(<span class="at">initial_value =</span> tf<span class="sc">$</span><span class="fu">zeros</span>(<span class="fu">shape</span>(output_dim)))</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(b)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;tf.Variable 'Variable:0' shape=(1,) dtype=float32, numpy=array([0.], dtype=float32)&gt;</code></pre>
+</div>
+</div>
+<p>As we have two inputs, <code>W</code> is just two scalar coefficients, <code>w1</code> and <code>w2</code>. <code>b</code> is a single scalar coefficient representing the intercept. So the full, expanded model is:</p>
+<p><span class="math display">\[
+\mbox{prediction} = [w_1,w_2] \times [x_1, x_2] + b = w_1 \times x_1 + w_2 \times x_2 + b
+\]</span></p>
+<p>Let’s create a function that performs a forward pass by calculating the above equation (note this uses the <code>matmul</code> function to get the weighted output). Normally, this would use a sigmoid activation function as the outcome is binary, but to keep things simple, we won’t transform the output. Note that we use a function to calculate this so that we can reuse this easily in the training loop below</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="cf">function</span>(inputs)</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a> tf<span class="sc">$</span><span class="fu">matmul</span>(inputs, W) <span class="sc">+</span> b</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>To illustrate what this does, let’s just run this with the first row of inputs:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>input1 <span class="ot">=</span> <span class="fu">as_tensor</span>(<span class="fu">array</span>(inputs[<span class="dv">1</span>, ], <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>)), <span class="at">dtype =</span> <span class="st">'float32'</span>)</span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a><span class="fu">model</span>(input1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>tf.Tensor([[1.9723705]], shape=(1, 1), dtype=float32)</code></pre>
+</div>
+</div>
+<p>Giving the predicted value for the first observation (which is a <code>0</code>). This is obviously with random weights, so there’s really no expectation that it will be close to the actual value. Next, we need to calculate how close it is through a loss function. For this example, we’ll use a simple mean squared error, and we’ll create a function to calculate that:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>square_loss <span class="ot">&lt;-</span> <span class="cf">function</span>(targets, predictions) { </span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>  per_sample_losses <span class="ot">&lt;-</span> tf<span class="sc">$</span><span class="fu">square</span>(tf<span class="sc">$</span><span class="fu">subtract</span>(targets, predictions))</span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>  tf<span class="sc">$</span><span class="fu">reduce_mean</span>(per_sample_losses)</span>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now let’s put these together with the gradient tape function to calculate the update to the weights through backpropagation. In this function, it uses the <code>GradientTape</code> to store the results of the forward pass and loss calculation. Then the tape is used to get the gradients or derivatives of the weights relative to the loss. Finally, the update is calculated by multiplying the gradient by a learning rate. This is a value less than one, which limits the update at each step.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>learning_rate <span class="ot">&lt;-</span> <span class="fl">0.1</span></span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>training_step <span class="ot">&lt;-</span> <span class="cf">function</span>(inputs, targets) {</span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">with</span>(tf<span class="sc">$</span><span class="fu">GradientTape</span>() <span class="sc">%as%</span> tape, {</span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a>    predictions <span class="ot">&lt;-</span> <span class="fu">model</span>(inputs)</span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a>    loss <span class="ot">&lt;-</span> <span class="fu">square_loss</span>(predictions, targets)</span>
+<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb59-7"><a href="#cb59-7" aria-hidden="true" tabindex="-1"></a>  grad_loss_wrt <span class="ot">&lt;-</span> tape<span class="sc">$</span><span class="fu">gradient</span>(loss, <span class="fu">list</span>(<span class="at">W =</span> W, <span class="at">b =</span> b))</span>
+<span id="cb59-8"><a href="#cb59-8" aria-hidden="true" tabindex="-1"></a>  W<span class="sc">$</span><span class="fu">assign_sub</span>(grad_loss_wrt<span class="sc">$</span>W <span class="sc">*</span> learning_rate)</span>
+<span id="cb59-9"><a href="#cb59-9" aria-hidden="true" tabindex="-1"></a>  b<span class="sc">$</span><span class="fu">assign_sub</span>(grad_loss_wrt<span class="sc">$</span>b <span class="sc">*</span> learning_rate)</span>
+<span id="cb59-10"><a href="#cb59-10" aria-hidden="true" tabindex="-1"></a>  loss</span>
+<span id="cb59-11"><a href="#cb59-11" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>After all that preparation, we’re ready to train the model. We convert the inputs to a tensor, then run a loop 40 times, each time calling the <code>training_step</code> function to update the weights</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>inputs <span class="ot">&lt;-</span> <span class="fu">as_tensor</span>(inputs, <span class="at">dtype =</span> <span class="st">"float32"</span>)</span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a> <span class="cf">for</span> (step <span class="cf">in</span> <span class="fu">seq</span>(<span class="dv">40</span>)) {</span>
+<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a>   loss <span class="ot">&lt;-</span> <span class="fu">training_step</span>(inputs, targets)</span>
+<span id="cb60-4"><a href="#cb60-4" aria-hidden="true" tabindex="-1"></a>   <span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"Loss at step %s: %.4f</span><span class="sc">\n</span><span class="st">"</span>, step, loss))</span>
+<span id="cb60-5"><a href="#cb60-5" aria-hidden="true" tabindex="-1"></a> }</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Loss at step 1: 5.7709
+Loss at step 2: 0.3353
+Loss at step 3: 0.1429
+Loss at step 4: 0.1151
+Loss at step 5: 0.1054
+Loss at step 6: 0.0982
+Loss at step 7: 0.0919
+Loss at step 8: 0.0861
+Loss at step 9: 0.0808
+Loss at step 10: 0.0760
+Loss at step 11: 0.0716
+Loss at step 12: 0.0676
+Loss at step 13: 0.0640
+Loss at step 14: 0.0606
+Loss at step 15: 0.0576
+Loss at step 16: 0.0548
+Loss at step 17: 0.0523
+Loss at step 18: 0.0500
+Loss at step 19: 0.0479
+Loss at step 20: 0.0460
+Loss at step 21: 0.0442
+Loss at step 22: 0.0426
+Loss at step 23: 0.0412
+Loss at step 24: 0.0398
+Loss at step 25: 0.0386
+Loss at step 26: 0.0375
+Loss at step 27: 0.0365
+Loss at step 28: 0.0356
+Loss at step 29: 0.0347
+Loss at step 30: 0.0340
+Loss at step 31: 0.0333
+Loss at step 32: 0.0326
+Loss at step 33: 0.0321
+Loss at step 34: 0.0315
+Loss at step 35: 0.0310
+Loss at step 36: 0.0306
+Loss at step 37: 0.0302
+Loss at step 38: 0.0298
+Loss at step 39: 0.0295
+Loss at step 40: 0.0292</code></pre>
+</div>
+</div>
+<p>Once trained, we can predict for each of the original observations and plot the predicted values. We’ll use a simple threshold of 0.5 (i.e.&nbsp;predictions above 0.5 are classed as <code>1</code>, below 0.5 as <code>0</code>). We can also plot the classifier by using the trained values of <code>W</code> and <code>b</code> to get the slope and intercept:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>predictions <span class="ot">&lt;-</span> <span class="fu">model</span>(inputs)</span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>inputs <span class="ot">&lt;-</span> <span class="fu">as.array</span>(inputs)</span>
+<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a>predictions <span class="ot">&lt;-</span> <span class="fu">as.array</span>(predictions)</span>
+<span id="cb62-4"><a href="#cb62-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-5"><a href="#cb62-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="at">x =</span> inputs[, <span class="dv">1</span>], <span class="at">y =</span> inputs[, <span class="dv">2</span>],</span>
+<span id="cb62-6"><a href="#cb62-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">col =</span> <span class="fu">ifelse</span>(predictions[, <span class="dv">1</span>] <span class="sc">&lt;=</span> <span class="fl">0.5</span>, <span class="st">"purple"</span>, <span class="st">"green"</span>))</span>
+<span id="cb62-7"><a href="#cb62-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-8"><a href="#cb62-8" aria-hidden="true" tabindex="-1"></a>slope <span class="ot">&lt;-</span> <span class="sc">-</span>W[<span class="dv">1</span>, ] <span class="sc">/</span> W[<span class="dv">2</span>, ]</span>
+<span id="cb62-9"><a href="#cb62-9" aria-hidden="true" tabindex="-1"></a>intercept <span class="ot">&lt;-</span> (<span class="fl">0.5</span> <span class="sc">-</span> b) <span class="sc">/</span> W[<span class="dv">2</span>, ]</span>
+<span id="cb62-10"><a href="#cb62-10" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="fu">as.array</span>(intercept), <span class="fu">as.array</span>(slope), <span class="at">col =</span> <span class="st">"red"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab07_files/figure-html/unnamed-chunk-31-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="the-keras-api" class="level1">
+<h1>The <strong>keras</strong> API</h1>
+<p>The examples above show how to work with the low-level <strong>tensorflow</strong> interface. In practice, you can skip a lot of the detail by using the <strong>keras</strong> API. In the code below, we’ll build a multi-layer neural network to perform a classification exercise.</p>
+<section id="keras-workflow" class="level2">
+<h2 class="anchored" data-anchor-id="keras-workflow">Keras workflow</h2>
+<p>Building a deep learning model through Keras requires a series of steps:</p>
+<ol type="1">
+<li>Create training data as tensors. This should include the input features and the target as separate tensors. For the simple models we are looking at in this lab, this is fairly straightforward, but for the more complex models, careful attention is required to the size and shape of these tensors.</li>
+<li>Create the network architecture. This consists of the set of layers that link the inputs to the target(s)</li>
+<li>Define the loss function, the optimizer and the performance metrics to be used to test the progress of the training</li>
+<li>Train the model using the training data, with part of the training data left out as validation data</li>
+</ol>
+</section>
+<section id="dataset" class="level2">
+<h2 class="anchored" data-anchor-id="dataset">Dataset</h2>
+<p>The data are from the file <em>credit_data.csv</em>, and represent a number of bank clients who have been tagged as having good or bad credit. The goal is to use the other variables in the file to predict this. Let’s start by reading in the data.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.1.4     ✔ readr     2.1.5
+✔ forcats   1.0.0     ✔ stringr   1.5.1
+✔ ggplot2   3.5.1     ✔ tibble    3.2.1
+✔ lubridate 1.9.3     ✔ tidyr     1.3.1
+✔ purrr     1.0.2     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">=</span> <span class="fu">read.csv</span>(<span class="st">"./datafiles/credit_data.csv"</span>)</span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  Status Seniority  Home Time Age Marital Records       Job Expenses Income
+1   good         9  rent   60  30 married      no freelance       73    129
+2   good        17  rent   60  58   widow      no     fixed       48    131
+3    bad        10 owner   36  46 married     yes freelance       90    200
+4   good         0  rent   60  24  single      no     fixed       63    182
+5   good         0  rent   36  26  single      no     fixed       46    107
+6   good         1 owner   60  36 married      no     fixed       75    214
+  Assets Debt Amount Price
+1      0    0    800   846
+2      0    0   1000  1658
+3   3000    0   2000  2985
+4   2500    0    900  1325
+5      0    0    310   910
+6   3500    0    650  1645</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(skimr)</span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a><span class="fu">skim</span>(df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<caption>Data summary</caption>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Name</td>
+<td style="text-align: left;">df</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Number of rows</td>
+<td style="text-align: left;">4454</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Number of columns</td>
+<td style="text-align: left;">14</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">_______________________</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Column type frequency:</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">character</td>
+<td style="text-align: left;">5</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">numeric</td>
+<td style="text-align: left;">9</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">________________________</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Group variables</td>
+<td style="text-align: left;">None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: character</strong></p>
+<table class="table table-sm table-striped small">
+<colgroup>
+<col style="width: 19%">
+<col style="width: 13%">
+<col style="width: 19%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 8%">
+<col style="width: 12%">
+<col style="width: 15%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">skim_variable</th>
+<th style="text-align: right;">n_missing</th>
+<th style="text-align: right;">complete_rate</th>
+<th style="text-align: right;">min</th>
+<th style="text-align: right;">max</th>
+<th style="text-align: right;">empty</th>
+<th style="text-align: right;">n_unique</th>
+<th style="text-align: right;">whitespace</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Status</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Home</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Marital</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Records</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Job</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: numeric</strong></p>
+<table class="table table-sm table-striped small">
+<colgroup>
+<col style="width: 15%">
+<col style="width: 10%">
+<col style="width: 15%">
+<col style="width: 8%">
+<col style="width: 9%">
+<col style="width: 4%">
+<col style="width: 8%">
+<col style="width: 5%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 6%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">skim_variable</th>
+<th style="text-align: right;">n_missing</th>
+<th style="text-align: right;">complete_rate</th>
+<th style="text-align: right;">mean</th>
+<th style="text-align: right;">sd</th>
+<th style="text-align: right;">p0</th>
+<th style="text-align: right;">p25</th>
+<th style="text-align: right;">p50</th>
+<th style="text-align: right;">p75</th>
+<th style="text-align: right;">p100</th>
+<th style="text-align: left;">hist</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Seniority</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">7.99</td>
+<td style="text-align: right;">8.17</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2.00</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">12.0</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: left;">▇▃▁▁▁</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Time</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">46.44</td>
+<td style="text-align: right;">14.66</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">36.00</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">60.0</td>
+<td style="text-align: right;">72</td>
+<td style="text-align: left;">▁▂▅▃▇</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Age</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">37.08</td>
+<td style="text-align: right;">10.98</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">28.00</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: right;">45.0</td>
+<td style="text-align: right;">68</td>
+<td style="text-align: left;">▆▇▆▃▁</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Expenses</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">55.57</td>
+<td style="text-align: right;">19.52</td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;">35.00</td>
+<td style="text-align: right;">51</td>
+<td style="text-align: right;">72.0</td>
+<td style="text-align: right;">180</td>
+<td style="text-align: left;">▇▃▁▁▁</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Income</td>
+<td style="text-align: right;">381</td>
+<td style="text-align: right;">0.91</td>
+<td style="text-align: right;">141.69</td>
+<td style="text-align: right;">80.75</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">90.00</td>
+<td style="text-align: right;">125</td>
+<td style="text-align: right;">170.0</td>
+<td style="text-align: right;">959</td>
+<td style="text-align: left;">▇▂▁▁▁</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Assets</td>
+<td style="text-align: right;">47</td>
+<td style="text-align: right;">0.99</td>
+<td style="text-align: right;">5403.98</td>
+<td style="text-align: right;">11574.42</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">3000</td>
+<td style="text-align: right;">6000.0</td>
+<td style="text-align: right;">300000</td>
+<td style="text-align: left;">▇▁▁▁▁</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Debt</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">343.03</td>
+<td style="text-align: right;">1245.99</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.0</td>
+<td style="text-align: right;">30000</td>
+<td style="text-align: left;">▇▁▁▁▁</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Amount</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">1038.92</td>
+<td style="text-align: right;">474.55</td>
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">700.00</td>
+<td style="text-align: right;">1000</td>
+<td style="text-align: right;">1300.0</td>
+<td style="text-align: right;">5000</td>
+<td style="text-align: left;">▇▆▁▁▁</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Price</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">1462.78</td>
+<td style="text-align: right;">628.13</td>
+<td style="text-align: right;">105</td>
+<td style="text-align: right;">1117.25</td>
+<td style="text-align: right;">1400</td>
+<td style="text-align: right;">1691.5</td>
+<td style="text-align: right;">11140</td>
+<td style="text-align: left;">▇▁▁▁▁</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>There are about 4400 observations in the set, and a number of these have missing values. We’ll use the <strong>tidyverse</strong> <code>drop_na</code> function to remove all rows with missing values, and also convert the <code>Status</code> column to a binary variable. This is an important step - deep learning models need all features and targets to be numerical.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">=</span> df <span class="sc">|&gt;</span></span>
+<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># mutate(Status = as.factor(Status)) |&gt;</span></span>
+<span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Status =</span> <span class="fu">ifelse</span>(Status <span class="sc">==</span> <span class="st">'bad'</span>, <span class="dv">1</span>, <span class="dv">0</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb68-4"><a href="#cb68-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Next, we’ll split the data into the usual set of training and testing.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidymodels)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Attaching packages ────────────────────────────────────── tidymodels 1.2.0 ──</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>✔ broom        1.0.7     ✔ rsample      1.2.1
+✔ dials        1.3.0     ✔ tune         1.2.1
+✔ infer        1.0.7     ✔ workflows    1.1.4
+✔ modeldata    1.4.0     ✔ workflowsets 1.1.0
+✔ parsnip      1.2.1     ✔ yardstick    1.3.1
+✔ recipes      1.1.0     </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'broom' was built under R version 4.4.1</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Conflicts ───────────────────────────────────────── tidymodels_conflicts() ──
+✖ scales::discard()        masks purrr::discard()
+✖ dplyr::filter()          masks stats::filter()
+✖ recipes::fixed()         masks stringr::fixed()
+✖ yardstick::get_weights() masks keras::get_weights()
+✖ dplyr::lag()             masks stats::lag()
+✖ yardstick::spec()        masks readr::spec()
+✖ .GlobalEnv::step()       masks recipes::step(), stats::step()
+• Use tidymodels_prefer() to resolve common conflicts.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a>df_split <span class="ot">=</span> <span class="fu">initial_split</span>(df, <span class="at">prop =</span> <span class="fl">0.8</span>)</span>
+<span id="cb74-2"><a href="#cb74-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb74-3"><a href="#cb74-3" aria-hidden="true" tabindex="-1"></a>df_train <span class="ot">=</span> <span class="fu">training</span>(df_split)</span>
+<span id="cb74-4"><a href="#cb74-4" aria-hidden="true" tabindex="-1"></a>df_test  <span class="ot">=</span> <span class="fu">testing</span>(df_split)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(df_train<span class="sc">$</span>Status)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+   0    1 
+2398  833 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(df_test<span class="sc">$</span>Status)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+  0   1 
+615 193 </code></pre>
+</div>
+</div>
+<p>Now, we’ll set up a recipe to transform the data. As noted above, all the inputs need to be numeric, so we’ll need to one hot encode or dummy transform all the categorical variables with <code>step_dummy</code>. We’ll also normalize all variables to the same range (this subtracts the mean and divides by the standard deviation). Neural networks are <em>very</em> sensitive to the range of values, so it is standard practice to transform data to <span class="math inline">\(z\)</span>-scores (as here) or to a 0-1 range.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a>rec <span class="ot">=</span> <span class="fu">recipe</span>(Status <span class="sc">~</span> ., df_train) <span class="sc">|&gt;</span></span>
+<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_normalize</span>(<span class="fu">all_numeric_predictors</span>()) <span class="sc">|&gt;</span></span>
+<span id="cb79-3"><a href="#cb79-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_dummy</span>(<span class="fu">all_nominal_predictors</span>())</span>
+<span id="cb79-4"><a href="#cb79-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb79-5"><a href="#cb79-5" aria-hidden="true" tabindex="-1"></a>df_train <span class="ot">=</span> rec <span class="sc">|&gt;</span></span>
+<span id="cb79-6"><a href="#cb79-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">prep</span>() <span class="sc">|&gt;</span></span>
+<span id="cb79-7"><a href="#cb79-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bake</span>(df_train)</span>
+<span id="cb79-8"><a href="#cb79-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb79-9"><a href="#cb79-9" aria-hidden="true" tabindex="-1"></a>df_test <span class="ot">=</span> rec <span class="sc">|&gt;</span></span>
+<span id="cb79-10"><a href="#cb79-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">prep</span>() <span class="sc">|&gt;</span></span>
+<span id="cb79-11"><a href="#cb79-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bake</span>(df_test)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Next, we’ll split the training data into training and validation. Validation datasets are important in deep learning as the complex networks can quickly and easily overfit to the training data. Validation data are used during the training process. Following each adjustment of the weights, the network predicts the labels for the validation set, and a validation error is calculated. A decreasing validation error suggests that the model is training well to the data, but when it starts to increase, this indicates overfitting: prediction for new data becomes worse. Here, we’ll remove a random sample of 20% of the original training data for validation, and use the other 80% for training.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb80"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a>ntrain <span class="ot">=</span> <span class="fu">nrow</span>(df_train)</span>
+<span id="cb80-2"><a href="#cb80-2" aria-hidden="true" tabindex="-1"></a>train_id <span class="ot">=</span> <span class="fu">sample</span>(ntrain, ntrain<span class="sc">*</span><span class="fl">0.8</span>)</span>
+<span id="cb80-3"><a href="#cb80-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb80-4"><a href="#cb80-4" aria-hidden="true" tabindex="-1"></a>df_valid <span class="ot">=</span> df_train[<span class="sc">-</span>train_id, ]</span>
+<span id="cb80-5"><a href="#cb80-5" aria-hidden="true" tabindex="-1"></a>df_train <span class="ot">=</span> df_train[train_id, ]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>As a final processing step, we’ll convert all the datasets to R’s matrix (or array) format. <strong>keras</strong> assumes that all data are in this format, which cuts down on internal processing when the model trains:</p>
+<p>We’ll get a list of all the transformed features for later selection:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a>feature_names <span class="ot">=</span> <span class="fu">colnames</span>(df_train) <span class="sc">|&gt;</span> </span>
+<span id="cb81-2"><a href="#cb81-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">setdiff</span>(<span class="st">"Status"</span>)</span>
+<span id="cb81-3"><a href="#cb81-3" aria-hidden="true" tabindex="-1"></a>feature_names</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "Seniority"         "Time"              "Age"              
+ [4] "Expenses"          "Income"            "Assets"           
+ [7] "Debt"              "Amount"            "Price"            
+[10] "Home_other"        "Home_owner"        "Home_parents"     
+[13] "Home_priv"         "Home_rent"         "Marital_married"  
+[16] "Marital_separated" "Marital_single"    "Marital_widow"    
+[19] "Records_yes"       "Job_freelance"     "Job_others"       
+[22] "Job_partime"      </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a>train_features <span class="ot">=</span> <span class="fu">as.matrix</span>(df_train[,feature_names])</span>
+<span id="cb83-2"><a href="#cb83-2" aria-hidden="true" tabindex="-1"></a>train_targets <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(df_train<span class="sc">$</span>Status)</span>
+<span id="cb83-3"><a href="#cb83-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb83-4"><a href="#cb83-4" aria-hidden="true" tabindex="-1"></a>valid_features <span class="ot">=</span> <span class="fu">as.matrix</span>(df_valid[,feature_names])</span>
+<span id="cb83-5"><a href="#cb83-5" aria-hidden="true" tabindex="-1"></a>valid_targets <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(df_valid<span class="sc">$</span>Status)</span>
+<span id="cb83-6"><a href="#cb83-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb83-7"><a href="#cb83-7" aria-hidden="true" tabindex="-1"></a>test_features <span class="ot">=</span> <span class="fu">as.matrix</span>(df_test[,feature_names])</span>
+<span id="cb83-8"><a href="#cb83-8" aria-hidden="true" tabindex="-1"></a>test_targets <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(df_test<span class="sc">$</span>Status)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="model-architecture" class="level2">
+<h2 class="anchored" data-anchor-id="model-architecture">Model architecture</h2>
+<section id="defining-the-network-architecture" class="level3">
+<h3 class="anchored" data-anchor-id="defining-the-network-architecture">Defining the network architecture</h3>
+<p>Now we’ll turn to designing the model. The first step is to create the architecture. <strong>keras</strong> has two methods to create the network. The simplest is to use the <code>keras_model_sequential()</code> function. This takes as input the definition of the hidden layers, as well as any parameters that are used to modify these during training.</p>
+<p>For example, to create a simple, two layer model with a single output, one hidden layer with 10 nodes, you would run the following command. Note that the first function takes the argument <code>input_shape</code> which describes the expected shape of the tensor holding the features (here 20 input features), and that we specify a ReLU activation function for the output.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb84"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb84-1"><a href="#cb84-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">keras_model_sequential</span>(<span class="at">input_shape =</span> <span class="fu">c</span>(<span class="dv">20</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb84-2"><a href="#cb84-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_dense</span>(<span class="at">units =</span> <span class="dv">10</span>, <span class="at">activation =</span> <span class="st">"relu"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb84-3"><a href="#cb84-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_dense</span>(<span class="at">units =</span> <span class="dv">1</span>, <span class="at">activation =</span> <span class="st">"relu"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The basic layer used here is a <em>dense</em> layer. This is one where every node connects to each incoming input and to each output. In this case, each of the twenty input features would connect to the 10 nodes in the hidden layer, and each of those will connect to the single output node. Each of these connections will have a weight to it, as well as a bias added to each node. Overall this gives us <span class="math inline">\(20 \times 10 + 10 = 210\)</span> from the input to the hidden layer, and <span class="math inline">\(10 \times 1 + 1 = 11\)</span>, giving 221 parameters overall. To check this we can use the <code>summary</code> function with the model object, which gives an overview of the model architecture. You’ll see that it has automatically named each layer (e.g.&nbsp;<code>dense_1</code>) as well as the overall model (you can add names if useful).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb85"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Model: "sequential"
+________________________________________________________________________________
+ Layer (type)                       Output Shape                    Param #     
+================================================================================
+ dense_1 (Dense)                    (None, 10)                      210         
+ dense (Dense)                      (None, 1)                       11          
+================================================================================
+Total params: 221 (884.00 Byte)
+Trainable params: 221 (884.00 Byte)
+Non-trainable params: 0 (0.00 Byte)
+________________________________________________________________________________</code></pre>
+</div>
+</div>
+<p>The other method to define the architecture uses the Keras API. This is a much more flexible approach based on graph theory and can be used to create networks that are much more complex.</p>
+<p>For our model, we’ll create something a little more complex. This will have two hidden layers, each with 256 nodes. The final layer will give the prediction. As we only need to predict one thing (the credit risk), we only need one node. We’ll use ReLu activation functions throughout, except for the final layer where we use a sigmoid activation function to constrain the output to the range [0-1].</p>
+<p>We’ll add a couple of dropout layers as well. These are layers where a proportion of the weights are set to zero, effectively removing them from any prediction. This has the effect of penalizing the model, making it slower to train, but reducing the risk of overfitting.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb87"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span></span>
+<span id="cb87-2"><a href="#cb87-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">keras_model_sequential</span>(<span class="at">input_shape =</span> <span class="fu">ncol</span>(train_features)) <span class="sc">|&gt;</span></span>
+<span id="cb87-3"><a href="#cb87-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_dense</span>(<span class="dv">256</span>, <span class="at">activation =</span> <span class="st">"relu"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb87-4"><a href="#cb87-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_dropout</span>(<span class="fl">0.3</span>) <span class="sc">|&gt;</span></span>
+<span id="cb87-5"><a href="#cb87-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_dense</span>(<span class="dv">256</span>, <span class="at">activation =</span> <span class="st">"relu"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb87-6"><a href="#cb87-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_dropout</span>(<span class="fl">0.3</span>) <span class="sc">|&gt;</span></span>
+<span id="cb87-7"><a href="#cb87-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_dense</span>(<span class="dv">1</span>, <span class="at">activation =</span> <span class="st">"sigmoid"</span>)</span>
+<span id="cb87-8"><a href="#cb87-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb87-9"><a href="#cb87-9" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Model: "sequential_1"
+________________________________________________________________________________
+ Layer (type)                       Output Shape                    Param #     
+================================================================================
+ dense_4 (Dense)                    (None, 256)                     5888        
+ dropout_1 (Dropout)                (None, 256)                     0           
+ dense_3 (Dense)                    (None, 256)                     65792       
+ dropout (Dropout)                  (None, 256)                     0           
+ dense_2 (Dense)                    (None, 1)                       257         
+================================================================================
+Total params: 71937 (281.00 KB)
+Trainable params: 71937 (281.00 KB)
+Non-trainable params: 0 (0.00 Byte)
+________________________________________________________________________________</code></pre>
+</div>
+</div>
+<p>Note that the increase in the number of layers and nodes has had a large effect in the total number of parameters to be estimated, now at around 71,000 parameters.</p>
+<p>Next, we’ll define the list of metrics to be calculated during training. We’ll just record the accuracy, but you can add further metrics here (see the help documentation for a full list).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb89"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb89-1"><a href="#cb89-1" aria-hidden="true" tabindex="-1"></a>metrics <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb89-2"><a href="#cb89-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">metric_binary_accuracy</span>(<span class="at">name =</span> <span class="st">"accuracy"</span>)</span>
+<span id="cb89-3"><a href="#cb89-3" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Next, we need to compile the model. This links the model to a specific optimizer, the loss function and any error metrics we want to calculate.</p>
+<ul>
+<li>Optimizer: We’ll use the standard backpropagation algorithm here (<code>rmsprop</code>), with a learning rate of 1e-4. This is controls the amount of update for each weight at each iteration. Other optimizers include <code>sgd</code> for stochastic gradient descent and <code>adam</code> for the Adam algorithm, both of which are useful for much larger, complex data</li>
+<li>Loss function. Here, we’ll use binary cross entropy. This is the standard loss function for binary outcomes (cross entropy is a measure of how different two distributions are, and this is well suited to a binary classification exercise, where we want to discriminate between 0’s and 1’s)</li>
+<li>Metrics: we simply include the list we made earlier</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb90"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb90-1"><a href="#cb90-1" aria-hidden="true" tabindex="-1"></a>model <span class="sc">|&gt;</span> <span class="fu">compile</span>(</span>
+<span id="cb90-2"><a href="#cb90-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">optimizer =</span> <span class="fu">optimizer_rmsprop</span>(<span class="fl">1e-4</span>),</span>
+<span id="cb90-3"><a href="#cb90-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">loss =</span> <span class="st">"binary_crossentropy"</span>,</span>
+<span id="cb90-4"><a href="#cb90-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">metrics =</span> metrics</span>
+<span id="cb90-5"><a href="#cb90-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now we have everything in place, we can train the model. Here we specify:</p>
+<ul>
+<li>the set of features for training (<code>train_features</code>)</li>
+<li>the set of labels for training (<code>train_targets</code>)</li>
+<li>the number of iterations to train the model for (<code>epochs</code>)</li>
+<li>the <code>batch_size</code>.</li>
+<li>the validation features and labels</li>
+</ul>
+<p>The batch size is quite an useful parameter to make your network more efficient. This is the number of samples to pass through the network before updating weights. This allows you to trade off the speed of the calculation against the convergence. Using smaller batches uses less memory but may take longer to converge, as the weights are being updated using only a fraction of the data. Larger batches will converge quickly, by may cause memory issues, and may more easily result in overfitting.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb91"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a>model <span class="sc">|&gt;</span> <span class="fu">fit</span>(</span>
+<span id="cb91-2"><a href="#cb91-2" aria-hidden="true" tabindex="-1"></a>  train_features, train_targets,</span>
+<span id="cb91-3"><a href="#cb91-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">validation_data =</span> <span class="fu">list</span>(valid_features, valid_targets),</span>
+<span id="cb91-4"><a href="#cb91-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">batch_size =</span> <span class="dv">256</span>,</span>
+<span id="cb91-5"><a href="#cb91-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">epochs =</span> <span class="dv">30</span>,</span>
+<span id="cb91-6"><a href="#cb91-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># callbacks = callbacks,</span></span>
+<span id="cb91-7"><a href="#cb91-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">verbose =</span> <span class="dv">2</span></span>
+<span id="cb91-8"><a href="#cb91-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Epoch 1/30
+11/11 - 0s - loss: 0.6635 - accuracy: 0.6192 - val_loss: 0.6198 - val_accuracy: 0.7264 - 428ms/epoch - 39ms/step
+Epoch 2/30
+11/11 - 0s - loss: 0.6030 - accuracy: 0.7303 - val_loss: 0.5924 - val_accuracy: 0.7295 - 31ms/epoch - 3ms/step
+Epoch 3/30
+11/11 - 0s - loss: 0.5762 - accuracy: 0.7500 - val_loss: 0.5770 - val_accuracy: 0.7280 - 23ms/epoch - 2ms/step
+Epoch 4/30
+11/11 - 0s - loss: 0.5617 - accuracy: 0.7473 - val_loss: 0.5673 - val_accuracy: 0.7280 - 23ms/epoch - 2ms/step
+Epoch 5/30
+11/11 - 0s - loss: 0.5483 - accuracy: 0.7477 - val_loss: 0.5599 - val_accuracy: 0.7280 - 23ms/epoch - 2ms/step
+Epoch 6/30
+11/11 - 0s - loss: 0.5402 - accuracy: 0.7438 - val_loss: 0.5542 - val_accuracy: 0.7280 - 23ms/epoch - 2ms/step
+Epoch 7/30
+11/11 - 0s - loss: 0.5317 - accuracy: 0.7469 - val_loss: 0.5491 - val_accuracy: 0.7295 - 23ms/epoch - 2ms/step
+Epoch 8/30
+11/11 - 0s - loss: 0.5239 - accuracy: 0.7512 - val_loss: 0.5436 - val_accuracy: 0.7311 - 23ms/epoch - 2ms/step
+Epoch 9/30
+11/11 - 0s - loss: 0.5174 - accuracy: 0.7543 - val_loss: 0.5393 - val_accuracy: 0.7357 - 23ms/epoch - 2ms/step
+Epoch 10/30
+11/11 - 0s - loss: 0.5117 - accuracy: 0.7604 - val_loss: 0.5354 - val_accuracy: 0.7326 - 26ms/epoch - 2ms/step
+Epoch 11/30
+11/11 - 0s - loss: 0.5079 - accuracy: 0.7597 - val_loss: 0.5318 - val_accuracy: 0.7342 - 26ms/epoch - 2ms/step
+Epoch 12/30
+11/11 - 0s - loss: 0.4974 - accuracy: 0.7604 - val_loss: 0.5269 - val_accuracy: 0.7311 - 25ms/epoch - 2ms/step
+Epoch 13/30
+11/11 - 0s - loss: 0.4980 - accuracy: 0.7639 - val_loss: 0.5224 - val_accuracy: 0.7403 - 24ms/epoch - 2ms/step
+Epoch 14/30
+11/11 - 0s - loss: 0.4918 - accuracy: 0.7697 - val_loss: 0.5193 - val_accuracy: 0.7419 - 24ms/epoch - 2ms/step
+Epoch 15/30
+11/11 - 0s - loss: 0.4891 - accuracy: 0.7717 - val_loss: 0.5162 - val_accuracy: 0.7465 - 24ms/epoch - 2ms/step
+Epoch 16/30
+11/11 - 0s - loss: 0.4769 - accuracy: 0.7744 - val_loss: 0.5132 - val_accuracy: 0.7496 - 25ms/epoch - 2ms/step
+Epoch 17/30
+11/11 - 0s - loss: 0.4739 - accuracy: 0.7771 - val_loss: 0.5099 - val_accuracy: 0.7527 - 25ms/epoch - 2ms/step
+Epoch 18/30
+11/11 - 0s - loss: 0.4731 - accuracy: 0.7794 - val_loss: 0.5069 - val_accuracy: 0.7573 - 24ms/epoch - 2ms/step
+Epoch 19/30
+11/11 - 0s - loss: 0.4693 - accuracy: 0.7821 - val_loss: 0.5037 - val_accuracy: 0.7558 - 24ms/epoch - 2ms/step
+Epoch 20/30
+11/11 - 0s - loss: 0.4618 - accuracy: 0.7790 - val_loss: 0.5013 - val_accuracy: 0.7558 - 24ms/epoch - 2ms/step
+Epoch 21/30
+11/11 - 0s - loss: 0.4660 - accuracy: 0.7833 - val_loss: 0.4983 - val_accuracy: 0.7512 - 24ms/epoch - 2ms/step
+Epoch 22/30
+11/11 - 0s - loss: 0.4583 - accuracy: 0.7868 - val_loss: 0.4962 - val_accuracy: 0.7589 - 23ms/epoch - 2ms/step
+Epoch 23/30
+11/11 - 0s - loss: 0.4580 - accuracy: 0.7864 - val_loss: 0.4936 - val_accuracy: 0.7604 - 24ms/epoch - 2ms/step
+Epoch 24/30
+11/11 - 0s - loss: 0.4563 - accuracy: 0.7906 - val_loss: 0.4925 - val_accuracy: 0.7620 - 24ms/epoch - 2ms/step
+Epoch 25/30
+11/11 - 0s - loss: 0.4503 - accuracy: 0.7930 - val_loss: 0.4900 - val_accuracy: 0.7604 - 24ms/epoch - 2ms/step
+Epoch 26/30
+11/11 - 0s - loss: 0.4517 - accuracy: 0.7972 - val_loss: 0.4874 - val_accuracy: 0.7635 - 24ms/epoch - 2ms/step
+Epoch 27/30
+11/11 - 0s - loss: 0.4491 - accuracy: 0.7930 - val_loss: 0.4864 - val_accuracy: 0.7651 - 25ms/epoch - 2ms/step
+Epoch 28/30
+11/11 - 0s - loss: 0.4473 - accuracy: 0.8011 - val_loss: 0.4839 - val_accuracy: 0.7774 - 24ms/epoch - 2ms/step
+Epoch 29/30
+11/11 - 0s - loss: 0.4460 - accuracy: 0.7949 - val_loss: 0.4823 - val_accuracy: 0.7821 - 24ms/epoch - 2ms/step
+Epoch 30/30
+11/11 - 0s - loss: 0.4466 - accuracy: 0.7953 - val_loss: 0.4821 - val_accuracy: 0.7790 - 24ms/epoch - 2ms/step</code></pre>
+</div>
+</div>
+<p>As the model runs, you’ll see some output, and if you are running this in RStudio, Keras will plot the evolution of the loss function and the accuracy during the training. Pay attention to changes in the loss (which should decrease) and the accuracy (which should increase). Note that there are values for the training and for the validation set.</p>
+<p>These results are also stored in <code>model$history</code>, which we can then plot:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb93"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb93-1"><a href="#cb93-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(model<span class="sc">$</span>history<span class="sc">$</span>epoch, model<span class="sc">$</span>history<span class="sc">$</span>history<span class="sc">$</span>loss, <span class="at">type =</span> <span class="st">'l'</span>)</span>
+<span id="cb93-2"><a href="#cb93-2" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(model<span class="sc">$</span>history<span class="sc">$</span>epoch, model<span class="sc">$</span>history<span class="sc">$</span>history<span class="sc">$</span>val_loss, <span class="at">col =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab07_files/figure-html/unnamed-chunk-47-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb94"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb94-1"><a href="#cb94-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(model<span class="sc">$</span>history<span class="sc">$</span>epoch, model<span class="sc">$</span>history<span class="sc">$</span>history<span class="sc">$</span>accuracy, <span class="at">type =</span> <span class="st">'l'</span>)</span>
+<span id="cb94-2"><a href="#cb94-2" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(model<span class="sc">$</span>history<span class="sc">$</span>epoch, model<span class="sc">$</span>history<span class="sc">$</span>history<span class="sc">$</span>val_accuracy, <span class="at">col =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab07_files/figure-html/unnamed-chunk-48-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>These show an expected decrease in loss, and corresponding increase in accuracy for both the training and validation sets. Note that the validation loss continues to decline, which may suggest that further training would be useful.</p>
+<p>We can test the model by using the <code>predict</code> function and the test (not validation!) dataset.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb95"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb95-1"><a href="#cb95-1" aria-hidden="true" tabindex="-1"></a>y_pred_test <span class="ot">&lt;-</span> model <span class="sc">|&gt;</span></span>
+<span id="cb95-2"><a href="#cb95-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">predict</span>(test_features)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>26/26 - 0s - 54ms/epoch - 2ms/step</code></pre>
+</div>
+</div>
+<p>As the predictions are probabilities [0-1], we’ll now convert these to binary [0,1] and calculate the accuracy:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb97"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb97-1"><a href="#cb97-1" aria-hidden="true" tabindex="-1"></a>y_pred_test <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(y_pred_test <span class="sc">&gt;</span> <span class="fl">0.5</span>, <span class="dv">1</span>, <span class="dv">0</span>)</span>
+<span id="cb97-2"><a href="#cb97-2" aria-hidden="true" tabindex="-1"></a>pred_correct <span class="ot">&lt;-</span> df_test<span class="sc">$</span>Status <span class="sc">==</span> y_pred_test</span>
+<span id="cb97-3"><a href="#cb97-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"Validation accuracy: %.2f"</span>, <span class="fu">mean</span>(pred_correct)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Validation accuracy: 0.80</code></pre>
+</div>
+</div>
+<p>We get an accuracy of about 0.8, which is not bad for a first attempt. The next steps would be to modify the network architecture to see if this could be improved on, e.g.&nbsp;by adding more layers or more nodes in the layers.</p>
+</section>
+</section>
+</section>
+<section id="exercise" class="level1">
+<h1>Exercise</h1>
+<p>For the exercise, you will need to build use an unsupervised classification method with the Cancer dataset from the lab 4 (<em>data_atlantic_1998_2012.csv</em>). As a reminder, this file contains information on cancer rates from around 660 counties in the eastern part of the US. There is also a shapefile with the polygons for each county (<em>COUNTY_ATLANTIC.shp</em>).</p>
+<p>For the exercise, you will need to cluster these data and map out the resulting clusters. You will need to carry out the following steps:</p>
+<ul>
+<li>Read in the data and select the columns: <code>Cancer</code>, <code>Smoking</code>, <code>Poverty</code>, <code>PM25</code>, <code>SO2</code> and <code>NO2</code></li>
+<li>Scale the data using a <span class="math inline">\(z\)</span>-score transform</li>
+<li>Cluster the data using <em>either</em> <span class="math inline">\(k\)</span>-means <em>or</em> a self-organizing map</li>
+<li>Extract the cluster number for each county and add it to the shapefile</li>
+<li>Make a map of the clusters</li>
+<li></li>
+</ul>
+<p>Use a Quarto document to record your answers and output. Assignments, to include both the Quarto document and (ideally) the compiled HTML file, should be submitted to Canvas by Mar 17th. Please use the following naming convention: <code>Lab06_lastname</code>.</p>
+</section>
+<section id="appendix" class="level1">
+<h1>Appendix</h1>
+<section id="credit-risk-data-set" class="level2">
+<h2 class="anchored" data-anchor-id="credit-risk-data-set">Credit risk data set</h2>
+<p><em>credit_data.csv</em></p>
+<table class="table">
+<colgroup>
+<col style="width: 34%">
+<col style="width: 65%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Column header</th>
+<th>Variable</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>Status</code></td>
+<td>whether the customer managed to pay back the loan (0) or not (1)</td>
+</tr>
+<tr class="even">
+<td><code>Seniority</code></td>
+<td>job experience in years</td>
+</tr>
+<tr class="odd">
+<td><code>Home</code></td>
+<td>type of homeownership: renting (1), a homeowner (2), and others</td>
+</tr>
+<tr class="even">
+<td><code>Time</code></td>
+<td>period planned for the loan (in months)</td>
+</tr>
+<tr class="odd">
+<td><code>Age</code></td>
+<td>age of the client</td>
+</tr>
+<tr class="even">
+<td><code>Marital</code></td>
+<td>marital [status]: single (1), married (2), and others</td>
+</tr>
+<tr class="odd">
+<td><code>Records</code></td>
+<td>whether the client has any previous records: no (1), yes (2)</td>
+</tr>
+<tr class="even">
+<td><code>Job</code></td>
+<td>type of job: full-time (1), part-time (2), and others</td>
+</tr>
+<tr class="odd">
+<td><code>Expenses</code></td>
+<td>how much the client spends per month</td>
+</tr>
+<tr class="even">
+<td><code>Income</code></td>
+<td>how much the client earns per month</td>
+</tr>
+<tr class="odd">
+<td><code>Assets</code></td>
+<td>total worth of all the assets of the client</td>
+</tr>
+<tr class="even">
+<td><code>Debt</code></td>
+<td>amount of credit debt</td>
+</tr>
+<tr class="odd">
+<td><code>Amount</code></td>
+<td>requested amount of the loan</td>
+</tr>
+<tr class="even">
+<td><code>Price</code></td>
+<td>price of an item the client wants to buy</td>
+</tr>
+</tbody>
+</table>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

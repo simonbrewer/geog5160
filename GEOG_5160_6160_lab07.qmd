@@ -421,6 +421,19 @@ df_test = rec |>
   bake(df_test)
 ```
 
+Next, we'll split the training data into training and validation. Validation datasets are important in deep learning as the complex networks can quickly and easily overfit to the training data. Validation data are used during the training process. Following each adjustment of the weights, the network predicts the labels for the validation set, and a validation error is calculated. A decreasing validation error suggests that the model is training well to the data, but when it starts to increase, this indicates overfitting: prediction for new data becomes worse. Here, we'll remove a random sample of 20% of the original training data for validation, and use the other 80% for training.
+
+```{r}
+ntrain = nrow(df_train)
+train_id = sample(ntrain, ntrain*0.8)
+
+df_valid = df_train[-train_id, ]
+df_train = df_train[train_id, ]
+```
+
+
+As a final processing step, we'll convert all the datasets to R's matrix (or array) format. **keras** assumes that all data are in this format, which cuts down on internal processing when the model trains:
+
 We'll get a list of all the transformed features for later selection:
 
 ```{r}
@@ -429,16 +442,15 @@ feature_names = colnames(df_train) |>
 feature_names
 ```
 
-As a final processing step, we'll convert all the datasets to R's matrix (or array) format. **keras** assumes that all data are in this format, which cuts down on internal processing when the model trains:
-
-
 ```{r}
 train_features = as.matrix(df_train[,feature_names])
 train_targets <- as.matrix(df_train$Status)
 
+valid_features = as.matrix(df_valid[,feature_names])
+valid_targets <- as.matrix(df_valid$Status)
+
 test_features = as.matrix(df_test[,feature_names])
 test_targets <- as.matrix(df_test$Status)
-
 ```
 
 ## Model architecture
@@ -449,24 +461,27 @@ Now we'll turn to designing the model. The first step is to create the architect
 
 For example, to create a simple, two layer model with a single output, one hidden layer with 10 nodes, you would run the following command. Note that the first function takes the argument `input_shape` which describes the expected shape of the tensor holding the features (here 20 input features), and that we specify a ReLU activation function for the output. 
 
-The basic layer used here is a *dense* layer. This is one where every node connects to each incoming input and to each output. In this case, each of the twenty input features would connect to the 10 nodes in the hidden layer, and each of those will connect to the single output node. Each of these connections will have a weight to it, as well as a bias added to each node. Overall this gives us $20 \times 10 + 10 = 210$ from the input to the hidden layer, and $10 \times 1 + 1 = 11$, giving 221 parameters overall. 
-
 ```{r eval=TRUE}
 model <- keras_model_sequential(input_shape = c(20)) |>
   layer_dense(units = 10, activation = "relu") |>
   layer_dense(units = 1, activation = "relu")
 ```
 
+The basic layer used here is a *dense* layer. This is one where every node connects to each incoming input and to each output. In this case, each of the twenty input features would connect to the 10 nodes in the hidden layer, and each of those will connect to the single output node. Each of these connections will have a weight to it, as well as a bias added to each node. Overall this gives us $20 \times 10 + 10 = 210$ from the input to the hidden layer, and $10 \times 1 + 1 = 11$, giving 221 parameters overall. To check this we can use the `summary` function with the model object, which gives an overview of the model architecture. You'll see that it has automatically named each layer (e.g. `dense_1`) as well as the overall model (you can add names if useful). 
+
+```{r eval=TRUE}
+summary(model)
+```
+
 The other method to define the architecture uses the Keras API. This is a much more flexible approach based on graph theory and can be used to create networks that are much more complex. 
 
-For our model, we'll create something a little more complex. This will have three hidden layers, each with 256 nodes. The final layer will give the prediction. As we only need to predict one thing (the credit risk), we only need one node. We'll use ReLu activation functions throughout, except for the final layer where we use a sigmoid activation function to constrain the output to the range [0-1]. 
+For our model, we'll create something a little more complex. This will have two hidden layers, each with 256 nodes. The final layer will give the prediction. As we only need to predict one thing (the credit risk), we only need one node. We'll use ReLu activation functions throughout, except for the final layer where we use a sigmoid activation function to constrain the output to the range [0-1]. 
 
 We'll add a couple of dropout layers as well. These are layers where a proportion of the weights are set to zero, effectively removing them from any prediction. This has the effect of penalizing the model, making it slower to train, but reducing the risk of overfitting.
 
 ```{r}
 model <-
   keras_model_sequential(input_shape = ncol(train_features)) |>
-  layer_dense(256, activation = "relu") |>
   layer_dense(256, activation = "relu") |>
   layer_dropout(0.3) |>
   layer_dense(256, activation = "relu") |>
@@ -476,34 +491,54 @@ model <-
 summary(model)
 ```
 
-The `summary` function gives an overview of the model architecture. You'll see that it has automatically named each layer (e.g. `dense_1`) as well as the overall model (you can add names if useful). Note that the increase in the number of layers and nodes has had a large effect in the total number of parameters to be estimated, now at around 137,000 parameters.
+Note that the increase in the number of layers and nodes has had a large effect in the total number of parameters to be estimated, now at around 71,000 parameters.
 
+Next, we'll define the list of metrics to be calculated during training. We'll just record the accuracy, but you can add further metrics here (see the help documentation for a full list). 
 
 ```{r}
 metrics <- list(
-  metric_precision(name = "accuracy")
-  # metric_precision(name = "precision"),
-  # metric_recall(name = "recall")
+  metric_binary_accuracy(name = "accuracy")
 )
+```
+
+Next, we need to compile the model. This links the model to a specific optimizer, the loss function and any error metrics we want to calculate. 
+
+- Optimizer: We'll use the standard backpropagation algorithm here (`rmsprop`), with a learning rate of 1e-4. This is controls the amount of update for each weight at each iteration. Other optimizers include `sgd` for stochastic gradient descent and `adam` for the Adam algorithm, both of which are useful for much larger, complex data
+- Loss function. Here, we'll use binary cross entropy. This is the standard loss function for binary outcomes (cross entropy is a measure of how different two distributions are, and this is well suited to a binary classification exercise, where we want to discriminate between 0's and 1's)
+- Metrics: we simply include the list we made earlier
+
+```{r}
 model |> compile(
-  optimizer = optimizer_adam(1e-4),
+  optimizer = optimizer_rmsprop(1e-4),
   loss = "binary_crossentropy",
   metrics = metrics
 )
 ```
 
+Now we have everything in place, we can train the model. Here we specify:
 
+- the set of features for training (`train_features`)
+- the set of labels for training (`train_targets`)
+- the number of iterations to train the model for (`epochs`)
+- the `batch_size`. 
+- the validation features and labels
+
+The batch size is quite an useful parameter to make your network more efficient. This is the number of samples to pass through the network before updating weights. This allows you to trade off the speed of the calculation against the convergence. Using smaller batches uses less memory but may take longer to converge, as the weights are being updated using only a fraction of the data. Larger batches will converge quickly, by may cause memory issues, and may more easily result in overfitting. 
 
 ```{r}
 model |> fit(
   train_features, train_targets,
-  validation_data = list(test_features, test_targets),
+  validation_data = list(valid_features, valid_targets),
   batch_size = 256,
   epochs = 30,
   # callbacks = callbacks,
   verbose = 2
 )
 ```
+
+As the model runs, you'll see some output, and if you are running this in RStudio, Keras will plot the evolution of the loss function and the accuracy during the training. Pay attention to changes in the loss (which should decrease) and the accuracy (which should increase). Note that there are values for the training and for the validation set. 
+
+These results are also stored in `model$history`, which we can then plot:
 
 ```{r}
 plot(model$history$epoch, model$history$history$loss, type = 'l')
@@ -515,22 +550,24 @@ plot(model$history$epoch, model$history$history$accuracy, type = 'l')
 lines(model$history$epoch, model$history$history$val_accuracy, col = 2)
 ```
 
+These show an expected decrease in loss, and corresponding increase in accuracy for both the training and validation sets. Note that the validation loss continues to decline, which may suggest that further training would be useful.
+
+We can test the model by using the `predict` function and the test (not validation!) dataset. 
+
 ```{r}
 y_pred_test <- model |>
   predict(test_features)
+```
 
+As the predictions are probabilities [0-1], we'll now convert these to binary [0,1] and calculate the accuracy:
+
+```{r}
 y_pred_test <- ifelse(y_pred_test > 0.5, 1, 0)
-```
-
-```{r}
-table(test_targets, y_pred_test)
-```
-
-```{r}
 pred_correct <- df_test$Status == y_pred_test
 cat(sprintf("Validation accuracy: %.2f", mean(pred_correct)))
 ```
 
+We get an accuracy of about 0.8, which is not bad for a first attempt. The next steps would be to modify the network architecture to see if this could be improved on, e.g. by adding more layers or more nodes in the layers. 
 
 # Exercise
 
@@ -549,34 +586,23 @@ Use a Quarto document to record your answers and output. Assignments, to include
 
 # Appendix
 
-## Gap Minder Dataset
+## Credit risk data set
 
-GapMinder dataset on global inequality (1800 to 2018): *gapminder_1800_2018.csv*
+*credit_data.csv*
 
 | Column header     | Variable                           |
 |-------------------|------------------------------------|
-| `country`         | Country name                       |
-| `year`            | Year                               |
-| `pop`             | Population                         |
-| `child_mortality` | Child mortality rate (1000 births) |
-| `fertility`       | Birth rate                         |
-| `per_cap_co2`     | Per capita CO2 emissions           |
-| `income`          | Mean income (\$)                   |
-| `life_expectancy` | Mean life expectancy               |
-| `population`      | Population size                    |
-
-## Atlantic county cancer rates
-
-*data_atlantic_1998_2012.csv*
-
-| Column header | Variable                             |
-|---------------|--------------------------------------|
-| `FIPS`        | Country name                         |
-| `x`           | Year                                 |
-| `y`           | Population                           |
-| `Cancer`      | Cancer mortality rate / 100,000      |
-| `Poverty`     | Poverty rate (% below poverty level) |
-| `Smoking`     | Smoking rate (%)                     |
-| `PM25`        | Annual mean PM2.5 concentration      |
-| `NO2`         | Annual mean NO2 concentration        |
-| `SO2`         | Annual mean SO2 concentration        |
+| `Status`         | whether the customer managed to pay back the loan (0) or not (1)                       |
+| `Seniority`            | job experience in years                               |
+| `Home`             | type of homeownership: renting (1), a homeowner (2), and others                         |
+| `Time` | period planned for the loan (in months) |
+| `Age`       | age of the client                      |
+| `Marital`     | marital [status]: single (1), married (2), and others          |
+| `Records`          | whether the client has any previous records: no (1), yes (2)                  |
+| `Job` | type of job: full-time (1), part-time (2), and others              |
+| `Expenses`      | how much the client spends per month                  |
+| `Income`      | how much the client earns per month                    |
+| `Assets`      | total worth of all the assets of the client                    |
+| `Debt`      | amount of credit debt                   |
+| `Amount`      | requested amount of the loan                    |
+| `Price`      | price of an item the client wants to buy                   |
