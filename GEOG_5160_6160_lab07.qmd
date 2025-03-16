@@ -32,7 +32,7 @@ For the next few labs, we'll be looking at deep learning models. As these are co
 
 If at this point, this seems excessively complicated, well, it is. But there is a reason for this, which is to allow a great amount of flexibility. If you want to develop very complex models, you can work directly with the deep learning package. If you need only to use standard functions, then you can use **keras**. And if you want to use R as the front-end to all of this, you can do that too.
 
-We'll mainly be using a combination of **keras** and **tensorflow** in this class, so the goals of this lab are to introduce these are get them running with a couple of simple examples.
+We'll mainly be using a combination of **keras** and **tensorflow** in this class, so the goals of this lab are to introduce these are get them running with a couple of simple examples. . The code shown here borrows heavily from Deep Learning with R (2nd edition) by Chollet et al. 
 
 ## Objectives
 
@@ -152,7 +152,7 @@ While this will look a lot like a tensor, this is used to store values that chan
 tensor_rnd = tf$random$normal(shape(2, 3), mean = 10, stddev = 1)
 ```
 
-Then we can calcualte the square or square root:
+Then we can calculate the square or square root:
 
 ```{r}
 tf$square(tensor_rnd)
@@ -162,11 +162,9 @@ tf$square(tensor_rnd)
 tf$sqrt(tensor_rnd)
 ```
 
-There are also specific functions that are key to train a neural netwok. You might recall from the lecture that there are three main calculate steps. 
+There are also specific functions that are key to train a neural network. You might recall from the lecture that there are three main calculate steps. 
 
-1) In the forward pass, the output of every neuron in the network is calculated as the weighted sum of the inputs, plus a bias term $y = W \cdot x + b$. The first part of this equation is the dot product of two matrices, the array of weights ($W$) and the input values ($x$). In tensorflow, this calculated using the `matmul` function.
-
-For example, here we create tensors of weights and random input values and multiply them together:
+1) In the forward pass, the output of every neuron in the network is calculated as the weighted sum of the inputs, plus a bias term $y = W \cdot x + b$. The first part of this equation is the dot product of two matrices, the array of weights ($W$) and the input values ($x$). In tensorflow, this calculated using the `matmul` function. For example, here we create tensors of weights and random input values and multiply them together:
 
 ```{r}
 W <- tf$Variable(array(runif(4), c(2,2)))
@@ -218,7 +216,9 @@ plot(x, x_act)
 
 3. Backpropagation
 
-Following the forward pass, neural networks are trained using backpropagation. In this step, a gradient is calculated for each weight relatively to the loss or error. This gradient tells the network how much to update each weight (steep gradients mean that the error is large and a larger update is needed), as well as the direction of change (positive or negative). This becomes very complicated in larger networks, where this has to be (back)propagated through multiple layers and across mulitple nodes. Tensorflow uses the concept of a gradient *tape* to help in this. This records all the necessary steps to estimate these gradients by tracking all the connections in the network. Once set up, it can then estimate the gradient of any output in the network relative to any variable or set of variables. To illustrate this, the following code uses a simple model of $y = 2 \times x + 3$. This is used to create a `GradientTape` object, and then we can estimate the gradient. As this is just a simple linear model, the gradient is, of course, the slope of 2:
+Following the forward pass, neural networks are trained using backpropagation. In this step, a gradient is calculated for each weight relatively to the loss or error. This gradient tells the network how much to update each weight (steep gradients mean that the error is large and a larger update is needed), as well as the direction of change (positive or negative). This becomes very complicated in larger networks, where this has to be (back)propagated through multiple layers and across mulitple nodes. Tensorflow uses the concept of a gradient *tape* to help in this. This records all the necessary steps to estimate these gradients by tracking all the connections in the network. Once set up, it can then estimate the gradient of any output in the network relative to any variable or set of variables. 
+
+To illustrate this, the following code uses a simple model of $y = 2 \times x + 3$. This is used to create a `GradientTape` object, and then we can estimate the gradient for `y` with respect to `x`. As this is just a simple linear model, the gradient is, of course, the slope of 2:
 
 ```{r}
 x <- tf$Variable(0)
@@ -571,18 +571,15 @@ We get an accuracy of about 0.8, which is not bad for a first attempt. The next 
 
 # Exercise
 
-For the exercise, you will need to build use an unsupervised classification method with the Cancer dataset from the lab 4 (*data_atlantic_1998_2012.csv*). As a reminder, this file contains information on cancer rates from around 660 counties in the eastern part of the US. There is also a shapefile with the polygons for each county (*COUNTY_ATLANTIC.shp*).
+For the exercise, you just need to make a new model for the credit score data. There are several things that you can try, including:
 
-For the exercise, you will need to cluster these data and map out the resulting clusters. You will need to carry out the following steps:
+- Adding more layers
+- Adding more nodes
+- Changing the learning rate, batch size or number of training epochs
 
--   Read in the data and select the columns: `Cancer`, `Smoking`, `Poverty`, `PM25`, `SO2` and `NO2`
--   Scale the data using a $z$-score transform
--   Cluster the data using *either* $k$-means *or* a self-organizing map
--   Extract the cluster number for each county and add it to the shapefile
--   Make a map of the clusters
--   
+Use a Quarto document to record the code describing the changes in your model setup. You should also re-train the model and make a new set of predictions for the test set, and report the accuracy. Assignments, to include both the Quarto document and (ideally) the compiled HTML file, should be submitted to Canvas by March 31st. Please use the following naming convention: Lab07_lastname.
 
-Use a Quarto document to record your answers and output. Assignments, to include both the Quarto document and (ideally) the compiled HTML file, should be submitted to Canvas by Mar 17th. Please use the following naming convention: `Lab06_lastname`.
+Please use the following naming convention: `Lab07_lastname.ipynb`.
 
 # Appendix
 

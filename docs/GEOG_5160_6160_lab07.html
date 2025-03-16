@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Simon Brewer">
-<meta name="dcterms.date" content="2025-03-13">
+<meta name="dcterms.date" content="2025-03-15">
 
 <title>GEOG 5160 6160 Lab 07</title>
 <style>
@@ -206,7 +206,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">March 13, 2025</p>
+      <p class="date">March 15, 2025</p>
     </div>
   </div>
   
@@ -227,7 +227,7 @@ window.Quarto = {
 <li>The R <strong>keras</strong> package. This uses the <strong>reticulate</strong> package to call <strong>keras</strong> functions from R</li>
 </ul>
 <p>If at this point, this seems excessively complicated, well, it is. But there is a reason for this, which is to allow a great amount of flexibility. If you want to develop very complex models, you can work directly with the deep learning package. If you need only to use standard functions, then you can use <strong>keras</strong>. And if you want to use R as the front-end to all of this, you can do that too.</p>
-<p>We’ll mainly be using a combination of <strong>keras</strong> and <strong>tensorflow</strong> in this class, so the goals of this lab are to introduce these are get them running with a couple of simple examples.</p>
+<p>We’ll mainly be using a combination of <strong>keras</strong> and <strong>tensorflow</strong> in this class, so the goals of this lab are to introduce these are get them running with a couple of simple examples. . The code shown here borrows heavily from Deep Learning with R (2nd edition) by Chollet et al.&nbsp;</p>
 <section id="objectives" class="level2">
 <h2 class="anchored" data-anchor-id="objectives">Objectives</h2>
 <ul>
@@ -343,12 +343,12 @@ use_virtualenv("r-keras")</code></pre>
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Tensor of random numbers (normally distributed)</span></span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>tf<span class="sc">$</span>random<span class="sc">$</span><span class="fu">normal</span>(<span class="fu">shape</span>(<span class="dv">1</span>, <span class="dv">3</span>), <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">stddev =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>tf.Tensor([[ 0.06901879  1.7105858  -0.4723271 ]], shape=(1, 3), dtype=float32)</code></pre>
+<pre><code>tf.Tensor([[ 0.22671565 -1.5747831  -0.25572237]], shape=(1, 3), dtype=float32)</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Tensor of random numbers (uniformly distributed)</span></span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>tf<span class="sc">$</span>random<span class="sc">$</span><span class="fu">uniform</span>(<span class="fu">shape</span>(<span class="dv">1</span>, <span class="dv">3</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>tf.Tensor([[0.1366911  0.44991148 0.48229814]], shape=(1, 3), dtype=float32)</code></pre>
+<pre><code>tf.Tensor([[0.87550557 0.3742311  0.01553428]], shape=(1, 3), dtype=float32)</code></pre>
 </div>
 </div>
 <p><strong>tensorflow</strong> also defines a <code>variable</code> data type:</p>
@@ -369,28 +369,27 @@ array([[0., 0.],
 <div class="cell">
 <div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>tensor_rnd <span class="ot">=</span> tf<span class="sc">$</span>random<span class="sc">$</span><span class="fu">normal</span>(<span class="fu">shape</span>(<span class="dv">2</span>, <span class="dv">3</span>), <span class="at">mean =</span> <span class="dv">10</span>, <span class="at">stddev =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Then we can calcualte the square or square root:</p>
+<p>Then we can calculate the square or square root:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>tf<span class="sc">$</span><span class="fu">square</span>(tensor_rnd)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>tf.Tensor(
-[[89.538086 92.906456 84.85223 ]
- [93.91021  87.249054 86.6687  ]], shape=(2, 3), dtype=float32)</code></pre>
+[[ 71.1127   81.26277 108.05485]
+ [113.52463  93.19283 120.59773]], shape=(2, 3), dtype=float32)</code></pre>
 </div>
 </div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>tf<span class="sc">$</span><span class="fu">sqrt</span>(tensor_rnd)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>tf.Tensor(
-[[3.0761106 3.1046417 3.0350497]
- [3.1129935 3.0562592 3.0511642]], shape=(2, 3), dtype=float32)</code></pre>
+[[2.9039342 3.0024302 3.224119 ]
+ [3.2641683 3.1070313 3.3138647]], shape=(2, 3), dtype=float32)</code></pre>
 </div>
 </div>
-<p>There are also specific functions that are key to train a neural netwok. You might recall from the lecture that there are three main calculate steps.</p>
+<p>There are also specific functions that are key to train a neural network. You might recall from the lecture that there are three main calculate steps.</p>
 <ol type="1">
-<li>In the forward pass, the output of every neuron in the network is calculated as the weighted sum of the inputs, plus a bias term <span class="math inline">\(y = W \cdot x + b\)</span>. The first part of this equation is the dot product of two matrices, the array of weights (<span class="math inline">\(W\)</span>) and the input values (<span class="math inline">\(x\)</span>). In tensorflow, this calculated using the <code>matmul</code> function.</li>
+<li>In the forward pass, the output of every neuron in the network is calculated as the weighted sum of the inputs, plus a bias term <span class="math inline">\(y = W \cdot x + b\)</span>. The first part of this equation is the dot product of two matrices, the array of weights (<span class="math inline">\(W\)</span>) and the input values (<span class="math inline">\(x\)</span>). In tensorflow, this calculated using the <code>matmul</code> function. For example, here we create tensors of weights and random input values and multiply them together:</li>
 </ol>
-<p>For example, here we create tensors of weights and random input values and multiply them together:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>W <span class="ot">&lt;-</span> tf<span class="sc">$</span><span class="fu">Variable</span>(<span class="fu">array</span>(<span class="fu">runif</span>(<span class="dv">4</span>), <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>)))</span>
 <span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(W)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -479,7 +478,8 @@ array([[0.91480604, 0.28613953],
 <ol start="3" type="1">
 <li>Backpropagation</li>
 </ol>
-<p>Following the forward pass, neural networks are trained using backpropagation. In this step, a gradient is calculated for each weight relatively to the loss or error. This gradient tells the network how much to update each weight (steep gradients mean that the error is large and a larger update is needed), as well as the direction of change (positive or negative). This becomes very complicated in larger networks, where this has to be (back)propagated through multiple layers and across mulitple nodes. Tensorflow uses the concept of a gradient <em>tape</em> to help in this. This records all the necessary steps to estimate these gradients by tracking all the connections in the network. Once set up, it can then estimate the gradient of any output in the network relative to any variable or set of variables. To illustrate this, the following code uses a simple model of <span class="math inline">\(y = 2 \times x + 3\)</span>. This is used to create a <code>GradientTape</code> object, and then we can estimate the gradient. As this is just a simple linear model, the gradient is, of course, the slope of 2:</p>
+<p>Following the forward pass, neural networks are trained using backpropagation. In this step, a gradient is calculated for each weight relatively to the loss or error. This gradient tells the network how much to update each weight (steep gradients mean that the error is large and a larger update is needed), as well as the direction of change (positive or negative). This becomes very complicated in larger networks, where this has to be (back)propagated through multiple layers and across mulitple nodes. Tensorflow uses the concept of a gradient <em>tape</em> to help in this. This records all the necessary steps to estimate these gradients by tracking all the connections in the network. Once set up, it can then estimate the gradient of any output in the network relative to any variable or set of variables.</p>
+<p>To illustrate this, the following code uses a simple model of <span class="math inline">\(y = 2 \times x + 3\)</span>. This is used to create a <code>GradientTape</code> object, and then we can estimate the gradient for <code>y</code> with respect to <code>x</code>. As this is just a simple linear model, the gradient is, of course, the slope of 2:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> tf<span class="sc">$</span><span class="fu">Variable</span>(<span class="dv">0</span>)</span>
 <span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a><span class="fu">with</span>(tf<span class="sc">$</span><span class="fu">GradientTape</span>() <span class="sc">%as%</span> tape, {</span>
@@ -541,8 +541,8 @@ array([[0.91480604, 0.28613953],
 <span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(W)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>&lt;tf.Variable 'Variable:0' shape=(2, 1) dtype=float32, numpy=
-array([[0.03435946],
-       [0.9805056 ]], dtype=float32)&gt;</code></pre>
+array([[0.24803936],
+       [0.05983651]], dtype=float32)&gt;</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> tf<span class="sc">$</span><span class="fu">Variable</span>(<span class="at">initial_value =</span> tf<span class="sc">$</span><span class="fu">zeros</span>(<span class="fu">shape</span>(output_dim)))</span>
 <span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(b)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -564,7 +564,7 @@ array([[0.03435946],
 <div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>input1 <span class="ot">=</span> <span class="fu">as_tensor</span>(<span class="fu">array</span>(inputs[<span class="dv">1</span>, ], <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>)), <span class="at">dtype =</span> <span class="st">'float32'</span>)</span>
 <span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a><span class="fu">model</span>(input1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>tf.Tensor([[1.9723705]], shape=(1, 1), dtype=float32)</code></pre>
+<pre><code>tf.Tensor([[0.3087606]], shape=(1, 1), dtype=float32)</code></pre>
 </div>
 </div>
 <p>Giving the predicted value for the first observation (which is a <code>0</code>). This is obviously with random weights, so there’s really no expectation that it will be close to the actual value. Next, we need to calculate how close it is through a loss function. For this example, we’ll use a simple mean squared error, and we’ll create a function to calculate that:</p>
@@ -596,46 +596,46 @@ array([[0.03435946],
 <span id="cb60-4"><a href="#cb60-4" aria-hidden="true" tabindex="-1"></a>   <span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"Loss at step %s: %.4f</span><span class="sc">\n</span><span class="st">"</span>, step, loss))</span>
 <span id="cb60-5"><a href="#cb60-5" aria-hidden="true" tabindex="-1"></a> }</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Loss at step 1: 5.7709
-Loss at step 2: 0.3353
-Loss at step 3: 0.1429
-Loss at step 4: 0.1151
-Loss at step 5: 0.1054
-Loss at step 6: 0.0982
-Loss at step 7: 0.0919
-Loss at step 8: 0.0861
-Loss at step 9: 0.0808
-Loss at step 10: 0.0760
-Loss at step 11: 0.0716
-Loss at step 12: 0.0676
-Loss at step 13: 0.0640
-Loss at step 14: 0.0606
-Loss at step 15: 0.0576
-Loss at step 16: 0.0548
-Loss at step 17: 0.0523
-Loss at step 18: 0.0500
-Loss at step 19: 0.0479
-Loss at step 20: 0.0460
-Loss at step 21: 0.0442
-Loss at step 22: 0.0426
-Loss at step 23: 0.0412
-Loss at step 24: 0.0398
-Loss at step 25: 0.0386
-Loss at step 26: 0.0375
-Loss at step 27: 0.0365
-Loss at step 28: 0.0356
-Loss at step 29: 0.0347
-Loss at step 30: 0.0340
-Loss at step 31: 0.0333
-Loss at step 32: 0.0326
-Loss at step 33: 0.0321
-Loss at step 34: 0.0315
-Loss at step 35: 0.0310
-Loss at step 36: 0.0306
-Loss at step 37: 0.0302
-Loss at step 38: 0.0298
-Loss at step 39: 0.0295
-Loss at step 40: 0.0292</code></pre>
+<pre><code>Loss at step 1: 0.1316
+Loss at step 2: 0.0873
+Loss at step 3: 0.0813
+Loss at step 4: 0.0764
+Loss at step 5: 0.0720
+Loss at step 6: 0.0679
+Loss at step 7: 0.0643
+Loss at step 8: 0.0609
+Loss at step 9: 0.0578
+Loss at step 10: 0.0550
+Loss at step 11: 0.0525
+Loss at step 12: 0.0502
+Loss at step 13: 0.0481
+Loss at step 14: 0.0461
+Loss at step 15: 0.0444
+Loss at step 16: 0.0427
+Loss at step 17: 0.0413
+Loss at step 18: 0.0399
+Loss at step 19: 0.0387
+Loss at step 20: 0.0376
+Loss at step 21: 0.0366
+Loss at step 22: 0.0356
+Loss at step 23: 0.0348
+Loss at step 24: 0.0340
+Loss at step 25: 0.0333
+Loss at step 26: 0.0327
+Loss at step 27: 0.0321
+Loss at step 28: 0.0316
+Loss at step 29: 0.0311
+Loss at step 30: 0.0306
+Loss at step 31: 0.0302
+Loss at step 32: 0.0298
+Loss at step 33: 0.0295
+Loss at step 34: 0.0292
+Loss at step 35: 0.0289
+Loss at step 36: 0.0287
+Loss at step 37: 0.0284
+Loss at step 38: 0.0282
+Loss at step 39: 0.0280
+Loss at step 40: 0.0278</code></pre>
 </div>
 </div>
 <p>Once trained, we can predict for each of the original observations and plot the predicted values. We’ll use a simple threshold of 0.5 (i.e.&nbsp;predictions above 0.5 are classed as <code>1</code>, below 0.5 as <code>0</code>). We can also plot the classifier by using the trained values of <code>W</code> and <code>b</code> to get the slope and intercept:</p>
@@ -1015,7 +1015,7 @@ Loss at step 40: 0.0292</code></pre>
 ✖ dplyr::lag()             masks stats::lag()
 ✖ yardstick::spec()        masks readr::spec()
 ✖ .GlobalEnv::step()       masks recipes::step(), stats::step()
-• Use tidymodels_prefer() to resolve common conflicts.</code></pre>
+• Search for functions across packages at https://www.tidymodels.org/find/</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a>df_split <span class="ot">=</span> <span class="fu">initial_split</span>(df, <span class="at">prop =</span> <span class="fl">0.8</span>)</span>
 <span id="cb74-2"><a href="#cb74-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -1184,65 +1184,65 @@ ________________________________________________________________________________
 <span id="cb91-8"><a href="#cb91-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Epoch 1/30
-11/11 - 0s - loss: 0.6635 - accuracy: 0.6192 - val_loss: 0.6198 - val_accuracy: 0.7264 - 428ms/epoch - 39ms/step
+11/11 - 0s - loss: 0.7006 - accuracy: 0.4996 - val_loss: 0.6464 - val_accuracy: 0.7063 - 453ms/epoch - 41ms/step
 Epoch 2/30
-11/11 - 0s - loss: 0.6030 - accuracy: 0.7303 - val_loss: 0.5924 - val_accuracy: 0.7295 - 31ms/epoch - 3ms/step
+11/11 - 0s - loss: 0.6254 - accuracy: 0.7125 - val_loss: 0.6098 - val_accuracy: 0.7280 - 33ms/epoch - 3ms/step
 Epoch 3/30
-11/11 - 0s - loss: 0.5762 - accuracy: 0.7500 - val_loss: 0.5770 - val_accuracy: 0.7280 - 23ms/epoch - 2ms/step
+11/11 - 0s - loss: 0.5948 - accuracy: 0.7411 - val_loss: 0.5912 - val_accuracy: 0.7280 - 24ms/epoch - 2ms/step
 Epoch 4/30
-11/11 - 0s - loss: 0.5617 - accuracy: 0.7473 - val_loss: 0.5673 - val_accuracy: 0.7280 - 23ms/epoch - 2ms/step
+11/11 - 0s - loss: 0.5767 - accuracy: 0.7461 - val_loss: 0.5797 - val_accuracy: 0.7280 - 25ms/epoch - 2ms/step
 Epoch 5/30
-11/11 - 0s - loss: 0.5483 - accuracy: 0.7477 - val_loss: 0.5599 - val_accuracy: 0.7280 - 23ms/epoch - 2ms/step
+11/11 - 0s - loss: 0.5613 - accuracy: 0.7481 - val_loss: 0.5716 - val_accuracy: 0.7280 - 24ms/epoch - 2ms/step
 Epoch 6/30
-11/11 - 0s - loss: 0.5402 - accuracy: 0.7438 - val_loss: 0.5542 - val_accuracy: 0.7280 - 23ms/epoch - 2ms/step
+11/11 - 0s - loss: 0.5502 - accuracy: 0.7465 - val_loss: 0.5649 - val_accuracy: 0.7280 - 24ms/epoch - 2ms/step
 Epoch 7/30
-11/11 - 0s - loss: 0.5317 - accuracy: 0.7469 - val_loss: 0.5491 - val_accuracy: 0.7295 - 23ms/epoch - 2ms/step
+11/11 - 0s - loss: 0.5450 - accuracy: 0.7473 - val_loss: 0.5603 - val_accuracy: 0.7280 - 24ms/epoch - 2ms/step
 Epoch 8/30
-11/11 - 0s - loss: 0.5239 - accuracy: 0.7512 - val_loss: 0.5436 - val_accuracy: 0.7311 - 23ms/epoch - 2ms/step
+11/11 - 0s - loss: 0.5377 - accuracy: 0.7481 - val_loss: 0.5549 - val_accuracy: 0.7280 - 24ms/epoch - 2ms/step
 Epoch 9/30
-11/11 - 0s - loss: 0.5174 - accuracy: 0.7543 - val_loss: 0.5393 - val_accuracy: 0.7357 - 23ms/epoch - 2ms/step
+11/11 - 0s - loss: 0.5294 - accuracy: 0.7496 - val_loss: 0.5501 - val_accuracy: 0.7280 - 24ms/epoch - 2ms/step
 Epoch 10/30
-11/11 - 0s - loss: 0.5117 - accuracy: 0.7604 - val_loss: 0.5354 - val_accuracy: 0.7326 - 26ms/epoch - 2ms/step
+11/11 - 0s - loss: 0.5215 - accuracy: 0.7539 - val_loss: 0.5464 - val_accuracy: 0.7280 - 26ms/epoch - 2ms/step
 Epoch 11/30
-11/11 - 0s - loss: 0.5079 - accuracy: 0.7597 - val_loss: 0.5318 - val_accuracy: 0.7342 - 26ms/epoch - 2ms/step
+11/11 - 0s - loss: 0.5188 - accuracy: 0.7562 - val_loss: 0.5420 - val_accuracy: 0.7326 - 26ms/epoch - 2ms/step
 Epoch 12/30
-11/11 - 0s - loss: 0.4974 - accuracy: 0.7604 - val_loss: 0.5269 - val_accuracy: 0.7311 - 25ms/epoch - 2ms/step
+11/11 - 0s - loss: 0.5077 - accuracy: 0.7581 - val_loss: 0.5384 - val_accuracy: 0.7326 - 25ms/epoch - 2ms/step
 Epoch 13/30
-11/11 - 0s - loss: 0.4980 - accuracy: 0.7639 - val_loss: 0.5224 - val_accuracy: 0.7403 - 24ms/epoch - 2ms/step
+11/11 - 0s - loss: 0.5062 - accuracy: 0.7597 - val_loss: 0.5349 - val_accuracy: 0.7403 - 25ms/epoch - 2ms/step
 Epoch 14/30
-11/11 - 0s - loss: 0.4918 - accuracy: 0.7697 - val_loss: 0.5193 - val_accuracy: 0.7419 - 24ms/epoch - 2ms/step
+11/11 - 0s - loss: 0.5006 - accuracy: 0.7620 - val_loss: 0.5311 - val_accuracy: 0.7357 - 26ms/epoch - 2ms/step
 Epoch 15/30
-11/11 - 0s - loss: 0.4891 - accuracy: 0.7717 - val_loss: 0.5162 - val_accuracy: 0.7465 - 24ms/epoch - 2ms/step
+11/11 - 0s - loss: 0.4920 - accuracy: 0.7721 - val_loss: 0.5277 - val_accuracy: 0.7403 - 25ms/epoch - 2ms/step
 Epoch 16/30
-11/11 - 0s - loss: 0.4769 - accuracy: 0.7744 - val_loss: 0.5132 - val_accuracy: 0.7496 - 25ms/epoch - 2ms/step
+11/11 - 0s - loss: 0.4893 - accuracy: 0.7740 - val_loss: 0.5251 - val_accuracy: 0.7450 - 25ms/epoch - 2ms/step
 Epoch 17/30
-11/11 - 0s - loss: 0.4739 - accuracy: 0.7771 - val_loss: 0.5099 - val_accuracy: 0.7527 - 25ms/epoch - 2ms/step
+11/11 - 0s - loss: 0.4842 - accuracy: 0.7678 - val_loss: 0.5215 - val_accuracy: 0.7512 - 26ms/epoch - 2ms/step
 Epoch 18/30
-11/11 - 0s - loss: 0.4731 - accuracy: 0.7794 - val_loss: 0.5069 - val_accuracy: 0.7573 - 24ms/epoch - 2ms/step
+11/11 - 0s - loss: 0.4818 - accuracy: 0.7759 - val_loss: 0.5189 - val_accuracy: 0.7527 - 26ms/epoch - 2ms/step
 Epoch 19/30
-11/11 - 0s - loss: 0.4693 - accuracy: 0.7821 - val_loss: 0.5037 - val_accuracy: 0.7558 - 24ms/epoch - 2ms/step
+11/11 - 0s - loss: 0.4841 - accuracy: 0.7813 - val_loss: 0.5155 - val_accuracy: 0.7512 - 25ms/epoch - 2ms/step
 Epoch 20/30
-11/11 - 0s - loss: 0.4618 - accuracy: 0.7790 - val_loss: 0.5013 - val_accuracy: 0.7558 - 24ms/epoch - 2ms/step
+11/11 - 0s - loss: 0.4725 - accuracy: 0.7806 - val_loss: 0.5122 - val_accuracy: 0.7512 - 25ms/epoch - 2ms/step
 Epoch 21/30
-11/11 - 0s - loss: 0.4660 - accuracy: 0.7833 - val_loss: 0.4983 - val_accuracy: 0.7512 - 24ms/epoch - 2ms/step
+11/11 - 0s - loss: 0.4743 - accuracy: 0.7852 - val_loss: 0.5090 - val_accuracy: 0.7558 - 26ms/epoch - 2ms/step
 Epoch 22/30
-11/11 - 0s - loss: 0.4583 - accuracy: 0.7868 - val_loss: 0.4962 - val_accuracy: 0.7589 - 23ms/epoch - 2ms/step
+11/11 - 0s - loss: 0.4694 - accuracy: 0.7895 - val_loss: 0.5061 - val_accuracy: 0.7558 - 25ms/epoch - 2ms/step
 Epoch 23/30
-11/11 - 0s - loss: 0.4580 - accuracy: 0.7864 - val_loss: 0.4936 - val_accuracy: 0.7604 - 24ms/epoch - 2ms/step
+11/11 - 0s - loss: 0.4661 - accuracy: 0.7875 - val_loss: 0.5045 - val_accuracy: 0.7604 - 25ms/epoch - 2ms/step
 Epoch 24/30
-11/11 - 0s - loss: 0.4563 - accuracy: 0.7906 - val_loss: 0.4925 - val_accuracy: 0.7620 - 24ms/epoch - 2ms/step
+11/11 - 0s - loss: 0.4590 - accuracy: 0.7976 - val_loss: 0.5017 - val_accuracy: 0.7666 - 26ms/epoch - 2ms/step
 Epoch 25/30
-11/11 - 0s - loss: 0.4503 - accuracy: 0.7930 - val_loss: 0.4900 - val_accuracy: 0.7604 - 24ms/epoch - 2ms/step
+11/11 - 0s - loss: 0.4532 - accuracy: 0.7961 - val_loss: 0.5001 - val_accuracy: 0.7620 - 26ms/epoch - 2ms/step
 Epoch 26/30
-11/11 - 0s - loss: 0.4517 - accuracy: 0.7972 - val_loss: 0.4874 - val_accuracy: 0.7635 - 24ms/epoch - 2ms/step
+11/11 - 0s - loss: 0.4520 - accuracy: 0.7891 - val_loss: 0.4970 - val_accuracy: 0.7635 - 25ms/epoch - 2ms/step
 Epoch 27/30
-11/11 - 0s - loss: 0.4491 - accuracy: 0.7930 - val_loss: 0.4864 - val_accuracy: 0.7651 - 25ms/epoch - 2ms/step
+11/11 - 0s - loss: 0.4495 - accuracy: 0.7926 - val_loss: 0.4949 - val_accuracy: 0.7666 - 25ms/epoch - 2ms/step
 Epoch 28/30
-11/11 - 0s - loss: 0.4473 - accuracy: 0.8011 - val_loss: 0.4839 - val_accuracy: 0.7774 - 24ms/epoch - 2ms/step
+11/11 - 0s - loss: 0.4515 - accuracy: 0.7972 - val_loss: 0.4938 - val_accuracy: 0.7651 - 25ms/epoch - 2ms/step
 Epoch 29/30
-11/11 - 0s - loss: 0.4460 - accuracy: 0.7949 - val_loss: 0.4823 - val_accuracy: 0.7821 - 24ms/epoch - 2ms/step
+11/11 - 0s - loss: 0.4454 - accuracy: 0.7995 - val_loss: 0.4929 - val_accuracy: 0.7635 - 25ms/epoch - 2ms/step
 Epoch 30/30
-11/11 - 0s - loss: 0.4466 - accuracy: 0.7953 - val_loss: 0.4821 - val_accuracy: 0.7790 - 24ms/epoch - 2ms/step</code></pre>
+11/11 - 0s - loss: 0.4430 - accuracy: 0.7926 - val_loss: 0.4904 - val_accuracy: 0.7697 - 24ms/epoch - 2ms/step</code></pre>
 </div>
 </div>
 <p>As the model runs, you’ll see some output, and if you are running this in RStudio, Keras will plot the evolution of the loss function and the accuracy during the training. Pay attention to changes in the loss (which should decrease) and the accuracy (which should increase). Note that there are values for the training and for the validation set.</p>
@@ -1275,7 +1275,7 @@ Epoch 30/30
 <div class="sourceCode cell-code" id="cb95"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb95-1"><a href="#cb95-1" aria-hidden="true" tabindex="-1"></a>y_pred_test <span class="ot">&lt;-</span> model <span class="sc">|&gt;</span></span>
 <span id="cb95-2"><a href="#cb95-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">predict</span>(test_features)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>26/26 - 0s - 54ms/epoch - 2ms/step</code></pre>
+<pre><code>26/26 - 0s - 46ms/epoch - 2ms/step</code></pre>
 </div>
 </div>
 <p>As the predictions are probabilities [0-1], we’ll now convert these to binary [0,1] and calculate the accuracy:</p>
@@ -1284,7 +1284,7 @@ Epoch 30/30
 <span id="cb97-2"><a href="#cb97-2" aria-hidden="true" tabindex="-1"></a>pred_correct <span class="ot">&lt;-</span> df_test<span class="sc">$</span>Status <span class="sc">==</span> y_pred_test</span>
 <span id="cb97-3"><a href="#cb97-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"Validation accuracy: %.2f"</span>, <span class="fu">mean</span>(pred_correct)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Validation accuracy: 0.80</code></pre>
+<pre><code>Validation accuracy: 0.81</code></pre>
 </div>
 </div>
 <p>We get an accuracy of about 0.8, which is not bad for a first attempt. The next steps would be to modify the network architecture to see if this could be improved on, e.g.&nbsp;by adding more layers or more nodes in the layers.</p>
@@ -1293,17 +1293,14 @@ Epoch 30/30
 </section>
 <section id="exercise" class="level1">
 <h1>Exercise</h1>
-<p>For the exercise, you will need to build use an unsupervised classification method with the Cancer dataset from the lab 4 (<em>data_atlantic_1998_2012.csv</em>). As a reminder, this file contains information on cancer rates from around 660 counties in the eastern part of the US. There is also a shapefile with the polygons for each county (<em>COUNTY_ATLANTIC.shp</em>).</p>
-<p>For the exercise, you will need to cluster these data and map out the resulting clusters. You will need to carry out the following steps:</p>
+<p>For the exercise, you just need to make a new model for the credit score data. There are several things that you can try, including:</p>
 <ul>
-<li>Read in the data and select the columns: <code>Cancer</code>, <code>Smoking</code>, <code>Poverty</code>, <code>PM25</code>, <code>SO2</code> and <code>NO2</code></li>
-<li>Scale the data using a <span class="math inline">\(z\)</span>-score transform</li>
-<li>Cluster the data using <em>either</em> <span class="math inline">\(k\)</span>-means <em>or</em> a self-organizing map</li>
-<li>Extract the cluster number for each county and add it to the shapefile</li>
-<li>Make a map of the clusters</li>
-<li></li>
+<li>Adding more layers</li>
+<li>Adding more nodes</li>
+<li>Changing the learning rate, batch size or number of training epochs</li>
 </ul>
-<p>Use a Quarto document to record your answers and output. Assignments, to include both the Quarto document and (ideally) the compiled HTML file, should be submitted to Canvas by Mar 17th. Please use the following naming convention: <code>Lab06_lastname</code>.</p>
+<p>Use a Quarto document to record the code describing the changes in your model setup. You should also re-train the model and make a new set of predictions for the test set, and report the accuracy. Assignments, to include both the Quarto document and (ideally) the compiled HTML file, should be submitted to Canvas by March 31st. Please use the following naming convention: Lab07_lastname.</p>
+<p>Please use the following naming convention: <code>Lab07_lastname.ipynb</code>.</p>
 </section>
 <section id="appendix" class="level1">
 <h1>Appendix</h1>
