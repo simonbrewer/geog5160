@@ -44,6 +44,14 @@ Spatial data science is a fast-growing discipline, with wide-ranging application
     - [Lab notes (R)][lab05r]
     - [Lab notes (Python notebook)][lab05p]
     - [Lab notes (Python colab)][lab05c]
+- Lab 6
+    - [Lab notes (R)][lab06r]
+    - [Lab notes (Python notebook)][lab06p]
+    - [Lab notes (Python colab)]
+- Lab 7
+    - [Lab notes (R)][lab07r]
+    - [Lab notes (Python notebook)][lab07p]
+    - [Lab notes (Python colab)]
 
 # Data
 
@@ -64,6 +72,13 @@ Spatial data science is a fast-growing discipline, with wide-ranging application
 - Lab 5
     - [Bike rental dataset][bike]
     - [Housing dataset][housing]
+- Lab 6
+    - [Gapminder dataset][gap]
+    - [Natural Earth coastlines][ne_shp]
+    - [Cancer mortality rates][cancer]
+    - [Atlantic county shapefile][atl_shp]
+- Lab 7
+    - [Classification dataset][class_data]
     
 
 [install]: https://simonbrewer.github.io/geog5160/GEOG_5160_6160_Installation.html
@@ -81,6 +96,10 @@ Spatial data science is a fast-growing discipline, with wide-ranging application
 [lab04c]: https://colab.research.google.com/drive/11buvWJVZ3GPZasCv0wNlfqSzjLreTEQA?usp=sharing
 [lab05r]: https://simonbrewer.github.io/geog5160/GEOG_5160_6160_lab05.html
 [lab05p]: https://github.com/simonbrewer/geog5160/blob/main/GEOG_5160_6160_lab05.ipynb
+[lab06r]: https://simonbrewer.github.io/geog5160/GEOG_5160_6160_lab06.html
+[lab06p]: https://github.com/simonbrewer/geog5160/blob/main/GEOG_5160_6160_lab06.ipynb
+[lab07r]: https://simonbrewer.github.io/geog5160/GEOG_5160_6160_lab07.html
+[lab07p]: https://github.com/simonbrewer/geog5160/blob/main/GEOG_5160_6160_lab07.ipynb
 
 [penguins]: https://drive.google.com/file/d/1Sb5uv2RP_gcNJDKmlEjBoSUOdETIq2Jf/view?usp=sharing
 [housing]: https://drive.google.com/file/d/1pTBKamvTk7ZLsRIFKRNQ37_XU2J5y9XT/view?usp=sharing
@@ -93,3 +112,5 @@ Spatial data science is a fast-growing discipline, with wide-ranging application
 [lslpts]: https://drive.google.com/file/d/1x9bZXR86J-kFxufFvmNpbrid66krbONI/view?usp=sharing
 [lsl_ta]: https://drive.google.com/file/d/1DO6eyL-N48rM-2pU4ddwMn4YFRoouYtM/view?usp=sharing
 [bike]: https://drive.google.com/file/d/1vuFJPShROaRHSc_rJrRkskTiIQONjLzk/view?usp=sharing
+[gap]: https://drive.google.com/file/d/1KKqQFDBv8Axditeo95wgRECrA9jCPchD/view?usp=sharing
+[class_data]: https://drive.google.com/file/d/1282606hbmX2UuBd6IoKpXQy9TbS3-yZ7/view?usp=sharing
