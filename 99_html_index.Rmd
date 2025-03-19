@@ -79,6 +79,7 @@ Spatial data science is a fast-growing discipline, with wide-ranging application
     - [Atlantic county shapefile][atl_shp]
 - Lab 7
     - [Classification dataset][class_data]
+    - [Credit dataset][credit_data]
     
 
 [install]: https://simonbrewer.github.io/geog5160/GEOG_5160_6160_Installation.html
@@ -114,3 +115,4 @@ Spatial data science is a fast-growing discipline, with wide-ranging application
 [bike]: https://drive.google.com/file/d/1vuFJPShROaRHSc_rJrRkskTiIQONjLzk/view?usp=sharing
 [gap]: https://drive.google.com/file/d/1KKqQFDBv8Axditeo95wgRECrA9jCPchD/view?usp=sharing
 [class_data]: https://drive.google.com/file/d/1282606hbmX2UuBd6IoKpXQy9TbS3-yZ7/view?usp=sharing
+[credit_data]: https://drive.google.com/file/d/13dbnHh0VMEb8dlTf-YU6CJC4tday8L6V/view?usp=sharing
