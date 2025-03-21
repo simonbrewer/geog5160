@@ -1,0 +1,596 @@
+---
+title: "GEOG 5160 6160 Lab 07"
+author: 
+  - name: "Simon Brewer"
+    email: simon.brewer@ess.utah.edu
+    affiliations:
+      - name: University of Utah
+        address: 260 S Central Campus Drive
+        city: Salt Lake City
+        state: UT
+        postal-code: 84112
+date: last-modified
+format:
+  html:
+    toc: true
+editor: visual
+---
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+library(png)
+library(grid)
+set.seed(42)
+```
+
+# Introduction
+
+For the next few labs, we'll be looking at deep learning models. As these are computationally costly models, they are generally built using specialized software to make them as efficient as possible. The full software stack is a little complicated, but in short, it consists of:
+
+-   The backend deep learning software. This includes **tensorflow**, **torch** and **jax**.
+-   The **keras** API. This is written in Python and tries to act as a unified interface to the different types of software
+-   The R **keras** package. This uses the **reticulate** package to call **keras** functions from R
+
+If at this point, this seems excessively complicated, well, it is. But there is a reason for this, which is to allow a great amount of flexibility. If you want to develop very complex models, you can work directly with the deep learning package. If you need only to use standard functions, then you can use **keras**. And if you want to use R as the front-end to all of this, you can do that too.
+
+We'll mainly be using a combination of **keras** and **tensorflow** in this class, so the goals of this lab are to introduce these are get them running with a couple of simple examples. . The code shown here borrows heavily from Deep Learning with R (2nd edition) by Chollet et al.
+
+## Objectives
+
+-   Set up **keras** and **tensorflow** on your computer
+-   Understand the basic operations in a neural network
+-   Build a simple classification model using standard network layers
+-   Train and evaluate this model
+
+# Installation
+
+Installing deep learning software can be quite complicated. The backend software is in continual and rapid development, so that the libraries change often. In addition, these often are set up to use any available GPU power rather than (or in addition to) CPU power, and this requires an extra step of installing drivers for this. Here, we'll try to use the simplest approach in R, which is to install the **keras** package, and then let it take care of the backend. So start by installing this package:
+
+```{r eval=FALSE}
+install.packages("keras")
+```
+
+If everything went ok, then load the library and run the following command to install the backend
+
+```{r eval=FALSE}
+library(keras)
+install_keras()
+```
+
+This should create a specific virtual environment called `r-tensorflow`, and install some additional packages (this may take a few minutes). If you get any errors with this, please let me know.
+
+## Installing into a virtual environment
+
+You can also change the name of the virtual environment as follows (this allows you to install different backends or versions in different environments). Don't worry about this step if the first installation went well
+
+``` {eval="FALSE"}
+library(reticulate)
+virtualenv_create("r-keras", python=install_python())
+library(keras)
+install_keras(envname = "r-keras")
+use_virtualenv("r-keras")
+```
+
+# **Tensorflow**
+
+## Tensors
+
+Let's start by looking at the building blocks of these networks, *tensors*. This is the standard data object, and describes an array of numbers with a certain number of dimensions. If that sounds a lot like matrices and arrays, it is because this is just a highly efficient way of storing these. Start by loading the libraries:
+
+```{r}
+library(keras)
+library(tensorflow)
+```
+
+Now we can make a simple 2D tensor with 2 rows and 3 columns as follows. This uses R's `array` function to create the data, then converts it to a tensor:
+
+```{r}
+r_array <- array(1:6, c(2, 3))
+tf_tensor_2D <- as_tensor(r_array)
+tf_tensor_2D
+```
+
+And here's a 1D tensor
+
+```{r}
+r_array <- array(1:4, c(4))
+tf_tensor_1D <- as_tensor(r_array)
+tf_tensor_1D
+```
+
+And a 3D tensor
+
+```{r}
+r_array <- array(1:12, c(2,3,2))
+tf_tensor_3D <- as_tensor(r_array)
+tf_tensor_3D
+```
+
+You can use a lot of the basic R functions with these. For example, to see the size of the tensor
+
+```{r}
+dim(tf_tensor_2D)
+```
+
+or
+
+```{r}
+tf_tensor_2D$ndim
+```
+
+You can also add two tensors (as long as they have the same shape)
+
+```{r}
+tf_tensor_2D + tf_tensor_2D
+```
+
+There are also functions to create tensors with specific values
+
+```{r}
+## Tensor of 1s
+tf$ones(shape(1, 3))
+## Tensor of 0s
+tf$zeros(shape(1, 3))
+## Tensor of random numbers (normally distributed)
+tf$random$normal(shape(1, 3), mean = 0, stddev = 1)
+## Tensor of random numbers (uniformly distributed)
+tf$random$uniform(shape(1, 3))
+```
+
+**tensorflow** also defines a `variable` data type:
+
+```{r}
+W <- tf$Variable(array(0, dim = c(2,2)))
+W
+```
+
+While this will look a lot like a tensor, this is used to store values that change during training including model weights and parameters
+
+## Basic operations
+
+**tensorflow** comes with a lot of basic math functions. Let's start by creating a 2D random tensor:
+
+```{r}
+tensor_rnd = tf$random$normal(shape(2, 3), mean = 10, stddev = 1)
+```
+
+Then we can calculate the square or square root:
+
+```{r}
+tf$square(tensor_rnd)
+```
+
+```{r}
+tf$sqrt(tensor_rnd)
+```
+
+There are also specific functions that are key to train a neural network. You might recall from the lecture that there are three main calculate steps.
+
+1)  In the forward pass, the output of every neuron in the network is calculated as the weighted sum of the inputs, plus a bias term $y = W \cdot x + b$. The first part of this equation is the dot product of two matrices, the array of weights ($W$) and the input values ($x$). In tensorflow, this calculated using the `matmul` function. For example, here we create tensors of weights and random input values and multiply them together:
+
+```{r}
+W <- tf$Variable(array(runif(4), c(2,2)))
+print(W)
+
+x <- as_tensor(array(rnorm(4), c(2, 2)))
+print(x)
+
+tf$matmul(x, W)
+```
+
+If we also create a *bias* (a constant additive term), we can create the basic weighted sum
+
+```{r}
+b <- tf$Variable(array(1, dim = c(2)))
+print(b)
+
+tf$matmul(x, W) + b
+```
+
+2.  Activation function
+
+The next step in the forward pass is to send the output of node (above) through an activation function. There are several of these, and the code below simply illustrates how they convert a vector of randomly generated values (`x`)
+
+-   Linear activation
+
+```{r}
+x <- as_tensor(array(rnorm(100), c(100, 1)))
+x_act <- activation_linear(x)
+plot(x, x_act)
+```
+
+-   Sigmoid activation. Note that this requires a second column of zeros added to it
+
+```{r}
+xs <- k_concatenate(list(x, 
+                         as_tensor(rep(0, length(x)), shape = c(length(x),1))))
+x_act <- activation_sigmoid(xs)
+plot(x[,1], x_act[,1])
+
+```
+
+-   ReLu activation. This is a widely used activation function in deep learning, which sets all output below zero to zero, and uses a linear transform for the values above 0
+
+```{r}
+x_act <- activation_relu(x)
+plot(x, x_act)
+```
+
+3.  Backpropagation
+
+Following the forward pass, neural networks are trained using backpropagation. In this step, a gradient is calculated for each weight relatively to the loss or error. This gradient tells the network how much to update each weight (steep gradients mean that the error is large and a larger update is needed), as well as the direction of change (positive or negative). This becomes very complicated in larger networks, where this has to be (back)propagated through multiple layers and across mulitple nodes. Tensorflow uses the concept of a gradient *tape* to help in this. This records all the necessary steps to estimate these gradients by tracking all the connections in the network. Once set up, it can then estimate the gradient of any output in the network relative to any variable or set of variables.
+
+To illustrate this, the following code uses a simple model of $y = 2 \times x + 3$. This is used to create a `GradientTape` object, and then we can estimate the gradient for `y` with respect to `x`. As this is just a simple linear model, the gradient is, of course, the slope of 2:
+
+```{r}
+x <- tf$Variable(0)
+with(tf$GradientTape() %as% tape, {
+  y <- 2 * x + 3
+})
+grad_of_y_wrt_x <- tape$gradient(y, x)
+grad_of_y_wrt_x
+```
+
+# Putting it together: a linear classifier
+
+We'll now illustrate how all of this comes together with a really simple example. This is a dataset with two features (`x1` and `x2`) and a binary target (`class`):
+
+```{r}
+df = read.csv("./datafiles/slc.csv")
+head(df)
+```
+
+As tensorflow really wants values as an array, we'll create two of these, one for the features (`inputs`) and one for the targets:
+
+```{r}
+inputs <- cbind(df$x1, df$x2)
+
+targets <- array(ifelse(df$class == "neg", 0, 1), dim = c(nrow(df),1))
+```
+
+Let's plot these out to see the distribution:
+
+```{r}
+plot(x = inputs[, 1], y = inputs[, 2],
+    col = ifelse(targets[, 1] == 0, "purple", "green"))
+```
+
+From the plot, you should be able to already visualize where you would place a line to separate the two groups. We'll now create a linear classifier that can find this line as the following equation (if you look closely, you'll see that this is just a linear model with slopes (`W`) and intercept (`b`)).
+
+$$
+\mbox{prediction} = W \times input + b
+$$
+
+This is trained to minimize the square of the difference between predictions and the targets. As you’ll see, it’s actually a much simpler example than the end-to-end example of a toy two-layer neural network you saw at the end of chapter 2. However, this time you should be able to understand everything about the code, line by line.
+
+Next, we'll initialize values for `W` and `b`, using random values and with zeros, respectively.
+
+```{r}
+input_dim <- 2
+output_dim <- 1
+W <- tf$Variable(initial_value =
+                   tf$random$uniform(shape(input_dim, output_dim)))
+print(W)
+b <- tf$Variable(initial_value = tf$zeros(shape(output_dim)))
+print(b)
+```
+
+As we have two inputs, `W` is just two scalar coefficients, `w1` and `w2`. `b` is a single scalar coefficient representing the intercept. So the full, expanded model is:
+
+$$
+\mbox{prediction} = [w_1,w_2] \times [x_1, x_2] + b = w_1 \times x_1 + w_2 \times x_2 + b
+$$
+
+Let's create a function that performs a forward pass by calculating the above equation (note this uses the `matmul` function to get the weighted output). Normally, this would use a sigmoid activation function as the outcome is binary, but to keep things simple, we won't transform the output. Note that we use a function to calculate this so that we can reuse this easily in the training loop below
+
+```{r}
+model <- function(inputs)
+ tf$matmul(inputs, W) + b
+```
+
+To illustrate what this does, let's just run this with the first row of inputs:
+
+```{r}
+input1 = as_tensor(array(inputs[1, ], c(1,2)), dtype = 'float32')
+model(input1)
+```
+
+Giving the predicted value for the first observation (which is a `0`). This is obviously with random weights, so there's really no expectation that it will be close to the actual value. Next, we need to calculate how close it is through a loss function. For this example, we'll use a simple mean squared error, and we'll create a function to calculate that:
+
+```{r}
+square_loss <- function(targets, predictions) { 
+  per_sample_losses <- tf$square(tf$subtract(targets, predictions))
+  tf$reduce_mean(per_sample_losses)
+}
+```
+
+Now let's put these together with the gradient tape function to calculate the update to the weights through backpropagation. In this function, it uses the `GradientTape` to store the results of the forward pass and loss calculation. Then the tape is used to get the gradients or derivatives of the weights relative to the loss. Finally, the update is calculated by multiplying the gradient by a learning rate. This is a value less than one, which limits the update at each step.
+
+```{r}
+learning_rate <- 0.1
+training_step <- function(inputs, targets) {
+  with(tf$GradientTape() %as% tape, {
+    predictions <- model(inputs)
+    loss <- square_loss(predictions, targets)
+  })
+  grad_loss_wrt <- tape$gradient(loss, list(W = W, b = b))
+  W$assign_sub(grad_loss_wrt$W * learning_rate)
+  b$assign_sub(grad_loss_wrt$b * learning_rate)
+  loss
+}
+```
+
+After all that preparation, we're ready to train the model. We convert the inputs to a tensor, then run a loop 40 times, each time calling the `training_step` function to update the weights
+
+```{r}
+inputs <- as_tensor(inputs, dtype = "float32")
+ for (step in seq(40)) {
+   loss <- training_step(inputs, targets)
+   cat(sprintf("Loss at step %s: %.4f\n", step, loss))
+ }
+```
+
+Once trained, we can predict for each of the original observations and plot the predicted values. We'll use a simple threshold of 0.5 (i.e. predictions above 0.5 are classed as `1`, below 0.5 as `0`). We can also plot the classifier by using the trained values of `W` and `b` to get the slope and intercept:
+
+```{r}
+predictions <- model(inputs)
+inputs <- as.array(inputs)
+predictions <- as.array(predictions)
+
+plot(x = inputs[, 1], y = inputs[, 2],
+    col = ifelse(predictions[, 1] <= 0.5, "purple", "green"))
+
+slope <- -W[1, ] / W[2, ]
+intercept <- (0.5 - b) / W[2, ]
+abline(as.array(intercept), as.array(slope), col = "red")
+```
+
+# The **keras** API
+
+The examples above show how to work with the low-level **tensorflow** interface. In practice, you can skip a lot of the detail by using the **keras** API. In the code below, we'll build a multi-layer neural network to perform a classification exercise.
+
+## Keras workflow
+
+Building a deep learning model through Keras requires a series of steps:
+
+1.  Create training data as tensors. This should include the input features and the target as separate tensors. For the simple models we are looking at in this lab, this is fairly straightforward, but for the more complex models, careful attention is required to the size and shape of these tensors.
+2.  Create the network architecture. This consists of the set of layers that link the inputs to the target(s)
+3.  Define the loss function, the optimizer and the performance metrics to be used to test the progress of the training
+4.  Train the model using the training data, with part of the training data left out as validation data
+
+## Dataset
+
+The data are from the file *credit_data.csv*, and represent a number of bank clients who have been tagged as having good or bad credit. The goal is to use the other variables in the file to predict this. Let's start by reading in the data.
+
+```{r}
+library(tidyverse)
+df = read.csv("./datafiles/credit_data.csv")
+head(df)
+```
+
+```{r}
+library(skimr)
+skim(df)
+```
+
+There are about 4400 observations in the set, and a number of these have missing values. We'll use the **tidyverse** `drop_na` function to remove all rows with missing values, and also convert the `Status` column to a binary variable. This is an important step - deep learning models need all features and targets to be numerical.
+
+```{r}
+df = df |>
+  # mutate(Status = as.factor(Status)) |>
+  mutate(Status = ifelse(Status == 'bad', 1, 0)) |>
+  drop_na()
+```
+
+Next, we'll split the data into the usual set of training and testing.
+
+```{r}
+library(tidymodels)
+
+df_split = initial_split(df, prop = 0.8)
+
+df_train = training(df_split)
+df_test  = testing(df_split)
+```
+
+```{r}
+table(df_train$Status)
+table(df_test$Status)
+```
+
+Now, we'll set up a recipe to transform the data. As noted above, all the inputs need to be numeric, so we'll need to one hot encode or dummy transform all the categorical variables with `step_dummy`. We'll also normalize all variables to the same range (this subtracts the mean and divides by the standard deviation). Neural networks are *very* sensitive to the range of values, so it is standard practice to transform data to $z$-scores (as here) or to a 0-1 range.
+
+```{r}
+rec = recipe(Status ~ ., df_train) |>
+  step_normalize(all_numeric_predictors()) |>
+  step_dummy(all_nominal_predictors())
+
+df_train = rec |>
+  prep() |>
+  bake(df_train)
+
+df_test = rec |>
+  prep() |>
+  bake(df_test)
+```
+
+Next, we'll split the training data into training and validation. Validation datasets are important in deep learning as the complex networks can quickly and easily overfit to the training data. Validation data are used during the training process. Following each adjustment of the weights, the network predicts the labels for the validation set, and a validation error is calculated. A decreasing validation error suggests that the model is training well to the data, but when it starts to increase, this indicates overfitting: prediction for new data becomes worse. Here, we'll remove a random sample of 20% of the original training data for validation, and use the other 80% for training.
+
+```{r}
+ntrain = nrow(df_train)
+train_id = sample(ntrain, ntrain*0.8)
+
+df_valid = df_train[-train_id, ]
+df_train = df_train[train_id, ]
+```
+
+As a final processing step, we'll convert all the datasets to R's matrix (or array) format. **keras** assumes that all data are in this format, which cuts down on internal processing when the model trains:
+
+We'll get a list of all the transformed features for later selection:
+
+```{r}
+feature_names = colnames(df_train) |> 
+  setdiff("Status")
+feature_names
+```
+
+```{r}
+train_features = as.matrix(df_train[,feature_names])
+train_targets <- as.matrix(df_train$Status)
+
+valid_features = as.matrix(df_valid[,feature_names])
+valid_targets <- as.matrix(df_valid$Status)
+
+test_features = as.matrix(df_test[,feature_names])
+test_targets <- as.matrix(df_test$Status)
+```
+
+## Model architecture
+
+### Defining the network architecture
+
+Now we'll turn to designing the model. The first step is to create the architecture. **keras** has two methods to create the network. The simplest is to use the `keras_model_sequential()` function. This takes as input the definition of the hidden layers, as well as any parameters that are used to modify these during training.
+
+For example, to create a simple, two layer model with a single output, one hidden layer with 10 nodes, you would run the following command. Note that the first function takes the argument `input_shape` which describes the expected shape of the tensor holding the features (here 20 input features), and that we specify a ReLU activation function for the output.
+
+```{r eval=TRUE}
+model <- keras_model_sequential(input_shape = c(20)) |>
+  layer_dense(units = 10, activation = "relu") |>
+  layer_dense(units = 1, activation = "relu")
+```
+
+The basic layer used here is a *dense* layer. This is one where every node connects to each incoming input and to each output. In this case, each of the twenty input features would connect to the 10 nodes in the hidden layer, and each of those will connect to the single output node. Each of these connections will have a weight to it, as well as a bias added to each node. Overall this gives us $20 \times 10 + 10 = 210$ from the input to the hidden layer, and $10 \times 1 + 1 = 11$, giving 221 parameters overall. To check this we can use the `summary` function with the model object, which gives an overview of the model architecture. You'll see that it has automatically named each layer (e.g. `dense_1`) as well as the overall model (you can add names if useful).
+
+```{r eval=TRUE}
+summary(model)
+```
+
+The other method to define the architecture uses the Keras API. This is a much more flexible approach based on graph theory and can be used to create networks that are much more complex.
+
+For our model, we'll create something a little more complex. This will have two hidden layers, each with 256 nodes. The final layer will give the prediction. As we only need to predict one thing (the credit risk), we only need one node. We'll use ReLu activation functions throughout, except for the final layer where we use a sigmoid activation function to constrain the output to the range \[0-1\].
+
+We'll add a couple of dropout layers as well. These are layers where a proportion of the weights are set to zero, effectively removing them from any prediction. This has the effect of penalizing the model, making it slower to train, but reducing the risk of overfitting.
+
+```{r}
+model <-
+  keras_model_sequential(input_shape = ncol(train_features)) |>
+  layer_dense(256, activation = "relu") |>
+  layer_dropout(0.3) |>
+  layer_dense(256, activation = "relu") |>
+  layer_dropout(0.3) |>
+  layer_dense(1, activation = "sigmoid")
+
+summary(model)
+```
+
+Note that the increase in the number of layers and nodes has had a large effect in the total number of parameters to be estimated, now at around 71,000 parameters.
+
+Next, we'll define the list of metrics to be calculated during training. We'll just record the accuracy, but you can add further metrics here (see the help documentation for a full list).
+
+```{r}
+metrics <- list(
+  metric_binary_accuracy(name = "accuracy")
+)
+```
+
+Next, we need to compile the model. This links the model to a specific optimizer, the loss function and any error metrics we want to calculate.
+
+-   Optimizer: We'll use the standard backpropagation algorithm here (`rmsprop`), with a learning rate of 1e-4. This is controls the amount of update for each weight at each iteration. Other optimizers include `sgd` for stochastic gradient descent and `adam` for the Adam algorithm, both of which are useful for much larger, complex data
+-   Loss function. Here, we'll use binary cross entropy. This is the standard loss function for binary outcomes (cross entropy is a measure of how different two distributions are, and this is well suited to a binary classification exercise, where we want to discriminate between 0's and 1's)
+-   Metrics: we simply include the list we made earlier
+
+```{r}
+model |> compile(
+  optimizer = optimizer_rmsprop(1e-4),
+  loss = "binary_crossentropy",
+  metrics = metrics
+)
+```
+
+Now we have everything in place, we can train the model. Here we specify:
+
+-   the set of features for training (`train_features`)
+-   the set of labels for training (`train_targets`)
+-   the number of iterations to train the model for (`epochs`)
+-   the `batch_size`.
+-   the validation features and labels
+
+The batch size is quite an useful parameter to make your network more efficient. This is the number of samples to pass through the network before updating weights. This allows you to trade off the speed of the calculation against the convergence. Using smaller batches uses less memory but may take longer to converge, as the weights are being updated using only a fraction of the data. Larger batches will converge quickly, by may cause memory issues, and may more easily result in overfitting.
+
+```{r}
+model |> fit(
+  train_features, train_targets,
+  validation_data = list(valid_features, valid_targets),
+  batch_size = 256,
+  epochs = 30,
+  # callbacks = callbacks,
+  verbose = 2
+)
+```
+
+As the model runs, you'll see some output, and if you are running this in RStudio, Keras will plot the evolution of the loss function and the accuracy during the training. Pay attention to changes in the loss (which should decrease) and the accuracy (which should increase). Note that there are values for the training and for the validation set.
+
+These results are also stored in `model$history`, which we can then plot:
+
+```{r}
+plot(model$history$epoch, model$history$history$loss, type = 'l')
+lines(model$history$epoch, model$history$history$val_loss, col = 2)
+```
+
+```{r}
+plot(model$history$epoch, model$history$history$accuracy, type = 'l')
+lines(model$history$epoch, model$history$history$val_accuracy, col = 2)
+```
+
+These show an expected decrease in loss, and corresponding increase in accuracy for both the training and validation sets. Note that the validation loss continues to decline, which may suggest that further training would be useful.
+
+We can test the model by using the `predict` function and the test (not validation!) dataset.
+
+```{r}
+y_pred_test <- model |>
+  predict(test_features)
+```
+
+As the predictions are probabilities \[0-1\], we'll now convert these to binary \[0,1\] and calculate the accuracy:
+
+```{r}
+y_pred_test <- ifelse(y_pred_test > 0.5, 1, 0)
+pred_correct <- df_test$Status == y_pred_test
+cat(sprintf("Validation accuracy: %.2f", mean(pred_correct)))
+```
+
+We get an accuracy of about 0.8, which is not bad for a first attempt. The next steps would be to modify the network architecture to see if this could be improved on, e.g. by adding more layers or more nodes in the layers.
+
+# Exercise
+
+For the exercise, you just need to make a new model for the credit score data. There are several things that you can try, including:
+
+-   Adding more layers
+-   Adding more nodes
+-   Changing the learning rate, batch size or number of training epochs
+
+Use a Quarto document to record the code describing the changes in your model setup. You should also re-train the model and make a new set of predictions for the test set, and report the accuracy. Assignments, to include both the Quarto document and (ideally) the compiled HTML file, should be submitted to Canvas by March 31st. Please use the following naming convention: Lab07_lastname.
+
+Please use the following naming convention: `Lab07_lastname.ipynb`.
+
+# Appendix
+
+## Credit risk data set
+
+*credit_data.csv*
+
+| Column header | Variable                                                         |
+|---------------|------------------------------------------------------------------|
+| `Status`      | whether the customer managed to pay back the loan (0) or not (1) |
+| `Seniority`   | job experience in years                                          |
+| `Home`        | type of homeownership: renting (1), a homeowner (2), and others  |
+| `Time`        | period planned for the loan (in months)                          |
+| `Age`         | age of the client                                                |
+| `Marital`     | marital \[status\]: single (1), married (2), and others          |
+| `Records`     | whether the client has any previous records: no (1), yes (2)     |
+| `Job`         | type of job: full-time (1), part-time (2), and others            |
+| `Expenses`    | how much the client spends per month                             |
+| `Income`      | how much the client earns per month                              |
+| `Assets`      | total worth of all the assets of the client                      |
+| `Debt`        | amount of credit debt                                            |
+| `Amount`      | requested amount of the loan                                     |
+| `Price`       | price of an item the client wants to buy                         |
