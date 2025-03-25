@@ -26,41 +26,40 @@ set.seed(42)
 
 In this exercise, we'll build a convolutional neural network (CNN) for image classification. This is one of the original and more straightforward uses of CNNs. More complex uses include:
 
-- Semantic image segmentation
-- Image denoising or reconstruction
-- Working with video streams
+-   Semantic image segmentation
+-   Image denoising or reconstruction
+-   Working with video streams
 
-But all methods are based around two basic operations: 
+But all methods are based around two basic operations:
 
-- Convolution: in this step, the network learns a series of kernels or filters that transform the original image in some way. These are similar to filters that are used in standard image processing (e.g. low-pass filters), but filters are chosen by how well the transformed image maps to the outcome variable. To put this another way, these filters identify shapes or features that are important in differentiating between different outcomes
-- Max-pooling: in this step, the image resolution is transformed. In general, the resolution is halved, by aggregating groups of four pixels in a two by two window. Pooling acts to aggregate smaller scale features into larger objects
+-   Convolution: in this step, the network learns a series of kernels or filters that transform the original image in some way. These are similar to filters that are used in standard image processing (e.g. low-pass filters), but filters are chosen by how well the transformed image maps to the outcome variable. To put this another way, these filters identify shapes or features that are important in differentiating between different outcomes
+-   Max-pooling: in this step, the image resolution is transformed. In general, the resolution is halved, by aggregating groups of four pixels in a two by two window. Pooling acts to aggregate smaller scale features into larger objects
 
 In general, these steps are repeated several times. As this progresses, the small shapes identified in the first set of convolutions are progressively combined into larger structures. For example, a series of small curves or lines could be aggregated into a cat's eye.
 
-The code in this example is modified from a blog by BEEILAB: 
-https://medium.com/@beeilab.yt/land-use-land-cover-classification-using-satellite-images-and-deep-learning-a-step-by-step-guide-27fea9dbf748
+The code in this example is modified from a blog by BEEILAB: https://medium.com/@beeilab.yt/land-use-land-cover-classification-using-satellite-images-and-deep-learning-a-step-by-step-guide-27fea9dbf748
 
 # Image classification
 
-The basic idea behind image classification is to link *features* of an image to a single label or class. For example, we might have a photograph of a cat, with the label `Cat` and one of a dog with the label `Dog`. The goal of the model is to identify what shapes and colors, and combination of these can help differentiate between these two classes. 
+The basic idea behind image classification is to link *features* of an image to a single label or class. For example, we might have a photograph of a cat, with the label `Cat` and one of a dog with the label `Dog`. The goal of the model is to identify what shapes and colors, and combination of these can help differentiate between these two classes.
 
 # Data
 
 For this exercise, we'll use the EuroSat benchmarking dataset from: https://zenodo.org/records/7711810:
 
-> EuroSAT is a land use and land cover classification dataset. The dataset is based on Sentinel-2 satellite imagery covering 13 spectral bands and consists of 10 LULC classes with a total of 27,000 labeled and geo-referenced images. 
+> EuroSAT is a land use and land cover classification dataset. The dataset is based on Sentinel-2 satellite imagery covering 13 spectral bands and consists of 10 LULC classes with a total of 27,000 labeled and geo-referenced images.
 
-The images are available as both multispectral and RGB. We'll just use the RGB images here to limit the amount of data we need to deal with, but this code can be easily extended to use the multispectral data. In the paper that accompanies this dataset, the authors were able to get a 98.5% accuracy in prediction. We won't get that high here, as we'll take a few short cuts to make the code run faster, but this should give you an idea of what is possible with these networks. 
+The images are available as both multispectral and RGB. We'll just use the RGB images here to limit the amount of data we need to deal with, but this code can be easily extended to use the multispectral data. In the paper that accompanies this dataset, the authors were able to get a 98.5% accuracy in prediction. We won't get that high here, as we'll take a few short cuts to make the code run faster, but this should give you an idea of what is possible with these networks.
 
-The images are available on the workshop Google drive in the zip file *EuroSat_RGB.zip*. Download this now, and move it to a folder that is easy to find on your computer, and unzip it. 
+The images are available on the workshop Google drive in the zip file *EuroSat_RGB.zip*. Download this now, and move it to a folder that is easy to find on your computer, and unzip it.
 
-Once you have unzipped the data, take a look in the *EuroSat_RGB* folder. This is already set up in the standard way for image classification, where all images for a given class are kept in a single folder for that class. The name of the folders can then used as the *label* for each image, and is what we will use. 
+Once you have unzipped the data, take a look in the *EuroSat_RGB* folder. This is already set up in the standard way for image classification, where all images for a given class are kept in a single folder for that class. The name of the folders can then used as the *label* for each image, and is what we will use.
 
-- EuroSat_RGB
-- AnnualCrop
-- Forest
-- HerbaceousVegetation
-- ...
+-   EuroSat_RGB
+-   AnnualCrop
+-   Forest
+-   HerbaceousVegetation
+-   ...
 
 Note that this is a specific layout for image classification. There are other options, for example, if you are working with continuous outcomes.
 
@@ -82,7 +81,7 @@ Now set the path to the folder containing the training images you downloaded. If
 image_path = "./datafiles/EuroSAT_RGB/EuroSAT_RGB/"
 ```
 
-If you have any questions about setting this path, please ask. 
+If you have any questions about setting this path, please ask.
 
 You can visualize any of the images using the **imager** package (you'll need to install this):
 
@@ -92,9 +91,9 @@ im = load.image(paste0(image_path, "Forest/Forest_10.jpg"))
 plot(im)
 ```
 
-You can try other images by changing the folder name and filename. Note that these are somewhat idealized images, with a blank white background. 
+You can try other images by changing the folder name and filename. Note that these are somewhat idealized images, with a blank white background.
 
-Next, we'll define the classes that we are going to process. There are 16 different types of fruit in the dataset, making this a multi-class classification problem. 
+Next, we'll define the classes that we are going to process. There are 10 different land-use classes in the dataset, making this a multi-class classification problem.
 
 ```{r}
 class_list = c("AnnualCrop", "Forest", "HerbaceousVegetation",
@@ -105,7 +104,7 @@ class_list = c("AnnualCrop", "Forest", "HerbaceousVegetation",
 num_classes = length(class_list)
 ```
 
-The original images are 64x64 pixels. As these are small, we can use them at their full resolution. For larger images, we'd either need to reduce their resolution or divide them into smaller images. 
+The original images are 64x64 pixels. As these are small, we can use them at their full resolution. For larger images, we'd either need to reduce their resolution or divide them into smaller images.
 
 We'll set a few constants here: the image size (`patch_size`) and the number of images we want to use from each class (`patch_number`). The full set has 3000 images per class, but here will limit this to the first 1000 to speed up model training. A good follow-up exercise would be to increase this to see what impact it has on the model's predictive skill. We also define the number of channels - these will define the input tensors. These will be rank 3 tensors, with dimensions 64x64x3. The channels can easily be changed here to include additional bands as necessary (Sentinel-2 multispectral data has 13 bands, for example).
 
@@ -129,7 +128,7 @@ X = array(0, dim = c(patch_numbers * num_classes,
 Y = array(0, dim = c(patch_numbers * num_classes)) ## Labels
 ```
 
-Now we'll read in and store the images in a big loop. We'll first iterate over the different class folders, then over the images contained within them. We use `rast` from the **terra** package to read in the image, then copy the image into the `X` array created earlier. At the same time, we store the folder name in `y` as the label. As these are 8-bit RGB images, the intensity values range from 0-255. We standardize to a [0-1] range by dividing the pixel values by 255. This form of standardization (min-max standardization) is frequently used with neural networks to avoid issues in weight calculation.
+Now we'll read in and store the images in a big loop. We'll first iterate over the different class folders, then over the images contained within them. We use `rast` from the **terra** package to read in the image, then copy the image into the `X` array created earlier. At the same time, we store the folder name in `y` as the label. As these are 8-bit RGB images, the intensity values range from 0-255. We standardize to a \[0-1\] range by dividing the pixel values by 255. This form of standardization (min-max standardization) is frequently used with neural networks to avoid issues in weight calculation.
 
 ```{r warning=FALSE}
 library(terra)
@@ -163,7 +162,7 @@ X_test = X[-train_id, , , ]
 y_test = Y[-train_id]
 ```
 
-Second, we split the other 80% into a training and validation set using another 80/20 split. The training set will be used to set model weights, and the validation set used to assess performance during training. 
+Second, we split the other 80% into a training and validation set using another 80/20 split. The training set will be used to set model weights, and the validation set used to assess performance during training.
 
 ```{r}
 train_id <- sample(1:nrow(X_train), nrow(X_train)  * 0.8)
@@ -189,11 +188,7 @@ channels = dim(X_train[1, , , ])[3]
 
 # Convolutional neural network model
 
-Let's now set up the model. We'll now set up the model. There are a few things we need to define here:
-- The loss function
-- Performance metrics
-- Model optimizer
-- The architecture
+Let's now set up the model. We'll now set up the model. There are a few things we need to define here: - The loss function - Performance metrics - Model optimizer - The architecture
 
 ## Loss function
 
@@ -213,7 +208,7 @@ my_metrics = 'accuracy'
 
 ## Optimizer
 
-The optimizer is used to adjust weights during the backpropagation or training of the network. We'll use the `Adam` optimizer - this is well suited to large and complex problems, and is computationally very efficient. We'll set the learning rate to 1e-5. This is an important hyperparameter in these models as it this limits the changes to model weights during training, and can help limit overfitting. If you have time, it's worth re-training the model with a higher or lower rate to see the effect. 
+The optimizer is used to adjust weights during the backpropagation or training of the network. We'll use the `Adam` optimizer - this is well suited to large and complex problems, and is computationally very efficient. We'll set the learning rate to 1e-5. This is an important hyperparameter in these models as it this limits the changes to model weights during training, and can help limit overfitting. If you have time, it's worth re-training the model with a higher or lower rate to see the effect.
 
 ```{r}
 my_opt = optimizer_rmsprop(learning_rate = 1e-5)
@@ -229,7 +224,7 @@ First, create a template sequential model
 model = keras_model_sequential() 
 ```
 
-Next we add the first hidden layer. This is a convolutional layer, where we'll create 32 filters (or convolutions) based on the original images, with a 3x3 kernel. We'll pad the output of this layer so that it has the same size as the input (`same`), and give this a ReLU activation function to transform the weights. Note that as this is the first layer, we also need to define the size of the input tensors (width, height and channels). 
+Next we add the first hidden layer. This is a convolutional layer, where we'll create 32 filters (or convolutions) based on the original images, with a 3x3 kernel. We'll pad the output of this layer so that it has the same size as the input (`same`), and give this a ReLU activation function to transform the weights. Note that as this is the first layer, we also need to define the size of the input tensors (width, height and channels).
 
 ```{r}
 model %>%
@@ -243,14 +238,15 @@ If you print the model object now, you'll see that it has been updated.
 ```{r}
 model
 ```
-Now, we add a max-pooling layer. As a reminder, this reduces the resolution of the output from the previous layer by a simple filter, forcing the next layer of the network to focus on larger image features. 
+
+Now, we add a max-pooling layer. As a reminder, this reduces the resolution of the output from the previous layer by a simple filter, forcing the next layer of the network to focus on larger image features.
 
 ```{r}
 model %>%
   layer_max_pooling_2d(pool_size = c(2,2))
 ```
 
-Now we'll add layers to connect the output of this max-pooling step to the output (the land cover classes). The first thing we need to do is to flatten the output. The output of the max-pooling is a tensor of shape (32, 32, 32). The reduction in the height and width is a result of the max-pooling operation and the 32 is the number of filters from the convolution. The `layer_flatten()` function will flatten this into a rank 1 tensor of shape 32768 (32^3). 
+Now we'll add layers to connect the output of this max-pooling step to the output (the land cover classes). The first thing we need to do is to flatten the output. The output of the max-pooling is a tensor of shape (32, 32, 32). The reduction in the height and width is a result of the max-pooling operation and the 32 is the number of filters from the convolution. The `layer_flatten()` function will flatten this into a rank 1 tensor of shape 32768 (32\^3).
 
 ```{r}
 model %>%
@@ -264,7 +260,7 @@ model %>%
   layer_dense(128, activation = "relu")
 ```
 
-Finally, we need a layer to represent the predictions. As this is a multiclass task, the final layer needs to have the same number of nodes as classes (10). This is passed through a softmax activation function. This transforms the predictions for all classes into probabilities (i.e. they have to sum to 1). 
+Finally, we need a layer to represent the predictions. As this is a multiclass task, the final layer needs to have the same number of nodes as classes (10). This is passed through a softmax activation function. This transforms the predictions for all classes into probabilities (i.e. they have to sum to 1).
 
 ```{r}
 model %>%
@@ -272,7 +268,6 @@ model %>%
 ```
 
 More practically, we'll create a function that will build the model in one go, which allows us to to easily create new versions for testing. We'll create a slightly more complex model, with three successive convolution/max-pooling steps, and two dense layers before the output. We'll also add batch normalization layers; these take the output of the previous layer and normalize the weights. This is a simple method that adjusts the mean weight to close to zero and reduces the amount of variation. This helps avoid gradient problems with very small or very large weights
-
 
 ```{r}
 create_model = function(img_width, img_height, 
@@ -322,9 +317,9 @@ model = create_model(img_width, img_height, channels,
 summary(model)
 ```
 
-Our model has a little under 1.2 million parameters or weights to train (hence the need for a lot of images). 
+Our model has a little under 1.2 million parameters or weights to train (hence the need for a lot of images).
 
-The next step is to compile the model. 
+The next step is to compile the model.
 
 ```{r}
 model %>% compile(
@@ -338,19 +333,19 @@ model %>% compile(
 
 We'll now train the model for 30 epochs, using the `fit()` method. We need to provide the following arguments:
 
-- `x`: The input training data
-- `y`: The training labels or classes
-- `validation_data`: the generator of the validation samples
-- `epochs`: number of full training iterations
-- `batch_size`: number of images that are passed to the network before updating weights
-- We also tell the model to `shuffle` the input images during training. This can be important as deep learning networks learn best when there is a lot of variation in the inputs, including the order that they are received
+-   `x`: The input training data
+-   `y`: The training labels or classes
+-   `validation_data`: the generator of the validation samples
+-   `epochs`: number of full training iterations
+-   `batch_size`: number of images that are passed to the network before updating weights
+-   We also tell the model to `shuffle` the input images during training. This can be important as deep learning networks learn best when there is a lot of variation in the inputs, including the order that they are received
 
 This takes a couple of minutes to train (on my laptop). It's worth remembering what is going on here: the algorithm is reading in batches of 32 images, rescaling them, updating model weights through back propagation and then repeating the whole thing 30 times. As we previously defined a separate validation set (and image generator), this routine will calculate two losses:
 
-- The training loss. This is how accurately the model can predict the images that are being used to update the weights
-- The validation loss. This is how accurately the model can predict a set of training images that are not used in updating the weights
+-   The training loss. This is how accurately the model can predict the images that are being used to update the weights
+-   The validation loss. This is how accurately the model can predict a set of training images that are not used in updating the weights
 
-As the model continues to train, you should see the loss (the crossentropy) decrease for both of these, but will likely stabilize at a certain point. The accuracy should (hopefully) increase over time. 
+As the model continues to train, you should see the loss (the crossentropy) decrease for both of these, but will likely stabilize at a certain point. The accuracy should (hopefully) increase over time.
 
 ```{r eval=FALSE}
 history <- model %>% fit(
@@ -376,9 +371,9 @@ history <- model %>% fit(
 
 # Model evaluation
 
-We'll now evaluate the trained model. First, we'll plot out the changes in the accuracy and loss function across the training epochs. This visualization is an important step as it helps show if the model has been well trained. Ideally, the loss function will show a fairly gradual decline to a minimum, and the accuracy will show a gradual increase to a plateau. If these do not stabilize, this indicates under-training and may require a higher learning rate or more epochs. If the decline in the loss is very sharp, the model may be overfit to the data. 
+We'll now evaluate the trained model. First, we'll plot out the changes in the accuracy and loss function across the training epochs. This visualization is an important step as it helps show if the model has been well trained. Ideally, the loss function will show a fairly gradual decline to a minimum, and the accuracy will show a gradual increase to a plateau. If these do not stabilize, this indicates under-training and may require a higher learning rate or more epochs. If the decline in the loss is very sharp, the model may be overfit to the data.
 
-All the information about the model training is held in the output `history` object. 
+All the information about the model training is held in the output `history` object.
 
 ```{r}
 plot(history)
@@ -412,9 +407,7 @@ prediction <- factor(max.col(y_pred) )
 actual <- factor(max.col(y_test))
 ```
 
-With the predicted and observed labels, we can now use **ModelMetrics** broad range of evaluation metrics. For example, to calculate the precision and recall:
-- Precision is the ratio of the number of images that were correctly predicted for a class to the total number of images that were predicted for that class (correctly or incorrectly). 
-- Recall is the ratio of of the number of images that were correctly predicted for a class to the total number of images in that class. This is also called the sensitivity
+With the predicted and observed labels, we can now use **ModelMetrics** broad range of evaluation metrics. For example, to calculate the precision and recall: - Precision is the ratio of the number of images that were correctly predicted for a class to the total number of images that were predicted for that class (correctly or incorrectly). - Recall is the ratio of of the number of images that were correctly predicted for a class to the total number of images in that class. This is also called the sensitivity
 
 ```{r}
 library(ModelMetrics)
@@ -428,7 +421,7 @@ We can now make a confusion matrix between the observed and predicted classes:
 pred_table <- table(actual, prediction)
 ```
 
-Note that the row and column indices are different (this is because R starts indices at 1 and Keras starts at 0). We can simply replace these with the fruit labels
+Note that the row and column indices are different (this is because R starts indices at 1 and keras starts at 0). We can simply replace these with the land-use labels
 
 ```{r results='hide'}
 rownames(pred_table) <- colnames(pred_table) <- class_list
@@ -439,7 +432,9 @@ pred_table
 knitr::kable(pred_table)
 ```
 
-This shows why we got such a high accuracy - nearly all the images are correctly classified. Let's finish by plotting this result. Here, we convert this confusion matrix into a long data frame, and calculate the number of each observed image class. We then use this to calculate the percentage correctly identified, and use **ggplot2**'s `geom_tile` to plot this out. Note that you will need the **reshape2** package here:
+This shows where the model is working well (and which classes are less well identified). You'll also see that most of the mis-matches are understandable (e.g. roads misclassified as rivers, crops misclassified as herbaceous vegetation). 
+
+Let's finish by plotting this result. Here, we convert this confusion matrix into a long data frame, and calculate the number of each observed image class. We then use this to calculate the percentage correctly identified, and use **ggplot2**'s `geom_tile` to plot this out. Note that you will need the **reshape2** package here:
 
 ```{r}
 library(reshape2)
@@ -475,7 +470,7 @@ print(p)
 
 The confusion matrix shows that the class-based accuracy varies substantially (compare highways to sea/lake). Overall the predictive skill is reasonable, particularly given some of the short-cuts that were taken here (subsets of data, realtively few training epochs). There are a variety of ways that this model can be improved on:
 
-- Using all the images
-- Using the multispectral images
-- Using a more complex CNN with a larger number of layers
-- Using a pre-trained model (one trained on a very large number of images that can be modified for this set
+-   Using all the images
+-   Using the multispectral images
+-   Using a more complex CNN with a larger number of layers
+-   Using a pre-trained model (one trained on a very large number of images that can be modified for this set
