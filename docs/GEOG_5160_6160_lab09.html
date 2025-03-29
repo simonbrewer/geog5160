@@ -1,0 +1,1465 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.553">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Simon Brewer">
+<meta name="dcterms.date" content="2025-03-29">
+
+<title>GEOG 5160 6160 Lab 09</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body>
+
+<div id="quarto-search-results"></div>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a>
+  <ul class="collapse">
+  <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data">Data</a></li>
+  </ul></li>
+  <li><a href="#data-generators" id="toc-data-generators" class="nav-link" data-scroll-target="#data-generators">Data generators</a></li>
+  <li><a href="#cnn-with-data-generator" id="toc-cnn-with-data-generator" class="nav-link" data-scroll-target="#cnn-with-data-generator">CNN with data generator</a></li>
+  <li><a href="#using-data-augmentation" id="toc-using-data-augmentation" class="nav-link" data-scroll-target="#using-data-augmentation">Using data augmentation</a></li>
+  <li><a href="#using-a-pretrained-model" id="toc-using-a-pretrained-model" class="nav-link" data-scroll-target="#using-a-pretrained-model">Using a pretrained model</a>
+  <ul class="collapse">
+  <li><a href="#feature-extraction" id="toc-feature-extraction" class="nav-link" data-scroll-target="#feature-extraction">Feature extraction</a></li>
+  <li><a href="#feature-extraction-with-data-augmentation" id="toc-feature-extraction-with-data-augmentation" class="nav-link" data-scroll-target="#feature-extraction-with-data-augmentation">Feature extraction with data augmentation</a></li>
+  <li><a href="#fine-tuning" id="toc-fine-tuning" class="nav-link" data-scroll-target="#fine-tuning">Fine-tuning</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">GEOG 5160 6160 Lab 09</h1>
+</div>
+
+
+<div class="quarto-title-meta-author">
+  <div class="quarto-title-meta-heading">Author</div>
+  <div class="quarto-title-meta-heading">Affiliation</div>
+  
+    <div class="quarto-title-meta-contents">
+    <p class="author">Simon Brewer <a href="mailto:simon.brewer@ess.utah.edu" class="quarto-title-author-email"><i class="bi bi-envelope"></i></a> </p>
+  </div>
+  <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            University of Utah
+          </p>
+      </div>
+  </div>
+
+<div class="quarto-title-meta">
+
+      
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">March 29, 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+<p>In the last lab, we looked at how to build and train convolutional neural networks for image classification. This lab will build from that by introducing a set of extensions from that basic model. These are:</p>
+<ul>
+<li>Using data generators to process and input image files</li>
+<li>Using data augmentation</li>
+<li>Using pretrained models</li>
+</ul>
+<section id="data" class="level3">
+<h3 class="anchored" data-anchor-id="data">Data</h3>
+<p>For this exercise, we’ll again use the EuroSat benchmarking dataset from: https://zenodo.org/records/7711810:</p>
+<blockquote class="blockquote">
+<p>EuroSAT is a land use and land cover classification dataset. The dataset is based on Sentinel-2 satellite imagery covering 13 spectral bands and consists of 10 LULC classes with a total of 27,000 labeled and geo-referenced images.</p>
+</blockquote>
+<p>You should have a copy of these files from the previous lab, but if not, download the zip file <em>EuroSat_RGB.zip</em> from the class webpage, move it to a folder that is easy to find on your computer, and unzip it.</p>
+<p>Once you have unzipped the data, take a look in the <em>EuroSat_RGB</em> folder. This is already set up in the standard way for image classification, where all images for a given class are kept in a single folder for that class.</p>
+<pre><code>- EuroSat_RGB
+  - AnnualCrop
+  - Forest
+  - HerbaceousVegetation
+  - ...</code></pre>
+</section>
+</section>
+<section id="data-generators" class="level1">
+<h1>Data generators</h1>
+<p>In the previous exercise, we simply loaded all the image files into memory and converted them to <strong>numpy</strong> arrays for training and testing. This is fine for small sets of images, but can quickly become impractical with larger sets or when the images are larger. To help with this, <strong>keras</strong> has a set of helper functions. these can be set to only load a small number of images at a time (a <em>batch</em> of images). During each training <em>epoch</em> the function loads <em>batch_size</em> images in a batch, updates the model weights, then loads the next batch. In general, once each batch of images has been used, the set of validation images are then processed to get the validation metrics.</p>
+<p><strong>keras</strong> has a set of these functions for different types of data (text, time series, images). Here, we’ll use <code>image_dataset_from_directory</code>, which processes images from a named directory. This assumes that this directory contains a set of subdirectories (one per class of image). So the <code>train</code> directory will contain one directory called <code>AnnualCrop</code> with all the annual crop images, etc. What makes this a little more complex, is that the function is designed to work on separate folders of training, validation and testing images. So the actual folder format will look something like this:</p>
+<pre><code>- base_dir
+- train
+- AnnualCrop
+- Forest
+- HerbaceousVegetation
+- ...
+- valid
+- AnnualCrop
+- Forest
+- HerbaceousVegetation
+- ...
+- test
+- AnnualCrop
+- Forest
+- HerbaceousVegetation
+- ...</code></pre>
+<p>Before doing anything else, let’s load the keras library. You’ll also need the <strong>tfdatasets</strong> and <strong>listarrays</strong> libraries.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(listarrays)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(keras)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tfdatasets)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We’ll now create this folder structure, shuffle the original image sets and copy them into this. Note that the code below is not the most efficient, but should hopefully be fairly transparent as to what is going on. First we set names for the old and new directories (as well as creating the new directory)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>old_dir <span class="ot">=</span> <span class="st">"./datafiles/EuroSAT_RGB/EuroSAT_RGB/"</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>new_dir <span class="ot">=</span> <span class="st">"./datafiles/EuroSAT_RGB_class/"</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="sc">!</span><span class="fu">dir.exists</span>(new_dir)) {<span class="fu">dir.create</span>(new_dir)}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Following this, we create training, validation and testing subdirectories</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>train_dir <span class="ot">=</span> <span class="fu">paste0</span>(new_dir, <span class="st">"/train/"</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="sc">!</span><span class="fu">dir.exists</span>(train_dir)) {<span class="fu">dir.create</span>(train_dir)}</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>valid_dir <span class="ot">=</span> <span class="fu">paste0</span>(new_dir, <span class="st">"/valid/"</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="sc">!</span><span class="fu">dir.exists</span>(valid_dir)) {<span class="fu">dir.create</span>(valid_dir)}</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>test_dir <span class="ot">=</span> <span class="fu">paste0</span>(new_dir, <span class="st">"/test/"</span>)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="sc">!</span><span class="fu">dir.exists</span>(test_dir)) {<span class="fu">dir.create</span>(test_dir)}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>And now we loop by class, find the list of files, randomly split this into different subsets and copy to the appropriate directory. Note that this might take a couple of minutes to run (it is trying to process about 25000 images).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>classes <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"AnnualCrop"</span>, <span class="st">"Forest"</span>, <span class="st">"HerbaceousVegetation"</span>, <span class="st">"Highway"</span>, </span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Industrial"</span>, <span class="st">"Pasture"</span>, <span class="st">"PermanentCrop"</span>, <span class="st">"Residential"</span>, </span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>            <span class="st">"River"</span>, <span class="st">"SeaLake"</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (class <span class="cf">in</span> classes) {</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(class)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  in_dir <span class="ot">=</span> <span class="fu">paste0</span>(old_dir, class, <span class="st">"/"</span>)</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  train_dir <span class="ot">=</span> <span class="fu">paste0</span>(new_dir, <span class="st">"/train/"</span>, class, <span class="st">"/"</span>)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="fu">dir.exists</span>(train_dir)) { <span class="fu">unlink</span>(train_dir, <span class="at">recursive =</span> <span class="cn">TRUE</span>) }</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dir.create</span>(train_dir)</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  valid_dir <span class="ot">=</span> <span class="fu">paste0</span>(new_dir, <span class="st">"/valid/"</span>, class, <span class="st">"/"</span>)</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="fu">dir.exists</span>(valid_dir)) { <span class="fu">unlink</span>(valid_dir, <span class="at">recursive =</span> <span class="cn">TRUE</span>) }</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dir.create</span>(valid_dir)</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>  test_dir <span class="ot">=</span> <span class="fu">paste0</span>(new_dir, <span class="st">"/test/"</span>, class, <span class="st">"/"</span>)</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="fu">dir.exists</span>(test_dir)) { <span class="fu">unlink</span>(test_dir, <span class="at">recursive =</span> <span class="cn">TRUE</span>) }</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dir.create</span>(test_dir)</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>  file_list <span class="ot">=</span> <span class="fu">list.files</span>(in_dir)</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>  file_id <span class="ot">=</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(file_list)</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>  ssize <span class="ot">=</span> <span class="fu">round</span>(<span class="fu">length</span>(file_id) <span class="sc">/</span> <span class="dv">5</span>)</span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>  test_id <span class="ot">=</span> <span class="fu">sample</span>(file_id, ssize)</span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>  file_id <span class="ot">=</span> <span class="fu">setdiff</span>(file_id, test_id)</span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>  valid_id <span class="ot">=</span> <span class="fu">sample</span>(file_id, ssize)</span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>  train_id <span class="ot">=</span> <span class="fu">setdiff</span>(file_id, valid_id)</span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>  train_files <span class="ot">=</span> file_list[train_id]</span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>  valid_files <span class="ot">=</span> file_list[valid_id]</span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>  test_files <span class="ot">=</span> file_list[test_id]</span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">file.copy</span>(<span class="fu">paste0</span>(in_dir, train_files), <span class="fu">paste0</span>(train_dir))</span>
+<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">file.copy</span>(<span class="fu">paste0</span>(in_dir, valid_files), <span class="fu">paste0</span>(valid_dir))</span>
+<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a>  <span class="fu">file.copy</span>(<span class="fu">paste0</span>(in_dir, test_files), <span class="fu">paste0</span>(test_dir))</span>
+<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We can now set up the data generator using <code>image_dataset_from_directory</code>. First, let’s fix the base directory, plus image size and number of channels, and the batch size (the number of images to be loaded at any one time)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>base_dir <span class="ot">=</span> new_dir</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>image_width <span class="ot">=</span> <span class="dv">64</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>image_height <span class="ot">=</span> <span class="dv">64</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>num_channels <span class="ot">=</span> <span class="dv">3</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>batch_size <span class="ot">=</span> <span class="dv">32</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now, we’ll set up an generator for the training images. This takes as arguments</p>
+<ul>
+<li>The top level folder storing the class folders</li>
+<li>The image size</li>
+<li>The batch size</li>
+</ul>
+<p>There are a number of other arguments to this function, including whether to shuffle the images between epochs (default <code>True</code>), and whether to infer the class names from the subfolder names or from a list (default <code>inferred</code>). When you run this, it should print both the number of images and classes it found in that directory. If either of these numbers is 0, please check your file path</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>train_dataset <span class="ot">&lt;-</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">image_dataset_from_directory</span>(<span class="fu">paste0</span>(base_dir, <span class="st">"/"</span>, <span class="st">"train"</span>),</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>                               <span class="at">image_size =</span> <span class="fu">c</span>(image_width, image_height),   </span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>                               <span class="at">batch_size =</span> batch_size)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Found 16200 files belonging to 10 classes.</code></pre>
+</div>
+</div>
+<p>Now, we can set up separate generators for the validation and training sets:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>valid_dataset <span class="ot">&lt;-</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">image_dataset_from_directory</span>(<span class="fu">paste0</span>(base_dir, <span class="st">"/"</span>, <span class="st">"valid"</span>),</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>                               <span class="at">image_size =</span> <span class="fu">c</span>(image_width, image_height),   </span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>                               <span class="at">batch_size =</span> batch_size)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Found 5400 files belonging to 10 classes.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>test_dataset <span class="ot">&lt;-</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">image_dataset_from_directory</span>(<span class="fu">paste0</span>(base_dir, <span class="st">"/"</span>, <span class="st">"test"</span>),</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>                               <span class="at">image_size =</span> <span class="fu">c</span>(image_width, image_height),   </span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>                               <span class="at">batch_size =</span> batch_size)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Found 5400 files belonging to 10 classes.</code></pre>
+</div>
+</div>
+<p>The <code>dataset</code> objects made can now be used to generate sets of data. Just as an example, the following code pulls the next iteration of a batch of training data and print the resulting shapes. Note that each batch of features is <code>(batch_size, image_width, image_height, num_channels)</code> and each batch of labels is <code>batch_size</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>iter_out <span class="ot">=</span> <span class="fu">iter_next</span>(<span class="fu">as_iterator</span>(train_dataset)) </span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>iter_out[[<span class="dv">1</span>]]<span class="sc">$</span>shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>TensorShape([32, 64, 64, 3])</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>iter_out[[<span class="dv">2</span>]]<span class="sc">$</span>shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>TensorShape([32])</code></pre>
+</div>
+</div>
+</section>
+<section id="cnn-with-data-generator" class="level1">
+<h1>CNN with data generator</h1>
+<p>We’ll now go ahead and build a model that can be trained using the data generator. In the interest of time in this class, we’ll keep this model simple, with only two convolutional layers, and two max-pooling steps. (Feel free to experiment with this by adding more convolutions or dense layers after the <code>Flatten</code> layer).</p>
+<p>We’ll also use a different syntax to build the model. This is <strong>keras</strong> functional API, which allows for more flexible model building. If you look at the code below, you should see that each layer is added as a single function call, rather than putting everything within a <code>Sequential</code> model as we did previously. This can help in diagnosing problems (when a single layer causes a error), as well as allowing different model architechtures. A couple of other things to note:</p>
+<ul>
+<li>We start with an <code>Input</code> layer which defines dimensions of the input data tensors (the images)</li>
+<li>We then use R’s pipe operator to add successive layers, including a <code>rescaling</code> layer to convert between the original pixel values ([0-255]) and a standardized range of [0-1]</li>
+<li>The flattened output is passed through a single densely connected layer before the output</li>
+<li>We again use ReLU activation for all intermediate layers, and a softmax for the output</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>inputs <span class="ot">&lt;-</span> <span class="fu">layer_input</span>(<span class="at">shape =</span> <span class="fu">c</span>(image_width, image_height, num_channels))</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>outputs <span class="ot">&lt;-</span> inputs <span class="sc">|&gt;</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_rescaling</span>(<span class="dv">1</span> <span class="sc">/</span> <span class="dv">255</span>) <span class="sc">|&gt;</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_conv_2d</span>(<span class="at">filters =</span> <span class="dv">32</span>, <span class="at">kernel_size =</span> <span class="dv">3</span>, <span class="at">activation =</span> <span class="st">"relu"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_max_pooling_2d</span>(<span class="at">pool_size =</span> <span class="dv">2</span>) <span class="sc">|&gt;</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_conv_2d</span>(<span class="at">filters =</span> <span class="dv">64</span>, <span class="at">kernel_size =</span> <span class="dv">3</span>, <span class="at">activation =</span> <span class="st">"relu"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_max_pooling_2d</span>(<span class="at">pool_size =</span> <span class="dv">2</span>) <span class="sc">|&gt;</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_flatten</span>() <span class="sc">|&gt;</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_dense</span>(<span class="dv">32</span>, <span class="at">activation =</span> <span class="st">"relu"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_dense</span>(<span class="dv">10</span>, <span class="at">activation =</span> <span class="st">"softmax"</span>)</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">keras_model</span>(inputs, outputs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>This gives us a total of around 420 thousand weights:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Model: "model"
+________________________________________________________________________________
+ Layer (type)                       Output Shape                    Param #     
+================================================================================
+ input_1 (InputLayer)               [(None, 64, 64, 3)]             0           
+ rescaling (Rescaling)              (None, 64, 64, 3)               0           
+ conv2d_1 (Conv2D)                  (None, 62, 62, 32)              896         
+ max_pooling2d_1 (MaxPooling2D)     (None, 31, 31, 32)              0           
+ conv2d (Conv2D)                    (None, 29, 29, 64)              18496       
+ max_pooling2d (MaxPooling2D)       (None, 14, 14, 64)              0           
+ flatten (Flatten)                  (None, 12544)                   0           
+ dense_1 (Dense)                    (None, 32)                      401440      
+ dense (Dense)                      (None, 10)                      330         
+================================================================================
+Total params: 421162 (1.61 MB)
+Trainable params: 421162 (1.61 MB)
+Non-trainable params: 0 (0.00 Byte)
+________________________________________________________________________________</code></pre>
+</div>
+</div>
+<p>Now we’ll define the loss, optimizer and performance metric. The only change here is that we will use the slightly simpler <code>RMSprop</code> as the optimizer</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>model <span class="sc">|&gt;</span> </span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">compile</span>(<span class="at">loss =</span> <span class="st">"sparse_categorical_crossentropy"</span>,</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>          <span class="at">optimizer =</span> <span class="fu">optimizer_rmsprop</span>(<span class="at">learning_rate =</span> <span class="fl">1e-3</span>),</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>          <span class="at">metrics =</span> <span class="st">"accuracy"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Before training, we’ll define a <em>callback</em>. This is one of a set of functions that are run at specific times during the training. There are a number of these that can carry out different operations (and you can write your own). Here, we’ll use <code>ModelCheckpoint</code>. This will save the state of the model (i.e.&nbsp;the weights) at each step. To avoid overwriting the file if the model starts to overfit, we specify that the update should only be made if the current validation accuracy is better than the previously saved one.</p>
+<p>As deep learning models can take quite a long time to train, it’s worth getting used to saving them to file so that you can reuse them at a later point without costly retraining.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>callbacks <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">callback_model_checkpoint</span>(</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">filepath =</span> <span class="st">"model1.keras"</span>,</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">save_best_only =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">monitor =</span> <span class="st">"val_loss"</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>And finally, we train the model. We’ll only train it for 10 epochs here to keep the computation time down, but in practice, this would likely need several more.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>history <span class="ot">&lt;-</span> model <span class="sc">|&gt;</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    train_dataset,</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">epochs =</span> <span class="dv">10</span>,</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">validation_data =</span> valid_dataset,</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">callbacks =</span> callbacks</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Epoch 1/10
+507/507 - 11s - loss: 1.5736 - accuracy: 0.4026 - val_loss: 1.2477 - val_accuracy: 0.5274 - 11s/epoch - 23ms/step
+Epoch 2/10
+507/507 - 11s - loss: 1.0984 - accuracy: 0.6093 - val_loss: 1.0308 - val_accuracy: 0.6289 - 11s/epoch - 22ms/step
+Epoch 3/10
+507/507 - 11s - loss: 0.8979 - accuracy: 0.6772 - val_loss: 1.4288 - val_accuracy: 0.5250 - 11s/epoch - 22ms/step
+Epoch 4/10
+507/507 - 10s - loss: 0.7835 - accuracy: 0.7219 - val_loss: 1.3267 - val_accuracy: 0.5567 - 10s/epoch - 20ms/step
+Epoch 5/10
+507/507 - 11s - loss: 0.6925 - accuracy: 0.7568 - val_loss: 0.9844 - val_accuracy: 0.6698 - 11s/epoch - 21ms/step
+Epoch 6/10
+507/507 - 11s - loss: 0.6206 - accuracy: 0.7820 - val_loss: 0.9416 - val_accuracy: 0.6911 - 11s/epoch - 21ms/step
+Epoch 7/10
+507/507 - 11s - loss: 0.5581 - accuracy: 0.8009 - val_loss: 0.8753 - val_accuracy: 0.7080 - 11s/epoch - 21ms/step
+Epoch 8/10
+507/507 - 11s - loss: 0.5017 - accuracy: 0.8235 - val_loss: 0.6704 - val_accuracy: 0.7798 - 11s/epoch - 21ms/step
+Epoch 9/10
+507/507 - 11s - loss: 0.4577 - accuracy: 0.8383 - val_loss: 0.7910 - val_accuracy: 0.7259 - 11s/epoch - 21ms/step
+Epoch 10/10
+507/507 - 11s - loss: 0.4132 - accuracy: 0.8564 - val_loss: 0.7277 - val_accuracy: 0.7781 - 11s/epoch - 21ms/step</code></pre>
+</div>
+</div>
+<p>Let’s plot the accuracy and loss curves</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(history)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab09_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Next, we’ll evaluate the model using the test images. To demonstrate the use of the save model file, we’ll load that and use the resulting object to evaluate. You should get an accuracy of between 0.7 and 0.8. This is lower than the previous model we built, as the current one is both simpler and has only been trained for a short period.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>test_model <span class="ot">&lt;-</span> <span class="fu">load_model_tf</span>(<span class="st">"model1.keras"</span>)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">evaluate</span>(test_model, test_dataset)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>169/169 - 1s - loss: 0.6634 - accuracy: 0.7819 - 1s/epoch - 6ms/step</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"Test accuracy: %.3f</span><span class="sc">\n</span><span class="st">"</span>, result[<span class="st">"accuracy"</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Test accuracy: 0.782</code></pre>
+</div>
+</div>
+</section>
+<section id="using-data-augmentation" class="level1">
+<h1>Using data augmentation</h1>
+<p>The most successful CNNs are generally trained on hundreds of thousands or millions of images. So while we have around 19000 images to train from, this remains a fairly small dataset. One approach to improve the predictive skill of models trained ‘from scratch’ with smaller data is to use <em>data augmentation</em>. In this approach, we randomly manipulate each training image at each epoch through rotations, zooming, translation, flipping, etc. This is trying to represent the concept that if a set of people all took an image of the same object, each image would be slightly different as some people would be closer/further away, shorter or taller etc.</p>
+<p>Rather than trying to do this by hand, <strong>keras</strong> has a set of layers that will peform random augmentation (defining these as layers makes it easy to incorporate them in a CNN as we will see). To illustrate this, we’ll create a new model that represents the data augmentation step. This will have a random flip (both horizontal and vertical), a random rotation by about 10% (left and right) and a random zoom of up to 20%</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>data_augmentation <span class="ot">&lt;-</span> <span class="fu">keras_model_sequential</span>() <span class="sc">|&gt;</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_random_flip</span>() <span class="sc">|&gt;</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_random_rotation</span>(<span class="fl">0.1</span>) <span class="sc">|&gt;</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_random_zoom</span>(<span class="fl">0.2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We can now extract a random training image and pass it through the augmentation model to show the results. Note that your image and changes will be different. You can also re-run this multiple times to see different images</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>batch <span class="ot">&lt;-</span> train_dataset <span class="sc">|&gt;</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as_iterator</span>() <span class="sc">|&gt;</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">iter_next</span>()</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(images, labels) <span class="sc">%&lt;-%</span> batch</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">3</span>), <span class="at">mar =</span> <span class="fu">rep</span>(.<span class="dv">5</span>, <span class="dv">4</span>))</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>image <span class="ot">&lt;-</span> images[<span class="dv">1</span>, , , ]</span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">as.raster</span>(<span class="fu">as.array</span>(image), <span class="at">max =</span> <span class="dv">255</span>))</span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span><span class="dv">9</span>) {</span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>  augmented_images <span class="ot">&lt;-</span> <span class="fu">data_augmentation</span>(images)</span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>  augmented_image <span class="ot">&lt;-</span> augmented_images[<span class="dv">1</span>, , , ]</span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>(<span class="fu">as.raster</span>(<span class="fu">as.array</span>(augmented_image), <span class="at">max =</span> <span class="dv">255</span>))</span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab09_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>To incorporate that into a CNN model, all we have to do is include this set of layers in the model we build, between the input and first convolution layer. As augmentation effectively increases the correlation between images, we’ll also add a drop out later after flattening to limit the effect of this</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>inputs <span class="ot">&lt;-</span> <span class="fu">layer_input</span>(<span class="at">shape =</span> <span class="fu">c</span>(image_width, image_height, num_channels))</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>outputs <span class="ot">&lt;-</span> inputs <span class="sc">|&gt;</span></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data_augmentation</span>() <span class="sc">|&gt;</span></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_rescaling</span>(<span class="dv">1</span> <span class="sc">/</span> <span class="dv">255</span>) <span class="sc">|&gt;</span></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_conv_2d</span>(<span class="at">filters =</span> <span class="dv">32</span>, <span class="at">kernel_size =</span> <span class="dv">3</span>, <span class="at">activation =</span> <span class="st">"relu"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_max_pooling_2d</span>(<span class="at">pool_size =</span> <span class="dv">2</span>) <span class="sc">|&gt;</span></span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_conv_2d</span>(<span class="at">filters =</span> <span class="dv">64</span>, <span class="at">kernel_size =</span> <span class="dv">3</span>, <span class="at">activation =</span> <span class="st">"relu"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_max_pooling_2d</span>(<span class="at">pool_size =</span> <span class="dv">2</span>) <span class="sc">|&gt;</span></span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_flatten</span>() <span class="sc">|&gt;</span></span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_dense</span>(<span class="dv">32</span>, <span class="at">activation =</span> <span class="st">"relu"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_dropout</span>(<span class="fl">0.5</span>) <span class="sc">|&gt;</span></span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_dense</span>(<span class="dv">10</span>, <span class="at">activation =</span> <span class="st">"softmax"</span>)</span>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">keras_model</span>(inputs, outputs)</span>
+<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a>model <span class="sc">|&gt;</span> </span>
+<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">compile</span>(<span class="at">loss =</span> <span class="st">"sparse_categorical_crossentropy"</span>,</span>
+<span id="cb32-17"><a href="#cb32-17" aria-hidden="true" tabindex="-1"></a>          <span class="at">optimizer =</span> <span class="fu">optimizer_rmsprop</span>(<span class="at">learning_rate =</span> <span class="fl">1e-3</span>),</span>
+<span id="cb32-18"><a href="#cb32-18" aria-hidden="true" tabindex="-1"></a>          <span class="at">metrics =</span> <span class="st">"accuracy"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We’ll train with a checkpoint to save the best model. Augmentation usually requires a longer period of training (we’ll run for 10 epochs again here)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>callbacks <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">callback_model_checkpoint</span>(</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">filepath =</span> <span class="st">"model2.keras"</span>,</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">save_best_only =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">monitor =</span> <span class="st">"val_loss"</span></span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>history <span class="ot">&lt;-</span> model <span class="sc">|&gt;</span> <span class="fu">fit</span>(</span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>  train_dataset,</span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">epochs =</span> <span class="dv">10</span>,</span>
+<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">validation_data =</span> valid_dataset,</span>
+<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">callbacks =</span> callbacks</span>
+<span id="cb33-14"><a href="#cb33-14" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Epoch 1/10
+507/507 - 12s - loss: 2.0313 - accuracy: 0.2274 - val_loss: 1.7680 - val_accuracy: 0.3974 - 12s/epoch - 24ms/step
+Epoch 2/10
+507/507 - 12s - loss: 1.8034 - accuracy: 0.3052 - val_loss: 1.5185 - val_accuracy: 0.4557 - 12s/epoch - 24ms/step
+Epoch 3/10
+507/507 - 12s - loss: 1.6751 - accuracy: 0.3769 - val_loss: 1.2824 - val_accuracy: 0.5441 - 12s/epoch - 23ms/step
+Epoch 4/10
+507/507 - 12s - loss: 1.4892 - accuracy: 0.4427 - val_loss: 1.1379 - val_accuracy: 0.6217 - 12s/epoch - 23ms/step
+Epoch 5/10
+507/507 - 12s - loss: 1.3560 - accuracy: 0.5072 - val_loss: 1.0978 - val_accuracy: 0.5841 - 12s/epoch - 23ms/step
+Epoch 6/10
+507/507 - 12s - loss: 1.2637 - accuracy: 0.5459 - val_loss: 1.5270 - val_accuracy: 0.4283 - 12s/epoch - 23ms/step
+Epoch 7/10
+507/507 - 12s - loss: 1.2037 - accuracy: 0.5699 - val_loss: 1.6309 - val_accuracy: 0.5494 - 12s/epoch - 23ms/step
+Epoch 8/10
+507/507 - 12s - loss: 1.1486 - accuracy: 0.5875 - val_loss: 1.0459 - val_accuracy: 0.6019 - 12s/epoch - 23ms/step
+Epoch 9/10
+507/507 - 12s - loss: 1.1114 - accuracy: 0.6051 - val_loss: 0.8836 - val_accuracy: 0.6957 - 12s/epoch - 24ms/step
+Epoch 10/10
+507/507 - 12s - loss: 1.1063 - accuracy: 0.6081 - val_loss: 1.1063 - val_accuracy: 0.6065 - 12s/epoch - 23ms/step</code></pre>
+</div>
+</div>
+<p>And as before, we’ll load the model and evaluate using the test set. You should see a small improvement in the accuracy (and running this for a longer set of iterations would improve this further).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>test_model <span class="ot">&lt;-</span> <span class="fu">load_model_tf</span>(<span class="st">"model2.keras"</span>)</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">evaluate</span>(test_model, test_dataset)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>169/169 - 1s - loss: 0.8592 - accuracy: 0.7007 - 1s/epoch - 7ms/step</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"Test accuracy: %.3f</span><span class="sc">\n</span><span class="st">"</span>, result[<span class="st">"accuracy"</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Test accuracy: 0.701</code></pre>
+</div>
+</div>
+</section>
+<section id="using-a-pretrained-model" class="level1">
+<h1>Using a pretrained model</h1>
+<p>An alternative approach for working with small image datasets is to use pretrained CNNs. These are generally CNNs that have been trained on a much larger and more varied set of images. To understand how (and why) this might work, it helps to remember that CNNs are considered to have two sections:</p>
+<ul>
+<li>A feature extractor (the convolution and pooling layers) - also known as the ‘convolutional base’</li>
+<li>A classifier (the set of densely connected layers and the output)</li>
+</ul>
+<p>When we use pretrained models, we try to leverage information contained in the convolutional base. For large models, trained on large data, the idea is that some of the image features that were learned are generic - i.e.&nbsp;they can occur in some way in multiple classes of images.</p>
+<blockquote class="blockquote">
+<p>If this original data-set is large enough and general enough, the spatial hierarchy of features learned by the pretrained model can effectively act as a generic model of the visual world, and hence, its features can prove useful for many different computer vision problems, even though these new problems may involve completely different classes than those of the original task (Chollet)</p>
+</blockquote>
+<p>Or to put it another way, if the model has learned how to look at the world and recognize general features in images, we should be able to recombine these to learn new types or classes of image.</p>
+<section id="feature-extraction" class="level2">
+<h2 class="anchored" data-anchor-id="feature-extraction">Feature extraction</h2>
+<p>As a first attempt at this, we’ll use a pretrained model simply as a feature extractor. In practice, this means pushing our EuroSAT images through the pretrained convolutional base and saving the outputs. We’ll then use these as <em>inputs</em> to train a new classifier model</p>
+<blockquote class="blockquote">
+<p>Why reuse only the convolutional base? Could we reuse the densely connected classifier as well? In general, doing so should be avoided. The reason is that the representations learned by the convolutional base are likely to be more generic and, therefore, more reusable: the feature maps of a convnet are presence maps of generic concepts over a picture, which are likely to be useful regardless of the computer vision problem at hand. But the representations learned by the classifier will necessarily be specific to the set of classes on which the model was trained (Chollet)</p>
+</blockquote>
+<p>Here, we’ll use the VGG16 model. This is a model developed by the University of Oxford. It has 16 layers, and was trained on the ImageNet dataset which comprises around 14 million images from 1000 different classes. <strong>keras</strong> has a useful helper function to acquire this model (and a few others as well). A much broader range of pretrained models can be found on the Hugging Face website (https://huggingface.co/).</p>
+<p>Let’s download this and set it up. Note that we specify the weights (based on the dataset used to train it originally), whether or not to include the classifier (<code>include_top=False</code>) and the expected input shape of the images we will be using this with</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>conv_base <span class="ot">&lt;-</span> <span class="fu">application_vgg16</span>(</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">weights =</span> <span class="st">"imagenet"</span>,</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">include_top =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">input_shape =</span> <span class="fu">c</span>(image_width, image_height, num_channels)</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Let’s take a look at the model. Note this is a much higher number of weights than anything we’ve looked at so fat (~14 million). Note also that there are no dense or output layers</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(conv_base)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Model: "vgg16"
+________________________________________________________________________________
+ Layer (type)                       Output Shape                    Param #     
+================================================================================
+ input_3 (InputLayer)               [(None, 64, 64, 3)]             0           
+ block1_conv1 (Conv2D)              (None, 64, 64, 64)              1792        
+ block1_conv2 (Conv2D)              (None, 64, 64, 64)              36928       
+ block1_pool (MaxPooling2D)         (None, 32, 32, 64)              0           
+ block2_conv1 (Conv2D)              (None, 32, 32, 128)             73856       
+ block2_conv2 (Conv2D)              (None, 32, 32, 128)             147584      
+ block2_pool (MaxPooling2D)         (None, 16, 16, 128)             0           
+ block3_conv1 (Conv2D)              (None, 16, 16, 256)             295168      
+ block3_conv2 (Conv2D)              (None, 16, 16, 256)             590080      
+ block3_conv3 (Conv2D)              (None, 16, 16, 256)             590080      
+ block3_pool (MaxPooling2D)         (None, 8, 8, 256)               0           
+ block4_conv1 (Conv2D)              (None, 8, 8, 512)               1180160     
+ block4_conv2 (Conv2D)              (None, 8, 8, 512)               2359808     
+ block4_conv3 (Conv2D)              (None, 8, 8, 512)               2359808     
+ block4_pool (MaxPooling2D)         (None, 4, 4, 512)               0           
+ block5_conv1 (Conv2D)              (None, 4, 4, 512)               2359808     
+ block5_conv2 (Conv2D)              (None, 4, 4, 512)               2359808     
+ block5_conv3 (Conv2D)              (None, 4, 4, 512)               2359808     
+ block5_pool (MaxPooling2D)         (None, 2, 2, 512)               0           
+================================================================================
+Total params: 14714688 (56.13 MB)
+Trainable params: 14714688 (56.13 MB)
+Non-trainable params: 0 (0.00 Byte)
+________________________________________________________________________________</code></pre>
+</div>
+</div>
+<p>So how do we use this? We’ll create a function that iterates across every image we have in training, validation and testing. This will take the image and run it through the VGGNet convolutional base, where each image will be transformed using the learned set of convolutions (and pooling). The transformed images are save as <code>all_features</code> and the corresponding labels are also saved.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>get_features_and_labels <span class="ot">&lt;-</span> <span class="cf">function</span>(dataset) {</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>  n_batches <span class="ot">&lt;-</span> <span class="fu">length</span>(dataset)</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>  all_features <span class="ot">&lt;-</span> <span class="fu">vector</span>(<span class="st">"list"</span>, n_batches)</span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>  all_labels <span class="ot">&lt;-</span> <span class="fu">vector</span>(<span class="st">"list"</span>, n_batches)</span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>  iterator <span class="ot">&lt;-</span> <span class="fu">as_array_iterator</span>(dataset)</span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_batches) {</span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(images, labels) <span class="sc">%&lt;-%</span> <span class="fu">iter_next</span>(iterator)</span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a>    preprocessed_images <span class="ot">&lt;-</span> <span class="fu">imagenet_preprocess_input</span>(images)</span>
+<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a>    features <span class="ot">&lt;-</span> conv_base <span class="sc">|&gt;</span> <span class="fu">predict</span>(preprocessed_images, <span class="at">verbose =</span> <span class="dv">0</span>)</span>
+<span id="cb42-10"><a href="#cb42-10" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb42-11"><a href="#cb42-11" aria-hidden="true" tabindex="-1"></a>    all_labels[[i]] <span class="ot">&lt;-</span> labels   </span>
+<span id="cb42-12"><a href="#cb42-12" aria-hidden="true" tabindex="-1"></a>    all_features[[i]] <span class="ot">&lt;-</span> features</span>
+<span id="cb42-13"><a href="#cb42-13" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb42-14"><a href="#cb42-14" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb42-15"><a href="#cb42-15" aria-hidden="true" tabindex="-1"></a>  all_features <span class="ot">&lt;-</span> listarrays<span class="sc">::</span><span class="fu">bind_on_rows</span>(all_features)</span>
+<span id="cb42-16"><a href="#cb42-16" aria-hidden="true" tabindex="-1"></a>  all_labels <span class="ot">&lt;-</span> listarrays<span class="sc">::</span><span class="fu">bind_on_rows</span>(all_labels)</span>
+<span id="cb42-17"><a href="#cb42-17" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb42-18"><a href="#cb42-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(all_features, all_labels)</span>
+<span id="cb42-19"><a href="#cb42-19" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now let’s run this to convert all images. Note that this will take a few minutes to run.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(train_features, train_labels) <span class="sc">%&lt;-%</span> <span class="fu">get_features_and_labels</span>(train_dataset)</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(val_features, val_labels) <span class="sc">%&lt;-%</span> <span class="fu">get_features_and_labels</span>(valid_dataset)</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(test_features, test_labels) <span class="sc">%&lt;-%</span> <span class="fu">get_features_and_labels</span>(test_dataset)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Once we have the set of transformed images, we can create a new classifier. We’ll just reuse the same set of layers as in the previous model (<code>Flatten</code> -&gt; <code>Dense</code> -&gt; <code>Dropout</code> -&gt; <code>Output</code>). Note that the input shape has changed - this is now equivalent to the output of the convolutional base (2x2x512)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>inputs <span class="ot">&lt;-</span> <span class="fu">layer_input</span>(<span class="at">shape =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">512</span>))</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>outputs <span class="ot">&lt;-</span> inputs <span class="sc">|&gt;</span></span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_flatten</span>() <span class="sc">|&gt;</span></span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_dense</span>(<span class="dv">64</span>) <span class="sc">|&gt;</span></span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_dropout</span>(.<span class="dv">5</span>) <span class="sc">|&gt;</span></span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_dense</span>(<span class="dv">10</span>, <span class="at">activation =</span> <span class="st">"softmax"</span>)</span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">keras_model</span>(inputs, outputs)</span>
+<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a>model <span class="sc">|&gt;</span> </span>
+<span id="cb44-10"><a href="#cb44-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">compile</span>(<span class="at">loss =</span> <span class="st">"sparse_categorical_crossentropy"</span>,</span>
+<span id="cb44-11"><a href="#cb44-11" aria-hidden="true" tabindex="-1"></a>          <span class="at">optimizer =</span> <span class="fu">optimizer_rmsprop</span>(<span class="at">learning_rate =</span> <span class="fl">1e-3</span>),</span>
+<span id="cb44-12"><a href="#cb44-12" aria-hidden="true" tabindex="-1"></a>          <span class="at">metrics =</span> <span class="st">"accuracy"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>And train it! One of the big advantages of this approach is that the model is substantially smaller (no convolutions) and so quicker to train</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>callbacks <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">callback_model_checkpoint</span>(</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">filepath =</span> <span class="st">"model3.keras"</span>,</span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">save_best_only =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">monitor =</span> <span class="st">"val_loss"</span></span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a>history <span class="ot">&lt;-</span> model <span class="sc">|&gt;</span> <span class="fu">fit</span>(</span>
+<span id="cb45-10"><a href="#cb45-10" aria-hidden="true" tabindex="-1"></a>  train_features, train_labels,</span>
+<span id="cb45-11"><a href="#cb45-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">epochs =</span> <span class="dv">20</span>,</span>
+<span id="cb45-12"><a href="#cb45-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">validation_data =</span> <span class="fu">list</span>(val_features, val_labels),</span>
+<span id="cb45-13"><a href="#cb45-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">callbacks =</span> callbacks</span>
+<span id="cb45-14"><a href="#cb45-14" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Epoch 1/20
+507/507 - 1s - loss: 3.3307 - accuracy: 0.7867 - val_loss: 1.8348 - val_accuracy: 0.8650 - 711ms/epoch - 1ms/step
+Epoch 2/20
+507/507 - 0s - loss: 1.7665 - accuracy: 0.8652 - val_loss: 1.2196 - val_accuracy: 0.8993 - 407ms/epoch - 803us/step
+Epoch 3/20
+507/507 - 0s - loss: 1.2271 - accuracy: 0.8858 - val_loss: 1.1029 - val_accuracy: 0.9026 - 410ms/epoch - 809us/step
+Epoch 4/20
+507/507 - 0s - loss: 0.8998 - accuracy: 0.8965 - val_loss: 0.9058 - val_accuracy: 0.9033 - 412ms/epoch - 813us/step
+Epoch 5/20
+507/507 - 0s - loss: 0.7068 - accuracy: 0.9056 - val_loss: 0.8328 - val_accuracy: 0.9052 - 436ms/epoch - 860us/step
+Epoch 6/20
+507/507 - 0s - loss: 0.5904 - accuracy: 0.9087 - val_loss: 0.7129 - val_accuracy: 0.9072 - 393ms/epoch - 775us/step
+Epoch 7/20
+507/507 - 0s - loss: 0.5146 - accuracy: 0.9131 - val_loss: 0.6664 - val_accuracy: 0.9065 - 408ms/epoch - 805us/step
+Epoch 8/20
+507/507 - 0s - loss: 0.4249 - accuracy: 0.9184 - val_loss: 0.6094 - val_accuracy: 0.9102 - 406ms/epoch - 801us/step
+Epoch 9/20
+507/507 - 0s - loss: 0.3640 - accuracy: 0.9204 - val_loss: 0.6078 - val_accuracy: 0.9028 - 396ms/epoch - 782us/step
+Epoch 10/20
+507/507 - 0s - loss: 0.3332 - accuracy: 0.9259 - val_loss: 0.5617 - val_accuracy: 0.9096 - 428ms/epoch - 845us/step
+Epoch 11/20
+507/507 - 0s - loss: 0.3006 - accuracy: 0.9285 - val_loss: 0.5519 - val_accuracy: 0.9091 - 397ms/epoch - 782us/step
+Epoch 12/20
+507/507 - 0s - loss: 0.2853 - accuracy: 0.9306 - val_loss: 0.5208 - val_accuracy: 0.9094 - 412ms/epoch - 813us/step
+Epoch 13/20
+507/507 - 0s - loss: 0.2687 - accuracy: 0.9345 - val_loss: 0.5074 - val_accuracy: 0.9085 - 392ms/epoch - 773us/step
+Epoch 14/20
+507/507 - 0s - loss: 0.2540 - accuracy: 0.9350 - val_loss: 0.5103 - val_accuracy: 0.9109 - 388ms/epoch - 765us/step
+Epoch 15/20
+507/507 - 0s - loss: 0.2591 - accuracy: 0.9353 - val_loss: 0.5030 - val_accuracy: 0.9061 - 404ms/epoch - 798us/step
+Epoch 16/20
+507/507 - 0s - loss: 0.2330 - accuracy: 0.9397 - val_loss: 0.5453 - val_accuracy: 0.9083 - 385ms/epoch - 759us/step
+Epoch 17/20
+507/507 - 0s - loss: 0.2383 - accuracy: 0.9404 - val_loss: 0.5552 - val_accuracy: 0.9041 - 387ms/epoch - 763us/step
+Epoch 18/20
+507/507 - 0s - loss: 0.2385 - accuracy: 0.9378 - val_loss: 0.6149 - val_accuracy: 0.9024 - 390ms/epoch - 770us/step
+Epoch 19/20
+507/507 - 0s - loss: 0.2324 - accuracy: 0.9410 - val_loss: 0.5836 - val_accuracy: 0.9111 - 387ms/epoch - 763us/step
+Epoch 20/20
+507/507 - 1s - loss: 0.2317 - accuracy: 0.9437 - val_loss: 0.6337 - val_accuracy: 0.9067 - 541ms/epoch - 1ms/step</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(history)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab09_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>And we can evaluate on the training set using the <em>extracted</em> test dataset. This now should show a substantial improvement over the previous models, with an accuracy of over 90%.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>test_model <span class="ot">&lt;-</span> <span class="fu">load_model_tf</span>(<span class="st">"model3.keras"</span>)</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">evaluate</span>(test_model, test_features, test_labels)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>169/169 - 0s - loss: 0.4981 - accuracy: 0.9078 - 125ms/epoch - 742us/step</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"Test accuracy: %.3f</span><span class="sc">\n</span><span class="st">"</span>, result[<span class="st">"accuracy"</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Test accuracy: 0.908</code></pre>
+</div>
+</div>
+</section>
+<section id="feature-extraction-with-data-augmentation" class="level2">
+<h2 class="anchored" data-anchor-id="feature-extraction-with-data-augmentation">Feature extraction with data augmentation</h2>
+<p>In the previous model, we separated the feature extraction and classifier into two separate steps. This prevents us from using data augmentation, as we only ‘extract’ each image once. If you want to combine both these approaches, it is possible to create a new model that incorporates:</p>
+<ul>
+<li>The augmentation layer(s)</li>
+<li>The convolutional base</li>
+<li>The new trainable classifier</li>
+</ul>
+<p>And we’ll demonstrate this here. First, we re-instantiate the VGGNet model. We then set the argument <code>trainable = False</code>. This ‘freezes’ all the existing weights so that they are not updated during training.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>conv_base <span class="ot">&lt;-</span> <span class="fu">application_vgg16</span>(</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>   <span class="at">weights =</span> <span class="st">"imagenet"</span>,</span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>   <span class="at">include_top =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a><span class="fu">freeze_weights</span>(conv_base)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>If you now look at the summary of this model, you should see that the number of trainable parameters (at the bottom) is now 0; in other words, we do not update any of these while training with the new data</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(conv_base)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Model: "vgg16"
+________________________________________________________________________________
+ Layer (type)                  Output Shape               Param #    Trainable  
+================================================================================
+ input_5 (InputLayer)          [(None, None, None, 3)]    0          N          
+ block1_conv1 (Conv2D)         (None, None, None, 64)     1792       N          
+ block1_conv2 (Conv2D)         (None, None, None, 64)     36928      N          
+ block1_pool (MaxPooling2D)    (None, None, None, 64)     0          N          
+ block2_conv1 (Conv2D)         (None, None, None, 128)    73856      N          
+ block2_conv2 (Conv2D)         (None, None, None, 128)    147584     N          
+ block2_pool (MaxPooling2D)    (None, None, None, 128)    0          N          
+ block3_conv1 (Conv2D)         (None, None, None, 256)    295168     N          
+ block3_conv2 (Conv2D)         (None, None, None, 256)    590080     N          
+ block3_conv3 (Conv2D)         (None, None, None, 256)    590080     N          
+ block3_pool (MaxPooling2D)    (None, None, None, 256)    0          N          
+ block4_conv1 (Conv2D)         (None, None, None, 512)    1180160    N          
+ block4_conv2 (Conv2D)         (None, None, None, 512)    2359808    N          
+ block4_conv3 (Conv2D)         (None, None, None, 512)    2359808    N          
+ block4_pool (MaxPooling2D)    (None, None, None, 512)    0          N          
+ block5_conv1 (Conv2D)         (None, None, None, 512)    2359808    N          
+ block5_conv2 (Conv2D)         (None, None, None, 512)    2359808    N          
+ block5_conv3 (Conv2D)         (None, None, None, 512)    2359808    N          
+ block5_pool (MaxPooling2D)    (None, None, None, 512)    0          N          
+================================================================================
+Total params: 14714688 (56.13 MB)
+Trainable params: 0 (0.00 Byte)
+Non-trainable params: 14714688 (56.13 MB)
+________________________________________________________________________________</code></pre>
+</div>
+</div>
+<p>We then make the augmentation layer (we could simply reuse the one from above, this is just here as a reminder or in case you want to change any augmentation parameters). Once this is made, we add the convolutional base, the augmentation and a new classifier together into a new CNN model</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>data_augmentation <span class="ot">&lt;-</span> <span class="fu">keras_model_sequential</span>() <span class="sc">|&gt;</span></span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_random_flip</span>() <span class="sc">|&gt;</span></span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_random_rotation</span>(<span class="fl">0.1</span>) <span class="sc">|&gt;</span></span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_random_zoom</span>(<span class="fl">0.2</span>)</span>
+<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-6"><a href="#cb55-6" aria-hidden="true" tabindex="-1"></a>inputs <span class="ot">&lt;-</span> <span class="fu">layer_input</span>(<span class="at">shape =</span> <span class="fu">c</span>(image_width, image_height, num_channels))</span>
+<span id="cb55-7"><a href="#cb55-7" aria-hidden="true" tabindex="-1"></a>outputs <span class="ot">&lt;-</span> inputs <span class="sc">|&gt;</span></span>
+<span id="cb55-8"><a href="#cb55-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data_augmentation</span>() <span class="sc">|&gt;</span></span>
+<span id="cb55-9"><a href="#cb55-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">imagenet_preprocess_input</span>() <span class="sc">|&gt;</span></span>
+<span id="cb55-10"><a href="#cb55-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">conv_base</span>() <span class="sc">|&gt;</span></span>
+<span id="cb55-11"><a href="#cb55-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_flatten</span>() <span class="sc">|&gt;</span></span>
+<span id="cb55-12"><a href="#cb55-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_dense</span>(<span class="dv">64</span>) <span class="sc">|&gt;</span></span>
+<span id="cb55-13"><a href="#cb55-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_dropout</span>(.<span class="dv">5</span>) <span class="sc">|&gt;</span></span>
+<span id="cb55-14"><a href="#cb55-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_dense</span>(<span class="dv">10</span>, <span class="at">activation =</span> <span class="st">"softmax"</span>)</span>
+<span id="cb55-15"><a href="#cb55-15" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">keras_model</span>(inputs, outputs)</span>
+<span id="cb55-16"><a href="#cb55-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-17"><a href="#cb55-17" aria-hidden="true" tabindex="-1"></a>model <span class="sc">|&gt;</span> </span>
+<span id="cb55-18"><a href="#cb55-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">compile</span>(<span class="at">loss =</span> <span class="st">"sparse_categorical_crossentropy"</span>,</span>
+<span id="cb55-19"><a href="#cb55-19" aria-hidden="true" tabindex="-1"></a>          <span class="at">optimizer =</span> <span class="fu">optimizer_rmsprop</span>(<span class="at">learning_rate =</span> <span class="fl">1e-3</span>),</span>
+<span id="cb55-20"><a href="#cb55-20" aria-hidden="true" tabindex="-1"></a>          <span class="at">metrics =</span> <span class="st">"accuracy"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The code to run this is given below. Be aware that this takes a fair amount of time to run (roughly 20 min on my laptop), even though we are only training weights in the last densely connected layers. This is because we are now obtaining batches of images, extracting the features using the previous model (<code>vgg16.preprocess_input</code>), passing this through a classifier and then doing all the usual updating of weights.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>callbacks <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a> <span class="fu">callback_model_checkpoint</span>(</span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>   <span class="at">filepath =</span> <span class="st">"model4.h5"</span>,</span>
+<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a>   <span class="at">save_best_only =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb56-5"><a href="#cb56-5" aria-hidden="true" tabindex="-1"></a>   <span class="at">monitor =</span> <span class="st">"val_loss"</span></span>
+<span id="cb56-6"><a href="#cb56-6" aria-hidden="true" tabindex="-1"></a> )</span>
+<span id="cb56-7"><a href="#cb56-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb56-8"><a href="#cb56-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-9"><a href="#cb56-9" aria-hidden="true" tabindex="-1"></a>history <span class="ot">&lt;-</span> model <span class="sc">%&gt;%</span> <span class="fu">fit</span>(</span>
+<span id="cb56-10"><a href="#cb56-10" aria-hidden="true" tabindex="-1"></a> train_dataset,</span>
+<span id="cb56-11"><a href="#cb56-11" aria-hidden="true" tabindex="-1"></a> <span class="at">epochs =</span> <span class="dv">20</span>,</span>
+<span id="cb56-12"><a href="#cb56-12" aria-hidden="true" tabindex="-1"></a> <span class="at">validation_data =</span> valid_dataset,</span>
+<span id="cb56-13"><a href="#cb56-13" aria-hidden="true" tabindex="-1"></a> <span class="at">callbacks =</span> callbacks</span>
+<span id="cb56-14"><a href="#cb56-14" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Epoch 1/20
+507/507 - 104s - loss: 3.4212 - accuracy: 0.7418 - val_loss: 1.9356 - val_accuracy: 0.8611 - 104s/epoch - 205ms/step
+Epoch 2/20
+507/507 - 106s - loss: 2.1239 - accuracy: 0.8085 - val_loss: 1.4325 - val_accuracy: 0.8750 - 106s/epoch - 209ms/step
+Epoch 3/20
+507/507 - 106s - loss: 1.4983 - accuracy: 0.8246 - val_loss: 1.0311 - val_accuracy: 0.8802 - 106s/epoch - 209ms/step
+Epoch 4/20
+507/507 - 103s - loss: 1.0836 - accuracy: 0.8318 - val_loss: 0.7469 - val_accuracy: 0.8841 - 103s/epoch - 202ms/step
+Epoch 5/20
+507/507 - 103s - loss: 0.8051 - accuracy: 0.8361 - val_loss: 0.5509 - val_accuracy: 0.8850 - 103s/epoch - 203ms/step
+Epoch 6/20
+507/507 - 103s - loss: 0.6260 - accuracy: 0.8412 - val_loss: 0.4344 - val_accuracy: 0.8952 - 103s/epoch - 203ms/step
+Epoch 7/20
+507/507 - 104s - loss: 0.5167 - accuracy: 0.8527 - val_loss: 0.4029 - val_accuracy: 0.9000 - 104s/epoch - 204ms/step
+Epoch 8/20
+507/507 - 104s - loss: 0.5053 - accuracy: 0.8531 - val_loss: 0.4171 - val_accuracy: 0.8898 - 104s/epoch - 205ms/step
+Epoch 9/20
+507/507 - 101s - loss: 0.5013 - accuracy: 0.8566 - val_loss: 0.3764 - val_accuracy: 0.9007 - 101s/epoch - 200ms/step
+Epoch 10/20
+507/507 - 101s - loss: 0.4786 - accuracy: 0.8627 - val_loss: 0.3985 - val_accuracy: 0.8991 - 101s/epoch - 199ms/step
+Epoch 11/20
+507/507 - 103s - loss: 0.4849 - accuracy: 0.8611 - val_loss: 0.3693 - val_accuracy: 0.9031 - 103s/epoch - 203ms/step
+Epoch 12/20
+507/507 - 104s - loss: 0.4802 - accuracy: 0.8609 - val_loss: 0.4020 - val_accuracy: 0.9000 - 104s/epoch - 206ms/step
+Epoch 13/20
+507/507 - 103s - loss: 0.4914 - accuracy: 0.8652 - val_loss: 0.3941 - val_accuracy: 0.9076 - 103s/epoch - 203ms/step
+Epoch 14/20
+507/507 - 101s - loss: 0.4836 - accuracy: 0.8645 - val_loss: 0.4008 - val_accuracy: 0.9007 - 101s/epoch - 200ms/step
+Epoch 15/20
+507/507 - 101s - loss: 0.4819 - accuracy: 0.8615 - val_loss: 0.4338 - val_accuracy: 0.8891 - 101s/epoch - 199ms/step
+Epoch 16/20
+507/507 - 99s - loss: 0.4868 - accuracy: 0.8623 - val_loss: 0.3846 - val_accuracy: 0.9048 - 99s/epoch - 195ms/step
+Epoch 17/20
+507/507 - 100s - loss: 0.4793 - accuracy: 0.8638 - val_loss: 0.3913 - val_accuracy: 0.9050 - 100s/epoch - 197ms/step
+Epoch 18/20
+507/507 - 99s - loss: 0.4772 - accuracy: 0.8672 - val_loss: 0.4127 - val_accuracy: 0.8976 - 99s/epoch - 195ms/step
+Epoch 19/20
+507/507 - 98s - loss: 0.4754 - accuracy: 0.8688 - val_loss: 0.4477 - val_accuracy: 0.8972 - 98s/epoch - 194ms/step
+Epoch 20/20
+507/507 - 220s - loss: 0.4831 - accuracy: 0.8670 - val_loss: 0.4191 - val_accuracy: 0.8948 - 220s/epoch - 434ms/step</code></pre>
+</div>
+</div>
+<p>Testing this shows a similar improvement to the previous model (&gt;0.9). The real difference here is that in the previous model we had to extract all the features into memory before training, whereas here we only load the data we need for a single batch. This may be important when working with much larger datasets.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>test_model <span class="ot">&lt;-</span> <span class="fu">load_model_tf</span>(<span class="st">"model4.h5"</span>)</span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a> result <span class="ot">&lt;-</span> <span class="fu">evaluate</span>(test_model, test_dataset)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>169/169 - 27s - loss: 0.3354 - accuracy: 0.9091 - 27s/epoch - 162ms/step</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a> <span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"Test accuracy: %.3f</span><span class="sc">\n</span><span class="st">"</span>, result[<span class="st">"accuracy"</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Test accuracy: 0.909</code></pre>
+</div>
+</div>
+</section>
+<section id="fine-tuning" class="level2">
+<h2 class="anchored" data-anchor-id="fine-tuning">Fine-tuning</h2>
+<p>A potential issue with using pre-trained models arises when there is a big difference between the original classification task that they were trained on, and the new task we are using this for. Here, we are using a model (VGGNet) trained on a set of images (ImageNet) that largely contain objects (animals, vehicles, etc; the full list is here: https://deeplearning.cms.waikato.ac.nz/user-guide/class-maps/IMAGENET/). And we are using this to perform land cover classification.</p>
+<p>Why is this an issue? The effect of pooling in the model means that the first convolutional layers represent very generic shapes and features (such as visual edges, colors, and textures), where as later convolutions find combinations of these that represent more complex objects in the image (a cat’s eye for example). These later convolutions are then more tied to specific objects, and less able to generalize.</p>
+<p>In this case, an alternative approach is to fine tune the pre-trained model. In practice, this means keeping or freezing the weights on the first set of (generic) layers, and relearning the weights for later (specific) layers so that they better match the images you are working with.</p>
+<p>So let’s see how this works. Above, we used a function (<code>freeze_weights</code>) to freeze all the layers in the convolutional base. There is a matching function (<code>unfreeze_weights</code>) that unfreezes the weights, and we can set an argument to only unfreeze the top four layers:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unfreeze_weights</span>(conv_base, <span class="at">from =</span> <span class="sc">-</span><span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>If we now look at the model, you’ll see there are about 7 million trainable parameters, about half as many as the original model, but substantial more than when we used this for simple feature extraction.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(conv_base)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Model: "vgg16"
+________________________________________________________________________________
+ Layer (type)                  Output Shape               Param #    Trainable  
+================================================================================
+ input_5 (InputLayer)          [(None, None, None, 3)]    0          N          
+ block1_conv1 (Conv2D)         (None, None, None, 64)     1792       N          
+ block1_conv2 (Conv2D)         (None, None, None, 64)     36928      N          
+ block1_pool (MaxPooling2D)    (None, None, None, 64)     0          N          
+ block2_conv1 (Conv2D)         (None, None, None, 128)    73856      N          
+ block2_conv2 (Conv2D)         (None, None, None, 128)    147584     N          
+ block2_pool (MaxPooling2D)    (None, None, None, 128)    0          N          
+ block3_conv1 (Conv2D)         (None, None, None, 256)    295168     N          
+ block3_conv2 (Conv2D)         (None, None, None, 256)    590080     N          
+ block3_conv3 (Conv2D)         (None, None, None, 256)    590080     N          
+ block3_pool (MaxPooling2D)    (None, None, None, 256)    0          N          
+ block4_conv1 (Conv2D)         (None, None, None, 512)    1180160    N          
+ block4_conv2 (Conv2D)         (None, None, None, 512)    2359808    N          
+ block4_conv3 (Conv2D)         (None, None, None, 512)    2359808    N          
+ block4_pool (MaxPooling2D)    (None, None, None, 512)    0          N          
+ block5_conv1 (Conv2D)         (None, None, None, 512)    2359808    Y          
+ block5_conv2 (Conv2D)         (None, None, None, 512)    2359808    Y          
+ block5_conv3 (Conv2D)         (None, None, None, 512)    2359808    Y          
+ block5_pool (MaxPooling2D)    (None, None, None, 512)    0          Y          
+================================================================================
+Total params: 14714688 (56.13 MB)
+Trainable params: 7079424 (27.01 MB)
+Non-trainable params: 7635264 (29.13 MB)
+________________________________________________________________________________</code></pre>
+</div>
+</div>
+<p>We’ll now retrain this. We’ll reuse the same classifier and augmentation layer as above. As a result, we simply need to recompile the model to take account of the changes to the convolutional base</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>model <span class="sc">|&gt;</span> </span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">compile</span>(<span class="at">loss =</span> <span class="st">"sparse_categorical_crossentropy"</span>,</span>
+<span id="cb65-3"><a href="#cb65-3" aria-hidden="true" tabindex="-1"></a>          <span class="at">optimizer =</span> <span class="fu">optimizer_rmsprop</span>(<span class="at">learning_rate =</span> <span class="fl">1e-3</span>),</span>
+<span id="cb65-4"><a href="#cb65-4" aria-hidden="true" tabindex="-1"></a>          <span class="at">metrics =</span> <span class="st">"accuracy"</span>)</span>
+<span id="cb65-5"><a href="#cb65-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb65-6"><a href="#cb65-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Model: "model_3"
+________________________________________________________________________________
+ Layer (type)                  Output Shape               Param #    Trainable  
+================================================================================
+ input_6 (InputLayer)          [(None, 64, 64, 3)]        0          Y          
+ sequential_1 (Sequential)     (None, 64, 64, 3)          0          Y          
+ tf.__operators__.getitem (Sl  (None, 64, 64, 3)          0          Y          
+ icingOpLambda)                                                                 
+ tf.nn.bias_add (TFOpLambda)   (None, 64, 64, 3)          0          Y          
+ vgg16 (Functional)            (None, None, None, 512)    14714688   Y          
+ flatten_3 (Flatten)           (None, 2048)               0          Y          
+ dense_7 (Dense)               (None, 64)                 131136     Y          
+ dropout_2 (Dropout)           (None, 64)                 0          Y          
+ dense_6 (Dense)               (None, 10)                 650        Y          
+================================================================================
+Total params: 14846474 (56.63 MB)
+Trainable params: 7211210 (27.51 MB)
+Non-trainable params: 7635264 (29.13 MB)
+________________________________________________________________________________</code></pre>
+</div>
+</div>
+<p>And finally, fit this model. This will take substantially longer than the other models in this lab as we are trying to learn a much higher number of weights (this took around 3 minutes per epoch on my laptop). The code is included here, but be aware that this wil tie up your computer for a while.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a>callbacks <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">callback_model_checkpoint</span>(<span class="at">filepath =</span> <span class="st">"model5.h5"</span>,</span>
+<span id="cb67-3"><a href="#cb67-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">save_best_only =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb67-4"><a href="#cb67-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">monitor =</span> <span class="st">"val_loss"</span>)</span>
+<span id="cb67-5"><a href="#cb67-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb67-6"><a href="#cb67-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-7"><a href="#cb67-7" aria-hidden="true" tabindex="-1"></a>history <span class="ot">&lt;-</span> model <span class="sc">%&gt;%</span> <span class="fu">fit</span>(</span>
+<span id="cb67-8"><a href="#cb67-8" aria-hidden="true" tabindex="-1"></a>  train_dataset,</span>
+<span id="cb67-9"><a href="#cb67-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">epochs =</span> <span class="dv">20</span>,</span>
+<span id="cb67-10"><a href="#cb67-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">validation_data =</span> valid_dataset,</span>
+<span id="cb67-11"><a href="#cb67-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">callbacks =</span> callbacks</span>
+<span id="cb67-12"><a href="#cb67-12" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Epoch 1/20
+507/507 - 133s - loss: 6.8197 - accuracy: 0.5901 - val_loss: 0.4006 - val_accuracy: 0.9078 - 133s/epoch - 262ms/step
+Epoch 2/20
+507/507 - 128s - loss: 0.5557 - accuracy: 0.8619 - val_loss: 0.3920 - val_accuracy: 0.9209 - 128s/epoch - 253ms/step
+Epoch 3/20
+507/507 - 129s - loss: 0.5053 - accuracy: 0.8791 - val_loss: 0.3494 - val_accuracy: 0.9191 - 129s/epoch - 254ms/step
+Epoch 4/20
+507/507 - 130s - loss: 0.4408 - accuracy: 0.8940 - val_loss: 0.4783 - val_accuracy: 0.9050 - 130s/epoch - 256ms/step
+Epoch 5/20
+507/507 - 128s - loss: 0.4325 - accuracy: 0.8989 - val_loss: 0.4090 - val_accuracy: 0.9287 - 128s/epoch - 253ms/step
+Epoch 6/20
+507/507 - 128s - loss: 0.4232 - accuracy: 0.9036 - val_loss: 0.4709 - val_accuracy: 0.9263 - 128s/epoch - 253ms/step
+Epoch 7/20
+507/507 - 129s - loss: 0.4055 - accuracy: 0.9074 - val_loss: 0.4662 - val_accuracy: 0.9274 - 129s/epoch - 255ms/step
+Epoch 8/20
+507/507 - 131s - loss: 0.3846 - accuracy: 0.9100 - val_loss: 0.5225 - val_accuracy: 0.9124 - 131s/epoch - 258ms/step
+Epoch 9/20
+507/507 - 131s - loss: 0.3780 - accuracy: 0.9154 - val_loss: 0.4676 - val_accuracy: 0.9344 - 131s/epoch - 259ms/step
+Epoch 10/20
+507/507 - 132s - loss: 0.3965 - accuracy: 0.9137 - val_loss: 0.5688 - val_accuracy: 0.9246 - 132s/epoch - 260ms/step
+Epoch 11/20
+507/507 - 130s - loss: 0.3750 - accuracy: 0.9145 - val_loss: 0.3982 - val_accuracy: 0.9404 - 130s/epoch - 256ms/step
+Epoch 12/20
+507/507 - 128s - loss: 0.3732 - accuracy: 0.9156 - val_loss: 2.2187 - val_accuracy: 0.8498 - 128s/epoch - 252ms/step
+Epoch 13/20
+507/507 - 128s - loss: 0.3803 - accuracy: 0.9204 - val_loss: 0.3845 - val_accuracy: 0.9237 - 128s/epoch - 253ms/step
+Epoch 14/20
+507/507 - 130s - loss: 0.3614 - accuracy: 0.9222 - val_loss: 0.4231 - val_accuracy: 0.9380 - 130s/epoch - 257ms/step
+Epoch 15/20
+507/507 - 128s - loss: 0.3665 - accuracy: 0.9204 - val_loss: 0.4339 - val_accuracy: 0.9209 - 128s/epoch - 252ms/step
+Epoch 16/20
+507/507 - 131s - loss: 0.3743 - accuracy: 0.9217 - val_loss: 0.5539 - val_accuracy: 0.9106 - 131s/epoch - 258ms/step
+Epoch 17/20
+507/507 - 133s - loss: 0.3593 - accuracy: 0.9218 - val_loss: 0.3021 - val_accuracy: 0.9448 - 133s/epoch - 262ms/step
+Epoch 18/20
+507/507 - 132s - loss: 0.3585 - accuracy: 0.9251 - val_loss: 0.5261 - val_accuracy: 0.9252 - 132s/epoch - 260ms/step
+Epoch 19/20
+507/507 - 134s - loss: 0.3476 - accuracy: 0.9268 - val_loss: 0.3462 - val_accuracy: 0.9420 - 134s/epoch - 264ms/step
+Epoch 20/20
+507/507 - 131s - loss: 0.3670 - accuracy: 0.9252 - val_loss: 0.6982 - val_accuracy: 0.9211 - 131s/epoch - 259ms/step</code></pre>
+</div>
+</div>
+<p>If we evaluate this, you should see another small improvement in the model (to over 0.93). Remember that the first model we built had an accuracy of around 0.7, and this should give you an indication of how much these models can be improved <em>without</em> requiring new data.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>test_model <span class="ot">&lt;-</span> <span class="fu">load_model_tf</span>(<span class="st">"model5.h5"</span>)</span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a> result <span class="ot">&lt;-</span> <span class="fu">evaluate</span>(test_model, test_dataset)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>169/169 - 25s - loss: 0.2840 - accuracy: 0.9411 - 25s/epoch - 147ms/step</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a> <span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"Test accuracy: %.3f</span><span class="sc">\n</span><span class="st">"</span>, result[<span class="st">"accuracy"</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Test accuracy: 0.941</code></pre>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

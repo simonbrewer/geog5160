@@ -38,13 +38,15 @@ For this exercise, we'll again use the EuroSat benchmarking dataset from: https:
 
 You should have a copy of these files from the previous lab, but if not, download the zip file *EuroSat_RGB.zip* from the class webpage, move it to a folder that is easy to find on your computer, and unzip it. 
 
-Once you have unzipped the data, take a look in the *EuroSat_RGB* folder. This is already set up in the standard way for image classification, where all images for a given class are kept in a single folder for that class. The name of the folders can then used as the *label* for each image, and is what we will use. 
+Once you have unzipped the data, take a look in the *EuroSat_RGB* folder. This is already set up in the standard way for image classification, where all images for a given class are kept in a single folder for that class. 
 
+```
 - EuroSat_RGB
-- AnnualCrop
-- Forest
-- HerbaceousVegetation
-- ...
+  - AnnualCrop
+  - Forest
+  - HerbaceousVegetation
+  - ...
+```
 
 # Data generators
 
@@ -505,7 +507,7 @@ We then make the augmentation layer (we could simply reuse the one from above, t
 
 ```{r}
 data_augmentation <- keras_model_sequential() |>
-  layer_random_flip("horizontal") |>
+  layer_random_flip() |>
   layer_random_rotation(0.1) |>
   layer_random_zoom(0.2)
 
@@ -526,12 +528,12 @@ model |>
           metrics = "accuracy")
 ```
 
-The code to run this is given below. Be aware that this takes a fair amount of time to run (roughly 20 min on my laptop), even though we are only training weights in the last densely connected layers. THis is because we are now obtaining batches of images, extracting the features using the previous model (`vgg16.preprocess_input`), passing this through a classifier and then doing all the usual updating of weights.
+The code to run this is given below. Be aware that this takes a fair amount of time to run (roughly 20 min on my laptop), even though we are only training weights in the last densely connected layers. This is because we are now obtaining batches of images, extracting the features using the previous model (`vgg16.preprocess_input`), passing this through a classifier and then doing all the usual updating of weights.
 
 ```{r}
 callbacks <- list(
  callback_model_checkpoint(
-   filepath = "model4.keras",
+   filepath = "model4.h5",
    save_best_only = TRUE,
    monitor = "val_loss"
  )
@@ -548,7 +550,7 @@ history <- model %>% fit(
 Testing this shows a similar improvement to the previous model (>0.9). The real difference here is that in the previous model we had to extract all the features into memory before training, whereas here we only load the data we need for a single batch. This may be important when working with much larger datasets.
 
 ```{r}
-test_model <- load_model_tf("model4.keras")
+test_model <- load_model_tf("model4.h5")
  result <- evaluate(test_model, test_dataset)
  cat(sprintf("Test accuracy: %.3f\n", result["accuracy"]))
 ```
@@ -588,7 +590,7 @@ And finally, fit this model. This will take substantially longer than the other 
 
 ```{r}
 callbacks <- list(
-  callback_model_checkpoint(filepath = "model5.keras",
+  callback_model_checkpoint(filepath = "model5.h5",
     save_best_only = TRUE,
     monitor = "val_loss")
 )
@@ -604,7 +606,7 @@ history <- model %>% fit(
 If we evaluate this, you should see another small improvement in the model (to over 0.93). Remember that the first model we built had an accuracy of around 0.7, and this should give you an indication of how much these models can be improved *without* requiring new data. 
 
 ```{r}
-test_model <- load_model_tf("model5.keras")
+test_model <- load_model_tf("model5.h5")
  result <- evaluate(test_model, test_dataset)
  cat(sprintf("Test accuracy: %.3f\n", result["accuracy"]))
 ```
