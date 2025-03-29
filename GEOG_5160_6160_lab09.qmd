@@ -477,6 +477,7 @@ test_model <- load_model_tf("model3.keras")
 result <- evaluate(test_model, test_features, test_labels)
 cat(sprintf("Test accuracy: %.3f\n", result["accuracy"]))
 ```
+
 ## Feature extraction with data augmentation
 
 In the previous model, we separated the feature extraction and classifier into two separate steps. This prevents us from using data augmentation, as we only 'extract' each image once. If you want to combine both these approaches, it is possible to create a new model that incorporates:
@@ -539,7 +540,7 @@ callbacks <- list(
 history <- model %>% fit(
  train_dataset,
  epochs = 20,
- validation_data = validation_dataset,
+ validation_data = valid_dataset,
  callbacks = callbacks
 )
 ```
@@ -551,3 +552,60 @@ test_model <- load_model_tf("model4.keras")
  result <- evaluate(test_model, test_dataset)
  cat(sprintf("Test accuracy: %.3f\n", result["accuracy"]))
 ```
+
+## Fine-tuning
+
+A potential issue with using pre-trained models arises when there is a big difference between the original classification task that they were trained on, and the new task we are using this for. Here, we are using a model (VGGNet) trained on a set of images (ImageNet) that largely contain objects (animals, vehicles, etc; the full list is here: https://deeplearning.cms.waikato.ac.nz/user-guide/class-maps/IMAGENET/). And we are using this to perform land cover classification. 
+
+Why is this an issue? The effect of pooling in the model means that the first convolutional layers represent very generic shapes and features (such as visual edges, colors, and textures), where as later convolutions find combinations of these that represent more complex objects in the image (a cat's eye for example). These later convolutions are then more tied to specific objects, and less able to generalize.
+
+In this case, an alternative approach is to fine tune the pre-trained model. In practice, this means keeping or freezing the weights on the first set of (generic) layers, and relearning the weights for later (specific) layers so that they better match the images you are working with. 
+
+So let's see how this works. Above, we used a function (`freeze_weights`) to freeze all the layers in the convolutional base. There is a matching function (`unfreeze_weights`) that unfreezes the weights, and we can set an argument to only unfreeze the top four layers:
+
+```{r}
+unfreeze_weights(conv_base, from = -4)
+```
+
+If we now look at the model, you'll see there are about 7 million trainable parameters, about half as many as the original model, but substantial more than when we used this for simple feature extraction.
+
+```{r}
+summary(conv_base)
+```
+
+We'll now retrain this. We'll reuse the same classifier and augmentation layer as above. As a result, we simply need to recompile the model to take account of the changes to the convolutional base
+
+```{r}
+model |> 
+  compile(loss = "sparse_categorical_crossentropy",
+          optimizer = optimizer_rmsprop(learning_rate = 1e-3),
+          metrics = "accuracy")
+
+summary(model)
+```
+
+And finally, fit this model. This will take substantially longer than the other models in this lab as we are trying to learn a much higher number of weights (this took around 3 minutes per epoch on my laptop). The code is included here, but be aware that this wil tie up your computer for a while.  
+
+```{r}
+callbacks <- list(
+  callback_model_checkpoint(filepath = "model5.keras",
+    save_best_only = TRUE,
+    monitor = "val_loss")
+)
+
+history <- model %>% fit(
+  train_dataset,
+  epochs = 20,
+  validation_data = valid_dataset,
+  callbacks = callbacks
+)
+```
+
+If we evaluate this, you should see another small improvement in the model (to over 0.93). Remember that the first model we built had an accuracy of around 0.7, and this should give you an indication of how much these models can be improved *without* requiring new data. 
+
+```{r}
+test_model <- load_model_tf("model5.keras")
+ result <- evaluate(test_model, test_dataset)
+ cat(sprintf("Test accuracy: %.3f\n", result["accuracy"]))
+```
+
