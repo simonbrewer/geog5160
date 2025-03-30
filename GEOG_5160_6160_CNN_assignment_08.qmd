@@ -1,0 +1,60 @@
+---
+title: "GEOG 5160 6160 Assignment 8"
+author: 
+  - name: "Simon Brewer"
+    email: simon.brewer@ess.utah.edu
+    affiliations:
+      - name: University of Utah
+        address: 260 S Central Campus Drive
+        city: Salt Lake City
+        state: UT
+        postal-code: 84112
+date: last-modified
+format:
+  html:
+    toc: true
+editor: visual
+---
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+library(png)
+library(grid)
+set.seed(42)
+```
+
+# Convolutional neural network assignment
+
+For this exercise, you will need to build, train and evaluate your own convolutional neural network (CNN) to classify one of the two datasets listed below. Code to build these can be found in labs 8 and 9, and you are free to use this and modify it. Your submission for this exercise should consist of:
+
+- A notebook (Python) or Quarto document that provides your code and a brief description of your model (number of layers, any augmentation or processing steps). This code should be capable of being run.
+- An accuracy score for your final model based on an evaluate of a test set of images
+
+The deadline for submissions is Monday April 14th through Canvas. Note that this exercise is worth 10 points towards your overall grade.
+
+# Data sets
+
+## Land-use scene classification
+
+This is a data set of land use/land cover images take from a sample dataset provided by UC Merced. There are 21 classes with 500 images each. Each class is split into training (350), validation (100) and testing (50) subfolders, and each image is RGB and 256x256 pixels. Note that the size and number of classes differs from the example dataset.
+
+Data can be found here:
+https://drive.google.com/file/d/17kD3qfgeHVOg2t6OWbth082Yz1VqpwvL/view?usp=sharing
+
+Original link to data:
+https://www.kaggle.com/datasets/apollo2506/landuse-scene-classification
+http://weegee.vision.ucmerced.edu/datasets/landuse.html
+
+
+## Dogs and cats
+
+This is a dataset of images of cats and dogs. There are 2500 images of each, with 1000 in training, 500 in validation and 1000 in testing. All images are RGB but are a variety of sizes, so you will need to use a data generator to resize these as you load them. Note that this is a binary classification exercise, so you will need a different loss function (`binary_crossentropy`) and only a single output node. 
+
+Data can be found here:
+https://drive.google.com/file/d/1sReimHhXsLhDpGuprzIUEs2IP9UxBAoi/view?usp=sharing
+
+Original link to data
+https://www.kaggle.com/c/dogs-vs-cats/data
+
+
+
+
