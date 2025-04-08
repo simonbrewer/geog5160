@@ -1,0 +1,32 @@
+---
+title: "GEOG 5160 6160 Lab 10"
+author: 
+  - name: "Simon Brewer"
+    email: simon.brewer@ess.utah.edu
+    affiliations:
+      - name: University of Utah
+        address: 260 S Central Campus Drive
+        city: Salt Lake City
+        state: UT
+        postal-code: 84112
+date: last-modified
+format:
+  html:
+    toc: true
+editor: visual
+---
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+library(png)
+library(grid)
+set.seed(42)
+```
+
+# Introduction
+
+In the last lab, we looked at how to build and train convolutional neural networks for image classification. This lab will build from that by introducing a set of extensions from that basic model. These are:
+
+-   Using data generators to process and input image files
+-   Using data augmentation
+-   Using pretrained models
+
