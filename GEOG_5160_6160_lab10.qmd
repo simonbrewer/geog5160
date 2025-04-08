@@ -24,9 +24,189 @@ set.seed(42)
 
 # Introduction
 
-In the last lab, we looked at how to build and train convolutional neural networks for image classification. This lab will build from that by introducing a set of extensions from that basic model. These are:
+This notebook will walk through setting up a model for the semantic segmentation of images using convolutional neural networks (CNNs). Unlike classification, where we attempt to predict a label associated with an image (e.g. cat or dog), in semantic segmentation, we are trying to label each pixel within an image. This is usually done by providing a corresponding mask for each training image that indicates which pixels belong to which class. The example used here is based on a set of aerial images taken across Dubai and used in a Kaggle competition:
 
--   Using data generators to process and input image files
--   Using data augmentation
--   Using pretrained models
+https://www.kaggle.com/datasets/humansintheloop/semantic-segmentation-of-aerial-imagery
+
+There are a total of 72 images and masks in this dataset. In the interest of making this tractable in a class, we'll just train the model using a subset (18) of these images, and only for a few epochs. With a relatively small dataset, the goal of this lab is demonstrate how to build and evaluate these models. I would not expect to get a very high level of accuracy without increasing both the size of the data and the number of epochs. 
+
+Code for the UNet model in this example has been modified from https://github.com/r-tensorflow/unet/tree/master
+
+## Objectives
+
+- Build a simple segmentation model in TF/Keras
+- Understand how to build an encoder and decoder branch in a convolutional neural network
+- How to use skip-connections to preserve spatial structure
+
+## Data processing
+
+First, let's load some libraries
+
+```{r}
+library(fs)
+library(tensorflow)
+library(keras)
+```
+
+Next, we'll get the images. These are available through the class Google drive in the zip file *unet_images3.zip*. Download this now, and move it to a folder that is easy to find on your computer, and unzip it. This will create a set of folders that look like this:
+
+```
+- images3
+    - images
+    - masks
+```
+
+In each of these you'll find matching images. The `images` folder contains the RGB image as JPEGs, and the `masks` folder contains the matching mask as PNG files. The file names should match, so *image_part_001_000.png* will be the mask for *image_part_001_000.jpg*. These files are smaller tiles created from the original images. If you want to see what the original images look like, download and unzip the file *unet_images2.zip*. If you have this, you can load an example of each. First, we'll make a couple of functions to display images using **keras** functions:
+
+
+```{r}
+display_image_tensor <- function(x, ..., max = 255,
+                                 plot_margins = c(0, 0, 0, 0)) {   
+  if(!is.null(plot_margins))
+    par(mar = plot_margins)
+  x |>
+    as.array() |>
+    drop() |>
+    as.raster(max = max) |>
+    plot(..., interpolate = FALSE)
+}
+
+display_target_tensor <- function(target) {
+  display_image_tensor(target, max = 5)   
+}
+```
+
+Now get the list of full images:
+
+```{r}
+data_dir <- path("./datafiles/images2/")
+
+input_dir <- data_dir / "images/"
+target_dir <- data_dir / "masks/"
+
+image_paths <- tibble::tibble(
+  input = sort(dir_ls(input_dir, glob = "*.jpg")),
+  target = sort(dir_ls(target_dir, glob = "*.png")))
+```
+
+And here's the first image:
+
+```{r}
+image_paths$input[1] |>
+  tf$io$read_file() |>
+  tf$io$decode_jpeg() |>
+  display_image_tensor()
+```
+
+And the corresponding mask:
+
+```{r}
+image_paths$target[1] |>
+  tf$io$read_file() |>
+  tf$io$decode_png() |>
+  display_image_tensor()
+```
+
+
+Now let's take a look at the tiles in `images3/`. We'll make a list of the full paths to both images and masks for use in training the model
+
+```{r}
+data_dir <- path("./datafiles/images3/")
+dir_create(data_dir)
+
+input_dir <- data_dir / "images/"
+target_dir <- data_dir / "masks/"
+
+image_paths <- tibble::tibble(
+  input = sort(dir_ls(input_dir, glob = "*.jpg")),
+  target = sort(dir_ls(target_dir, glob = "*.png")))
+
+image_paths
+```
+
+If we plot the first image, you should see that it is the top-left corner of the original image
+
+```{r}
+image_paths$input[1] |>
+  tf$io$read_file() |>
+  tf$io$decode_jpeg() |>
+  display_image_tensor()
+```
+
+We'll load the matching mask as well. Note that this has been converted to an integer mask, with 6 possible classes:
+
+```
+Building = 0
+Land = 1
+Road = 2
+Vegetation = 3
+Water = 4
+Unlabeled = 5
+```
+
+```{r}
+image_paths$target[1] |>
+  tf$io$read_file() |>
+  tf$io$decode_png() |>
+  display_target_tensor()
+```
+
+Next, we'll create two tensorflow datasets that hold the images. As this is a fairly small dataset, we'll simply read the images into memory. For larger sets, we would need to create a data generator here. We'll first make a couple of helper functions:
+
+- A function to read images
+- A function to resize images
+- A function to make the gather the images into a dataset
+
+
+```{r}
+library(tfdatasets)
+tf_read_image <-
+  function(path, format = "image", resize = NULL, ...) {
+    
+    img <- path |>
+      tf$io$read_file() |>
+      tf$io[[paste0("decode_", format)]](...)
+    
+    if (!is.null(resize))
+      img <- img |>
+        tf$image$resize(as.integer(resize))
+    img
+  }
+
+tf_read_image_and_resize <- function(..., resize = img_size) {
+  tf_read_image(..., resize = resize)
+}
+
+make_dataset <- function(paths_df) {
+  tensor_slices_dataset(paths_df) |>
+    dataset_map(function(path) {
+      image <- path$input |>
+        tf_read_image_and_resize("jpeg", channels = 3L) ## Reads images (3 channels)
+      target <- path$target |>
+        tf_read_image_and_resize("png", channels = 1L) ## Reads masks (1 channel)
+      # target <- target - 1
+      list(image, target) ## Stores image and corresponding mask
+    }) |>
+    dataset_cache() |> ## Dynamically caches the images
+    dataset_shuffle(buffer_size = nrow(paths_df)) |> ## Shuffles images between runs
+    dataset_batch(32)
+}
+```
+
+Now let's create the dataset. First, we'll define the input image size - for this we'll keep the images at their original size (128x128) but this can be used if the tiles are of different sizes to ensure all input *tensors* are the same. Second, we define the number of images to be used for validation (roughly 25% of the inputs). Third, we split the list of file names into training and validation. And finally, we make the two datasets
+
+```{r}
+img_size <- c(128, 128)
+
+num_val_samples <- 500
+val_idx <- sample.int(nrow(image_paths), num_val_samples)
+
+val_paths <- image_paths[val_idx, ]
+train_paths <- image_paths[-val_idx, ]
+
+validation_dataset <- make_dataset(val_paths)
+train_dataset <- make_dataset(train_paths)
+```
+
+
 
