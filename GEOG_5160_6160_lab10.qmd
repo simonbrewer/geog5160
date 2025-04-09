@@ -487,7 +487,7 @@ With all that in place, we can train the model. We'll use batchs of 64 images, a
 ```{r}
 history <- model |> fit(
   train_dataset,
-  epochs = 5,
+  epochs = 25,
   callbacks = callbacks,
   validation_data = validation_dataset
 )
@@ -524,7 +524,7 @@ test_mask <- val_paths$target[i] |>
 
 c) use the model `predict` function to estimate the probability of each class for each pixel
 
-````{r}
+```{r}
 predicted_mask_probs <-
   model(test_image[tf$newaxis, , , ])
 ```
@@ -532,13 +532,19 @@ predicted_mask_probs <-
 d) visualize the prediction (the class with the highest probability)
 
 ```{r}
-# predicted_mask <-
-#   tf$argmax(predicted_mask_probs, axis = -1L)
+predicted_mask <-
+  tf$argmax(predicted_mask_probs, axis = -1L)
 ```
 
 ```{r}
-# par(mfrow = c(1, 3))
-# display_image_tensor(test_image)
-# display_target_tensor(test_mask)
-# display_target_tensor(predicted_mask)
+par(mfrow = c(1, 3))
+display_image_tensor(test_image)
+display_target_tensor(test_mask)
+display_target_tensor(predicted_mask)
 ```
+
+The resulting segmentation is far from perfect here, but given the size of the input data and the relatively short training period, it is already starting to capture the spatial patterns in this image. The next steps are likely to be:
+
+- Add the full set of images
+- Train for longer (100 epochs)
+- Add data augmentation

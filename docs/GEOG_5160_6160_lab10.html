@@ -1,0 +1,1270 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.553">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Simon Brewer">
+<meta name="dcterms.date" content="2025-04-08">
+
+<title>GEOG 5160 6160 Lab 10</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body>
+
+<div id="quarto-search-results"></div>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a>
+  <ul class="collapse">
+  <li><a href="#objectives" id="toc-objectives" class="nav-link" data-scroll-target="#objectives">Objectives</a></li>
+  <li><a href="#data-processing" id="toc-data-processing" class="nav-link" data-scroll-target="#data-processing">Data processing</a></li>
+  </ul></li>
+  <li><a href="#unet-model" id="toc-unet-model" class="nav-link" data-scroll-target="#unet-model">UNet Model</a>
+  <ul class="collapse">
+  <li><a href="#upsampling" id="toc-upsampling" class="nav-link" data-scroll-target="#upsampling">Upsampling</a>
+  <ul class="collapse">
+  <li><a href="#upsampling2d" id="toc-upsampling2d" class="nav-link" data-scroll-target="#upsampling2d"><code>UpSampling2D</code></a></li>
+  <li><a href="#conv2dtranspose" id="toc-conv2dtranspose" class="nav-link" data-scroll-target="#conv2dtranspose"><code>Conv2DTranspose</code></a></li>
+  </ul></li>
+  <li><a href="#skip-connection" id="toc-skip-connection" class="nav-link" data-scroll-target="#skip-connection">Skip connection</a></li>
+  <li><a href="#model-architecture" id="toc-model-architecture" class="nav-link" data-scroll-target="#model-architecture">Model architecture</a>
+  <ul class="collapse">
+  <li><a href="#performance-metrics" id="toc-performance-metrics" class="nav-link" data-scroll-target="#performance-metrics">Performance metrics</a></li>
+  <li><a href="#optimizer" id="toc-optimizer" class="nav-link" data-scroll-target="#optimizer">Optimizer</a></li>
+  </ul></li>
+  <li><a href="#training" id="toc-training" class="nav-link" data-scroll-target="#training">Training</a></li>
+  <li><a href="#model-evaluation" id="toc-model-evaluation" class="nav-link" data-scroll-target="#model-evaluation">Model evaluation</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">GEOG 5160 6160 Lab 10</h1>
+</div>
+
+
+<div class="quarto-title-meta-author">
+  <div class="quarto-title-meta-heading">Author</div>
+  <div class="quarto-title-meta-heading">Affiliation</div>
+  
+    <div class="quarto-title-meta-contents">
+    <p class="author">Simon Brewer <a href="mailto:simon.brewer@ess.utah.edu" class="quarto-title-author-email"><i class="bi bi-envelope"></i></a> </p>
+  </div>
+  <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            University of Utah
+          </p>
+      </div>
+  </div>
+
+<div class="quarto-title-meta">
+
+      
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">April 8, 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+<p>This notebook will walk through setting up a model for the semantic segmentation of images using convolutional neural networks (CNNs). Unlike classification, where we attempt to predict a label associated with an image (e.g.&nbsp;cat or dog), in semantic segmentation, we are trying to label each pixel within an image. This is usually done by providing a corresponding mask for each training image that indicates which pixels belong to which class. The example used here is based on a set of aerial images taken across Dubai and used in a Kaggle competition:</p>
+<p>https://www.kaggle.com/datasets/humansintheloop/semantic-segmentation-of-aerial-imagery</p>
+<p>There are a total of 72 images and masks in this dataset. In the interest of making this tractable in a class, we’ll just train the model using a subset (18) of these images, and only for a few epochs. With a relatively small dataset, the goal of this lab is demonstrate how to build and evaluate these models. I would not expect to get a very high level of accuracy without increasing both the size of the data and the number of epochs.</p>
+<p>Code for the UNet model in this example has been modified from https://github.com/r-tensorflow/unet/tree/master</p>
+<section id="objectives" class="level2">
+<h2 class="anchored" data-anchor-id="objectives">Objectives</h2>
+<ul>
+<li>Build a simple segmentation model in TF/Keras</li>
+<li>Understand how to build an encoder and decoder branch in a convolutional neural network</li>
+<li>How to use skip-connections to preserve spatial structure</li>
+</ul>
+</section>
+<section id="data-processing" class="level2">
+<h2 class="anchored" data-anchor-id="data-processing">Data processing</h2>
+<p>First, let’s load some libraries</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'fs' was built under R version 4.4.1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tensorflow)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(keras)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Next, we’ll get the images. These are available through the class Google drive in the zip file <em>unet_images3.zip</em>. Download this now, and move it to a folder that is easy to find on your computer, and unzip it. This will create a set of folders that look like this:</p>
+<pre><code>- images3
+    - images
+    - masks</code></pre>
+<p>In each of these you’ll find matching images. The <code>images</code> folder contains the RGB image as JPEGs, and the <code>masks</code> folder contains the matching mask as PNG files. The file names should match, so <em>image_part_001_000.png</em> will be the mask for <em>image_part_001_000.jpg</em>. These files are smaller tiles created from the original images. If you want to see what the original images look like, download and unzip the file <em>unet_images2.zip</em>. If you have this, you can load an example of each. First, we’ll make a couple of functions to display images using <strong>keras</strong> functions:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>display_image_tensor <span class="ot">&lt;-</span> <span class="cf">function</span>(x, ..., <span class="at">max =</span> <span class="dv">255</span>,</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">plot_margins =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>)) {   </span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="sc">!</span><span class="fu">is.null</span>(plot_margins))</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">par</span>(<span class="at">mar =</span> plot_margins)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  x <span class="sc">|&gt;</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">as.array</span>() <span class="sc">|&gt;</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">drop</span>() <span class="sc">|&gt;</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">as.raster</span>(<span class="at">max =</span> max) <span class="sc">|&gt;</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">plot</span>(..., <span class="at">interpolate =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>display_target_tensor <span class="ot">&lt;-</span> <span class="cf">function</span>(target) {</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">display_image_tensor</span>(target, <span class="at">max =</span> <span class="dv">5</span>)   </span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now get the list of full images:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>data_dir <span class="ot">&lt;-</span> <span class="fu">path</span>(<span class="st">"./datafiles/images2/"</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>input_dir <span class="ot">&lt;-</span> data_dir <span class="sc">/</span> <span class="st">"images/"</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>target_dir <span class="ot">&lt;-</span> data_dir <span class="sc">/</span> <span class="st">"masks/"</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>image_paths <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">input =</span> <span class="fu">sort</span>(<span class="fu">dir_ls</span>(input_dir, <span class="at">glob =</span> <span class="st">"*.jpg"</span>)),</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">target =</span> <span class="fu">sort</span>(<span class="fu">dir_ls</span>(target_dir, <span class="at">glob =</span> <span class="st">"*.png"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>And here’s the first image:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>image_paths<span class="sc">$</span>input[<span class="dv">1</span>] <span class="sc">|&gt;</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  tf<span class="sc">$</span>io<span class="sc">$</span><span class="fu">read_file</span>() <span class="sc">|&gt;</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  tf<span class="sc">$</span>io<span class="sc">$</span><span class="fu">decode_jpeg</span>() <span class="sc">|&gt;</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">display_image_tensor</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab10_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>And the corresponding mask:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>image_paths<span class="sc">$</span>target[<span class="dv">1</span>] <span class="sc">|&gt;</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  tf<span class="sc">$</span>io<span class="sc">$</span><span class="fu">read_file</span>() <span class="sc">|&gt;</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  tf<span class="sc">$</span>io<span class="sc">$</span><span class="fu">decode_png</span>() <span class="sc">|&gt;</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">display_image_tensor</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab10_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Now let’s take a look at the tiles in <code>images3/</code>. We’ll make a list of the full paths to both images and masks for use in training the model</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>data_dir <span class="ot">&lt;-</span> <span class="fu">path</span>(<span class="st">"./datafiles/images3/"</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dir_create</span>(data_dir)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>input_dir <span class="ot">&lt;-</span> data_dir <span class="sc">/</span> <span class="st">"images/"</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>target_dir <span class="ot">&lt;-</span> data_dir <span class="sc">/</span> <span class="st">"masks/"</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>image_paths <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">input =</span> <span class="fu">sort</span>(<span class="fu">dir_ls</span>(input_dir, <span class="at">glob =</span> <span class="st">"*.jpg"</span>)),</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">target =</span> <span class="fu">sort</span>(<span class="fu">dir_ls</span>(target_dir, <span class="at">glob =</span> <span class="st">"*.png"</span>)))</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>image_paths</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2,016 × 2
+   input                                             target                     
+   &lt;fs::path&gt;                                        &lt;fs::path&gt;                 
+ 1 ./datafiles/images3/images/image_part_001_000.jpg …sks/image_part_001_000.png
+ 2 ./datafiles/images3/images/image_part_001_001.jpg …sks/image_part_001_001.png
+ 3 ./datafiles/images3/images/image_part_001_002.jpg …sks/image_part_001_002.png
+ 4 ./datafiles/images3/images/image_part_001_003.jpg …sks/image_part_001_003.png
+ 5 ./datafiles/images3/images/image_part_001_004.jpg …sks/image_part_001_004.png
+ 6 ./datafiles/images3/images/image_part_001_005.jpg …sks/image_part_001_005.png
+ 7 ./datafiles/images3/images/image_part_001_006.jpg …sks/image_part_001_006.png
+ 8 ./datafiles/images3/images/image_part_001_007.jpg …sks/image_part_001_007.png
+ 9 ./datafiles/images3/images/image_part_001_008.jpg …sks/image_part_001_008.png
+10 ./datafiles/images3/images/image_part_001_009.jpg …sks/image_part_001_009.png
+# ℹ 2,006 more rows</code></pre>
+</div>
+</div>
+<p>If we plot the first image, you should see that it is the top-left corner of the original image</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>image_paths<span class="sc">$</span>input[<span class="dv">1</span>] <span class="sc">|&gt;</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  tf<span class="sc">$</span>io<span class="sc">$</span><span class="fu">read_file</span>() <span class="sc">|&gt;</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  tf<span class="sc">$</span>io<span class="sc">$</span><span class="fu">decode_jpeg</span>() <span class="sc">|&gt;</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">display_image_tensor</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab10_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>We’ll load the matching mask as well. Note that this has been converted to an integer mask, with 6 possible classes:</p>
+<pre><code>Building = 0
+Land = 1
+Road = 2
+Vegetation = 3
+Water = 4
+Unlabeled = 5</code></pre>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>image_paths<span class="sc">$</span>target[<span class="dv">1</span>] <span class="sc">|&gt;</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  tf<span class="sc">$</span>io<span class="sc">$</span><span class="fu">read_file</span>() <span class="sc">|&gt;</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  tf<span class="sc">$</span>io<span class="sc">$</span><span class="fu">decode_png</span>() <span class="sc">|&gt;</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">display_target_tensor</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab10_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Next, we’ll create two tensorflow datasets that hold the images. As this is a fairly small dataset, we’ll simply read the images into memory. For larger sets, we would need to create a data generator here. We’ll first make a couple of helper functions:</p>
+<ul>
+<li>A function to read images</li>
+<li>A function to resize images</li>
+<li>A function to make the gather the images into a dataset</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tfdatasets)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>tf_read_image <span class="ot">&lt;-</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">function</span>(path, <span class="at">format =</span> <span class="st">"image"</span>, <span class="at">resize =</span> <span class="cn">NULL</span>, ...) {</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    img <span class="ot">&lt;-</span> path <span class="sc">|&gt;</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>      tf<span class="sc">$</span>io<span class="sc">$</span><span class="fu">read_file</span>() <span class="sc">|&gt;</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>      tf<span class="sc">$</span>io[[<span class="fu">paste0</span>(<span class="st">"decode_"</span>, format)]](...)</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(resize))</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>      img <span class="ot">&lt;-</span> img <span class="sc">|&gt;</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>        tf<span class="sc">$</span>image<span class="sc">$</span><span class="fu">resize</span>(<span class="fu">as.integer</span>(resize))</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>    img</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>tf_read_image_and_resize <span class="ot">&lt;-</span> <span class="cf">function</span>(..., <span class="at">resize =</span> img_size) {</span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tf_read_image</span>(..., <span class="at">resize =</span> resize)</span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>make_dataset <span class="ot">&lt;-</span> <span class="cf">function</span>(paths_df) {</span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tensor_slices_dataset</span>(paths_df) <span class="sc">|&gt;</span></span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">dataset_map</span>(<span class="cf">function</span>(path) {</span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>      image <span class="ot">&lt;-</span> path<span class="sc">$</span>input <span class="sc">|&gt;</span></span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>        <span class="fu">tf_read_image_and_resize</span>(<span class="st">"jpeg"</span>, <span class="at">channels =</span> <span class="dv">3</span>L) <span class="do">## Reads images (3 channels)</span></span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>      target <span class="ot">&lt;-</span> path<span class="sc">$</span>target <span class="sc">|&gt;</span></span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a>        <span class="fu">tf_read_image_and_resize</span>(<span class="st">"png"</span>, <span class="at">channels =</span> <span class="dv">1</span>L) <span class="do">## Reads masks (1 channel)</span></span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a>      <span class="co"># target &lt;- target - 1</span></span>
+<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a>      <span class="fu">list</span>(image, target) <span class="do">## Stores image and corresponding mask</span></span>
+<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a>    }) <span class="sc">|&gt;</span></span>
+<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a>    <span class="fu">dataset_cache</span>() <span class="sc">|&gt;</span> <span class="do">## Dynamically caches the images</span></span>
+<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a>    <span class="fu">dataset_shuffle</span>(<span class="at">buffer_size =</span> <span class="fu">nrow</span>(paths_df)) <span class="sc">|&gt;</span> <span class="do">## Shuffles images between runs</span></span>
+<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a>    <span class="fu">dataset_batch</span>(<span class="dv">32</span>)</span>
+<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now let’s create the dataset. First, we’ll define the input image size - for this we’ll keep the images at their original size (128x128) but this can be used if the tiles are of different sizes to ensure all input <em>tensors</em> are the same. Second, we define the number of images to be used for validation (roughly 25% of the inputs). Third, we split the list of file names into training and validation. And finally, we make the two datasets</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>img_size <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">128</span>, <span class="dv">128</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>num_val_samples <span class="ot">&lt;-</span> <span class="dv">500</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>val_idx <span class="ot">&lt;-</span> <span class="fu">sample.int</span>(<span class="fu">nrow</span>(image_paths), num_val_samples)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>val_paths <span class="ot">&lt;-</span> image_paths[val_idx, ]</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>train_paths <span class="ot">&lt;-</span> image_paths[<span class="sc">-</span>val_idx, ]</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>validation_dataset <span class="ot">&lt;-</span> <span class="fu">make_dataset</span>(val_paths)</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>train_dataset <span class="ot">&lt;-</span> <span class="fu">make_dataset</span>(train_paths)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We’ll finish this section by defining a set of variables describing the images: the width and height, the number of channels and classes</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>image_width <span class="ot">=</span> img_size[<span class="dv">1</span>]</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>image_height <span class="ot">=</span> img_size[<span class="dv">2</span>]</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>num_channels <span class="ot">=</span> <span class="dv">3</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>num_classes <span class="ot">=</span> <span class="dv">6</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="unet-model" class="level1">
+<h1>UNet Model</h1>
+<p>Now let’s turn to building the model. We’ll use a basic UNet architecture for this. This has two sequential branches (encoder and decoder) as well as a number of skip connections. The encoder branch operates like a classic CNN, with convolution and pooling layers. The decoder reverses this, by upsampling to increase resolution and more convolutions. Practically, each branch has a series of steps which either decrease resolution (encoder) or increase it (decoder). The steps on each side match: so for example, the encoder could have step going from a resolution of 64 to 32, and the decoder has a matching set going from 32 to 64.</p>
+<p>We’ll need to use some new layer types for this, so we’ll take a look at these first</p>
+<section id="upsampling" class="level2">
+<h2 class="anchored" data-anchor-id="upsampling">Upsampling</h2>
+<p>Upsampling layers acts as the opposite to a max-pooling layer. Pooling reduces the size of the inputs, by only replacing a window of pixels (usually 2 by 2) with a single pixel containing the maximum value of the original 4. An upsampling layer will increase the resolution of the input according to a defined window (usually 2x2, meaning each original pixel is split into 4). There are two types of upsampling layers</p>
+<section id="upsampling2d" class="level3">
+<h3 class="anchored" data-anchor-id="upsampling2d"><code>UpSampling2D</code></h3>
+<p>This simply increases the resolution of the input. So an input pixel with the value of 2 will be split into 4, each with the value of 2:</p>
+<pre><code>In:  [2]
+Out: [[2, 2],
+      [2, 2]]</code></pre>
+</section>
+<section id="conv2dtranspose" class="level3">
+<h3 class="anchored" data-anchor-id="conv2dtranspose"><code>Conv2DTranspose</code></h3>
+<p>In addition to the upsampling, this layer applies convlutional filters. As a result, the value of the 4 output pixels are based on feature recognition in the coarser image, rather than simply using the same value</p>
+</section>
+</section>
+<section id="skip-connection" class="level2">
+<h2 class="anchored" data-anchor-id="skip-connection">Skip connection</h2>
+<p>Skip connections are used to join the encoder and decoder branch. These join the matching encoder and decoder steps (e.g.&nbsp;the downsampling from 64 to 32 and the upsampling from 32 to 64). This is done through the use of <code>concatenate</code> layers. These link together output from different layers - for example, if you wanted to introduce two different sets of input features through different networks, a <code>concatenate</code> layer then merges these together before linking to the output.</p>
+<p>To understand how this works for the UNet model, let’s say our input images are 128x128 pixels:</p>
+<ul>
+<li>Step 1: The input is passed through a series of convolutions, and the output is set of transformed values at the same resolution (128x128)</li>
+<li>Step 2: The output of step 1 is passed through a max-pooling step which reduced the resolution to 64x64</li>
+<li>Step 3: The output of step 2 is passed through more convolutions (output size 64x64)</li>
+<li>Step 4: The output of step 3 is upsampled back to 128x128</li>
+<li>Step 5: the output of step 4 is concatenated with the output of step 1</li>
+</ul>
+<p>In practice this is more complex as these skip connections are taking place at every down/up-sampling step.</p>
+</section>
+<section id="model-architecture" class="level2">
+<h2 class="anchored" data-anchor-id="model-architecture">Model architecture</h2>
+<p>Let’s actually build the model now so that you can see what this looks like. We’ll use the functional API which will allow us to build this in sections. One thing to note here is that (after the input), we store the layers in an object called <code>x</code>, then add the next layer to this so that it accumulates these:</p>
+<ul>
+<li>Create a blank list to store layers (this will be used later to link the downward and upward path)</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="do">## To store the blocks for the downward pass</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>down_layers <span class="ot">&lt;-</span> <span class="fu">list</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ul>
+<li>Create the input layer, using the image size definitions. Link this to a rescaling layer (the input images are RGB with values from 0-255)</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Input</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>input <span class="ot">&lt;-</span> <span class="fu">layer_input</span>(<span class="at">shape =</span> <span class="fu">c</span>(image_width, image_height, num_channels))</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">layer_rescaling</span>(input, <span class="dv">1</span><span class="sc">/</span><span class="dv">255</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ul>
+<li><p>First downsampling block. This is the first of four downsampling blocks that make up the encoder. These will have the same format, but the number of convolutional filters will increase by 2 at each block:</p></li>
+<li><p>A first convolutional layer</p></li>
+<li><p>A dropout layer</p></li>
+<li><p>A second convolutional layer</p></li>
+<li><p>(Store the block)</p></li>
+<li><p>A max-pooling layer</p></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="do">## ------------</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Encoder path: forward step 1</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">layer_conv_2d</span>(x, <span class="at">filters =</span> <span class="dv">16</span>, <span class="at">kernel_size =</span> <span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">3</span>),</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>                   <span class="at">activation =</span> <span class="st">"relu"</span>, <span class="at">kernel_initializer =</span> <span class="st">"he_normal"</span>, <span class="at">padding =</span> <span class="st">"same"</span>)</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">layer_dropout</span>(x, <span class="at">rate =</span> <span class="fl">0.1</span>)</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">layer_conv_2d</span>(x, <span class="at">filters =</span> <span class="dv">16</span>, <span class="at">kernel_size =</span> <span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">3</span>),</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>                   <span class="at">activation =</span> <span class="st">"relu"</span>, <span class="at">kernel_initializer =</span> <span class="st">"he_normal"</span>, <span class="at">padding =</span> <span class="st">"same"</span>)</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Store block</span></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>down_layers[[<span class="dv">1</span>]] <span class="ot">&lt;-</span> x</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a><span class="do">## Max-pooling</span></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">layer_max_pooling_2d</span>(x, <span class="at">pool_size =</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>), <span class="at">strides =</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ul>
+<li>The second downward block. Note that we increase the number of filters from 16 to 32:</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="do">## ------------</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Encoder path: forward step 2</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">layer_conv_2d</span>(x, <span class="at">filters =</span> <span class="dv">32</span>, <span class="at">kernel_size =</span> <span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">3</span>),</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>                   <span class="at">activation =</span> <span class="st">"relu"</span>, <span class="at">kernel_initializer =</span> <span class="st">"he_normal"</span>, <span class="at">padding =</span> <span class="st">"same"</span>)</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">layer_dropout</span>(x, <span class="at">rate =</span> <span class="fl">0.1</span>)</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">layer_conv_2d</span>(x, <span class="at">filters =</span> <span class="dv">32</span>, <span class="at">kernel_size =</span> <span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">3</span>),</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>                   <span class="at">activation =</span> <span class="st">"relu"</span>, <span class="at">kernel_initializer =</span> <span class="st">"he_normal"</span>, <span class="at">padding =</span> <span class="st">"same"</span>)</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Store block</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>down_layers[[<span class="dv">2</span>]] <span class="ot">&lt;-</span> x</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a><span class="do">## Max-pooling</span></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">layer_max_pooling_2d</span>(x, <span class="at">pool_size =</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>), <span class="at">strides =</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ul>
+<li>The third downward block. Note that we increase the number of filters from 32 to 64:</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="do">## ------------</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Encoder path: forward step 3</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">layer_conv_2d</span>(x, <span class="at">filters =</span> <span class="dv">64</span>, <span class="at">kernel_size =</span> <span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">3</span>),</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>                   <span class="at">activation =</span> <span class="st">"relu"</span>, <span class="at">kernel_initializer =</span> <span class="st">"he_normal"</span>, <span class="at">padding =</span> <span class="st">"same"</span>)</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">layer_dropout</span>(x, <span class="at">rate =</span> <span class="fl">0.1</span>)</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">layer_conv_2d</span>(x, <span class="at">filters =</span> <span class="dv">64</span>, <span class="at">kernel_size =</span> <span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">3</span>),</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>                   <span class="at">activation =</span> <span class="st">"relu"</span>, <span class="at">kernel_initializer =</span> <span class="st">"he_normal"</span>, <span class="at">padding =</span> <span class="st">"same"</span>)</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Store block</span></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>down_layers[[<span class="dv">3</span>]] <span class="ot">&lt;-</span> x</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a><span class="do">## Max-pooling</span></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">layer_max_pooling_2d</span>(x, <span class="at">pool_size =</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>), <span class="at">strides =</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ul>
+<li>The fourth downward block. Note that we increase the number of filters from 64 to 128:</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="do">## ------------</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Encoder path: forward step 4 </span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">layer_conv_2d</span>(x, <span class="at">filters =</span> <span class="dv">128</span>, <span class="at">kernel_size =</span> <span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">3</span>),</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>                   <span class="at">activation =</span> <span class="st">"relu"</span>, <span class="at">kernel_initializer =</span> <span class="st">"he_normal"</span>, <span class="at">padding =</span> <span class="st">"same"</span>)</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">layer_dropout</span>(x, <span class="at">rate =</span> <span class="fl">0.1</span>)</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">layer_conv_2d</span>(x, <span class="at">filters =</span> <span class="dv">128</span>, <span class="at">kernel_size =</span> <span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">3</span>),</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>                   <span class="at">activation =</span> <span class="st">"relu"</span>, <span class="at">kernel_initializer =</span> <span class="st">"he_normal"</span>, <span class="at">padding =</span> <span class="st">"same"</span>)</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Store block</span></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>down_layers[[<span class="dv">4</span>]] <span class="ot">&lt;-</span> x</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a><span class="do">## Max-pooling</span></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">layer_max_pooling_2d</span>(x, <span class="at">pool_size =</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>), <span class="at">strides =</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ul>
+<li>Now we make the latent space block. This acts to connect the downward and upward path. This is the most abstract part of the model as it contains the fully filtered and pooled inputs. We pass this through more convolutional filters and another dropout</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="do">## ------------</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Latent space</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="do">## Add another dropout</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">layer_dropout</span>(x, <span class="at">rate =</span> <span class="fl">0.1</span>)</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Convolutional layer on latent space</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">layer_conv_2d</span>(x, <span class="at">filters =</span> <span class="dv">256</span>, <span class="at">kernel_size =</span> <span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">3</span>),</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>                   <span class="at">activation =</span> <span class="st">"relu"</span>, <span class="at">kernel_initializer =</span> <span class="st">"he_normal"</span>, <span class="at">padding =</span> <span class="st">"same"</span>)</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">layer_conv_2d</span>(x, <span class="at">filters =</span> <span class="dv">256</span>, <span class="at">kernel_size =</span> <span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">3</span>),</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>                   <span class="at">activation =</span> <span class="st">"relu"</span>, <span class="at">kernel_initializer =</span> <span class="st">"he_normal"</span>, <span class="at">padding =</span> <span class="st">"same"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ul>
+<li>Now we can start the upsampling path (the decoder). There will again be 4 of these to match the downsampling path, (so we’ll call the first one number four). Note that here we start with a high number of filters (128) and decrease by 50% for each new block. Each block will have the same format:
+<ul>
+<li>A <code>Conv2DTranspose</code> layer to upsample the inputs, increasing the resolution</li>
+<li>A <code>concatenate</code> layer that links this to the corresponding downsampling block (this will be the fourth one)</li>
+<li>A first convolutional layer</li>
+<li>A dropout layer</li>
+<li>A second convolutional layer</li>
+</ul></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="do">## ------------</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Decoder path 4</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> keras<span class="sc">::</span><span class="fu">layer_conv_2d_transpose</span>(x, <span class="at">filters =</span> <span class="dv">128</span>, <span class="at">kernel_size =</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>),</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">padding =</span> <span class="st">"same"</span>, <span class="at">strides =</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>))</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> keras<span class="sc">::</span><span class="fu">layer_concatenate</span>(<span class="fu">list</span>(down_layers[[<span class="dv">4</span>]], x))</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">layer_conv_2d</span>(x, <span class="at">filters =</span> <span class="dv">128</span>, <span class="at">kernel_size =</span> <span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">3</span>),</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>                   <span class="at">activation =</span> <span class="st">"relu"</span>, <span class="at">kernel_initializer =</span> <span class="st">"he_normal"</span>, <span class="at">padding =</span> <span class="st">"same"</span>)</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">layer_dropout</span>(x, <span class="at">rate =</span> <span class="fl">0.1</span>)</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">layer_conv_2d</span>(x, <span class="at">filters =</span> <span class="dv">128</span>, <span class="at">kernel_size =</span> <span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">3</span>),</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>                   <span class="at">activation =</span> <span class="st">"relu"</span>, <span class="at">kernel_initializer =</span> <span class="st">"he_normal"</span>, <span class="at">padding =</span> <span class="st">"same"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ul>
+<li>The third upward block. Note that we decrease the number of filters from 128 to 64:</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="do">## ------------</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Decoder path 3</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> keras<span class="sc">::</span><span class="fu">layer_conv_2d_transpose</span>(x, <span class="at">filters =</span> <span class="dv">64</span>, <span class="at">kernel_size =</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>),</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">padding =</span> <span class="st">"same"</span>, <span class="at">strides =</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>))</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> keras<span class="sc">::</span><span class="fu">layer_concatenate</span>(<span class="fu">list</span>(down_layers[[<span class="dv">3</span>]], x))</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">layer_conv_2d</span>(x, <span class="at">filters =</span> <span class="dv">64</span>, <span class="at">kernel_size =</span> <span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">3</span>),</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>                   <span class="at">activation =</span> <span class="st">"relu"</span>, <span class="at">kernel_initializer =</span> <span class="st">"he_normal"</span>, <span class="at">padding =</span> <span class="st">"same"</span>)</span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">layer_dropout</span>(x, <span class="at">rate =</span> <span class="fl">0.1</span>)</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">layer_conv_2d</span>(x, <span class="at">filters =</span> <span class="dv">64</span>, <span class="at">kernel_size =</span> <span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">3</span>),</span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>                   <span class="at">activation =</span> <span class="st">"relu"</span>, <span class="at">kernel_initializer =</span> <span class="st">"he_normal"</span>, <span class="at">padding =</span> <span class="st">"same"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ul>
+<li>The second upward block. Note that we decrease the number of filters from 64 to 32:</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="do">## ------------</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Decoder path 2</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> keras<span class="sc">::</span><span class="fu">layer_conv_2d_transpose</span>(x, <span class="at">filters =</span> <span class="dv">32</span>, <span class="at">kernel_size =</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>),</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">padding =</span> <span class="st">"same"</span>, <span class="at">strides =</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>))</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> keras<span class="sc">::</span><span class="fu">layer_concatenate</span>(<span class="fu">list</span>(down_layers[[<span class="dv">2</span>]], x))</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">layer_conv_2d</span>(x, <span class="at">filters =</span> <span class="dv">32</span>, <span class="at">kernel_size =</span> <span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">3</span>),</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>                   <span class="at">activation =</span> <span class="st">"relu"</span>, <span class="at">kernel_initializer =</span> <span class="st">"he_normal"</span>, <span class="at">padding =</span> <span class="st">"same"</span>)</span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">layer_dropout</span>(x, <span class="at">rate =</span> <span class="fl">0.1</span>)</span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">layer_conv_2d</span>(x, <span class="at">filters =</span> <span class="dv">32</span>, <span class="at">kernel_size =</span> <span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">3</span>),</span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>                   <span class="at">activation =</span> <span class="st">"relu"</span>, <span class="at">kernel_initializer =</span> <span class="st">"he_normal"</span>, <span class="at">padding =</span> <span class="st">"same"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ul>
+<li>The first upward block. Note that we decrease the number of filters from 32 to 16:</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="do">## ------------</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Decoder path 1</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> keras<span class="sc">::</span><span class="fu">layer_conv_2d_transpose</span>(x, <span class="at">filters =</span> <span class="dv">16</span>, <span class="at">kernel_size =</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>),</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">padding =</span> <span class="st">"same"</span>, <span class="at">strides =</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>))</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> keras<span class="sc">::</span><span class="fu">layer_concatenate</span>(<span class="fu">list</span>(down_layers[[<span class="dv">1</span>]], x))</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">layer_conv_2d</span>(x, <span class="at">filters =</span> <span class="dv">16</span>, <span class="at">kernel_size =</span> <span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">3</span>),</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>                   <span class="at">activation =</span> <span class="st">"relu"</span>, <span class="at">kernel_initializer =</span> <span class="st">"he_normal"</span>, <span class="at">padding =</span> <span class="st">"same"</span>)</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">layer_dropout</span>(x, <span class="at">rate =</span> <span class="fl">0.1</span>)</span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">layer_conv_2d</span>(x, <span class="at">filters =</span> <span class="dv">16</span>, <span class="at">kernel_size =</span> <span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">3</span>),</span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>                   <span class="at">activation =</span> <span class="st">"relu"</span>, <span class="at">kernel_initializer =</span> <span class="st">"he_normal"</span>, <span class="at">padding =</span> <span class="st">"same"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ul>
+<li>We now make the final layer, the output layer. This is a slightly unusual layer, as it is a convolutional layer, but with a 1x1 window size. This acts a little like the <code>flatten</code> layer we have previously used, but here forces the output into a shape that is compatible with the masks. The masks have 6 channels (one for each class)</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="do">## ------------</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Output layer</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>output <span class="ot">&lt;-</span> keras<span class="sc">::</span><span class="fu">layer_conv_2d</span>(x, <span class="at">filters =</span> num_classes,</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>                               <span class="at">kernel_size =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>), <span class="at">activation =</span> <span class="st">"softmax"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>With all that done, we can now make the model by linking the input layers and the output:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> keras<span class="sc">::</span><span class="fu">keras_model</span>(input, output)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Let’s take a look at the model summary:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Model: "model"
+________________________________________________________________________________
+ Layer (type)           Output Shape            Param   Connected to            
+                                                 #                              
+================================================================================
+ input_1 (InputLayer)   [(None, 128, 128, 3)]   0       []                      
+ rescaling (Rescaling)  (None, 128, 128, 3)     0       ['input_1[0][0]']       
+ conv2d (Conv2D)        (None, 128, 128, 16)    448     ['rescaling[0][0]']     
+ dropout (Dropout)      (None, 128, 128, 16)    0       ['conv2d[0][0]']        
+ conv2d_1 (Conv2D)      (None, 128, 128, 16)    2320    ['dropout[0][0]']       
+ max_pooling2d (MaxPoo  (None, 64, 64, 16)      0       ['conv2d_1[0][0]']      
+ ling2D)                                                                        
+ conv2d_2 (Conv2D)      (None, 64, 64, 32)      4640    ['max_pooling2d[0][0]'] 
+ dropout_1 (Dropout)    (None, 64, 64, 32)      0       ['conv2d_2[0][0]']      
+ conv2d_3 (Conv2D)      (None, 64, 64, 32)      9248    ['dropout_1[0][0]']     
+ max_pooling2d_1 (MaxP  (None, 32, 32, 32)      0       ['conv2d_3[0][0]']      
+ ooling2D)                                                                      
+ conv2d_4 (Conv2D)      (None, 32, 32, 64)      18496   ['max_pooling2d_1[0][0]'
+                                                        ]                       
+ dropout_2 (Dropout)    (None, 32, 32, 64)      0       ['conv2d_4[0][0]']      
+ conv2d_5 (Conv2D)      (None, 32, 32, 64)      36928   ['dropout_2[0][0]']     
+ max_pooling2d_2 (MaxP  (None, 16, 16, 64)      0       ['conv2d_5[0][0]']      
+ ooling2D)                                                                      
+ conv2d_6 (Conv2D)      (None, 16, 16, 128)     73856   ['max_pooling2d_2[0][0]'
+                                                        ]                       
+ dropout_3 (Dropout)    (None, 16, 16, 128)     0       ['conv2d_6[0][0]']      
+ conv2d_7 (Conv2D)      (None, 16, 16, 128)     14758   ['dropout_3[0][0]']     
+                                                4                               
+ max_pooling2d_3 (MaxP  (None, 8, 8, 128)       0       ['conv2d_7[0][0]']      
+ ooling2D)                                                                      
+ dropout_4 (Dropout)    (None, 8, 8, 128)       0       ['max_pooling2d_3[0][0]'
+                                                        ]                       
+ conv2d_8 (Conv2D)      (None, 8, 8, 256)       29516   ['dropout_4[0][0]']     
+                                                8                               
+ conv2d_9 (Conv2D)      (None, 8, 8, 256)       59008   ['conv2d_8[0][0]']      
+                                                0                               
+ conv2d_transpose (Con  (None, 16, 16, 128)     13120   ['conv2d_9[0][0]']      
+ v2DTranspose)                                  0                               
+ concatenate (Concaten  (None, 16, 16, 256)     0       ['conv2d_7[0][0]',      
+ ate)                                                    'conv2d_transpose[0][0]
+                                                        ']                      
+ conv2d_10 (Conv2D)     (None, 16, 16, 128)     29504   ['concatenate[0][0]']   
+                                                0                               
+ dropout_5 (Dropout)    (None, 16, 16, 128)     0       ['conv2d_10[0][0]']     
+ conv2d_11 (Conv2D)     (None, 16, 16, 128)     14758   ['dropout_5[0][0]']     
+                                                4                               
+ conv2d_transpose_1 (C  (None, 32, 32, 64)      32832   ['conv2d_11[0][0]']     
+ onv2DTranspose)                                                                
+ concatenate_1 (Concat  (None, 32, 32, 128)     0       ['conv2d_5[0][0]',      
+ enate)                                                  'conv2d_transpose_1[0][
+                                                        0]']                    
+ conv2d_12 (Conv2D)     (None, 32, 32, 64)      73792   ['concatenate_1[0][0]'] 
+ dropout_6 (Dropout)    (None, 32, 32, 64)      0       ['conv2d_12[0][0]']     
+ conv2d_13 (Conv2D)     (None, 32, 32, 64)      36928   ['dropout_6[0][0]']     
+ conv2d_transpose_2 (C  (None, 64, 64, 32)      8224    ['conv2d_13[0][0]']     
+ onv2DTranspose)                                                                
+ concatenate_2 (Concat  (None, 64, 64, 64)      0       ['conv2d_3[0][0]',      
+ enate)                                                  'conv2d_transpose_2[0][
+                                                        0]']                    
+ conv2d_14 (Conv2D)     (None, 64, 64, 32)      18464   ['concatenate_2[0][0]'] 
+ dropout_7 (Dropout)    (None, 64, 64, 32)      0       ['conv2d_14[0][0]']     
+ conv2d_15 (Conv2D)     (None, 64, 64, 32)      9248    ['dropout_7[0][0]']     
+ conv2d_transpose_3 (C  (None, 128, 128, 16)    2064    ['conv2d_15[0][0]']     
+ onv2DTranspose)                                                                
+ concatenate_3 (Concat  (None, 128, 128, 32)    0       ['conv2d_1[0][0]',      
+ enate)                                                  'conv2d_transpose_3[0][
+                                                        0]']                    
+ conv2d_16 (Conv2D)     (None, 128, 128, 16)    4624    ['concatenate_3[0][0]'] 
+ dropout_8 (Dropout)    (None, 128, 128, 16)    0       ['conv2d_16[0][0]']     
+ conv2d_17 (Conv2D)     (None, 128, 128, 16)    2320    ['dropout_8[0][0]']     
+ conv2d_18 (Conv2D)     (None, 128, 128, 6)     102     ['conv2d_17[0][0]']     
+================================================================================
+Total params: 1941190 (7.41 MB)
+Trainable params: 1941190 (7.41 MB)
+Non-trainable params: 0 (0.00 Byte)
+________________________________________________________________________________</code></pre>
+</div>
+</div>
+<p>This model has 1.94 million weights or parameters to train. This is fairly common with any large CNN-type model, and is why we generally need a large amount of data to train.</p>
+<p>We can also visualize the architecture. You should be able to see a ‘C’ like structure between the downward and upward paths of the model. In the original paper, this was shown rotated 90 degrees to the left, hence the name ’U’Net. (Note that you might need to save this and zoom in to see the detail.)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="performance-metrics" class="level3">
+<h3 class="anchored" data-anchor-id="performance-metrics">Performance metrics</h3>
+<p>We’ll use the accuracy to assess the model (alternatively, we could use the intersection over union).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>metrics <span class="ot">=</span> <span class="st">"accuracy"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="optimizer" class="level3">
+<h3 class="anchored" data-anchor-id="optimizer">Optimizer</h3>
+<p>We’ll set the optimizer to RMSprop with a learning rate of 1e-3:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>optim <span class="ot">=</span> <span class="fu">optimizer_rmsprop</span>(<span class="at">learning_rate =</span> <span class="fl">1e-3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="training" class="level2">
+<h2 class="anchored" data-anchor-id="training">Training</h2>
+<p>Let’s compile the model and create a callback to save the best performing set of weights during training</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>model <span class="sc">|&gt;</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">compile</span>(<span class="at">optimizer =</span> optim,</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>          <span class="at">loss =</span> <span class="st">"sparse_categorical_crossentropy"</span>,</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>          <span class="at">metrics =</span> metrics)   </span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>callbacks <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">callback_model_checkpoint</span>(<span class="st">"lulc_segmentation.keras"</span>,</span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>                            <span class="at">save_best_only =</span> <span class="cn">TRUE</span>))   </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>With all that in place, we can train the model. We’ll use batchs of 64 images, and run for 25 epochs.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>history <span class="ot">&lt;-</span> model <span class="sc">|&gt;</span> <span class="fu">fit</span>(</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>  train_dataset,</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">epochs =</span> <span class="dv">25</span>,</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">callbacks =</span> callbacks,</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">validation_data =</span> validation_dataset</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Epoch 1/25
+48/48 - 30s - loss: 1.3016 - accuracy: 0.4427 - val_loss: 1.1319 - val_accuracy: 0.5264 - 30s/epoch - 617ms/step
+Epoch 2/25
+48/48 - 29s - loss: 1.1175 - accuracy: 0.5531 - val_loss: 1.0224 - val_accuracy: 0.5838 - 29s/epoch - 611ms/step
+Epoch 3/25
+48/48 - 27s - loss: 1.0083 - accuracy: 0.6037 - val_loss: 0.9061 - val_accuracy: 0.6505 - 27s/epoch - 566ms/step
+Epoch 4/25
+48/48 - 29s - loss: 0.9511 - accuracy: 0.6417 - val_loss: 0.9925 - val_accuracy: 0.6326 - 29s/epoch - 613ms/step
+Epoch 5/25
+48/48 - 26s - loss: 0.9020 - accuracy: 0.6642 - val_loss: 0.8773 - val_accuracy: 0.6760 - 26s/epoch - 542ms/step
+Epoch 6/25
+48/48 - 31s - loss: 0.8640 - accuracy: 0.6792 - val_loss: 0.8162 - val_accuracy: 0.6878 - 31s/epoch - 650ms/step
+Epoch 7/25
+48/48 - 27s - loss: 0.8377 - accuracy: 0.6894 - val_loss: 0.8021 - val_accuracy: 0.6989 - 27s/epoch - 569ms/step
+Epoch 8/25
+48/48 - 32s - loss: 0.8018 - accuracy: 0.7089 - val_loss: 0.9104 - val_accuracy: 0.6619 - 32s/epoch - 663ms/step
+Epoch 9/25
+48/48 - 29s - loss: 0.7746 - accuracy: 0.7231 - val_loss: 0.7906 - val_accuracy: 0.7084 - 29s/epoch - 603ms/step
+Epoch 10/25
+48/48 - 28s - loss: 0.7421 - accuracy: 0.7368 - val_loss: 0.7536 - val_accuracy: 0.7298 - 28s/epoch - 582ms/step
+Epoch 11/25
+48/48 - 27s - loss: 0.7383 - accuracy: 0.7368 - val_loss: 0.8214 - val_accuracy: 0.6961 - 27s/epoch - 560ms/step
+Epoch 12/25
+48/48 - 26s - loss: 0.7062 - accuracy: 0.7532 - val_loss: 0.7022 - val_accuracy: 0.7535 - 26s/epoch - 548ms/step
+Epoch 13/25
+48/48 - 28s - loss: 0.6870 - accuracy: 0.7587 - val_loss: 0.7157 - val_accuracy: 0.7490 - 28s/epoch - 578ms/step
+Epoch 14/25
+48/48 - 26s - loss: 0.6726 - accuracy: 0.7639 - val_loss: 0.8228 - val_accuracy: 0.7083 - 26s/epoch - 544ms/step
+Epoch 15/25
+48/48 - 28s - loss: 0.6514 - accuracy: 0.7709 - val_loss: 0.8873 - val_accuracy: 0.6918 - 28s/epoch - 591ms/step
+Epoch 16/25
+48/48 - 30s - loss: 0.6428 - accuracy: 0.7751 - val_loss: 0.8103 - val_accuracy: 0.7113 - 30s/epoch - 616ms/step
+Epoch 17/25
+48/48 - 26s - loss: 0.6330 - accuracy: 0.7763 - val_loss: 0.5836 - val_accuracy: 0.7909 - 26s/epoch - 547ms/step
+Epoch 18/25
+48/48 - 27s - loss: 0.6200 - accuracy: 0.7812 - val_loss: 0.7421 - val_accuracy: 0.7411 - 27s/epoch - 570ms/step
+Epoch 19/25
+48/48 - 27s - loss: 0.6178 - accuracy: 0.7785 - val_loss: 0.6323 - val_accuracy: 0.7769 - 27s/epoch - 563ms/step
+Epoch 20/25
+48/48 - 25s - loss: 0.6056 - accuracy: 0.7859 - val_loss: 0.6840 - val_accuracy: 0.7672 - 25s/epoch - 524ms/step
+Epoch 21/25
+48/48 - 25s - loss: 0.5965 - accuracy: 0.7876 - val_loss: 0.6671 - val_accuracy: 0.7605 - 25s/epoch - 520ms/step
+Epoch 22/25
+48/48 - 26s - loss: 0.5858 - accuracy: 0.7911 - val_loss: 0.7264 - val_accuracy: 0.7542 - 26s/epoch - 543ms/step
+Epoch 23/25
+48/48 - 28s - loss: 0.5819 - accuracy: 0.7931 - val_loss: 0.8269 - val_accuracy: 0.6848 - 28s/epoch - 590ms/step
+Epoch 24/25
+48/48 - 28s - loss: 0.5806 - accuracy: 0.7924 - val_loss: 0.5773 - val_accuracy: 0.7944 - 28s/epoch - 590ms/step
+Epoch 25/25
+48/48 - 28s - loss: 0.5622 - accuracy: 0.7987 - val_loss: 0.6708 - val_accuracy: 0.7699 - 28s/epoch - 579ms/step</code></pre>
+</div>
+</div>
+<p>And let’s plot the history</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(history)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab10_files/figure-html/unnamed-chunk-32-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The loss curve is noisy but shows a fairly consistent decline. As it has not yet plateaued, it may be worth increasing the number of epochs to train for longer.</p>
+</section>
+<section id="model-evaluation" class="level2">
+<h2 class="anchored" data-anchor-id="model-evaluation">Model evaluation</h2>
+<p>To finish up, we’ll take a look at how well the model can segment an image. As we don’t have a separate testing set, we’ll simply use one of the images from the validation set. The steps here are to</p>
+<ol type="a">
+<li>Reload the model weight</li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">load_model_tf</span>(<span class="st">"lulc_segmentation.keras"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ol start="2" type="a">
+<li>load an image (and mask)</li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>i <span class="ot">=</span> <span class="dv">10</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>test_image <span class="ot">&lt;-</span> val_paths<span class="sc">$</span>input[i] <span class="sc">|&gt;</span></span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tf_read_image_and_resize</span>(<span class="st">"jpeg"</span>, <span class="at">channels =</span> <span class="dv">3</span>L)</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>test_mask <span class="ot">&lt;-</span> val_paths<span class="sc">$</span>target[i] <span class="sc">|&gt;</span></span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tf_read_image_and_resize</span>(<span class="st">"png"</span>, <span class="at">channels =</span> <span class="dv">1</span>L)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ol start="3" type="a">
+<li>use the model <code>predict</code> function to estimate the probability of each class for each pixel</li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>predicted_mask_probs <span class="ot">&lt;-</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">model</span>(test_image[tf<span class="sc">$</span>newaxis, , , ])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ol start="4" type="a">
+<li>visualize the prediction (the class with the highest probability)</li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>predicted_mask <span class="ot">&lt;-</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  tf<span class="sc">$</span><span class="fu">argmax</span>(predicted_mask_probs, <span class="at">axis =</span> <span class="sc">-</span><span class="dv">1</span>L)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">3</span>))</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a><span class="fu">display_image_tensor</span>(test_image)</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a><span class="fu">display_target_tensor</span>(test_mask)</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a><span class="fu">display_target_tensor</span>(predicted_mask)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab10_files/figure-html/unnamed-chunk-37-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The resulting segmentation is far from perfect here, but given the size of the input data and the relatively short training period, it is already starting to capture the spatial patterns in this image. The next steps are likely to be:</p>
+<ul>
+<li>Add the full set of images</li>
+<li>Train for longer (100 epochs)</li>
+<li>Add data augmentation</li>
+</ul>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
