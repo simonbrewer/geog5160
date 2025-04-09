@@ -62,6 +62,10 @@ Spatial data science is a fast-growing discipline, with wide-ranging application
     - [Lab notes (Python notebook)][lab09p]
     - [Lab notes (Python colab)][lab09c]
     - [Assignment][cnn_exercise]
+- Lab 10
+    - [Lab notes (R)][lab10r]
+    - [Lab notes (Python notebook)][lab10p]
+    - [Lab notes (Python colab)][lab09c]
 
 # Data
 
@@ -92,6 +96,9 @@ Spatial data science is a fast-growing discipline, with wide-ranging application
     - [Credit dataset][credit_data]
 - Lab 8/9
     - [EuroSAT RGB images][eurosat_rgb]
+- Lab 10
+    - Full sized images [images2.zip][unet2]
+    - Tiled images [images3.zip][unet3]
     
 
 [install]: https://simonbrewer.github.io/geog5160/GEOG_5160_6160_Installation.html
@@ -122,6 +129,9 @@ Spatial data science is a fast-growing discipline, with wide-ranging application
 [lab09p]: https://github.com/simonbrewer/geog5160/blob/main/GEOG_5160_6160_lab09.ipynb
 [lab09c]: https://colab.research.google.com/drive/1mw2JOBrI80qA6e4Zs-REP7BZBjiEyhFK?usp=sharing
 [cnn_exercise]: https://simonbrewer.github.io/geog5160/GEOG_5160_6160_CNN_assignment_08.html
+[lab10r]: https://simonbrewer.github.io/geog5160/GEOG_5160_6160_lab10.html
+[lab10p]: https://github.com/simonbrewer/geog5160/blob/main/GEOG_5160_6160_lab10.ipynb
+[lab10c]: https://colab.research.google.com/drive/1pIZrXAqV-YeHx_EvWx-Y6J9EO5X7F6jA?usp=sharing
 
 [penguins]: https://drive.google.com/file/d/1Sb5uv2RP_gcNJDKmlEjBoSUOdETIq2Jf/view?usp=sharing
 [housing]: https://drive.google.com/file/d/1pTBKamvTk7ZLsRIFKRNQ37_XU2J5y9XT/view?usp=sharing
@@ -138,3 +148,5 @@ Spatial data science is a fast-growing discipline, with wide-ranging application
 [class_data]: https://drive.google.com/file/d/1282606hbmX2UuBd6IoKpXQy9TbS3-yZ7/view?usp=sharing
 [credit_data]: https://drive.google.com/file/d/13dbnHh0VMEb8dlTf-YU6CJC4tday8L6V/view?usp=sharing
 [eurosat_rgb]: https://drive.google.com/file/d/1jxJHZkAwrlyP-YZ4vRsYS7KVltp5-4yQ/view?usp=sharing
+[unet2]: https://drive.google.com/file/d/1wURMPxE0zOUKlJaLWYBdahoI_CcUFeYa/view?usp=sharing
+[unet3]: https://drive.google.com/file/d/1MuHa6fsFUIgDo9Zg2Et_N87piz77eYbq/view?usp=sharing
