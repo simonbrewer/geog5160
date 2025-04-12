@@ -1,0 +1,551 @@
+---
+title: "GEOG 5160 6160 Lab 11"
+author: 
+  - name: "Simon Brewer"
+    email: simon.brewer@ess.utah.edu
+    affiliations:
+      - name: University of Utah
+        address: 260 S Central Campus Drive
+        city: Salt Lake City
+        state: UT
+        postal-code: 84112
+date: last-modified
+format:
+  html:
+    toc: true
+editor: visual
+---
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+library(png)
+library(grid)
+set.seed(42)
+```
+
+# Introduction
+
+This notebook will walk through setting up a model for the semantic segmentation of images using convolutional neural networks (CNNs). Unlike classification, where we attempt to predict a label associated with an image (e.g. cat or dog), in semantic segmentation, we are trying to label each pixel within an image. This is usually done by providing a corresponding mask for each training image that indicates which pixels belong to which class. The example used here is based on a set of aerial images taken across Dubai and used in a Kaggle competition:
+
+https://www.kaggle.com/datasets/humansintheloop/semantic-segmentation-of-aerial-imagery
+
+There are a total of 72 images and masks in this dataset. In the interest of making this tractable in a class, we'll just train the model using a subset (18) of these images, and only for a few epochs. With a relatively small dataset, the goal of this lab is demonstrate how to build and evaluate these models. I would not expect to get a very high level of accuracy without increasing both the size of the data and the number of epochs.
+
+Code for the UNet model in this example has been modified from https://github.com/r-tensorflow/unet/tree/master
+
+## Objectives
+
+-   Build a simple segmentation model in TF/Keras
+-   Understand how to build an encoder and decoder branch in a convolutional neural network
+-   How to use skip-connections to preserve spatial structure
+
+## Data processing
+
+First, let's load some libraries
+
+```{r}
+library(fs)
+library(tensorflow)
+library(keras)
+```
+
+Next, we'll get the images. These are available through the class Google drive in the zip file *unet_images3.zip*. Download this now, and move it to a folder that is easy to find on your computer, and unzip it. This will create a set of folders that look like this:
+
+```         
+- images3
+    - images
+    - masks
+```
+
+In each of these you'll find matching images. The `images` folder contains the RGB image as JPEGs, and the `masks` folder contains the matching mask as PNG files. The file names should match, so *image_part_001_000.png* will be the mask for *image_part_001_000.jpg*. These files are smaller tiles created from the original images. If you want to see what the original images look like, download and unzip the file *unet_images2.zip*. If you have this, you can load an example of each. First, we'll make a couple of functions to display images using **keras** functions:
+
+```{r}
+display_image_tensor <- function(x, ..., max = 255,
+                                 plot_margins = c(0, 0, 0, 0)) {   
+  if(!is.null(plot_margins))
+    par(mar = plot_margins)
+  x |>
+    as.array() |>
+    drop() |>
+    as.raster(max = max) |>
+    plot(..., interpolate = FALSE)
+}
+
+display_target_tensor <- function(target) {
+  display_image_tensor(target, max = 5)   
+}
+```
+
+Now get the list of full images:
+
+```{r}
+data_dir <- path("./datafiles/images2/")
+
+input_dir <- data_dir / "images/"
+target_dir <- data_dir / "masks/"
+
+image_paths <- tibble::tibble(
+  input = sort(dir_ls(input_dir, glob = "*.jpg")),
+  target = sort(dir_ls(target_dir, glob = "*.png")))
+```
+
+And here's the first image:
+
+```{r}
+image_paths$input[1] |>
+  tf$io$read_file() |>
+  tf$io$decode_jpeg() |>
+  display_image_tensor()
+```
+
+And the corresponding mask:
+
+```{r}
+image_paths$target[1] |>
+  tf$io$read_file() |>
+  tf$io$decode_png() |>
+  display_image_tensor()
+```
+
+Now let's take a look at the tiles in `images3/`. We'll make a list of the full paths to both images and masks for use in training the model
+
+```{r}
+data_dir <- path("./datafiles/images3/")
+dir_create(data_dir)
+
+input_dir <- data_dir / "images/"
+target_dir <- data_dir / "masks/"
+
+image_paths <- tibble::tibble(
+  input = sort(dir_ls(input_dir, glob = "*.jpg")),
+  target = sort(dir_ls(target_dir, glob = "*.png")))
+
+image_paths
+```
+
+If we plot the first image, you should see that it is the top-left corner of the original image
+
+```{r}
+image_paths$input[1] |>
+  tf$io$read_file() |>
+  tf$io$decode_jpeg() |>
+  display_image_tensor()
+```
+
+We'll load the matching mask as well. Note that this has been converted to an integer mask, with 6 possible classes:
+
+```         
+Building = 0
+Land = 1
+Road = 2
+Vegetation = 3
+Water = 4
+Unlabeled = 5
+```
+
+```{r}
+image_paths$target[1] |>
+  tf$io$read_file() |>
+  tf$io$decode_png() |>
+  display_target_tensor()
+```
+
+Next, we'll create two tensorflow datasets that hold the images. As this is a fairly small dataset, we'll simply read the images into memory. For larger sets, we would need to create a data generator here. We'll first make a couple of helper functions:
+
+-   A function to read images
+-   A function to resize images
+-   A function to make the gather the images into a dataset
+
+```{r}
+library(tfdatasets)
+tf_read_image <-
+  function(path, format = "image", resize = NULL, ...) {
+    
+    img <- path |>
+      tf$io$read_file() |>
+      tf$io[[paste0("decode_", format)]](...)
+    
+    if (!is.null(resize))
+      img <- img |>
+        tf$image$resize(as.integer(resize))
+    img
+  }
+
+tf_read_image_and_resize <- function(..., resize = img_size) {
+  tf_read_image(..., resize = resize)
+}
+
+make_dataset <- function(paths_df) {
+  tensor_slices_dataset(paths_df) |>
+    dataset_map(function(path) {
+      image <- path$input |>
+        tf_read_image_and_resize("jpeg", channels = 3L) ## Reads images (3 channels)
+      target <- path$target |>
+        tf_read_image_and_resize("png", channels = 1L) ## Reads masks (1 channel)
+      # target <- target - 1
+      list(image, target) ## Stores image and corresponding mask
+    }) |>
+    dataset_cache() |> ## Dynamically caches the images
+    dataset_shuffle(buffer_size = nrow(paths_df)) |> ## Shuffles images between runs
+    dataset_batch(32)
+}
+```
+
+Now let's create the dataset. First, we'll define the input image size - for this we'll keep the images at their original size (128x128) but this can be used if the tiles are of different sizes to ensure all input *tensors* are the same. Second, we define the number of images to be used for validation (roughly 25% of the inputs). Third, we split the list of file names into training and validation. And finally, we make the two datasets
+
+```{r}
+img_size <- c(128, 128)
+
+num_val_samples <- 500
+val_idx <- sample.int(nrow(image_paths), num_val_samples)
+
+val_paths <- image_paths[val_idx, ]
+train_paths <- image_paths[-val_idx, ]
+
+validation_dataset <- make_dataset(val_paths)
+train_dataset <- make_dataset(train_paths)
+```
+
+We'll finish this section by defining a set of variables describing the images: the width and height, the number of channels and classes
+
+```{r}
+image_width = img_size[1]
+image_height = img_size[2]
+num_channels = 3
+num_classes = 6
+```
+
+# UNet Model
+
+Now let's turn to building the model. We'll use a basic UNet architecture for this. This has two sequential branches (encoder and decoder) as well as a number of skip connections. The encoder branch operates like a classic CNN, with convolution and pooling layers. The decoder reverses this, by upsampling to increase resolution and more convolutions. Practically, each branch has a series of steps which either decrease resolution (encoder) or increase it (decoder). The steps on each side match: so for example, the encoder could have step going from a resolution of 64 to 32, and the decoder has a matching set going from 32 to 64.
+
+We'll need to use some new layer types for this, so we'll take a look at these first
+
+## Upsampling
+
+Upsampling layers acts as the opposite to a max-pooling layer. Pooling reduces the size of the inputs, by only replacing a window of pixels (usually 2 by 2) with a single pixel containing the maximum value of the original 4. An upsampling layer will increase the resolution of the input according to a defined window (usually 2x2, meaning each original pixel is split into 4). There are two types of upsampling layers
+
+### `UpSampling2D`
+
+This simply increases the resolution of the input. So an input pixel with the value of 2 will be split into 4, each with the value of 2:
+
+```         
+In:  [2]
+Out: [[2, 2],
+      [2, 2]]
+```
+
+### `Conv2DTranspose`
+
+In addition to the upsampling, this layer applies convlutional filters. As a result, the value of the 4 output pixels are based on feature recognition in the coarser image, rather than simply using the same value
+
+## Skip connection
+
+Skip connections are used to join the encoder and decoder branch. These join the matching encoder and decoder steps (e.g. the downsampling from 64 to 32 and the upsampling from 32 to 64). This is done through the use of `concatenate` layers. These link together output from different layers - for example, if you wanted to introduce two different sets of input features through different networks, a `concatenate` layer then merges these together before linking to the output.
+
+To understand how this works for the UNet model, let's say our input images are 128x128 pixels:
+
+-   Step 1: The input is passed through a series of convolutions, and the output is set of transformed values at the same resolution (128x128)
+-   Step 2: The output of step 1 is passed through a max-pooling step which reduced the resolution to 64x64
+-   Step 3: The output of step 2 is passed through more convolutions (output size 64x64)
+-   Step 4: The output of step 3 is upsampled back to 128x128
+-   Step 5: the output of step 4 is concatenated with the output of step 1
+
+In practice this is more complex as these skip connections are taking place at every down/up-sampling step.
+
+## Model architecture
+
+Let's actually build the model now so that you can see what this looks like. We'll use the functional API which will allow us to build this in sections. One thing to note here is that (after the input), we store the layers in an object called `x`, then add the next layer to this so that it accumulates these:
+
+-   Create a blank list to store layers (this will be used later to link the downward and upward path)
+
+```{r}
+## To store the blocks for the downward pass
+down_layers <- list()
+```
+
+-   Create the input layer, using the image size definitions. Link this to a rescaling layer (the input images are RGB with values from 0-255)
+
+```{r}
+## Input
+input <- layer_input(shape = c(image_width, image_height, num_channels))
+x <- layer_rescaling(input, 1/255)
+```
+
+-   First downsampling block. This is the first of four downsampling blocks that make up the encoder. These will have the same format, but the number of convolutional filters will increase by 2 at each block:
+
+-   A first convolutional layer
+
+-   A dropout layer
+
+-   A second convolutional layer
+
+-   (Store the block)
+
+-   A max-pooling layer
+
+```{r}
+## ------------
+# Encoder path: forward step 1
+x <- layer_conv_2d(x, filters = 16, kernel_size = c(3,3),
+                   activation = "relu", kernel_initializer = "he_normal", padding = "same")
+x <- layer_dropout(x, rate = 0.1)
+x <- layer_conv_2d(x, filters = 16, kernel_size = c(3,3),
+                   activation = "relu", kernel_initializer = "he_normal", padding = "same")
+## Store block
+down_layers[[1]] <- x
+## Max-pooling
+x <- layer_max_pooling_2d(x, pool_size = c(2,2), strides = c(2,2))
+```
+
+-   The second downward block. Note that we increase the number of filters from 16 to 32:
+
+```{r}
+## ------------
+# Encoder path: forward step 2
+x <- layer_conv_2d(x, filters = 32, kernel_size = c(3,3),
+                   activation = "relu", kernel_initializer = "he_normal", padding = "same")
+x <- layer_dropout(x, rate = 0.1)
+x <- layer_conv_2d(x, filters = 32, kernel_size = c(3,3),
+                   activation = "relu", kernel_initializer = "he_normal", padding = "same")
+## Store block
+down_layers[[2]] <- x
+## Max-pooling
+x <- layer_max_pooling_2d(x, pool_size = c(2,2), strides = c(2,2))
+```
+
+-   The third downward block. Note that we increase the number of filters from 32 to 64:
+
+```{r}
+## ------------
+# Encoder path: forward step 3
+x <- layer_conv_2d(x, filters = 64, kernel_size = c(3,3),
+                   activation = "relu", kernel_initializer = "he_normal", padding = "same")
+x <- layer_dropout(x, rate = 0.1)
+x <- layer_conv_2d(x, filters = 64, kernel_size = c(3,3),
+                   activation = "relu", kernel_initializer = "he_normal", padding = "same")
+## Store block
+down_layers[[3]] <- x
+## Max-pooling
+x <- layer_max_pooling_2d(x, pool_size = c(2,2), strides = c(2,2))
+```
+
+-   The fourth downward block. Note that we increase the number of filters from 64 to 128:
+
+```{r}
+## ------------
+# Encoder path: forward step 4 
+x <- layer_conv_2d(x, filters = 128, kernel_size = c(3,3),
+                   activation = "relu", kernel_initializer = "he_normal", padding = "same")
+x <- layer_dropout(x, rate = 0.1)
+x <- layer_conv_2d(x, filters = 128, kernel_size = c(3,3),
+                   activation = "relu", kernel_initializer = "he_normal", padding = "same")
+## Store block
+down_layers[[4]] <- x
+## Max-pooling
+x <- layer_max_pooling_2d(x, pool_size = c(2,2), strides = c(2,2))
+```
+
+-   Now we make the latent space block. This acts to connect the downward and upward path. This is the most abstract part of the model as it contains the fully filtered and pooled inputs. We pass this through more convolutional filters and another dropout
+
+```{r}
+## ------------
+# Latent space
+## Add another dropout
+x <- layer_dropout(x, rate = 0.1)
+## Convolutional layer on latent space
+x <- layer_conv_2d(x, filters = 256, kernel_size = c(3,3),
+                   activation = "relu", kernel_initializer = "he_normal", padding = "same")
+x <- layer_conv_2d(x, filters = 256, kernel_size = c(3,3),
+                   activation = "relu", kernel_initializer = "he_normal", padding = "same")
+```
+
+-   Now we can start the upsampling path (the decoder). There will again be 4 of these to match the downsampling path, (so we'll call the first one number four). Note that here we start with a high number of filters (128) and decrease by 50% for each new block. Each block will have the same format:
+    -   A `Conv2DTranspose` layer to upsample the inputs, increasing the resolution
+    -   A `concatenate` layer that links this to the corresponding downsampling block (this will be the fourth one)
+    -   A first convolutional layer
+    -   A dropout layer
+    -   A second convolutional layer
+
+```{r}
+## ------------
+# Decoder path 4
+x <- keras::layer_conv_2d_transpose(x, filters = 128, kernel_size = c(2,2),
+  padding = "same", strides = c(2,2))
+x <- keras::layer_concatenate(list(down_layers[[4]], x))
+x <- layer_conv_2d(x, filters = 128, kernel_size = c(3,3),
+                   activation = "relu", kernel_initializer = "he_normal", padding = "same")
+x <- layer_dropout(x, rate = 0.1)
+x <- layer_conv_2d(x, filters = 128, kernel_size = c(3,3),
+                   activation = "relu", kernel_initializer = "he_normal", padding = "same")
+```
+
+-   The third upward block. Note that we decrease the number of filters from 128 to 64:
+
+```{r}
+## ------------
+# Decoder path 3
+x <- keras::layer_conv_2d_transpose(x, filters = 64, kernel_size = c(2,2),
+                                    padding = "same", strides = c(2,2))
+x <- keras::layer_concatenate(list(down_layers[[3]], x))
+x <- layer_conv_2d(x, filters = 64, kernel_size = c(3,3),
+                   activation = "relu", kernel_initializer = "he_normal", padding = "same")
+x <- layer_dropout(x, rate = 0.1)
+x <- layer_conv_2d(x, filters = 64, kernel_size = c(3,3),
+                   activation = "relu", kernel_initializer = "he_normal", padding = "same")
+```
+
+-   The second upward block. Note that we decrease the number of filters from 64 to 32:
+
+```{r}
+## ------------
+# Decoder path 2
+x <- keras::layer_conv_2d_transpose(x, filters = 32, kernel_size = c(2,2),
+                                    padding = "same", strides = c(2,2))
+x <- keras::layer_concatenate(list(down_layers[[2]], x))
+x <- layer_conv_2d(x, filters = 32, kernel_size = c(3,3),
+                   activation = "relu", kernel_initializer = "he_normal", padding = "same")
+x <- layer_dropout(x, rate = 0.1)
+x <- layer_conv_2d(x, filters = 32, kernel_size = c(3,3),
+                   activation = "relu", kernel_initializer = "he_normal", padding = "same")
+```
+
+-   The first upward block. Note that we decrease the number of filters from 32 to 16:
+
+```{r}
+## ------------
+# Decoder path 1
+x <- keras::layer_conv_2d_transpose(x, filters = 16, kernel_size = c(2,2),
+                                    padding = "same", strides = c(2,2))
+x <- keras::layer_concatenate(list(down_layers[[1]], x))
+x <- layer_conv_2d(x, filters = 16, kernel_size = c(3,3),
+                   activation = "relu", kernel_initializer = "he_normal", padding = "same")
+x <- layer_dropout(x, rate = 0.1)
+x <- layer_conv_2d(x, filters = 16, kernel_size = c(3,3),
+                   activation = "relu", kernel_initializer = "he_normal", padding = "same")
+```
+
+-   We now make the final layer, the output layer. This is a slightly unusual layer, as it is a convolutional layer, but with a 1x1 window size. This acts a little like the `flatten` layer we have previously used, but here forces the output into a shape that is compatible with the masks. The masks have 6 channels (one for each class)
+
+```{r}
+## ------------
+# Output layer
+output <- keras::layer_conv_2d(x, filters = num_classes,
+                               kernel_size = c(1,1), activation = "softmax")
+```
+
+With all that done, we can now make the model by linking the input layers and the output:
+
+```{r}
+model <- keras::keras_model(input, output)
+```
+
+Let's take a look at the model summary:
+
+```{r}
+summary(model)
+```
+
+This model has 1.94 million weights or parameters to train. This is fairly common with any large CNN-type model, and is why we generally need a large amount of data to train.
+
+We can also visualize the architecture. You should be able to see a 'C' like structure between the downward and upward paths of the model. In the original paper, this was shown rotated 90 degrees to the left, hence the name 'U'Net. (Note that you might need to save this and zoom in to see the detail.)
+
+```{r fig.keep='none'}
+plot(model)
+```
+
+### Performance metrics
+
+We'll use the accuracy to assess the model (alternatively, we could use the intersection over union).
+
+```{r}
+metrics = "accuracy"
+```
+
+### Optimizer
+
+We'll set the optimizer to RMSprop with a learning rate of 1e-3:
+
+```{r}
+optim = optimizer_rmsprop(learning_rate = 1e-3)
+```
+
+## Training
+
+Let's compile the model and create a callback to save the best performing set of weights during training
+
+```{r}
+model |>
+  compile(optimizer = optim,
+          loss = "sparse_categorical_crossentropy",
+          metrics = metrics)   
+callbacks <- list(
+  callback_model_checkpoint("lulc_segmentation.keras",
+                            save_best_only = TRUE))   
+```
+
+With all that in place, we can train the model. We'll use batchs of 64 images, and run for 25 epochs.
+
+```{r}
+history <- model |> fit(
+  train_dataset,
+  epochs = 25,
+  callbacks = callbacks,
+  validation_data = validation_dataset
+)
+```
+
+And let's plot the history
+
+```{r}
+plot(history)
+```
+
+The loss curve is noisy but shows a fairly consistent decline. As it has not yet plateaued, it may be worth increasing the number of epochs to train for longer.
+
+## Model evaluation
+
+To finish up, we'll take a look at how well the model can segment an image. As we don't have a separate testing set, we'll simply use one of the images from the validation set. The steps here are to
+
+a)  Reload the model weight
+
+```{r}
+model <- load_model_tf("lulc_segmentation.keras")
+```
+
+b)  load an image (and mask)
+
+```{r}
+i = 1
+test_image <- val_paths$input[i] |>
+  tf_read_image_and_resize("jpeg", channels = 3L)
+
+test_mask <- val_paths$target[i] |>
+  tf_read_image_and_resize("png", channels = 1L)
+```
+
+c)  use the model `predict` function to estimate the probability of each class for each pixel
+
+```{r}
+predicted_mask_probs <-
+  model(test_image[tf$newaxis, , , ])
+```
+
+d)  visualize the prediction (the class with the highest probability)
+
+```{r}
+predicted_mask <-
+  tf$argmax(predicted_mask_probs, axis = -1L)
+```
+
+```{r}
+par(mfrow = c(1, 3))
+display_image_tensor(test_image)
+display_target_tensor(test_mask)
+display_target_tensor(predicted_mask)
+```
+
+The resulting segmentation is far from perfect here, but given the size of the input data and the relatively short training period, it is already starting to capture the spatial patterns in this image. The next steps are likely to be:
+
+-   Add the full set of images
+-   Train for longer (100 epochs)
+-   Add data augmentation
