@@ -1,0 +1,1547 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.553">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Simon Brewer">
+<meta name="dcterms.date" content="2025-04-15">
+
+<title>GEOG 5160 6160 Lab 11</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body>
+
+<div id="quarto-search-results"></div>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#introduction-1" id="toc-introduction-1" class="nav-link" data-scroll-target="#introduction-1">Introduction</a>
+  <ul class="collapse">
+  <li><a href="#objectives" id="toc-objectives" class="nav-link" data-scroll-target="#objectives">Objectives</a></li>
+  </ul></li>
+  <li><a href="#data-processing" id="toc-data-processing" class="nav-link" data-scroll-target="#data-processing">Data processing</a></li>
+  <li><a href="#model-1-dense-network" id="toc-model-1-dense-network" class="nav-link" data-scroll-target="#model-1-dense-network">Model 1: Dense network</a></li>
+  <li><a href="#model-2-lstm" id="toc-model-2-lstm" class="nav-link" data-scroll-target="#model-2-lstm">Model 2: LSTM</a></li>
+  <li><a href="#model-3-lstm-with-multiple-time-steps" id="toc-model-3-lstm-with-multiple-time-steps" class="nav-link" data-scroll-target="#model-3-lstm-with-multiple-time-steps">Model 3: LSTM with multiple time steps</a></li>
+  <li><a href="#model-4-adding-recurrent-dropouts" id="toc-model-4-adding-recurrent-dropouts" class="nav-link" data-scroll-target="#model-4-adding-recurrent-dropouts">Model 4: Adding recurrent dropouts</a></li>
+  <li><a href="#model-5-stacked-lstm" id="toc-model-5-stacked-lstm" class="nav-link" data-scroll-target="#model-5-stacked-lstm">Model 5: Stacked LSTM</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">GEOG 5160 6160 Lab 11</h1>
+</div>
+
+
+<div class="quarto-title-meta-author">
+  <div class="quarto-title-meta-heading">Author</div>
+  <div class="quarto-title-meta-heading">Affiliation</div>
+  
+    <div class="quarto-title-meta-contents">
+    <p class="author">Simon Brewer <a href="mailto:simon.brewer@ess.utah.edu" class="quarto-title-author-email"><i class="bi bi-envelope"></i></a> </p>
+  </div>
+  <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            University of Utah
+          </p>
+      </div>
+  </div>
+
+<div class="quarto-title-meta">
+
+      
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">April 15, 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+</section>
+<section id="introduction-1" class="level1">
+<h1>Introduction</h1>
+<p>In this lab, we’ll look at working with time series data in deep learning models. The trick with all time series is to make predictions that consider not just the current time step, but also information from previous time steps. We’ll do this in two ways here. First, we’ll process the data for a ‘predict-ahead’ model. In this, the outcome or target at time <span class="math inline">\(t\)</span> will be modeled using the set of covariates at time <span class="math inline">\(t-1\)</span>, plus the value of the outcome at <span class="math inline">\(t-1\)</span>. This is a short-term predictive model in which we only use information from the previous time step to predict the target for the next time step. The second approach will be to use a recurrent neural network. These are models that are designed to incorporate a memory track, that retains some information about the relationship between variables from the previous time steps. We’ll use the LSTM model (long/short-term memory), as this can include information over short and longer time steps. We’ll build a series of models here of increasing complexity. As you go through this, pay attention to the relative gains (or losses) in predictive skill relative to the increases in model complexity.</p>
+<p>The models we’ll build are modified from: https://machinelearningmastery.com/multivariate-time-series-forecasting-lstms-keras/, as well as the Deep Learning with Python book (Chollet 2024).</p>
+<section id="objectives" class="level2">
+<h2 class="anchored" data-anchor-id="objectives">Objectives</h2>
+<ul>
+<li>Process data for time series modeling</li>
+<li>Build and test a recurrent neural network (LSTM)</li>
+<li>Extend the base LSTM model</li>
+</ul>
+</section>
+</section>
+<section id="data-processing" class="level1">
+<h1>Data processing</h1>
+<p>The data we’ll use is a time series of hourly air quality measurements from the US Embassy in Beijing from 2010 to 2014, together with corresponding weather data from Beijing Capital International Airport. Start by loading some of the libraries we’ll need:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(reticulate)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'reticulate' was built under R version 4.4.1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.1.4     ✔ readr     2.1.5
+✔ forcats   1.0.0     ✔ stringr   1.5.1
+✔ ggplot2   3.5.1     ✔ tibble    3.2.1
+✔ lubridate 1.9.3     ✔ tidyr     1.3.1
+✔ purrr     1.0.2     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(keras)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now load the data and take a look at the first few lines:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"./datafiles/pollution.csv"</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(dat)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                 date pollution dew temp press wnd_dir wnd_spd snow rain
+1 2010-01-02 00:00:00       129 -16   -4  1020      SE    1.79    0    0
+2 2010-01-02 01:00:00       148 -15   -4  1020      SE    2.68    0    0
+3 2010-01-02 02:00:00       159 -11   -5  1021      SE    3.57    0    0
+4 2010-01-02 03:00:00       181  -7   -5  1022      SE    5.36    1    0
+5 2010-01-02 04:00:00       138  -7   -5  1022      SE    6.25    2    0
+6 2010-01-02 05:00:00       109  -7   -6  1022      SE    7.14    3    0</code></pre>
+</div>
+</div>
+<p>The column labelled <code>pollution</code> is the target for prediction (this is PM2.5 measurements in ppb). Let’s plot out the series to see the trends and patterns (you should see a fairly strong seasonal cycle in most of the variables)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>dat<span class="sc">$</span>datetime <span class="ot">=</span> <span class="fu">ymd_hms</span>(dat<span class="sc">$</span>date)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>var_to_plot <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"pollution"</span>, <span class="st">"dew"</span>, <span class="st">"temp"</span>, <span class="st">"press"</span>, <span class="st">"wnd_spd"</span>, <span class="st">"snow"</span>, <span class="st">"rain"</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> var_to_plot){</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  p1 <span class="ot">=</span> <span class="fu">ggplot</span>(dat, <span class="fu">aes</span>(<span class="at">x =</span> datetime, <span class="at">y =</span> .data[[i]])) <span class="sc">+</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(p1)</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab11_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab11_files/figure-html/unnamed-chunk-4-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab11_files/figure-html/unnamed-chunk-4-3.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab11_files/figure-html/unnamed-chunk-4-4.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab11_files/figure-html/unnamed-chunk-4-5.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab11_files/figure-html/unnamed-chunk-4-6.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab11_files/figure-html/unnamed-chunk-4-7.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>We need to deal with the wind direction variable which is a string. We’l do this as a double step in R - first convert to a factor, then to a numeric values</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(dat<span class="sc">$</span>wnd_dir)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+   cv    NE    NW    SE 
+ 9384  4996 14130 15290 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>dat<span class="sc">$</span>wnd_dir <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">factor</span>(dat<span class="sc">$</span>wnd_dir, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"NE"</span>, <span class="st">"NW"</span>, <span class="st">"SE"</span>, <span class="st">"cv"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now we’ll normalize the variables to 0-1 range for training:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>normalize <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> <span class="fu">c</span>(x)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  (x <span class="sc">-</span> <span class="fu">min</span>(x)) <span class="sc">/</span> (<span class="fu">max</span>(x) <span class="sc">-</span> <span class="fu">min</span>(x))</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>scaled <span class="ot">&lt;-</span> dat <span class="sc">|&gt;</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">pollution =</span> <span class="fu">normalize</span>(pollution),</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>         <span class="at">dew =</span> <span class="fu">normalize</span>(dew),</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>         <span class="at">temp =</span> <span class="fu">normalize</span>(temp),</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>         <span class="at">press =</span> <span class="fu">normalize</span>(press),</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>         <span class="at">wnd_dir =</span> <span class="fu">normalize</span>(wnd_dir),</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>         <span class="at">wnd_spd =</span> <span class="fu">normalize</span>(wnd_spd),</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>         <span class="at">snow =</span> <span class="fu">normalize</span>(snow),</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>         <span class="at">rain =</span> <span class="fu">normalize</span>(rain)) <span class="sc">|&gt;</span> </span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>date, <span class="sc">-</span>datetime)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Normally, we’d only normalize the features, but as we are going to use the PM2.5 value from the previous time step as an additional feature, we need to normalize this as well. As this means we will be modeling the normalized PM2.5 values, we’ll store the minimum and maximum. This will allow us to back convert any predictions we make to parts per billion.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>pollution_min <span class="ot">&lt;-</span> <span class="fu">min</span>(dat<span class="sc">$</span>pollution)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>pollution_max <span class="ot">&lt;-</span> <span class="fu">max</span>(dat<span class="sc">$</span>pollution)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>n_steps <span class="ot">=</span> <span class="dv">1</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>n_vars <span class="ot">=</span> <span class="fu">dim</span>(scaled)[<span class="dv">2</span>]</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>lagged <span class="ot">=</span> <span class="fu">as.matrix</span>(scaled)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_steps) {</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  tmp <span class="ot">=</span> lagged[,<span class="dv">1</span><span class="sc">:</span>n_vars]</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_vars) {</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>    tmp[,j] <span class="ot">=</span> <span class="fu">lag</span>(lagged[,j], i)</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>  lagged <span class="ot">=</span> <span class="fu">cbind</span>(lagged,tmp)</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>lagged <span class="ot">=</span> <span class="fu">as.matrix</span>(<span class="fu">na.omit</span>(lagged))</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>y <span class="ot">=</span> lagged[ ,<span class="dv">1</span>] <span class="do">## Pollutant values</span></span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>X <span class="ot">=</span> lagged[, <span class="sc">-</span><span class="fu">seq</span>(<span class="dv">1</span>,n_vars)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>n_obs <span class="ot">=</span> <span class="dv">365</span> <span class="sc">*</span> <span class="dv">24</span> </span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>X_train <span class="ot">&lt;-</span> <span class="fu">data.matrix</span>(X[<span class="dv">1</span><span class="sc">:</span>n_obs, ])</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="co"># X_train &lt;- array(X_train, dim = c(n_obs, 1, 8))</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>y_train <span class="ot">&lt;-</span> y[<span class="dv">1</span><span class="sc">:</span>n_obs]</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>X_test <span class="ot">&lt;-</span> <span class="fu">data.matrix</span>(X[n_obs<span class="sc">:</span><span class="fu">nrow</span>(X), ])</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="co"># X_test &lt;- array(X_test, dim = c(nrow(X_test), 1, 8))</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>y_test <span class="ot">&lt;-</span> y[n_obs<span class="sc">:</span><span class="fu">nrow</span>(X)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="model-1-dense-network" class="level1">
+<h1>Model 1: Dense network</h1>
+<p>To start with, we’ll build a simple neural network with a single densely connected layer with 50 nodes between the input and output. We’ll build a pretty simple model with</p>
+<ul>
+<li>A input layer. Each observation going into the model is the set of 7 features (temperature, etc) from the previous time step and the pollution from the previous step, which gives a shape of (8,)</li>
+<li>A densely connected layer with 50 nodes</li>
+<li>An output layer. We’re only predicting the pollution value, so there’s only a single output. Note that as this is a continuous outcome, we don’t specify an activation function (as this would constrain the output of the model).</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="do">## ------------------------------------------------------------------------- ##</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="do">## Dense</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="co"># initialize our model</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">keras_model_sequential</span>()</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="co"># our input layer</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>model <span class="sc">|&gt;</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_dense</span>(<span class="at">input_shape =</span> <span class="fu">c</span>(<span class="dv">8</span>), <span class="at">units =</span> <span class="dv">50</span>)</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>model <span class="sc">|&gt;</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_dense</span>(<span class="at">units =</span> <span class="dv">1</span>) <span class="co"># output</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a><span class="co"># look at our model architecture</span></span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Model: "sequential"
+________________________________________________________________________________
+ Layer (type)                       Output Shape                    Param #     
+================================================================================
+ dense (Dense)                      (None, 50)                      450         
+ dense_1 (Dense)                    (None, 1)                       51          
+================================================================================
+Total params: 501 (1.96 KB)
+Trainable params: 501 (1.96 KB)
+Non-trainable params: 0 (0.00 Byte)
+________________________________________________________________________________</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Compile it</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>model <span class="sc">|&gt;</span> <span class="fu">compile</span>(</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">optimizer =</span> <span class="fu">optimizer_adam</span>(), </span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">loss =</span> <span class="st">"mse"</span>, </span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">metrics =</span> <span class="fu">c</span>(<span class="st">"mae"</span>)</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Actually train our model! This step will take a while</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>history <span class="ot">&lt;-</span> model <span class="sc">|&gt;</span> <span class="fu">fit</span>(</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> X_train, <span class="co"># sequence we're using for prediction </span></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> y_train, <span class="co"># sequence we're predicting</span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">batch_size =</span> <span class="dv">64</span>, <span class="co"># how many samples to pass to our model at a time</span></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">epochs =</span> <span class="dv">10</span>, <span class="co"># how many times we'll look @ the whole dataset</span></span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">validation_data =</span> <span class="fu">list</span>(X_test, y_test),</span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">shuffle =</span> <span class="cn">FALSE</span>) <span class="co"># </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Epoch 1/10
+137/137 - 1s - loss: 0.0078 - mae: 0.0651 - val_loss: 0.0265 - val_mae: 0.1368 - 579ms/epoch - 4ms/step
+Epoch 2/10
+137/137 - 0s - loss: 0.0021 - mae: 0.0328 - val_loss: 0.0149 - val_mae: 0.1009 - 188ms/epoch - 1ms/step
+Epoch 3/10
+137/137 - 0s - loss: 0.0014 - mae: 0.0245 - val_loss: 0.0082 - val_mae: 0.0747 - 185ms/epoch - 1ms/step
+Epoch 4/10
+137/137 - 0s - loss: 0.0011 - mae: 0.0207 - val_loss: 0.0049 - val_mae: 0.0576 - 180ms/epoch - 1ms/step
+Epoch 5/10
+137/137 - 0s - loss: 0.0011 - mae: 0.0187 - val_loss: 0.0035 - val_mae: 0.0483 - 192ms/epoch - 1ms/step
+Epoch 6/10
+137/137 - 0s - loss: 0.0010 - mae: 0.0176 - val_loss: 0.0028 - val_mae: 0.0423 - 179ms/epoch - 1ms/step
+Epoch 7/10
+137/137 - 0s - loss: 0.0010 - mae: 0.0170 - val_loss: 0.0023 - val_mae: 0.0382 - 184ms/epoch - 1ms/step
+Epoch 8/10
+137/137 - 0s - loss: 0.0010 - mae: 0.0167 - val_loss: 0.0022 - val_mae: 0.0366 - 181ms/epoch - 1ms/step
+Epoch 9/10
+137/137 - 0s - loss: 0.0010 - mae: 0.0166 - val_loss: 0.0021 - val_mae: 0.0367 - 188ms/epoch - 1ms/step
+Epoch 10/10
+137/137 - 0s - loss: 0.0010 - mae: 0.0166 - val_loss: 0.0021 - val_mae: 0.0373 - 181ms/epoch - 1ms/step</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="do">## -------------------------------------------------------------------------------------------</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Evaluate the model on the validation data</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> model <span class="sc">|&gt;</span> </span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  keras<span class="sc">::</span><span class="fu">evaluate</span>(X_test, y_test, <span class="at">verbose =</span> <span class="dv">0</span>)</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>results</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       loss         mae 
+0.002147793 0.037298840 </code></pre>
+</div>
+</div>
+</section>
+<section id="model-2-lstm" class="level1">
+<h1>Model 2: LSTM</h1>
+<p>For the next model, we’ll add an LSTM layer. This is a more complex layer, that includes weights that link inputs to the outputs, but also that link a saved or memory state to the current input.</p>
+<p>However, before setting this up, we need to reformat the input data. For time series models, the input shape needs to be three dimensional <code>(i,j,k)</code>, where <code>i</code> is the number of samples (this is the number of hourly observations), <code>j</code> is the number of time steps in each sequence and <code>k</code> is the number of features. <code>j</code> controls the number of previous time steps linked to an outcome, and this is a key parameter: higher values for <code>k</code> means that the model is considering a longer period of observations <em>prior</em> to the time step we are trying to predict. We’ll start by reusing the dataset we created for the densely connected model above. All we need to do here is to use the <code>reshape</code> method to add the additional axis for <code>j</code> here:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>n_obs <span class="ot">=</span> <span class="dv">365</span> <span class="sc">*</span> <span class="dv">24</span> </span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>X_train <span class="ot">&lt;-</span> <span class="fu">data.matrix</span>(X[<span class="dv">1</span><span class="sc">:</span>n_obs, ])</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>X_train <span class="ot">&lt;-</span> <span class="fu">array</span>(X_train, <span class="at">dim =</span> <span class="fu">c</span>(n_obs, n_steps, n_vars))</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>y_train <span class="ot">&lt;-</span> y[<span class="dv">1</span><span class="sc">:</span>n_obs]</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>X_test <span class="ot">&lt;-</span> <span class="fu">data.matrix</span>(X[n_obs<span class="sc">:</span><span class="fu">nrow</span>(X), ])</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>X_test <span class="ot">&lt;-</span> <span class="fu">array</span>(X_test, <span class="at">dim =</span> <span class="fu">c</span>(<span class="fu">nrow</span>(X_test), n_steps, n_vars))</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>y_test <span class="ot">&lt;-</span> y[n_obs<span class="sc">:</span><span class="fu">nrow</span>(X)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="do">## ------------------------------------------------------------------------- ##</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="do">## LSTM</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="co"># initialize our model</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">keras_model_sequential</span>()</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a><span class="co"># our input layer</span></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>model <span class="sc">%&gt;%</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_lstm</span>(<span class="at">input_shape =</span> <span class="fu">dim</span>(X_train)[<span class="dv">2</span><span class="sc">:</span><span class="dv">3</span>], <span class="at">units =</span> <span class="dv">50</span>)</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>model <span class="sc">%&gt;%</span></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_dense</span>(<span class="at">units =</span> <span class="dv">1</span>) <span class="co"># output</span></span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a><span class="co"># look at our model architecture</span></span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Model: "sequential_1"
+________________________________________________________________________________
+ Layer (type)                       Output Shape                    Param #     
+================================================================================
+ lstm (LSTM)                        (None, 50)                      11800       
+ dense_2 (Dense)                    (None, 1)                       51          
+================================================================================
+Total params: 11851 (46.29 KB)
+Trainable params: 11851 (46.29 KB)
+Non-trainable params: 0 (0.00 Byte)
+________________________________________________________________________________</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Compile it</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>model <span class="sc">%&gt;%</span> <span class="fu">compile</span>(</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">optimizer =</span> <span class="fu">optimizer_adam</span>(<span class="at">learning_rate =</span> <span class="fl">1e-3</span>), </span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">loss =</span> <span class="st">"mse"</span>, </span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">metrics =</span> <span class="fu">c</span>(<span class="st">"mae"</span>)</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now train:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>history <span class="ot">&lt;-</span> model <span class="sc">%&gt;%</span> <span class="fu">fit</span>(</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> X_train, <span class="co"># sequence we're using for prediction </span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> y_train, <span class="co"># sequence we're predicting</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">batch_size =</span> <span class="dv">64</span>, <span class="co"># how many samples to pass to our model at a time</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">epochs =</span> <span class="dv">50</span>, <span class="co"># how many times we'll look @ the whole dataset</span></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">validation_data =</span> <span class="fu">list</span>(X_test, y_test),</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">shuffle =</span> <span class="cn">FALSE</span>) <span class="co"># </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Epoch 1/50
+137/137 - 1s - loss: 0.0080 - mae: 0.0657 - val_loss: 0.0071 - val_mae: 0.0721 - 1s/epoch - 10ms/step
+Epoch 2/50
+137/137 - 0s - loss: 0.0045 - mae: 0.0487 - val_loss: 0.0079 - val_mae: 0.0778 - 260ms/epoch - 2ms/step
+Epoch 3/50
+137/137 - 0s - loss: 0.0024 - mae: 0.0351 - val_loss: 0.0080 - val_mae: 0.0751 - 257ms/epoch - 2ms/step
+Epoch 4/50
+137/137 - 0s - loss: 0.0015 - mae: 0.0257 - val_loss: 0.0066 - val_mae: 0.0665 - 253ms/epoch - 2ms/step
+Epoch 5/50
+137/137 - 0s - loss: 0.0012 - mae: 0.0217 - val_loss: 0.0047 - val_mae: 0.0553 - 252ms/epoch - 2ms/step
+Epoch 6/50
+137/137 - 0s - loss: 0.0011 - mae: 0.0194 - val_loss: 0.0034 - val_mae: 0.0465 - 254ms/epoch - 2ms/step
+Epoch 7/50
+137/137 - 0s - loss: 0.0010 - mae: 0.0179 - val_loss: 0.0027 - val_mae: 0.0405 - 261ms/epoch - 2ms/step
+Epoch 8/50
+137/137 - 0s - loss: 9.9758e-04 - mae: 0.0170 - val_loss: 0.0022 - val_mae: 0.0367 - 258ms/epoch - 2ms/step
+Epoch 9/50
+137/137 - 0s - loss: 9.8146e-04 - mae: 0.0163 - val_loss: 0.0020 - val_mae: 0.0343 - 255ms/epoch - 2ms/step
+Epoch 10/50
+137/137 - 0s - loss: 9.7248e-04 - mae: 0.0159 - val_loss: 0.0018 - val_mae: 0.0326 - 255ms/epoch - 2ms/step
+Epoch 11/50
+137/137 - 0s - loss: 9.6735e-04 - mae: 0.0157 - val_loss: 0.0017 - val_mae: 0.0312 - 259ms/epoch - 2ms/step
+Epoch 12/50
+137/137 - 0s - loss: 9.6438e-04 - mae: 0.0155 - val_loss: 0.0016 - val_mae: 0.0299 - 341ms/epoch - 2ms/step
+Epoch 13/50
+137/137 - 0s - loss: 9.6270e-04 - mae: 0.0154 - val_loss: 0.0015 - val_mae: 0.0287 - 252ms/epoch - 2ms/step
+Epoch 14/50
+137/137 - 0s - loss: 9.6184e-04 - mae: 0.0153 - val_loss: 0.0014 - val_mae: 0.0277 - 253ms/epoch - 2ms/step
+Epoch 15/50
+137/137 - 0s - loss: 9.6155e-04 - mae: 0.0153 - val_loss: 0.0014 - val_mae: 0.0268 - 260ms/epoch - 2ms/step
+Epoch 16/50
+137/137 - 0s - loss: 9.6165e-04 - mae: 0.0153 - val_loss: 0.0013 - val_mae: 0.0261 - 253ms/epoch - 2ms/step
+Epoch 17/50
+137/137 - 0s - loss: 9.6201e-04 - mae: 0.0153 - val_loss: 0.0013 - val_mae: 0.0255 - 256ms/epoch - 2ms/step
+Epoch 18/50
+137/137 - 0s - loss: 9.6252e-04 - mae: 0.0153 - val_loss: 0.0013 - val_mae: 0.0250 - 252ms/epoch - 2ms/step
+Epoch 19/50
+137/137 - 0s - loss: 9.6312e-04 - mae: 0.0153 - val_loss: 0.0012 - val_mae: 0.0247 - 258ms/epoch - 2ms/step
+Epoch 20/50
+137/137 - 0s - loss: 9.6375e-04 - mae: 0.0154 - val_loss: 0.0012 - val_mae: 0.0244 - 254ms/epoch - 2ms/step
+Epoch 21/50
+137/137 - 0s - loss: 9.6437e-04 - mae: 0.0154 - val_loss: 0.0012 - val_mae: 0.0242 - 256ms/epoch - 2ms/step
+Epoch 22/50
+137/137 - 0s - loss: 9.6492e-04 - mae: 0.0154 - val_loss: 0.0012 - val_mae: 0.0240 - 252ms/epoch - 2ms/step
+Epoch 23/50
+137/137 - 0s - loss: 9.6539e-04 - mae: 0.0154 - val_loss: 0.0012 - val_mae: 0.0239 - 257ms/epoch - 2ms/step
+Epoch 24/50
+137/137 - 0s - loss: 9.6574e-04 - mae: 0.0155 - val_loss: 0.0012 - val_mae: 0.0238 - 258ms/epoch - 2ms/step
+Epoch 25/50
+137/137 - 0s - loss: 9.6599e-04 - mae: 0.0155 - val_loss: 0.0012 - val_mae: 0.0237 - 253ms/epoch - 2ms/step
+Epoch 26/50
+137/137 - 0s - loss: 9.6612e-04 - mae: 0.0155 - val_loss: 0.0012 - val_mae: 0.0236 - 266ms/epoch - 2ms/step
+Epoch 27/50
+137/137 - 0s - loss: 9.6614e-04 - mae: 0.0155 - val_loss: 0.0012 - val_mae: 0.0236 - 274ms/epoch - 2ms/step
+Epoch 28/50
+137/137 - 0s - loss: 9.6604e-04 - mae: 0.0155 - val_loss: 0.0012 - val_mae: 0.0235 - 266ms/epoch - 2ms/step
+Epoch 29/50
+137/137 - 0s - loss: 9.6583e-04 - mae: 0.0155 - val_loss: 0.0012 - val_mae: 0.0234 - 275ms/epoch - 2ms/step
+Epoch 30/50
+137/137 - 0s - loss: 9.6554e-04 - mae: 0.0156 - val_loss: 0.0012 - val_mae: 0.0233 - 402ms/epoch - 3ms/step
+Epoch 31/50
+137/137 - 0s - loss: 9.6518e-04 - mae: 0.0156 - val_loss: 0.0012 - val_mae: 0.0231 - 281ms/epoch - 2ms/step
+Epoch 32/50
+137/137 - 0s - loss: 9.6476e-04 - mae: 0.0156 - val_loss: 0.0012 - val_mae: 0.0230 - 262ms/epoch - 2ms/step
+Epoch 33/50
+137/137 - 0s - loss: 9.6431e-04 - mae: 0.0156 - val_loss: 0.0012 - val_mae: 0.0229 - 254ms/epoch - 2ms/step
+Epoch 34/50
+137/137 - 0s - loss: 9.6382e-04 - mae: 0.0156 - val_loss: 0.0012 - val_mae: 0.0227 - 253ms/epoch - 2ms/step
+Epoch 35/50
+137/137 - 0s - loss: 9.6332e-04 - mae: 0.0156 - val_loss: 0.0011 - val_mae: 0.0226 - 264ms/epoch - 2ms/step
+Epoch 36/50
+137/137 - 0s - loss: 9.6280e-04 - mae: 0.0156 - val_loss: 0.0011 - val_mae: 0.0224 - 269ms/epoch - 2ms/step
+Epoch 37/50
+137/137 - 0s - loss: 9.6227e-04 - mae: 0.0156 - val_loss: 0.0011 - val_mae: 0.0223 - 256ms/epoch - 2ms/step
+Epoch 38/50
+137/137 - 0s - loss: 9.6175e-04 - mae: 0.0156 - val_loss: 0.0011 - val_mae: 0.0221 - 256ms/epoch - 2ms/step
+Epoch 39/50
+137/137 - 0s - loss: 9.6123e-04 - mae: 0.0156 - val_loss: 0.0011 - val_mae: 0.0220 - 265ms/epoch - 2ms/step
+Epoch 40/50
+137/137 - 0s - loss: 9.6071e-04 - mae: 0.0155 - val_loss: 0.0011 - val_mae: 0.0219 - 394ms/epoch - 3ms/step
+Epoch 41/50
+137/137 - 0s - loss: 9.6020e-04 - mae: 0.0155 - val_loss: 0.0011 - val_mae: 0.0217 - 308ms/epoch - 2ms/step
+Epoch 42/50
+137/137 - 0s - loss: 9.5970e-04 - mae: 0.0155 - val_loss: 0.0011 - val_mae: 0.0216 - 264ms/epoch - 2ms/step
+Epoch 43/50
+137/137 - 0s - loss: 9.5920e-04 - mae: 0.0155 - val_loss: 0.0011 - val_mae: 0.0215 - 266ms/epoch - 2ms/step
+Epoch 44/50
+137/137 - 0s - loss: 9.5872e-04 - mae: 0.0155 - val_loss: 0.0011 - val_mae: 0.0214 - 271ms/epoch - 2ms/step
+Epoch 45/50
+137/137 - 0s - loss: 9.5825e-04 - mae: 0.0155 - val_loss: 0.0011 - val_mae: 0.0213 - 284ms/epoch - 2ms/step
+Epoch 46/50
+137/137 - 0s - loss: 9.5779e-04 - mae: 0.0155 - val_loss: 0.0011 - val_mae: 0.0211 - 261ms/epoch - 2ms/step
+Epoch 47/50
+137/137 - 0s - loss: 9.5734e-04 - mae: 0.0155 - val_loss: 0.0011 - val_mae: 0.0210 - 264ms/epoch - 2ms/step
+Epoch 48/50
+137/137 - 0s - loss: 9.5691e-04 - mae: 0.0155 - val_loss: 0.0011 - val_mae: 0.0209 - 258ms/epoch - 2ms/step
+Epoch 49/50
+137/137 - 0s - loss: 9.5648e-04 - mae: 0.0155 - val_loss: 0.0011 - val_mae: 0.0208 - 264ms/epoch - 2ms/step
+Epoch 50/50
+137/137 - 0s - loss: 9.5606e-04 - mae: 0.0155 - val_loss: 0.0011 - val_mae: 0.0208 - 284ms/epoch - 2ms/step</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(history)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab11_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Evaluate the model on the validation data</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> model <span class="sc">%&gt;%</span> keras<span class="sc">::</span><span class="fu">evaluate</span>(X_test, y_test, <span class="at">verbose =</span> <span class="dv">0</span>)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>results</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      loss        mae 
+0.00106098 0.02075614 </code></pre>
+</div>
+</div>
+</section>
+<section id="model-3-lstm-with-multiple-time-steps" class="level1">
+<h1>Model 3: LSTM with multiple time steps</h1>
+<p>For this next model, we’ll link sequences of 12 hours of data to each observation point. Each input tensor will have the shape (12, 8), and the overall input dataframe will be (n, 12, 8), where <code>n</code> is the total number of observations in the training set. Note that this will be smaller that the <code>n</code> for the previous dataset, as we lose the first 12 observations (as there are not enough preceding values to make the sequences). Note that 12 is a fairly small sequence to use here - for daily data, we might want to use 24 steps or even several days worth of data prior to the observation point.</p>
+<p>First define the number of steps and features:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>n_steps <span class="ot">=</span> <span class="dv">12</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>n_vars <span class="ot">=</span> <span class="fu">dim</span>(scaled)[<span class="dv">2</span>]</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>lagged <span class="ot">=</span> <span class="fu">as.matrix</span>(scaled)</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_steps) {</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>  tmp <span class="ot">=</span> lagged[,<span class="dv">1</span><span class="sc">:</span>n_vars]</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_vars) {</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>    tmp[,j] <span class="ot">=</span> <span class="fu">lag</span>(lagged[,j], i)</span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>  lagged <span class="ot">=</span> <span class="fu">cbind</span>(lagged,tmp)</span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>lagged <span class="ot">=</span> <span class="fu">as.matrix</span>(<span class="fu">na.omit</span>(lagged))</span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a>y <span class="ot">=</span> lagged[ ,<span class="dv">1</span>] <span class="do">## Pollutant values</span></span>
+<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a>X <span class="ot">=</span> lagged[, <span class="sc">-</span><span class="fu">seq</span>(<span class="dv">1</span>,n_vars)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>And reshape to have the expected 3D tensor</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>make_x <span class="ot">&lt;-</span> <span class="cf">function</span>(X, n_steps, n_vars) {</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>  n_obs <span class="ot">=</span> <span class="fu">dim</span>(X)[<span class="dv">1</span>]</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>  X_out <span class="ot">=</span> <span class="fu">array</span>(<span class="cn">NA</span>, <span class="at">dim=</span><span class="fu">c</span>(n_obs, n_steps, n_vars))</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_obs) {</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>    start_id <span class="ot">=</span> (i<span class="dv">-1</span>)<span class="sc">*</span>n_vars <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>    stop_id <span class="ot">=</span> n_vars <span class="sc">*</span> i</span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># X_out[i,,] = X[, start_id:stop_id]</span></span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>    X_out[i,,] <span class="ot">=</span> <span class="fu">matrix</span>(X[i, ], <span class="at">ncol =</span> n_vars, <span class="at">byrow =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(X_out)</span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>n_obs <span class="ot">=</span> <span class="dv">365</span> <span class="sc">*</span> <span class="dv">24</span> </span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>X_train <span class="ot">&lt;-</span> <span class="fu">data.matrix</span>(X[<span class="dv">1</span><span class="sc">:</span>n_obs, ])</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a><span class="co">#X_train &lt;- array(X_train, dim = c(n_obs, n_steps, n_vars))</span></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>X_train <span class="ot">&lt;-</span> <span class="fu">make_x</span>(X_train, n_steps, n_vars)</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>y_train <span class="ot">&lt;-</span> y[<span class="dv">1</span><span class="sc">:</span>n_obs]</span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>X_test <span class="ot">&lt;-</span> <span class="fu">data.matrix</span>(X[n_obs<span class="sc">:</span><span class="fu">nrow</span>(X), ])</span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a><span class="co">#X_test &lt;- array(X_test, dim = c(nrow(X_test), n_steps, n_vars))</span></span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>X_test <span class="ot">&lt;-</span> <span class="fu">make_x</span>(X_test, n_steps, n_vars)</span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>y_test <span class="ot">&lt;-</span> y[n_obs<span class="sc">:</span><span class="fu">nrow</span>(X)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(X_train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 8760   12    8</code></pre>
+</div>
+</div>
+<p>Check that the second dimension of the <code>X</code> data is equal to the number of steps in each sequence.</p>
+<p>Now let’s go ahead and build and train our model. We’ll use the same architecture as the previous model, but a higher number of epochs</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="do">## ------------------------------------------------------------------------- ##</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="do">## LSTM</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="co"># initialize our model</span></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">keras_model_sequential</span>()</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a><span class="co"># our input layer</span></span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>model <span class="sc">%&gt;%</span></span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_lstm</span>(<span class="at">input_shape =</span> <span class="fu">dim</span>(X_train)[<span class="dv">2</span><span class="sc">:</span><span class="dv">3</span>], <span class="at">units =</span> <span class="dv">50</span>)</span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>model <span class="sc">%&gt;%</span></span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_dense</span>(<span class="at">units =</span> <span class="dv">1</span>) <span class="co"># output</span></span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a><span class="co"># look at our model architecture</span></span>
+<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Model: "sequential_2"
+________________________________________________________________________________
+ Layer (type)                       Output Shape                    Param #     
+================================================================================
+ lstm_1 (LSTM)                      (None, 50)                      11800       
+ dense_3 (Dense)                    (None, 1)                       51          
+================================================================================
+Total params: 11851 (46.29 KB)
+Trainable params: 11851 (46.29 KB)
+Non-trainable params: 0 (0.00 Byte)
+________________________________________________________________________________</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Compile it</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>model <span class="sc">%&gt;%</span> <span class="fu">compile</span>(</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">optimizer =</span> <span class="fu">optimizer_adam</span>(), </span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">loss =</span> <span class="st">"mse"</span>, </span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">metrics =</span> <span class="fu">c</span>(<span class="st">"mae"</span>)</span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Actually train our model! This step will take a while</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>history <span class="ot">&lt;-</span> model <span class="sc">%&gt;%</span> <span class="fu">fit</span>(</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> X_train, <span class="co"># sequence we're using for prediction </span></span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> y_train, <span class="co"># sequence we're predicting</span></span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">batch_size =</span> <span class="dv">64</span>, <span class="co"># how many samples to pass to our model at a time</span></span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">epochs =</span> <span class="dv">50</span>, <span class="co"># how many times we'll look @ the whole dataset</span></span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">validation_data =</span> <span class="fu">list</span>(X_test, y_test),</span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">shuffle =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">verbose =</span> <span class="dv">0</span>) <span class="co"># </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(history)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab11_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Evaluate the model on the validation data</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> model <span class="sc">%&gt;%</span> keras<span class="sc">::</span><span class="fu">evaluate</span>(X_test, y_test, <span class="at">verbose =</span> <span class="dv">0</span>)</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>results</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       loss         mae 
+0.001201039 0.022553470 </code></pre>
+</div>
+</div>
+<p>Evaluating on the test set shows a pretty decent drop from the previous model down to about 0.015 or about 1.5% of the range of the outcome</p>
+</section>
+<section id="model-4-adding-recurrent-dropouts" class="level1">
+<h1>Model 4: Adding recurrent dropouts</h1>
+<p>We’ve previously explored the use of dropout layers to slow training and create more general models. We’ll now use this to see if we can further improve model performance. As a reminder, dropouts randomly set some weights to zero, effectively removing them from affecting model predictions (this is what slows the training). For recurrent models like LSTMs dropouts have to be applied in a temporally constant manner by dropping some of the connections between data from different time steps. We’ll add this with the <code>recurrent_dropout</code> argument, but otherwise keep the model the same</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="do">## ------------------------------------------------------------------------- ##</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="do">## LSTM</span></span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a><span class="co"># initialize our model</span></span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">keras_model_sequential</span>()</span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a><span class="co"># our input layer</span></span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>model <span class="sc">%&gt;%</span></span>
+<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_lstm</span>(<span class="at">input_shape =</span> <span class="fu">dim</span>(X_train)[<span class="dv">2</span><span class="sc">:</span><span class="dv">3</span>], </span>
+<span id="cb43-9"><a href="#cb43-9" aria-hidden="true" tabindex="-1"></a>             <span class="at">units =</span> <span class="dv">100</span>,</span>
+<span id="cb43-10"><a href="#cb43-10" aria-hidden="true" tabindex="-1"></a>             <span class="at">recurrent_dropout =</span> <span class="fl">0.5</span>)</span>
+<span id="cb43-11"><a href="#cb43-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-12"><a href="#cb43-12" aria-hidden="true" tabindex="-1"></a>model <span class="sc">%&gt;%</span></span>
+<span id="cb43-13"><a href="#cb43-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_dense</span>(<span class="at">units =</span> <span class="dv">1</span>) <span class="co"># output</span></span>
+<span id="cb43-14"><a href="#cb43-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-15"><a href="#cb43-15" aria-hidden="true" tabindex="-1"></a><span class="co"># look at our model architecture</span></span>
+<span id="cb43-16"><a href="#cb43-16" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Model: "sequential_3"
+________________________________________________________________________________
+ Layer (type)                       Output Shape                    Param #     
+================================================================================
+ lstm_2 (LSTM)                      (None, 100)                     43600       
+ dense_4 (Dense)                    (None, 1)                       101         
+================================================================================
+Total params: 43701 (170.71 KB)
+Trainable params: 43701 (170.71 KB)
+Non-trainable params: 0 (0.00 Byte)
+________________________________________________________________________________</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Compile it</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>model <span class="sc">%&gt;%</span> <span class="fu">compile</span>(</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">optimizer =</span> <span class="fu">optimizer_adam</span>(<span class="at">learning_rate =</span> <span class="fl">1e-3</span>), </span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">loss =</span> <span class="st">"mse"</span>, </span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">metrics =</span> <span class="fu">c</span>(<span class="st">"mae"</span>)</span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Actually train our model! This step will take a while</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>history <span class="ot">&lt;-</span> model <span class="sc">%&gt;%</span> <span class="fu">fit</span>(</span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> X_train, <span class="co"># sequence we're using for prediction </span></span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> y_train, <span class="co"># sequence we're predicting</span></span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">batch_size =</span> <span class="dv">64</span>, <span class="co"># how many samples to pass to our model at a time</span></span>
+<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">epochs =</span> <span class="dv">100</span>, <span class="co"># how many times we'll look @ the whole dataset</span></span>
+<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">validation_data =</span> <span class="fu">list</span>(X_test, y_test),</span>
+<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">shuffle =</span> <span class="cn">FALSE</span>) <span class="co"># </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Epoch 1/100
+137/137 - 3s - loss: 0.0069 - mae: 0.0623 - val_loss: 0.0057 - val_mae: 0.0592 - 3s/epoch - 22ms/step
+Epoch 2/100
+137/137 - 2s - loss: 0.0038 - mae: 0.0437 - val_loss: 0.0035 - val_mae: 0.0442 - 2s/epoch - 14ms/step
+Epoch 3/100
+137/137 - 2s - loss: 0.0031 - mae: 0.0385 - val_loss: 0.0022 - val_mae: 0.0305 - 2s/epoch - 14ms/step
+Epoch 4/100
+137/137 - 2s - loss: 0.0028 - mae: 0.0369 - val_loss: 0.0029 - val_mae: 0.0366 - 2s/epoch - 15ms/step
+Epoch 5/100
+137/137 - 2s - loss: 0.0027 - mae: 0.0355 - val_loss: 0.0019 - val_mae: 0.0277 - 2s/epoch - 14ms/step
+Epoch 6/100
+137/137 - 2s - loss: 0.0026 - mae: 0.0351 - val_loss: 0.0018 - val_mae: 0.0274 - 2s/epoch - 14ms/step
+Epoch 7/100
+137/137 - 2s - loss: 0.0023 - mae: 0.0329 - val_loss: 0.0022 - val_mae: 0.0293 - 2s/epoch - 14ms/step
+Epoch 8/100
+137/137 - 2s - loss: 0.0024 - mae: 0.0337 - val_loss: 0.0021 - val_mae: 0.0295 - 2s/epoch - 15ms/step
+Epoch 9/100
+137/137 - 2s - loss: 0.0022 - mae: 0.0317 - val_loss: 0.0016 - val_mae: 0.0250 - 2s/epoch - 15ms/step
+Epoch 10/100
+137/137 - 2s - loss: 0.0022 - mae: 0.0313 - val_loss: 0.0017 - val_mae: 0.0254 - 2s/epoch - 15ms/step
+Epoch 11/100
+137/137 - 2s - loss: 0.0021 - mae: 0.0313 - val_loss: 0.0016 - val_mae: 0.0243 - 2s/epoch - 14ms/step
+Epoch 12/100
+137/137 - 2s - loss: 0.0021 - mae: 0.0302 - val_loss: 0.0017 - val_mae: 0.0251 - 2s/epoch - 14ms/step
+Epoch 13/100
+137/137 - 2s - loss: 0.0023 - mae: 0.0330 - val_loss: 0.0019 - val_mae: 0.0279 - 2s/epoch - 14ms/step
+Epoch 14/100
+137/137 - 2s - loss: 0.0021 - mae: 0.0303 - val_loss: 0.0015 - val_mae: 0.0257 - 2s/epoch - 14ms/step
+Epoch 15/100
+137/137 - 2s - loss: 0.0020 - mae: 0.0296 - val_loss: 0.0023 - val_mae: 0.0292 - 2s/epoch - 14ms/step
+Epoch 16/100
+137/137 - 2s - loss: 0.0023 - mae: 0.0328 - val_loss: 0.0016 - val_mae: 0.0261 - 2s/epoch - 14ms/step
+Epoch 17/100
+137/137 - 2s - loss: 0.0021 - mae: 0.0303 - val_loss: 0.0016 - val_mae: 0.0241 - 2s/epoch - 14ms/step
+Epoch 18/100
+137/137 - 2s - loss: 0.0020 - mae: 0.0293 - val_loss: 0.0015 - val_mae: 0.0235 - 2s/epoch - 14ms/step
+Epoch 19/100
+137/137 - 2s - loss: 0.0019 - mae: 0.0287 - val_loss: 0.0018 - val_mae: 0.0257 - 2s/epoch - 14ms/step
+Epoch 20/100
+137/137 - 2s - loss: 0.0019 - mae: 0.0286 - val_loss: 0.0017 - val_mae: 0.0242 - 2s/epoch - 14ms/step
+Epoch 21/100
+137/137 - 2s - loss: 0.0019 - mae: 0.0286 - val_loss: 0.0015 - val_mae: 0.0239 - 2s/epoch - 14ms/step
+Epoch 22/100
+137/137 - 2s - loss: 0.0018 - mae: 0.0281 - val_loss: 0.0019 - val_mae: 0.0267 - 2s/epoch - 14ms/step
+Epoch 23/100
+137/137 - 2s - loss: 0.0019 - mae: 0.0288 - val_loss: 0.0016 - val_mae: 0.0240 - 2s/epoch - 14ms/step
+Epoch 24/100
+137/137 - 2s - loss: 0.0018 - mae: 0.0282 - val_loss: 0.0017 - val_mae: 0.0250 - 2s/epoch - 14ms/step
+Epoch 25/100
+137/137 - 2s - loss: 0.0018 - mae: 0.0282 - val_loss: 0.0014 - val_mae: 0.0224 - 2s/epoch - 14ms/step
+Epoch 26/100
+137/137 - 2s - loss: 0.0017 - mae: 0.0276 - val_loss: 0.0016 - val_mae: 0.0248 - 2s/epoch - 14ms/step
+Epoch 27/100
+137/137 - 2s - loss: 0.0018 - mae: 0.0278 - val_loss: 0.0015 - val_mae: 0.0234 - 2s/epoch - 14ms/step
+Epoch 28/100
+137/137 - 2s - loss: 0.0018 - mae: 0.0281 - val_loss: 0.0015 - val_mae: 0.0230 - 2s/epoch - 14ms/step
+Epoch 29/100
+137/137 - 2s - loss: 0.0018 - mae: 0.0276 - val_loss: 0.0017 - val_mae: 0.0249 - 2s/epoch - 15ms/step
+Epoch 30/100
+137/137 - 2s - loss: 0.0017 - mae: 0.0275 - val_loss: 0.0013 - val_mae: 0.0216 - 2s/epoch - 14ms/step
+Epoch 31/100
+137/137 - 2s - loss: 0.0017 - mae: 0.0276 - val_loss: 0.0013 - val_mae: 0.0216 - 2s/epoch - 14ms/step
+Epoch 32/100
+137/137 - 2s - loss: 0.0017 - mae: 0.0269 - val_loss: 0.0021 - val_mae: 0.0287 - 2s/epoch - 14ms/step
+Epoch 33/100
+137/137 - 2s - loss: 0.0018 - mae: 0.0278 - val_loss: 0.0019 - val_mae: 0.0280 - 2s/epoch - 14ms/step
+Epoch 34/100
+137/137 - 2s - loss: 0.0017 - mae: 0.0276 - val_loss: 0.0013 - val_mae: 0.0220 - 2s/epoch - 15ms/step
+Epoch 35/100
+137/137 - 2s - loss: 0.0017 - mae: 0.0268 - val_loss: 0.0015 - val_mae: 0.0235 - 2s/epoch - 14ms/step
+Epoch 36/100
+137/137 - 2s - loss: 0.0016 - mae: 0.0264 - val_loss: 0.0014 - val_mae: 0.0223 - 2s/epoch - 14ms/step
+Epoch 37/100
+137/137 - 2s - loss: 0.0016 - mae: 0.0261 - val_loss: 0.0017 - val_mae: 0.0248 - 2s/epoch - 14ms/step
+Epoch 38/100
+137/137 - 2s - loss: 0.0017 - mae: 0.0272 - val_loss: 0.0014 - val_mae: 0.0227 - 2s/epoch - 14ms/step
+Epoch 39/100
+137/137 - 2s - loss: 0.0016 - mae: 0.0264 - val_loss: 0.0012 - val_mae: 0.0210 - 2s/epoch - 14ms/step
+Epoch 40/100
+137/137 - 2s - loss: 0.0016 - mae: 0.0260 - val_loss: 0.0012 - val_mae: 0.0211 - 2s/epoch - 14ms/step
+Epoch 41/100
+137/137 - 2s - loss: 0.0017 - mae: 0.0270 - val_loss: 0.0014 - val_mae: 0.0226 - 2s/epoch - 15ms/step
+Epoch 42/100
+137/137 - 2s - loss: 0.0016 - mae: 0.0262 - val_loss: 0.0013 - val_mae: 0.0222 - 2s/epoch - 14ms/step
+Epoch 43/100
+137/137 - 2s - loss: 0.0015 - mae: 0.0251 - val_loss: 0.0012 - val_mae: 0.0211 - 2s/epoch - 14ms/step
+Epoch 44/100
+137/137 - 2s - loss: 0.0016 - mae: 0.0257 - val_loss: 0.0011 - val_mae: 0.0200 - 2s/epoch - 14ms/step
+Epoch 45/100
+137/137 - 2s - loss: 0.0015 - mae: 0.0256 - val_loss: 0.0012 - val_mae: 0.0202 - 2s/epoch - 18ms/step
+Epoch 46/100
+137/137 - 2s - loss: 0.0015 - mae: 0.0254 - val_loss: 0.0013 - val_mae: 0.0209 - 2s/epoch - 17ms/step
+Epoch 47/100
+137/137 - 2s - loss: 0.0015 - mae: 0.0254 - val_loss: 0.0011 - val_mae: 0.0200 - 2s/epoch - 17ms/step
+Epoch 48/100
+137/137 - 2s - loss: 0.0015 - mae: 0.0245 - val_loss: 0.0011 - val_mae: 0.0199 - 2s/epoch - 17ms/step
+Epoch 49/100
+137/137 - 2s - loss: 0.0015 - mae: 0.0249 - val_loss: 0.0012 - val_mae: 0.0204 - 2s/epoch - 16ms/step
+Epoch 50/100
+137/137 - 2s - loss: 0.0015 - mae: 0.0246 - val_loss: 0.0011 - val_mae: 0.0198 - 2s/epoch - 17ms/step
+Epoch 51/100
+137/137 - 2s - loss: 0.0015 - mae: 0.0247 - val_loss: 0.0011 - val_mae: 0.0201 - 2s/epoch - 16ms/step
+Epoch 52/100
+137/137 - 2s - loss: 0.0014 - mae: 0.0245 - val_loss: 0.0011 - val_mae: 0.0197 - 2s/epoch - 15ms/step
+Epoch 53/100
+137/137 - 2s - loss: 0.0014 - mae: 0.0241 - val_loss: 0.0010 - val_mae: 0.0192 - 2s/epoch - 15ms/step
+Epoch 54/100
+137/137 - 2s - loss: 0.0015 - mae: 0.0247 - val_loss: 0.0011 - val_mae: 0.0197 - 2s/epoch - 15ms/step
+Epoch 55/100
+137/137 - 2s - loss: 0.0014 - mae: 0.0243 - val_loss: 0.0010 - val_mae: 0.0190 - 2s/epoch - 16ms/step
+Epoch 56/100
+137/137 - 2s - loss: 0.0014 - mae: 0.0237 - val_loss: 0.0010 - val_mae: 0.0191 - 2s/epoch - 16ms/step
+Epoch 57/100
+137/137 - 2s - loss: 0.0014 - mae: 0.0240 - val_loss: 0.0011 - val_mae: 0.0194 - 2s/epoch - 15ms/step
+Epoch 58/100
+137/137 - 2s - loss: 0.0014 - mae: 0.0235 - val_loss: 0.0011 - val_mae: 0.0190 - 2s/epoch - 16ms/step
+Epoch 59/100
+137/137 - 2s - loss: 0.0014 - mae: 0.0236 - val_loss: 0.0010 - val_mae: 0.0189 - 2s/epoch - 15ms/step
+Epoch 60/100
+137/137 - 2s - loss: 0.0014 - mae: 0.0236 - val_loss: 9.8091e-04 - val_mae: 0.0185 - 2s/epoch - 15ms/step
+Epoch 61/100
+137/137 - 2s - loss: 0.0013 - mae: 0.0233 - val_loss: 9.8476e-04 - val_mae: 0.0184 - 2s/epoch - 15ms/step
+Epoch 62/100
+137/137 - 2s - loss: 0.0013 - mae: 0.0229 - val_loss: 9.8866e-04 - val_mae: 0.0182 - 2s/epoch - 16ms/step
+Epoch 63/100
+137/137 - 2s - loss: 0.0013 - mae: 0.0231 - val_loss: 0.0011 - val_mae: 0.0190 - 2s/epoch - 15ms/step
+Epoch 64/100
+137/137 - 2s - loss: 0.0013 - mae: 0.0233 - val_loss: 9.7673e-04 - val_mae: 0.0182 - 2s/epoch - 15ms/step
+Epoch 65/100
+137/137 - 2s - loss: 0.0013 - mae: 0.0228 - val_loss: 9.3999e-04 - val_mae: 0.0177 - 2s/epoch - 15ms/step
+Epoch 66/100
+137/137 - 2s - loss: 0.0013 - mae: 0.0226 - val_loss: 9.4092e-04 - val_mae: 0.0179 - 2s/epoch - 16ms/step
+Epoch 67/100
+137/137 - 2s - loss: 0.0013 - mae: 0.0225 - val_loss: 9.2226e-04 - val_mae: 0.0178 - 2s/epoch - 15ms/step
+Epoch 68/100
+137/137 - 2s - loss: 0.0013 - mae: 0.0224 - val_loss: 9.1076e-04 - val_mae: 0.0176 - 2s/epoch - 15ms/step
+Epoch 69/100
+137/137 - 2s - loss: 0.0012 - mae: 0.0222 - val_loss: 9.4178e-04 - val_mae: 0.0178 - 2s/epoch - 16ms/step
+Epoch 70/100
+137/137 - 2s - loss: 0.0013 - mae: 0.0228 - val_loss: 9.0997e-04 - val_mae: 0.0177 - 2s/epoch - 15ms/step
+Epoch 71/100
+137/137 - 2s - loss: 0.0013 - mae: 0.0220 - val_loss: 9.0394e-04 - val_mae: 0.0170 - 2s/epoch - 15ms/step
+Epoch 72/100
+137/137 - 2s - loss: 0.0012 - mae: 0.0215 - val_loss: 9.1364e-04 - val_mae: 0.0173 - 2s/epoch - 15ms/step
+Epoch 73/100
+137/137 - 2s - loss: 0.0012 - mae: 0.0219 - val_loss: 8.8295e-04 - val_mae: 0.0171 - 2s/epoch - 15ms/step
+Epoch 74/100
+137/137 - 2s - loss: 0.0012 - mae: 0.0216 - val_loss: 8.9594e-04 - val_mae: 0.0175 - 2s/epoch - 15ms/step
+Epoch 75/100
+137/137 - 2s - loss: 0.0012 - mae: 0.0213 - val_loss: 8.9918e-04 - val_mae: 0.0172 - 2s/epoch - 14ms/step
+Epoch 76/100
+137/137 - 2s - loss: 0.0012 - mae: 0.0214 - val_loss: 8.9973e-04 - val_mae: 0.0173 - 2s/epoch - 16ms/step
+Epoch 77/100
+137/137 - 3s - loss: 0.0012 - mae: 0.0211 - val_loss: 8.8736e-04 - val_mae: 0.0170 - 3s/epoch - 19ms/step
+Epoch 78/100
+137/137 - 2s - loss: 0.0012 - mae: 0.0209 - val_loss: 9.0134e-04 - val_mae: 0.0174 - 2s/epoch - 15ms/step
+Epoch 79/100
+137/137 - 2s - loss: 0.0011 - mae: 0.0208 - val_loss: 9.1616e-04 - val_mae: 0.0172 - 2s/epoch - 14ms/step
+Epoch 80/100
+137/137 - 2s - loss: 0.0011 - mae: 0.0203 - val_loss: 8.6583e-04 - val_mae: 0.0167 - 2s/epoch - 15ms/step
+Epoch 81/100
+137/137 - 2s - loss: 0.0011 - mae: 0.0206 - val_loss: 8.7953e-04 - val_mae: 0.0171 - 2s/epoch - 14ms/step
+Epoch 82/100
+137/137 - 2s - loss: 0.0011 - mae: 0.0204 - val_loss: 8.7958e-04 - val_mae: 0.0172 - 2s/epoch - 14ms/step
+Epoch 83/100
+137/137 - 2s - loss: 0.0011 - mae: 0.0204 - val_loss: 8.6465e-04 - val_mae: 0.0168 - 2s/epoch - 14ms/step
+Epoch 84/100
+137/137 - 2s - loss: 0.0011 - mae: 0.0204 - val_loss: 8.8258e-04 - val_mae: 0.0169 - 2s/epoch - 15ms/step
+Epoch 85/100
+137/137 - 2s - loss: 0.0011 - mae: 0.0202 - val_loss: 8.8830e-04 - val_mae: 0.0170 - 2s/epoch - 15ms/step
+Epoch 86/100
+137/137 - 2s - loss: 0.0011 - mae: 0.0201 - val_loss: 8.6243e-04 - val_mae: 0.0167 - 2s/epoch - 14ms/step
+Epoch 87/100
+137/137 - 2s - loss: 0.0011 - mae: 0.0199 - val_loss: 8.9794e-04 - val_mae: 0.0175 - 2s/epoch - 14ms/step
+Epoch 88/100
+137/137 - 2s - loss: 0.0011 - mae: 0.0202 - val_loss: 8.9580e-04 - val_mae: 0.0173 - 2s/epoch - 15ms/step
+Epoch 89/100
+137/137 - 2s - loss: 0.0011 - mae: 0.0197 - val_loss: 8.8115e-04 - val_mae: 0.0175 - 2s/epoch - 15ms/step
+Epoch 90/100
+137/137 - 2s - loss: 0.0011 - mae: 0.0201 - val_loss: 9.1503e-04 - val_mae: 0.0181 - 2s/epoch - 14ms/step
+Epoch 91/100
+137/137 - 2s - loss: 0.0011 - mae: 0.0200 - val_loss: 8.8460e-04 - val_mae: 0.0174 - 2s/epoch - 14ms/step
+Epoch 92/100
+137/137 - 2s - loss: 0.0011 - mae: 0.0198 - val_loss: 8.7874e-04 - val_mae: 0.0175 - 2s/epoch - 14ms/step
+Epoch 93/100
+137/137 - 2s - loss: 0.0011 - mae: 0.0195 - val_loss: 9.1073e-04 - val_mae: 0.0176 - 2s/epoch - 14ms/step
+Epoch 94/100
+137/137 - 2s - loss: 0.0011 - mae: 0.0196 - val_loss: 9.5051e-04 - val_mae: 0.0184 - 2s/epoch - 14ms/step
+Epoch 95/100
+137/137 - 2s - loss: 0.0010 - mae: 0.0194 - val_loss: 8.8631e-04 - val_mae: 0.0169 - 2s/epoch - 14ms/step
+Epoch 96/100
+137/137 - 2s - loss: 0.0010 - mae: 0.0191 - val_loss: 8.7790e-04 - val_mae: 0.0172 - 2s/epoch - 14ms/step
+Epoch 97/100
+137/137 - 2s - loss: 0.0010 - mae: 0.0190 - val_loss: 8.8530e-04 - val_mae: 0.0173 - 2s/epoch - 14ms/step
+Epoch 98/100
+137/137 - 2s - loss: 0.0010 - mae: 0.0189 - val_loss: 8.7658e-04 - val_mae: 0.0172 - 2s/epoch - 15ms/step
+Epoch 99/100
+137/137 - 2s - loss: 0.0010 - mae: 0.0191 - val_loss: 8.6774e-04 - val_mae: 0.0170 - 2s/epoch - 14ms/step
+Epoch 100/100
+137/137 - 2s - loss: 0.0010 - mae: 0.0191 - val_loss: 8.4735e-04 - val_mae: 0.0165 - 2s/epoch - 15ms/step</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(history)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab11_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Evaluate the model on the validation data</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> model <span class="sc">%&gt;%</span> keras<span class="sc">::</span><span class="fu">evaluate</span>(X_test, y_test, <span class="at">verbose =</span> <span class="dv">0</span>)</span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>results</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        loss          mae 
+0.0008473511 0.0164830424 </code></pre>
+</div>
+</div>
+<p>In this case, adding the dropout makes the model worse. It’s likely that we’re getting close to the limit of what can be improved on with this model (and given that we took a realtively small amount of data for training). We could try to train this model for longer (or slower) to see if that improves things, but we’ll instead try one final experiment in which we make the model more complex.</p>
+</section>
+<section id="model-5-stacked-lstm" class="level1">
+<h1>Model 5: Stacked LSTM</h1>
+<p>Currently our model only has a single LSTM layer. But like CNNs, adding additional LSTM layers can improve model performance by identifying more complicated relationships between time steps. We’ll add a second LSTM here with 50 nodes. Note that we also need to add an argument to the preceding LSTM layer <code>return_sequences=TRUE</code>. This ensures that the output of LSTM layer 1 is presented to LSTM layer 2 as a time sequence. Let’s follow all the usual steps of building, compiling, training and evaluating:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="do">## ------------------------------------------------------------------------- ##</span></span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a><span class="do">## LSTM</span></span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a><span class="co"># initialize our model</span></span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">keras_model_sequential</span>()</span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-6"><a href="#cb51-6" aria-hidden="true" tabindex="-1"></a><span class="co"># our input layer</span></span>
+<span id="cb51-7"><a href="#cb51-7" aria-hidden="true" tabindex="-1"></a>model <span class="sc">%&gt;%</span></span>
+<span id="cb51-8"><a href="#cb51-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_lstm</span>(<span class="at">input_shape =</span> <span class="fu">dim</span>(X_train)[<span class="dv">2</span><span class="sc">:</span><span class="dv">3</span>], </span>
+<span id="cb51-9"><a href="#cb51-9" aria-hidden="true" tabindex="-1"></a>             <span class="at">units =</span> <span class="dv">100</span>,</span>
+<span id="cb51-10"><a href="#cb51-10" aria-hidden="true" tabindex="-1"></a>             <span class="at">recurrent_dropout =</span> <span class="fl">0.5</span>,</span>
+<span id="cb51-11"><a href="#cb51-11" aria-hidden="true" tabindex="-1"></a>             <span class="at">return_sequences =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb51-12"><a href="#cb51-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-13"><a href="#cb51-13" aria-hidden="true" tabindex="-1"></a>model <span class="sc">%&gt;%</span></span>
+<span id="cb51-14"><a href="#cb51-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_lstm</span>(<span class="at">units =</span> <span class="dv">50</span>,</span>
+<span id="cb51-15"><a href="#cb51-15" aria-hidden="true" tabindex="-1"></a>             <span class="at">recurrent_dropout =</span> <span class="fl">0.5</span>)</span>
+<span id="cb51-16"><a href="#cb51-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-17"><a href="#cb51-17" aria-hidden="true" tabindex="-1"></a>model <span class="sc">%&gt;%</span></span>
+<span id="cb51-18"><a href="#cb51-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_dense</span>(<span class="at">units =</span> <span class="dv">1</span>) <span class="co"># output</span></span>
+<span id="cb51-19"><a href="#cb51-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-20"><a href="#cb51-20" aria-hidden="true" tabindex="-1"></a><span class="co"># look at our model architecture</span></span>
+<span id="cb51-21"><a href="#cb51-21" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Model: "sequential_4"
+________________________________________________________________________________
+ Layer (type)                       Output Shape                    Param #     
+================================================================================
+ lstm_3 (LSTM)                      (None, 12, 100)                 43600       
+ lstm_4 (LSTM)                      (None, 50)                      30200       
+ dense_5 (Dense)                    (None, 1)                       51          
+================================================================================
+Total params: 73851 (288.48 KB)
+Trainable params: 73851 (288.48 KB)
+Non-trainable params: 0 (0.00 Byte)
+________________________________________________________________________________</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Compile it</span></span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>model <span class="sc">%&gt;%</span> <span class="fu">compile</span>(</span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">optimizer =</span> <span class="fu">optimizer_adam</span>(<span class="at">learning_rate =</span> <span class="fl">1e-3</span>), </span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">loss =</span> <span class="st">"mse"</span>, </span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">metrics =</span> <span class="fu">c</span>(<span class="st">"mae"</span>)</span>
+<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>history <span class="ot">&lt;-</span> model <span class="sc">%&gt;%</span> <span class="fu">fit</span>(</span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> X_train, <span class="co"># sequence we're using for prediction </span></span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> y_train, <span class="co"># sequence we're predicting</span></span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">batch_size =</span> <span class="dv">64</span>, <span class="co"># how many samples to pass to our model at a time</span></span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">epochs =</span> <span class="dv">100</span>, <span class="co"># how many times we'll look @ the whole dataset</span></span>
+<span id="cb54-6"><a href="#cb54-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">validation_data =</span> <span class="fu">list</span>(X_test, y_test),</span>
+<span id="cb54-7"><a href="#cb54-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">shuffle =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb54-8"><a href="#cb54-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">verbose =</span> <span class="dv">0</span>) <span class="co"># </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(history)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="GEOG_5160_6160_lab11_files/figure-html/unnamed-chunk-33-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> model <span class="sc">%&gt;%</span> keras<span class="sc">::</span><span class="fu">evaluate</span>(X_test, y_test, <span class="at">verbose =</span> <span class="dv">0</span>)</span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>results</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        loss          mae 
+0.0007461669 0.0149833281 </code></pre>
+</div>
+</div>
+<p>Adding the additional layer improves the model again, giving us (at least in this run) the best overall model. We’ll leave this here, but adding additional layers may be worth testing in this case. As an aside, I ran this over the weekend with 4 years of training data, and a 120 hour (5 day) window, and was able to get the error as low as 0.012 - albeit at a cost of 1 hour of computation time.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

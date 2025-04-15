@@ -32,9 +32,9 @@ The models we'll build are modified from: https://machinelearningmastery.com/mul
 
 ## Objectives
 
-- Process data for time series modeling
-- Build and test a recurrent neural network (LSTM)
-- Extend the base LSTM model
+-   Process data for time series modeling
+-   Build and test a recurrent neural network (LSTM)
+-   Extend the base LSTM model
 
 # Data processing
 
@@ -96,13 +96,12 @@ scaled <- dat |>
   select(-date, -datetime)
 ```
 
-Normally, we'd only normalize the features, but as we are going to use the PM2.5 value from the previous time step as an additional feature, we need to normalize this as well. As this means we will be modeling the normalized PM2.5 values, we'll store the minimum and maximum. This will allow us to back convert any predictions we make to parts per billion. 
+Normally, we'd only normalize the features, but as we are going to use the PM2.5 value from the previous time step as an additional feature, we need to normalize this as well. As this means we will be modeling the normalized PM2.5 values, we'll store the minimum and maximum. This will allow us to back convert any predictions we make to parts per billion.
 
 ```{r}
 pollution_min <- min(dat$pollution)
 pollution_max <- max(dat$pollution)
 ```
-
 
 ```{r}
 n_steps = 1
@@ -123,7 +122,6 @@ y = lagged[ ,1] ## Pollutant values
 X = lagged[, -seq(1,n_vars)]
 ```
 
-
 ```{r}
 n_obs = 365 * 24 
 
@@ -138,11 +136,11 @@ y_test <- y[n_obs:nrow(X)]
 
 # Model 1: Dense network
 
-To start with, we'll build a simple neural network with a single densely connected layer with 50 nodes between the input and output.  We'll build a pretty simple model with 
+To start with, we'll build a simple neural network with a single densely connected layer with 50 nodes between the input and output. We'll build a pretty simple model with
 
-- A input layer. Each observation going into the model is the set of 7 features (temperature, etc) from the previous time step and the pollution from the previous step, which gives a shape of (8,)
-- A densely connected layer with 50 nodes
-- An output layer. We're only predicting the pollution value, so there's only a single output. Note that as this is a continuous outcome, we don't specify an activation function (as this would constrain the output of the model).
+-   A input layer. Each observation going into the model is the set of 7 features (temperature, etc) from the previous time step and the pollution from the previous step, which gives a shape of (8,)
+-   A densely connected layer with 50 nodes
+-   An output layer. We're only predicting the pollution value, so there's only a single output. Note that as this is a continuous outcome, we don't specify an activation function (as this would constrain the output of the model).
 
 ```{r}
 ## ------------------------------------------------------------------------- ##
@@ -179,13 +177,13 @@ history <- model |> fit(
 ## -------------------------------------------------------------------------------------------
 # Evaluate the model on the validation data
 results <- model |> 
-  keras::evaluate(X_test, y_test, verbose = 1)
+  keras::evaluate(X_test, y_test, verbose = 0)
 results
 ```
 
-# Model 2: LSTM 
+# Model 2: LSTM
 
-For the next model, we'll add an LSTM layer. This is a more complex layer, that includes weights that link inputs to the outputs, but also that link a saved or memory state to the current input. 
+For the next model, we'll add an LSTM layer. This is a more complex layer, that includes weights that link inputs to the outputs, but also that link a saved or memory state to the current input.
 
 However, before setting this up, we need to reformat the input data. For time series models, the input shape needs to be three dimensional `(i,j,k)`, where `i` is the number of samples (this is the number of hourly observations), `j` is the number of time steps in each sequence and `k` is the number of features. `j` controls the number of previous time steps linked to an outcome, and this is a key parameter: higher values for `k` means that the model is considering a longer period of observations *prior* to the time step we are trying to predict. We'll start by reusing the dataset we created for the densely connected model above. All we need to do here is to use the `reshape` method to add the additional axis for `j` here:
 
@@ -216,15 +214,20 @@ model %>%
 
 # look at our model architecture
 summary(model)
+```
 
+```{r}
 ## Compile it
 model %>% compile(
   optimizer = optimizer_adam(learning_rate = 1e-3), 
   loss = "mse", 
   metrics = c("mae")
 )
+```
 
-# Actually train our model! This step will take a while
+Now train:
+
+```{r}
 history <- model %>% fit(
   x = X_train, # sequence we're using for prediction 
   y = y_train, # sequence we're predicting
@@ -232,17 +235,22 @@ history <- model %>% fit(
   epochs = 50, # how many times we'll look @ the whole dataset
   validation_data = list(X_test, y_test),
   shuffle = FALSE) # 
+```
 
+```{r}
 plot(history)
-## -------------------------------------------------------------------------------------------
-# Evaluate the model on the validation data
-results <- model %>% keras::evaluate(X_test, y_test, verbose = 1)
+```
+
+Evaluate the model on the validation data
+
+```{r}
+results <- model %>% keras::evaluate(X_test, y_test, verbose = 0)
 results
 ```
 
 # Model 3: LSTM with multiple time steps
 
-For this next model, we'll link sequences of 12 hours of data to each observation point. Each input tensor will have the shape (12, 8), and the overall input dataframe will be (n, 12, 8), where `n` is the total number of observations in the training set. Note that this will be smaller that the `n` for the previous dataset, as we lose the first 12 observations (as there are not enough preceding values to make the sequences). Note that 12 is a fairly small sequence to use here - for daily data, we might want to use 24 steps or even several days worth of data prior to the observation point. 
+For this next model, we'll link sequences of 12 hours of data to each observation point. Each input tensor will have the shape (12, 8), and the overall input dataframe will be (n, 12, 8), where `n` is the total number of observations in the training set. Note that this will be smaller that the `n` for the previous dataset, as we lose the first 12 observations (as there are not enough preceding values to make the sequences). Note that 12 is a fairly small sequence to use here - for daily data, we might want to use 24 steps or even several days worth of data prior to the observation point.
 
 First define the number of steps and features:
 
@@ -265,6 +273,7 @@ y = lagged[ ,1] ## Pollutant values
 X = lagged[, -seq(1,n_vars)]
 ```
 
+And reshape to have the expected 3D tensor
 
 ```{r}
 make_x <- function(X, n_steps, n_vars) {
@@ -296,6 +305,14 @@ y_test <- y[n_obs:nrow(X)]
 ```
 
 ```{r}
+dim(X_train)
+```
+
+Check that the second dimension of the `X` data is equal to the number of steps in each sequence. 
+
+Now let's go ahead and build and train our model. We'll use the same architecture as the previous model, but a higher number of epochs
+
+```{r}
 ## ------------------------------------------------------------------------- ##
 ## LSTM
 # initialize our model
@@ -318,21 +335,34 @@ model %>% compile(
   metrics = c("mae")
 )
 
-# Actually train our model! This step will take a while
+```
+
+Actually train our model! This step will take a while
+
+```{r}
 history <- model %>% fit(
   x = X_train, # sequence we're using for prediction 
   y = y_train, # sequence we're predicting
   batch_size = 64, # how many samples to pass to our model at a time
   epochs = 50, # how many times we'll look @ the whole dataset
   validation_data = list(X_test, y_test),
-  shuffle = FALSE) # 
+  shuffle = FALSE,
+  verbose = 0) # 
 
+```
+
+```{r}
 plot(history)
-## -------------------------------------------------------------------------------------------
-# Evaluate the model on the validation data
-results <- model %>% keras::evaluate(X_test, y_test, verbose = 1)
+```
+
+Evaluate the model on the validation data
+
+```{r}
+results <- model %>% keras::evaluate(X_test, y_test, verbose = 0)
 results
 ```
+
+Evaluating on the test set shows a pretty decent drop from the previous model down to about 0.015 or about 1.5% of the range of the outcome
 
 # Model 4: Adding recurrent dropouts
 
@@ -355,33 +385,44 @@ model %>%
 
 # look at our model architecture
 summary(model)
+```
 
+```{r}
 ## Compile it
 model %>% compile(
   optimizer = optimizer_adam(learning_rate = 1e-3), 
   loss = "mse", 
   metrics = c("mae")
 )
+```
 
+```{r}
 # Actually train our model! This step will take a while
 history <- model %>% fit(
   x = X_train, # sequence we're using for prediction 
   y = y_train, # sequence we're predicting
   batch_size = 64, # how many samples to pass to our model at a time
-  epochs = 50, # how many times we'll look @ the whole dataset
+  epochs = 100, # how many times we'll look @ the whole dataset
   validation_data = list(X_test, y_test),
   shuffle = FALSE) # 
+```
 
+```{r}
 plot(history)
-## -------------------------------------------------------------------------------------------
-# Evaluate the model on the validation data
-results <- model %>% keras::evaluate(X_test, y_test, verbose = 1)
+```
+
+Evaluate the model on the validation data
+
+```{r}
+results <- model %>% keras::evaluate(X_test, y_test, verbose = 0)
 results
 ```
 
+In this case, adding the dropout makes the model worse. It's likely that we're getting close to the limit of what can be improved on with this model (and given that we took a realtively small amount of data for training). We could try to train this model for longer (or slower) to see if that improves things, but we'll instead try one final experiment in which we make the model more complex. 
+
 # Model 5: Stacked LSTM
 
-Currently our model only has a single LSTM layer. But like CNNs, adding additional LSTM layers can improve model performance by identifying more complicated relationships between time steps. We'll add a second LSTM here with 50 nodes. Note that we also need to add an argument to the preceding LSTM layer `return_sequences=True`. This ensures that the output of LSTM layer 1 is presented to LSTM layer 2 as a time sequence. Let's follow all the usual steps of building, compiling, training and evaluating:
+Currently our model only has a single LSTM layer. But like CNNs, adding additional LSTM layers can improve model performance by identifying more complicated relationships between time steps. We'll add a second LSTM here with 50 nodes. Note that we also need to add an argument to the preceding LSTM layer `return_sequences=TRUE`. This ensures that the output of LSTM layer 1 is presented to LSTM layer 2 as a time sequence. Let's follow all the usual steps of building, compiling, training and evaluating:
 
 ```{r}
 ## ------------------------------------------------------------------------- ##
@@ -393,7 +434,8 @@ model <- keras_model_sequential()
 model %>%
   layer_lstm(input_shape = dim(X_train)[2:3], 
              units = 100,
-             recurrent_dropout = 0.5)
+             recurrent_dropout = 0.5,
+             return_sequences = TRUE)
 
 model %>%
   layer_lstm(units = 50,
@@ -404,6 +446,9 @@ model %>%
 
 # look at our model architecture
 summary(model)
+```
+
+```{r}
 
 ## Compile it
 model %>% compile(
@@ -411,19 +456,26 @@ model %>% compile(
   loss = "mse", 
   metrics = c("mae")
 )
+```
 
-# Actually train our model! This step will take a while
+```{r}
 history <- model %>% fit(
   x = X_train, # sequence we're using for prediction 
   y = y_train, # sequence we're predicting
   batch_size = 64, # how many samples to pass to our model at a time
-  epochs = 50, # how many times we'll look @ the whole dataset
+  epochs = 100, # how many times we'll look @ the whole dataset
   validation_data = list(X_test, y_test),
-  shuffle = FALSE) # 
+  shuffle = FALSE,
+  verbose = 0) # 
+```
 
+```{r}
 plot(history)
-## -------------------------------------------------------------------------------------------
-# Evaluate the model on the validation data
-results <- model %>% keras::evaluate(X_test, y_test, verbose = 1)
+```
+
+```{r}
+results <- model %>% keras::evaluate(X_test, y_test, verbose = 0)
 results
 ```
+
+Adding the additional layer improves the model again, giving us (at least in this run) the best overall model. We'll leave this here, but adding additional layers may be worth testing in this case. As an aside, I ran this over the weekend with 4 years of training data, and a 120 hour (5 day) window, and was able to get the error as low as 0.012 - albeit at a cost of 1 hour of computation time. 
