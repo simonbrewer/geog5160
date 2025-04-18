@@ -1,0 +1,37 @@
+---
+title: "GEOG 5160 6160 Assignment 11"
+author: 
+  - name: "Simon Brewer"
+    email: simon.brewer@ess.utah.edu
+    affiliations:
+      - name: University of Utah
+        address: 260 S Central Campus Drive
+        city: Salt Lake City
+        state: UT
+        postal-code: 84112
+date: last-modified
+format:
+  html:
+    toc: true
+editor: visual
+---
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+library(png)
+library(grid)
+set.seed(42)
+```
+
+# Recurrent neural network assignment
+
+For this exercise, you will need to submit evaluation scores for the 5 models listed in lab 11 (Recurren neural networks). These models are:
+
+- Model 1: Dense network
+- Model 2: Simple LSTM
+- Model 3: LSTM with multiple time steps
+- Model 4: Adding recurrent dropouts
+- Model 5: Stacked LSTM
+
+The easiest way to submit this will be as a table in Word, with the model experiment number and corresponding MAE from evaluation. 
+
+
