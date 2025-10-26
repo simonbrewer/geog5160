@@ -13,7 +13,7 @@ date: last-modified
 format:
   html:
     toc: true
-editor: visual
+editor: source
 ---
 
 ```{r echo=FALSE, warning=FALSE, message=FALSE}
@@ -71,7 +71,7 @@ Let's start, as usual, by loading the libraries we'll need for the lab:
 library(dplyr)
 library(tidyr)
 library(terra)
-library(keras)
+library(keras3)
 library(ggplot2)
 ```
 
@@ -216,55 +216,63 @@ my_opt = optimizer_rmsprop(learning_rate = 1e-5)
 
 ## Model architecture
 
-Before building the full model, we'll make a simple CNN with a single convolution/max-pooling step to illustrate how the code and snytax work
+Before building the full model, we'll make a simple CNN with a single convolution/max-pooling step to illustrate how the code and syntax work. This is done in three steps:
 
-First, create a template sequential model
+First, we create an input layer. This should define the size of each input image (ours are 64 x 64 pixels, and 3 color layers):
 
 ```{r}
-model = keras_model_sequential() 
+inputs = layer_input(shape = c(64, 64, 3))
+inputs
 ```
 
-Next we add the first hidden layer. This is a convolutional layer, where we'll create 32 filters (or convolutions) based on the original images, with a 3x3 kernel. We'll pad the output of this layer so that it has the same size as the input (`same`), and give this a ReLU activation function to transform the weights. Note that as this is the first layer, we also need to define the size of the input tensors (width, height and channels).
+Second, we compile the output layers, We'll do this one by here to illustrate the process, but below we'll create these in a single step. The first layer to add is a convolutional layer, where we'll create 32 filters (or convolutions) based on the original images, with a 3x3 kernel. We'll pad the output of this layer so that it has the same size as the input (`same`), and give this a ReLU activation function to transform the weights. Note that this very first layer is built from the `inputs` layer to obtain the size of the input tensors (width, height and channels).
 
 ```{r}
-model %>%
-  layer_conv_2d(filter = 32, kernel_size = c(3,3), padding = "same", 
-                input_shape = c(64, 64, 3),
-                activation = "relu")
+outputs <- inputs |>
+  layer_conv_2d(filters = 32, kernel_size = 3, 
+                padding = "same", activation = "relu")
 ```
 
-If you print the model object now, you'll see that it has been updated.
+If you print the `outputs` layer now, you'll see that it shows the size of the output from this convolutional step. As the images have been padded, the outputs have the same width and height, but now have a depth of 32:
 
 ```{r}
-model
+outputs
 ```
 
-Now, we add a max-pooling layer. As a reminder, this reduces the resolution of the output from the previous layer by a simple filter, forcing the next layer of the network to focus on larger image features.
+Now, we'll add a max-pooling layer. As a reminder, this reduces the resolution of the output from the previous layer by a simple filter, forcing the next layer of the network to focus on larger image features. If you again print the `outputs`, you'll see that the width and height have halved:
 
 ```{r}
-model %>%
-  layer_max_pooling_2d(pool_size = c(2,2))
+outputs <- outputs |>
+  layer_max_pooling_2d(pool_size = 2)
+outputs
 ```
 
 Now we'll add layers to connect the output of this max-pooling step to the output (the land cover classes). The first thing we need to do is to flatten the output. The output of the max-pooling is a tensor of shape (32, 32, 32). The reduction in the height and width is a result of the max-pooling operation and the 32 is the number of filters from the convolution. The `layer_flatten()` function will flatten this into a rank 1 tensor of shape 32768 (32\^3).
 
 ```{r}
-model %>%
+outputs <- outputs |>
   layer_flatten()
 ```
 
 Next we'll pass this flattened layer through a dense layer, with a ReLU activation. This will provides one more set of weights before we connect to the output.
 
 ```{r}
-model %>% 
+outputs <- outputs |>
   layer_dense(128, activation = "relu")
 ```
 
-Finally, we need a layer to represent the predictions. As this is a multiclass task, the final layer needs to have the same number of nodes as classes (10). This is passed through a softmax activation function. This transforms the predictions for all classes into probabilities (i.e. they have to sum to 1).
+Next we need a layer to represent the predictions. As this is a multiclass task, the final layer needs to have the same number of nodes as classes (10). This is passed through a softmax activation function. This transforms the predictions for all classes into probabilities (i.e. they have to sum to 1).
 
 ```{r}
-model %>%
+outputs <- outputs |>
   layer_dense(num_classes, activation = "softmax")
+```
+
+With all this done, we can do the third step, wehre the inputs and outputs are concatenated into a full model. If we print this, you'll see the full set of steps in the model:
+
+```{r}
+model = keras_model(inputs, outputs)
+model
 ```
 
 More practically, we'll create a function that will build the model in one go, which allows us to to easily create new versions for testing. We'll create a slightly more complex model, with three successive convolution/max-pooling steps, and two dense layers before the output. We'll also add batch normalization layers; these take the output of the previous layer and normalize the weights. This is a simple method that adjusts the mean weight to close to zero and reduces the amount of variation. This helps avoid gradient problems with very small or very large weights
@@ -272,38 +280,40 @@ More practically, we'll create a function that will build the model in one go, w
 ```{r}
 create_model = function(img_width, img_height, 
                         channels, num_classes=10) {
-  model <- keras_model_sequential() %>%
-    
-    # First layer: 1 convolution, 1 pooling
-    layer_conv_2d(filter = 32, kernel_size = c(3,3), 
-                  input_shape = c(img_width, img_height, channels), 
-                  padding = "same",
-                  activation = "relu") %>%
-    layer_max_pooling_2d(pool_size = c(2,2)) %>%
-    layer_batch_normalization() %>%
-
-    # Second hidden layer, repeat
-    layer_conv_2d(filter = 64, kernel_size = c(3,3), 
-                  padding = "same",
-                  activation = "relu") %>%
-    layer_max_pooling_2d(pool_size = c(2,2)) %>%
-    layer_batch_normalization() %>%
-
-    # Second hidden layer, repeat
-    layer_conv_2d(filter = 128, kernel_size = c(3,3), 
-                  padding = "same",
-                  activation = "relu") %>%
-    layer_max_pooling_2d(pool_size = c(2,2)) %>%
-    layer_batch_normalization() %>%
-
-    # Flatten and feed into dense layer
-    layer_flatten() %>%
-    layer_dense(128, activation = "relu") %>%
-    layer_dense(256, activation = "relu") %>%
-    
-    # Outputs 
-    layer_dense(num_classes, activation = "softmax")
   
+  inputs = layer_input(shape = c(img_width, img_height, channels))
+  
+  # First layer: 1 convolution, 1 pooling
+  outputs <- inputs |>
+    layer_conv_2d(filters = 32, kernel_size = 3, 
+                  padding = "same", activation = "relu") |>
+    layer_max_pooling_2d(pool_size = 2) |>
+    layer_batch_normalization()
+
+  # Second layer: 1 convolution, 1 pooling
+  outputs <- outputs |>
+    layer_conv_2d(filters = 64, kernel_size = 3, 
+                  padding = "same", activation = "relu") |>
+    layer_max_pooling_2d(pool_size = 2) |>
+    layer_batch_normalization()
+  
+  # Third layer: 1 convolution, 1 pooling
+  outputs <- outputs |>
+    layer_conv_2d(filters = 128, kernel_size = 3, 
+                  padding = "same", activation = "relu") |>
+    layer_max_pooling_2d(pool_size = 2) |>
+    layer_batch_normalization()
+  
+  # Fourth layer: flatten and connect to dense layer then to num_classes
+  outputs <- outputs |>
+    layer_flatten() |>
+    layer_dense(256, activation = "relu") |>
+    layer_dense(128, activation = "relu") |>
+    layer_dense(num_classes, activation = "softmax")
+
+  # Create full model
+  model = keras_model(inputs, outputs)
+ 
   return(model)
 }
 ```
@@ -317,12 +327,12 @@ model = create_model(img_width, img_height, channels,
 summary(model)
 ```
 
-Our model has a little under 1.2 million parameters or weights to train (hence the need for a lot of images).
+Our model has a little over 2.2 million parameters or weights to train (hence the need for a lot of images).
 
 The next step is to compile the model.
 
 ```{r}
-model %>% compile(
+model |> compile(
   loss = my_loss,
   optimizer = my_opt,
   metrics = my_metrics
@@ -348,7 +358,7 @@ This takes a couple of minutes to train (on my laptop). It's worth remembering w
 As the model continues to train, you should see the loss (the crossentropy) decrease for both of these, but will likely stabilize at a certain point. The accuracy should (hopefully) increase over time.
 
 ```{r eval=FALSE}
-history <- model %>% fit(
+history <- model |> fit(
   x = X_train, 
   y = y_train,
   validation_data = list(X_val, y_val),
@@ -359,7 +369,7 @@ history <- model %>% fit(
 ```
 
 ```{r echo=FALSE, warning=FALSE}
-history <- model %>% fit(
+history <- model |> fit(
   x = X_train, 
   y = y_train,
   validation_data = list(X_val, y_val),
@@ -382,7 +392,7 @@ plot(history)
 The plot shows a steep decline in the loss values, with a corresponding increase in accuracy. (It is possible that the model has not completely reached an optimum over the 20 epochs, but we can still work with this). Next, we'll see how the model performs in predicting classes for the test data set. As a reminder, this dataset was not used in the training (the model hasn't 'ssen' these images), and is considered to be a good independent test of predictive skill. Here, we use the `evaluate` method to calculate a testing loss and accuracy:
 
 ```{r}
-results <- model %>%
+results <- model |>
   evaluate(X_test, y_test)
 print(results)
 ```
@@ -390,7 +400,7 @@ print(results)
 Which gives us an accuracy of about `r round(results[2], 2)`. This is a reasonable classifier, but could be improved on. While this gives us an overall metric for the models predictive skill, we can also dig into this a little further, including looking at how well individual classes were predicted. To do this, we first predict for each test image:
 
 ```{r}
-y_pred <- model %>% 
+y_pred <- model |> 
   predict(X_test) 
 ```
 
@@ -432,23 +442,23 @@ pred_table
 knitr::kable(pred_table)
 ```
 
-This shows where the model is working well (and which classes are less well identified). You'll also see that most of the mis-matches are understandable (e.g. roads misclassified as rivers, crops misclassified as herbaceous vegetation). 
+This shows where the model is working well (and which classes are less well identified). You'll also see that most of the mis-matches are understandable (e.g. roads misclassified as rivers, crops misclassified as herbaceous vegetation).
 
 Let's finish by plotting this result. Here, we convert this confusion matrix into a long data frame, and calculate the number of each observed image class. We then use this to calculate the percentage correctly identified, and use **ggplot2**'s `geom_tile` to plot this out. Note that you will need the **reshape2** package here:
 
 ```{r}
 library(reshape2)
 
-pred_df <- melt(pred_table, value.name = "count") %>%
-  group_by(actual) %>%
-  mutate(n = sum(count)) %>%
+pred_df <- melt(pred_table, value.name = "count") |>
+  group_by(actual) |>
+  mutate(n = sum(count)) |>
   ungroup()
 ```
 
 ```{r}
-p <- pred_df %>%
-  filter(count > 0) %>%
-  mutate(percentage_pred = count / n * 100) %>%
+p <- pred_df |>
+  filter(count > 0) |>
+  mutate(percentage_pred = count / n * 100) |>
   ggplot(aes(x = actual, y = prediction, 
              fill = percentage_pred,
              label = round(percentage_pred, 2))) +
