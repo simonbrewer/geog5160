@@ -13,7 +13,8 @@ date: last-modified
 format:
   html:
     toc: true
-editor: visual
+    embed-resources: true
+editor: source
 ---
 
 ```{r echo=FALSE, warning=FALSE, message=FALSE}
@@ -196,7 +197,7 @@ best_param
 We'll now explore our random forest. For the exploration, we'll first build a new model using all the rental data. This is optional, and we could equally use the best fit model from the tuning step using the `finalize_model` function. We'll use the full dataset here for a number of reasons:
 
 -   We need to fit the model again so that it calculates the importance scores (we omitted this above)
--   We use the original categorical variables rather than the one-hot encoded values, as this will make visualizing the results easier 
+-   We use the original categorical variables rather than the one-hot encoded values, as this will make visualizing the results easier
 
 ```{r}
 rf <- rand_forest(mode = "regression", 
@@ -460,12 +461,12 @@ On this day, the warm weather increased rentals, and the high wind speeds decrea
 
 In a previous lab, we built a simple linear model of house prices using the data set (*Housing_Price_Data.csv*). For this exercise you will make a new model based on a random forest (or boosted regression tree if you;d prefer) and explore it using interpretable machine learning methods. You will need to do the following:
 
-- Load and preprocess the data. Use the `price` variable as the target. Remember to log transform the area and price variables and one-hot encode the categorical variables (see lab 2 for code)
-- Split this dataset into training and testing and build a random forest or boosted regression tree
-- Plot the variable importance scores using the code in this lab (lab5)
-- Plot a partial dependency curve for the effect of area
-- GEOG6160 Students: plot ICE curves for the effect of area
-- GEOG6160 Students: calculate and plot Shapley values for two observations (e.g. the cheapest and most expensive house)
+-   Load and preprocess the data. Use the `price` variable as the target. Remember to log transform the area and price variables and one-hot encode the categorical variables (see lab 2 for code)
+-   Split this dataset into training and testing and build a random forest or boosted regression tree
+-   Plot the variable importance scores using the code in this lab (lab5)
+-   Plot a partial dependency curve for the effect of area
+-   GEOG6160 Students: plot ICE curves for the effect of area
+-   GEOG6160 Students: calculate and plot Shapley values for two observations (e.g. the cheapest and most expensive house)
 
 Use a Quarto document to record your answers and output. Assignments, to include both the Quarto document and (ideally) the compiled HTML file, should be submitted to Canvas by Feb 19th. Please use the following naming convention: `Lab04_lastname`.
 
