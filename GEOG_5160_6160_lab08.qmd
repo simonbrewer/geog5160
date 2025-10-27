@@ -397,7 +397,7 @@ results <- model |>
 print(results)
 ```
 
-Which gives us an accuracy of about `r round(results[2], 2)`. This is a reasonable classifier, but could be improved on. While this gives us an overall metric for the models predictive skill, we can also dig into this a little further, including looking at how well individual classes were predicted. To do this, we first predict for each test image:
+Which gives us an accuracy of about r round(results[2], 2). This is a reasonable classifier, but could be improved on. While this gives us an overall metric for the models predictive skill, we can also dig into this a little further, including looking at how well individual classes were predicted. To do this, we first predict for each test image:
 
 ```{r}
 y_pred <- model |> 
@@ -417,39 +417,56 @@ prediction <- factor(max.col(y_pred) )
 actual <- factor(max.col(y_test))
 ```
 
-With the predicted and observed labels, we can now use **ModelMetrics** broad range of evaluation metrics. For example, to calculate the precision and recall: - Precision is the ratio of the number of images that were correctly predicted for a class to the total number of images that were predicted for that class (correctly or incorrectly). - Recall is the ratio of of the number of images that were correctly predicted for a class to the total number of images in that class. This is also called the sensitivity
+With the predicted and observed labels, we can now use **ModelMetrics** broad range of evaluation metrics. For example, to calculate the precision and recall: 
 
-```{r}
-library(ModelMetrics)
-precision(actual, y_pred)
-recall(actual, y_pred)
-```
+- Precision is the ratio of the number of images that were correctly predicted for a class to the total number of images that were predicted for that class (correctly or incorrectly)
+- Recall is the ratio of of the number of images that were correctly predicted for a class to the total number of images in that class. This is also called the sensitivity
 
 We can now make a confusion matrix between the observed and predicted classes:
 
 ```{r}
-pred_table <- table(actual, prediction)
+conf_mat <- table(actual, prediction)
 ```
 
 Note that the row and column indices are different (this is because R starts indices at 1 and keras starts at 0). We can simply replace these with the land-use labels
 
 ```{r results='hide'}
-rownames(pred_table) <- colnames(pred_table) <- class_list
-pred_table
+rownames(conf_mat) <- colnames(conf_mat) <- class_list
+conf_mat
 ```
 
 ```{r echo=FALSE}
-knitr::kable(pred_table)
+knitr::kable(conf_mat)
 ```
 
-This shows where the model is working well (and which classes are less well identified). You'll also see that most of the mis-matches are understandable (e.g. roads misclassified as rivers, crops misclassified as herbaceous vegetation).
+This shows where the model is working well (and which classes are less well identified). You'll also see that most of the mis-matches are understandable (e.g. roads misclassified as rivers, crops misclassified as herbaceous vegetation). From this matrix, we can now calculate:
+
+- Accuracy (if you want to do this by hand)
+
+```{r}
+acc <- sum(diag(conf_mat)) / sum(conf_mat)
+acc
+```
+
+- Precision
+
+```{r}
+prec <- diag(conf_mat) / rowSums(conf_mat)
+prec
+```
+- Recall
+
+```{r}
+rec <- (diag(conf_mat) / colSums(conf_mat))
+rec
+```
 
 Let's finish by plotting this result. Here, we convert this confusion matrix into a long data frame, and calculate the number of each observed image class. We then use this to calculate the percentage correctly identified, and use **ggplot2**'s `geom_tile` to plot this out. Note that you will need the **reshape2** package here:
 
 ```{r}
 library(reshape2)
 
-pred_df <- melt(pred_table, value.name = "count") |>
+pred_df <- melt(conf_mat, value.name = "count") |>
   group_by(actual) |>
   mutate(n = sum(count)) |>
   ungroup()
