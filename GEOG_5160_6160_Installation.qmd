@@ -13,7 +13,7 @@ date: last-modified
 format:
   html:
     toc: true
-editor: visual
+editor: source
 ---
 
 # Introduction
@@ -187,13 +187,13 @@ If you've got this far, we'll switch to the jupyter notebook for the remainder o
 
 ## Visual Studio Code
 
-An alternative (but recommended) interface for Python programming is Microsoft's Visual Studio Code (VSCode). This can be downloaded for your operating system [here](https://code.visualstudio.com/download) for free. 
+An alternative (but recommended) interface for Python programming is Microsoft's Visual Studio Code (VSCode). This can be downloaded for your operating system [here](https://code.visualstudio.com/download) for free.
 
 ![Visual Studio Code](./images/vscode.png)
 
 Once installed, you'll need to install the Python language support extension from the Extensions tab (click on the icon with four squares on the far left panel and search for Python).
 
-Once this is installed, you should be able to open and create notebooks as you would with jupyter. These need to have a *.ipynb extension to be recognized as notebooks. Once opened, you can use the button in the top-left (labelled 'Select kernel) to use a given Conda environment. Make sure you set this to the environment you created for the class. If you have any trouble finding your Conda environments, there is a good guide to troubleshoot this [here](https://code.visualstudio.com/docs/python/python-tutorial). 
+Once this is installed, you should be able to open and create notebooks as you would with jupyter. These need to have a \*.ipynb extension to be recognized as notebooks. Once opened, you can use the button in the top-left (labelled 'Select kernel) to use a given Conda environment. Make sure you set this to the environment you created for the class. If you have any trouble finding your Conda environments, there is a good guide to troubleshoot this [here](https://code.visualstudio.com/docs/python/python-tutorial).
 
 # Introduction to R
 
@@ -215,7 +215,7 @@ To install R on a Mac, click the “Download R for Mac” link, then download th
 
 ### Linux
 
-R comes pre-installed on many Linux systems, but is often an older version, and you'll likely want to update this. Click on the "Download R for Linux", which will take you to a new page giving options for some of the more widely used Linux distros: Debian, Redhat, SUSE, and Ubuntu. Clicking on any of these will take you to a new page with detailed installation instructions for that system. Note that you can also download the source code from the first page and compile it yourself. This is relatively straightforward on most Unix-type operating systems. 
+R comes pre-installed on many Linux systems, but is often an older version, and you'll likely want to update this. Click on the "Download R for Linux", which will take you to a new page giving options for some of the more widely used Linux distros: Debian, Redhat, SUSE, and Ubuntu. Clicking on any of these will take you to a new page with detailed installation instructions for that system. Note that you can also download the source code from the first page and compile it yourself. This is relatively straightforward on most Unix-type operating systems.
 
 ## RStudio
 
@@ -248,4 +248,3 @@ There are several ways to use a package once it is installed:
 -   In RStudio, the 'Packages' tab in the bottom right panel does the same, bringing up a list of available packages.
 
 For these last options, clicking in the box next to a package name will load the package, and clicking on the package name will bring up the associated help page.
-
