@@ -13,7 +13,7 @@ date: last-modified
 format:
   html:
     toc: true
-editor: visual
+editor: source
 ---
 
 # Introduction
