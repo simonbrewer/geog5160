@@ -13,7 +13,7 @@ date: last-modified
 format:
   html:
     toc: true
-editor: visual
+editor: source
 ---
 
 ```{r echo=FALSE, warning=FALSE, message=FALSE}
@@ -93,7 +93,7 @@ dat <- read.csv("../datafiles/Housing_Price_Data.csv")
 
 Finally, make sure to load the **tidymodels** package (if you are using a script or Quarto, make sure that this is added to your document)
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 library(tidymodels)
 ```
 
