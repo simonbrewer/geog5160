@@ -13,7 +13,8 @@ date: last-modified
 format:
   html:
     toc: true
-editor: visual
+    embed-resources: true
+editor: source
 ---
 
 ```{r echo=FALSE, warning=FALSE, message=FALSE}
@@ -34,9 +35,9 @@ The data we will use is from the [Gap Minder project](https://www.gapminder.org)
 
 ## Objectives
 
-- Set up data to run different unsupervised classification methods
-- Understand and work with the output
-- Use self-organizing maps with geographical data
+-   Set up data to run different unsupervised classification methods
+-   Understand and work with the output
+-   Use self-organizing maps with geographical data
 
 # Set up
 
@@ -457,16 +458,16 @@ tm_shape(cluster_sf) +
 
 # Exercise
 
-For the exercise, you will need to build use an unsupervised classification method with the Cancer dataset from the lab 4 (*data_atlantic_1998_2012.csv*). As a reminder, this file contains information on cancer rates from around 660 counties in the eastern part of the US. There is also a shapefile with the polygons for each county (*COUNTY_ATLANTIC.shp*). 
+For the exercise, you will need to build use an unsupervised classification method with the Cancer dataset from the lab 4 (*data_atlantic_1998_2012.csv*). As a reminder, this file contains information on cancer rates from around 660 counties in the eastern part of the US. There is also a shapefile with the polygons for each county (*COUNTY_ATLANTIC.shp*).
 
 For the exercise, you will need to cluster these data and map out the resulting clusters. You will need to carry out the following steps:
 
-- Read in the data and select the columns: `Cancer`, `Smoking`, `Poverty`, `PM25`, `SO2` and `NO2`
-- Scale the data using a $z$-score transform
-- Cluster the data using *either* $k$-means *or* a self-organizing map
-- Extract the cluster number for each county and add it to the shapefile
-- Make a map of the clusters
-- [GEOG6160 students only]: Make a table showing the average values of each variable in each cluster
+-   Read in the data and select the columns: `Cancer`, `Smoking`, `Poverty`, `PM25`, `SO2` and `NO2`
+-   Scale the data using a $z$-score transform
+-   Cluster the data using *either* $k$-means *or* a self-organizing map
+-   Extract the cluster number for each county and add it to the shapefile
+-   Make a map of the clusters
+-   
 
 Use a Quarto document to record your answers and output. Assignments, to include both the Quarto document and (ideally) the compiled HTML file, should be submitted to Canvas by Mar 17th. Please use the following naming convention: `Lab06_lastname`.
 
@@ -476,8 +477,8 @@ Use a Quarto document to record your answers and output. Assignments, to include
 
 GapMinder dataset on global inequality (1800 to 2018): *gapminder_1800_2018.csv*
 
-| Column header   | Variable                           |
-|-----------------|------------------------------------|
+| Column header     | Variable                           |
+|-------------------|------------------------------------|
 | `country`         | Country name                       |
 | `year`            | Year                               |
 | `pop`             | Population                         |
@@ -492,15 +493,14 @@ GapMinder dataset on global inequality (1800 to 2018): *gapminder_1800_2018.csv*
 
 *data_atlantic_1998_2012.csv*
 
-| Column header   | Variable                          |
-|-----------------|-----------------------------------|
-| `FIPS`         | Country name                       |
-| `x`            | Year                               |
-| `y`             | Population                        |
-| `Cancer` | Cancer mortality rate / 100,000          |
-| `Poverty`       | Poverty rate (% below poverty level) |
-| `Smoking`     | Smoking rate (%)                    |
-| `PM25`          | Annual mean PM2.5 concentration   |
-| `NO2` | Annual mean NO2 concentration               |
-| `SO2`      | Annual mean SO2 concentration          |
-
+| Column header | Variable                             |
+|---------------|--------------------------------------|
+| `FIPS`        | Country name                         |
+| `x`           | Year                                 |
+| `y`           | Population                           |
+| `Cancer`      | Cancer mortality rate / 100,000      |
+| `Poverty`     | Poverty rate (% below poverty level) |
+| `Smoking`     | Smoking rate (%)                     |
+| `PM25`        | Annual mean PM2.5 concentration      |
+| `NO2`         | Annual mean NO2 concentration        |
+| `SO2`         | Annual mean SO2 concentration        |
