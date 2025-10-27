@@ -13,6 +13,7 @@ date: last-modified
 format:
   html:
     toc: true
+    embed-resources: true
 editor: source
 ---
 
@@ -110,7 +111,10 @@ And we can equally plot the eAnd let's plot the annual temperature range (BIO7) 
 
 ```{r}
 tm_shape(pe_sf) +
-  tm_symbols(col="bio7", palette = "viridis", style = "cont")
+  tm_symbols(fill="bio7", 
+             fill.scale = tm_scale_continuous(
+               values = "viridis")
+             )
 ```
 
 ### Training and testing
