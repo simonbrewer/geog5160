@@ -13,7 +13,8 @@ date: last-modified
 format:
   html:
     toc: true
-editor: visual
+    embed-resources: true
+editor: source
 ---
 
 ```{r echo=FALSE, warning=FALSE, message=FALSE}
@@ -93,8 +94,8 @@ And we can use the thematic mapping package to show the distribution of the land
 
 ```{r}
 tm_shape(lsl_sf) +
-  tm_symbols(col = "lslpts") +
-  tm_scale_bar(position = c("left", "top")) +
+  tm_symbols(fill = "lslpts") +
+  tm_scalebar(position = c("left", "top")) +
   tm_compass(position = c("right", "top"))
 ```
 
@@ -106,11 +107,23 @@ env <- rast("./datafiles/ta.tif")
 env
 ```
 
-Each of the individual layers can be accessed using R's list notation, with two brackets. So to map the `log10_carea` values:
+To plot these, you can use **tmap**'s `tm_fill` function, where you'll need to specify the name of the layer you want to map. So to map the `log10_carea` values:
 
 ```{r}
-tm_shape(env[["log10_carea"]]) +
-  tm_raster(style = "sd") +
+tm_shape(env) +
+  tm_fill(fill = "log10_carea") +
+  tm_shape(lsl_sf) +
+  tm_dots()
+```
+This function can be used with a second function (`tm_scale_interval`) which allows you to change the color palette and number of breaks (this uses a red palette and quantile breaks):
+
+```{r eval=FALSE}
+tm_shape(env) +
+  tm_fill(fill = "log10_carea", 
+           fill.scale = tm_scale_intervals(
+             values = "brewer.reds", 
+             style = "quantile")
+          ) +
   tm_shape(lsl_sf) +
   tm_dots()
 ```
@@ -290,8 +303,12 @@ atl_cancer <- merge(atl, cancer, by = "FIPS")
 
 ```{r}
 tm_shape(atl_cancer) +
-  tm_fill("Cancer", palette = "viridis") +
-  tm_scale_bar() + tm_compass()
+  tm_fill(fill = "Cancer", 
+           fill.scale = tm_scale_intervals(
+             values = "viridis", 
+             style = "fisher")
+          ) +
+  tm_scalebar() + tm_compass()
 ```
 
 ## Geographical random forest
@@ -376,7 +393,7 @@ Calculate the error as prediction - observation and plot:
 atl_cancer$error = atl_cancer$y_hat - atl_cancer$Cancer
 tm_shape(atl_cancer) +
   tm_fill("error") +
-  tm_scale_bar() + tm_compass()
+  tm_scalebar() + tm_compass()
 ```
 
 And these results show that systematic error in the model (note the region of negative values in the west and south, and positive values in the north-west). Before including the coordinates in a model, let's run a 5-fold cross-validation on this model to get a reference RMSE and $R^2$. I've listed all the steps in the next block of code for clarity:
@@ -545,13 +562,12 @@ Raster dataset with same predictor variables as *lsl.csv*
 
 ## *data_atlantic_1998_2012.csv*
 
-- `FIPS`: County FIPS code
-- `x`: Easting (m)
-- `y`: Northing (m)
-- `Cancer`: Cancer mortality rate / 100,000
-- `Poverty`: Poverty rate (% below poverty level)
-- `Smoking`: Smoking rate (%)
-- `PM25`: Annual mean PM2.5 concentration
-- `NO2`: Annual mean NO2 concentration
-- `SO2`: Annual mean SO2 concentration
-
+-   `FIPS`: County FIPS code
+-   `x`: Easting (m)
+-   `y`: Northing (m)
+-   `Cancer`: Cancer mortality rate / 100,000
+-   `Poverty`: Poverty rate (% below poverty level)
+-   `Smoking`: Smoking rate (%)
+-   `PM25`: Annual mean PM2.5 concentration
+-   `NO2`: Annual mean NO2 concentration
+-   `SO2`: Annual mean SO2 concentration
