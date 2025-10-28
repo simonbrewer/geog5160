@@ -529,7 +529,7 @@ model |>
 
 The code to run this is given below. Be aware that this takes a fair amount of time to run (roughly 20 min on my laptop), even though we are only training weights in the last densely connected layers. This is because we are now obtaining batches of images, extracting the features using the previous model (`vgg16.preprocess_input`), passing this through a classifier and then doing all the usual updating of weights.
 
-```{r}
+```{r eval = FALSE}
 callbacks <- list(
  callback_model_checkpoint(
    filepath = "model4.keras",
@@ -587,7 +587,7 @@ summary(model)
 
 And finally, fit this model. This will take substantially longer than the other models in this lab as we are trying to learn a much higher number of weights (this took around 3 minutes per epoch on my laptop). The code is included here, but be aware that this will tie up your computer for a while.
 
-```{r}
+```{r eval = FALSE}
 callbacks <- list(
   callback_model_checkpoint(filepath = "model5.keras",
     save_best_only = TRUE,
