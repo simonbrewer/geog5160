@@ -13,7 +13,8 @@ date: last-modified
 format:
   html:
     toc: true
-editor: visual
+    embed-resources: true
+editor: source
 ---
 
 ```{r echo=FALSE, warning=FALSE, message=FALSE}
@@ -26,21 +27,21 @@ set.seed(42)
 
 In the last lab, we looked at how to build and train convolutional neural networks for image classification. This lab will build from that by introducing a set of extensions from that basic model. These are:
 
-- Using data generators to process and input image files
-- Using data augmentation
-- Using pretrained models
+-   Using data generators to process and input image files
+-   Using data augmentation
+-   Using pretrained models
 
 ### Data
 
 For this exercise, we'll again use the EuroSat benchmarking dataset from: https://zenodo.org/records/7711810:
 
-> EuroSAT is a land use and land cover classification dataset. The dataset is based on Sentinel-2 satellite imagery covering 13 spectral bands and consists of 10 LULC classes with a total of 27,000 labeled and geo-referenced images. 
+> EuroSAT is a land use and land cover classification dataset. The dataset is based on Sentinel-2 satellite imagery covering 13 spectral bands and consists of 10 LULC classes with a total of 27,000 labeled and geo-referenced images.
 
-You should have a copy of these files from the previous lab, but if not, download the zip file *EuroSat_RGB.zip* from the class webpage, move it to a folder that is easy to find on your computer, and unzip it. 
+You should have a copy of these files from the previous lab, but if not, download the zip file *EuroSat_RGB.zip* from the class webpage, move it to a folder that is easy to find on your computer, and unzip it.
 
-Once you have unzipped the data, take a look in the *EuroSat_RGB* folder. This is already set up in the standard way for image classification, where all images for a given class are kept in a single folder for that class. 
+Once you have unzipped the data, take a look in the *EuroSat_RGB* folder. This is already set up in the standard way for image classification, where all images for a given class are kept in a single folder for that class.
 
-```
+```         
 - EuroSat_RGB
   - AnnualCrop
   - Forest
@@ -50,11 +51,11 @@ Once you have unzipped the data, take a look in the *EuroSat_RGB* folder. This i
 
 # Data generators
 
-In the previous exercise, we simply loaded all the image files into memory and converted them to **numpy** arrays for training and testing. This is fine for small sets of images, but can quickly become impractical with larger sets or when the images are larger. To help with this, **keras** has a set of helper functions. these can be set to only load a small number of images at a time (a *batch* of images). During each training *epoch* the function loads *batch_size* images in a batch, updates the model weights, then loads the next batch. In general, once each batch of images has been used, the set of validation images are then processed to get the validation metrics. 
+In the previous exercise, we simply loaded all the image files into memory and converted them to **numpy** arrays for training and testing. This is fine for small sets of images, but can quickly become impractical with larger sets or when the images are larger. To help with this, **keras** has a set of helper functions. these can be set to only load a small number of images at a time (a *batch* of images). During each training *epoch* the function loads *batch_size* images in a batch, updates the model weights, then loads the next batch. In general, once each batch of images has been used, the set of validation images are then processed to get the validation metrics.
 
 **keras** has a set of these functions for different types of data (text, time series, images). Here, we'll use `image_dataset_from_directory`, which processes images from a named directory. This assumes that this directory contains a set of subdirectories (one per class of image). So the `train` directory will contain one directory called `AnnualCrop` with all the annual crop images, etc. What makes this a little more complex, is that the function is designed to work on separate folders of training, validation and testing images. So the actual folder format will look something like this:
 
-```
+```         
 - base_dir
 - train
 - AnnualCrop
@@ -77,7 +78,7 @@ Before doing anything else, let's load the keras library. You'll also need the *
 
 ```{r}
 library(listarrays)
-library(keras)
+library(keras3)
 library(tfdatasets)
 ```
 
@@ -102,7 +103,7 @@ test_dir = paste0(new_dir, "/test/")
 if(!dir.exists(test_dir)) {dir.create(test_dir)}
 ```
 
-And now we loop by class, find the list of files, randomly split this into different subsets and copy to the appropriate directory. Note that this might take a couple of minutes to run (it is trying to process about 25000 images). 
+And now we loop by class, find the list of files, randomly split this into different subsets and copy to the appropriate directory. Note that this might take a couple of minutes to run (it is trying to process about 25000 images).
 
 ```{r eval=FALSE}
 classes = c("AnnualCrop", "Forest", "HerbaceousVegetation", "Highway", 
@@ -162,9 +163,9 @@ batch_size = 32
 
 Now, we'll set up an generator for the training images. This takes as arguments
 
-- The top level folder storing the class folders
-- The image size
-- The batch size
+-   The top level folder storing the class folders
+-   The image size
+-   The batch size
 
 There are a number of other arguments to this function, including whether to shuffle the images between epochs (default `True`), and whether to infer the class names from the subfolder names or from a list (default `inferred`). When you run this, it should print both the number of images and classes it found in that directory. If either of these numbers is 0, please check your file path
 
@@ -203,10 +204,10 @@ We'll now go ahead and build a model that can be trained using the data generato
 
 We'll also use a different syntax to build the model. This is **keras** functional API, which allows for more flexible model building. If you look at the code below, you should see that each layer is added as a single function call, rather than putting everything within a `Sequential` model as we did previously. This can help in diagnosing problems (when a single layer causes a error), as well as allowing different model architechtures. A couple of other things to note:
 
-- We start with an `Input` layer which defines dimensions of the input data tensors (the images)
-- We then use R's pipe operator to add successive layers, including a `rescaling` layer to convert between the original pixel values ([0-255]) and a standardized range of [0-1]
-- The flattened output is passed through a single densely connected layer before the output
-- We again use ReLU activation for all intermediate layers, and a softmax for the output
+-   We start with an `Input` layer which defines dimensions of the input data tensors (the images)
+-   We then use R's pipe operator to add successive layers, including a `rescaling` layer to convert between the original pixel values (\[0-255\]) and a standardized range of \[0-1\]
+-   The flattened output is passed through a single densely connected layer before the output
+-   We again use ReLU activation for all intermediate layers, and a softmax for the output
 
 ```{r}
 inputs <- layer_input(shape = c(image_width, image_height, num_channels))
@@ -237,7 +238,7 @@ model |>
           metrics = "accuracy")
 ```
 
-Before training, we'll define a *callback*. This is one of a set of functions that are run at specific times during the training. There are a number of these that can carry out different operations (and you can write your own). Here, we'll use `ModelCheckpoint`. This will save the state of the model (i.e. the weights) at each step. To avoid overwriting the file if the model starts to overfit, we specify that the update should only be made if the current validation accuracy is better than the previously saved one. 
+Before training, we'll define a *callback*. This is one of a set of functions that are run at specific times during the training. There are a number of these that can carry out different operations (and you can write your own). Here, we'll use `ModelCheckpoint`. This will save the state of the model (i.e. the weights) at each step. To avoid overwriting the file if the model starts to overfit, we specify that the update should only be made if the current validation accuracy is better than the previously saved one.
 
 As deep learning models can take quite a long time to train, it's worth getting used to saving them to file so that you can reuse them at a later point without costly retraining.
 
@@ -263,24 +264,23 @@ history <- model |>
   )
 ```
 
-
 Let's plot the accuracy and loss curves
 
 ```{r}
 plot(history)
 ```
 
-Next, we'll evaluate the model using the test images. To demonstrate the use of the save model file, we'll load that and use the resulting object to evaluate. You should get an accuracy of between 0.7 and 0.8. This is lower than the previous model we built, as the current one is both simpler and has only been trained for a short period. 
+Next, we'll evaluate the model using the test images. To demonstrate the use of the save model file, we'll load that and use the resulting object to evaluate. You should get an accuracy of between 0.7 and 0.8. This is lower than the previous model we built, as the current one is both simpler and has only been trained for a short period.
 
 ```{r}
-test_model <- load_model_tf("model1.keras")
+test_model <- load_model("model1.keras")
 result <- evaluate(test_model, test_dataset)
 cat(sprintf("Test accuracy: %.3f\n", result["accuracy"]))
 ```
 
 # Using data augmentation
 
-The most successful CNNs are generally trained on hundreds of thousands or millions of images. So while we have around 19000 images to train from, this remains a fairly small dataset. One approach to improve the predictive skill of models trained 'from scratch' with smaller data is to use *data augmentation*. In this approach, we randomly manipulate each training image at each epoch through rotations, zooming, translation, flipping, etc. This is trying to represent the concept that if a set of people all took an image of the same object, each image would be slightly different as some people would be closer/further away, shorter or taller etc. 
+The most successful CNNs are generally trained on hundreds of thousands or millions of images. So while we have around 19000 images to train from, this remains a fairly small dataset. One approach to improve the predictive skill of models trained 'from scratch' with smaller data is to use *data augmentation*. In this approach, we randomly manipulate each training image at each epoch through rotations, zooming, translation, flipping, etc. This is trying to represent the concept that if a set of people all took an image of the same object, each image would be slightly different as some people would be closer/further away, shorter or taller etc.
 
 Rather than trying to do this by hand, **keras** has a set of layers that will peform random augmentation (defining these as layers makes it easy to incorporate them in a CNN as we will see). To illustrate this, we'll create a new model that represents the data augmentation step. This will have a random flip (both horizontal and vertical), a random rotation by about 10% (left and right) and a random zoom of up to 20%
 
@@ -354,10 +354,10 @@ history <- model |> fit(
 )
 ```
 
-And as before, we'll load the model and evaluate using the test set. You should see a small improvement in the accuracy (and running this for a longer set of iterations would improve this further). 
+And as before, we'll load the model and evaluate using the test set. You should see a small improvement in the accuracy (and running this for a longer set of iterations would improve this further).
 
 ```{r}
-test_model <- load_model_tf("model2.keras")
+test_model <- load_model("model2.keras")
 result <- evaluate(test_model, test_dataset)
 cat(sprintf("Test accuracy: %.3f\n", result["accuracy"]))
 ```
@@ -366,14 +366,14 @@ cat(sprintf("Test accuracy: %.3f\n", result["accuracy"]))
 
 An alternative approach for working with small image datasets is to use pretrained CNNs. These are generally CNNs that have been trained on a much larger and more varied set of images. To understand how (and why) this might work, it helps to remember that CNNs are considered to have two sections:
 
-- A feature extractor (the convolution and pooling layers) - also known as the 'convolutional base'
-- A classifier (the set of densely connected layers and the output)
+-   A feature extractor (the convolution and pooling layers) - also known as the 'convolutional base'
+-   A classifier (the set of densely connected layers and the output)
 
-When we use pretrained models, we try to leverage information contained in the convolutional base. For large models, trained on large data, the idea is that some of the image features that were learned are generic - i.e. they can occur in some way in multiple classes of images. 
+When we use pretrained models, we try to leverage information contained in the convolutional base. For large models, trained on large data, the idea is that some of the image features that were learned are generic - i.e. they can occur in some way in multiple classes of images.
 
 > If this original data-set is large enough and general enough, the spatial hierarchy of features learned by the pretrained model can effectively act as a generic model of the visual world, and hence, its features can prove useful for many different computer vision problems, even though these new problems may involve completely different classes than those of the original task (Chollet)
 
-Or to put it another way, if the model has learned how to look at the world and recognize general features in images, we should be able to recombine these to learn new types or classes of image. 
+Or to put it another way, if the model has learned how to look at the world and recognize general features in images, we should be able to recombine these to learn new types or classes of image.
 
 ## Feature extraction
 
@@ -393,14 +393,13 @@ conv_base <- application_vgg16(
 )
 ```
 
-Let's take a look at the model. Note this is a much higher number of weights than anything we've looked at so fat (~14 million). Note also that there are no dense or output layers
+Let's take a look at the model. Note this is a much higher number of weights than anything we've looked at so fat (\~14 million). Note also that there are no dense or output layers
 
 ```{r}
 summary(conv_base)
 ```
 
 So how do we use this? We'll create a function that iterates across every image we have in training, validation and testing. This will take the image and run it through the VGGNet convolutional base, where each image will be transformed using the learned set of convolutions (and pooling). The transformed images are save as `all_features` and the corresponding labels are also saved.
-
 
 ```{r}
 get_features_and_labels <- function(dataset) {
@@ -432,7 +431,7 @@ c(val_features, val_labels) %<-% get_features_and_labels(valid_dataset)
 c(test_features, test_labels) %<-% get_features_and_labels(test_dataset)
 ```
 
-Once we have the set of transformed images, we can create a new classifier. We'll just reuse the same set of layers as in the previous model (`Flatten` -> `Dense` -> `Dropout` -> `Output`). Note that the input shape has changed - this is now equivalent to the output of the convolutional base (2x2x512)
+Once we have the set of transformed images, we can create a new classifier. We'll just reuse the same set of layers as in the previous model (`Flatten` -\> `Dense` -\> `Dropout` -\> `Output`). Note that the input shape has changed - this is now equivalent to the output of the convolutional base (2x2x512)
 
 ```{r}
 inputs <- layer_input(shape = c(2, 2, 512))
@@ -472,10 +471,10 @@ history <- model |> fit(
 plot(history)
 ```
 
-And we can evaluate on the training set using the *extracted* test dataset. This now should show a substantial improvement over the previous models, with an accuracy of over 90%. 
+And we can evaluate on the training set using the *extracted* test dataset. This now should show a substantial improvement over the previous models, with an accuracy of over 90%.
 
 ```{r}
-test_model <- load_model_tf("model3.keras")
+test_model <- load_model("model3.keras")
 result <- evaluate(test_model, test_features, test_labels)
 cat(sprintf("Test accuracy: %.3f\n", result["accuracy"]))
 ```
@@ -484,9 +483,9 @@ cat(sprintf("Test accuracy: %.3f\n", result["accuracy"]))
 
 In the previous model, we separated the feature extraction and classifier into two separate steps. This prevents us from using data augmentation, as we only 'extract' each image once. If you want to combine both these approaches, it is possible to create a new model that incorporates:
 
-- The augmentation layer(s)
-- The convolutional base
-- The new trainable classifier
+-   The augmentation layer(s)
+-   The convolutional base
+-   The new trainable classifier
 
 And we'll demonstrate this here. First, we re-instantiate the VGGNet model. We then set the argument `trainable = False`. This 'freezes' all the existing weights so that they are not updated during training.
 
@@ -533,7 +532,7 @@ The code to run this is given below. Be aware that this takes a fair amount of t
 ```{r}
 callbacks <- list(
  callback_model_checkpoint(
-   filepath = "model4.h5",
+   filepath = "model4.keras",
    save_best_only = TRUE,
    monitor = "val_loss"
  )
@@ -547,21 +546,21 @@ history <- model %>% fit(
 )
 ```
 
-Testing this shows a similar improvement to the previous model (>0.9). The real difference here is that in the previous model we had to extract all the features into memory before training, whereas here we only load the data we need for a single batch. This may be important when working with much larger datasets.
+Testing this shows a similar improvement to the previous model (\>0.9). The real difference here is that in the previous model we had to extract all the features into memory before training, whereas here we only load the data we need for a single batch. This may be important when working with much larger datasets.
 
 ```{r}
-test_model <- load_model_tf("model4.h5")
+test_model <- load_model("model4.keras")
  result <- evaluate(test_model, test_dataset)
  cat(sprintf("Test accuracy: %.3f\n", result["accuracy"]))
 ```
 
 ## Fine-tuning
 
-A potential issue with using pre-trained models arises when there is a big difference between the original classification task that they were trained on, and the new task we are using this for. Here, we are using a model (VGGNet) trained on a set of images (ImageNet) that largely contain objects (animals, vehicles, etc; the full list is here: https://deeplearning.cms.waikato.ac.nz/user-guide/class-maps/IMAGENET/). And we are using this to perform land cover classification. 
+A potential issue with using pre-trained models arises when there is a big difference between the original classification task that they were trained on, and the new task we are using this for. Here, we are using a model (VGGNet) trained on a set of images (ImageNet) that largely contain objects (animals, vehicles, etc; the full list is here: https://deeplearning.cms.waikato.ac.nz/user-guide/class-maps/IMAGENET/). And we are using this to perform land cover classification.
 
 Why is this an issue? The effect of pooling in the model means that the first convolutional layers represent very generic shapes and features (such as visual edges, colors, and textures), where as later convolutions find combinations of these that represent more complex objects in the image (a cat's eye for example). These later convolutions are then more tied to specific objects, and less able to generalize.
 
-In this case, an alternative approach is to fine tune the pre-trained model. In practice, this means keeping or freezing the weights on the first set of (generic) layers, and relearning the weights for later (specific) layers so that they better match the images you are working with. 
+In this case, an alternative approach is to fine tune the pre-trained model. In practice, this means keeping or freezing the weights on the first set of (generic) layers, and relearning the weights for later (specific) layers so that they better match the images you are working with.
 
 So let's see how this works. Above, we used a function (`freeze_weights`) to freeze all the layers in the convolutional base. There is a matching function (`unfreeze_weights`) that unfreezes the weights, and we can set an argument to only unfreeze the top four layers:
 
@@ -569,7 +568,7 @@ So let's see how this works. Above, we used a function (`freeze_weights`) to fre
 unfreeze_weights(conv_base, from = -4)
 ```
 
-If we now look at the model, you'll see there are about 7 million trainable parameters, about half as many as the original model, but substantial more than when we used this for simple feature extraction.
+If we now look at the model, you'll see there are about 7 million trainable parameters, about half as many as the original model, but substantially more than when we used this for simple feature extraction.
 
 ```{r}
 summary(conv_base)
@@ -586,11 +585,11 @@ model |>
 summary(model)
 ```
 
-And finally, fit this model. This will take substantially longer than the other models in this lab as we are trying to learn a much higher number of weights (this took around 3 minutes per epoch on my laptop). The code is included here, but be aware that this wil tie up your computer for a while.  
+And finally, fit this model. This will take substantially longer than the other models in this lab as we are trying to learn a much higher number of weights (this took around 3 minutes per epoch on my laptop). The code is included here, but be aware that this will tie up your computer for a while.
 
 ```{r}
 callbacks <- list(
-  callback_model_checkpoint(filepath = "model5.h5",
+  callback_model_checkpoint(filepath = "model5.keras",
     save_best_only = TRUE,
     monitor = "val_loss")
 )
@@ -603,11 +602,10 @@ history <- model %>% fit(
 )
 ```
 
-If we evaluate this, you should see another small improvement in the model (to over 0.93). Remember that the first model we built had an accuracy of around 0.7, and this should give you an indication of how much these models can be improved *without* requiring new data. 
+If we evaluate this, you should see another small improvement in the model (to over 0.93). Remember that the first model we built had an accuracy of around 0.7, and this should give you an indication of how much these models can be improved *without* requiring new data.
 
 ```{r}
-test_model <- load_model_tf("model5.h5")
+test_model <- load_model("model5.keras")
  result <- evaluate(test_model, test_dataset)
  cat(sprintf("Test accuracy: %.3f\n", result["accuracy"]))
 ```
-
