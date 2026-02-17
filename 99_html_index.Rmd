@@ -47,7 +47,7 @@ Spatial data science is a fast-growing discipline, with wide-ranging application
 - Lab 6
     - [Lab notes (R)][lab06r]
     - [Lab notes (Python notebook)][lab06p]
-    - [Lab notes (Python colab)]
+    - [Lab notes (Python colab)][lab05c]
 
     
 
@@ -66,6 +66,7 @@ Spatial data science is a fast-growing discipline, with wide-ranging application
 [lab04c]: https://colab.research.google.com/drive/11buvWJVZ3GPZasCv0wNlfqSzjLreTEQA?usp=sharing
 [lab05r]: https://simonbrewer.github.io/geog5160/GEOG_5160_6160_lab05.html
 [lab05p]: https://github.com/simonbrewer/geog5160/blob/main/GEOG_5160_6160_lab05.ipynb
+[lab05c]: https://colab.research.google.com/drive/1aQa9VsSqM9xcl7VOvRkeTQ1kKKxrJuBk?usp=sharing
 [lab06r]: https://simonbrewer.github.io/geog5160/GEOG_5160_6160_lab06.html
 [lab06p]: https://github.com/simonbrewer/geog5160/blob/main/GEOG_5160_6160_lab06.ipynb
 [lab07r]: https://simonbrewer.github.io/geog5160/GEOG_5160_6160_lab07.html
