@@ -469,7 +469,7 @@ For the exercise, you will need to cluster these data and map out the resulting 
 -   Make a map of the clusters
 -   
 
-Use a Quarto document to record your answers and output. Assignments, to include both the Quarto document and (ideally) the compiled HTML file, should be submitted to Canvas by Mar 17th. Please use the following naming convention: `Lab06_lastname`.
+Use a Quarto document to record your answers and output. Assignments, to include both the Quarto document and (ideally) the compiled HTML file, should be submitted to Canvas. Please use the following naming convention: `Lab06_lastname`.
 
 # Appendix
 

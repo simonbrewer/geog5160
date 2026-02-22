@@ -468,7 +468,7 @@ In a previous lab, we built a simple linear model of house prices using the data
 -   GEOG6160 Students: plot ICE curves for the effect of area
 -   GEOG6160 Students: calculate and plot Shapley values for two observations (e.g. the cheapest and most expensive house)
 
-Use a Quarto document to record your answers and output. Assignments, to include both the Quarto document and (ideally) the compiled HTML file, should be submitted to Canvas by Feb 19th. Please use the following naming convention: `Lab04_lastname`.
+Use a Quarto document to record your answers and output. Assignments, to include both the Quarto document and (ideally) the compiled HTML file, should be submitted to Canvas. Please use the following naming convention: `Lab05_lastname`.
 
 # Appendix 1: Bike rental dataset
 
