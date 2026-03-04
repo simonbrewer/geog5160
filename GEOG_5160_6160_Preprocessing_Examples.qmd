@@ -1,0 +1,212 @@
+---
+title: "GEOG 5160 6160 Preprocessing examples"
+author: 
+  - name: "Simon Brewer"
+    email: simon.brewer@ess.utah.edu
+    affiliations:
+      - name: University of Utah
+        address: 260 S Central Campus Drive
+        city: Salt Lake City
+        state: UT
+        postal-code: 84112
+date: last-modified
+format:
+  html:
+    toc: true
+    embed-resources: true
+editor: source
+---
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+library(png)
+library(grid)
+set.seed(42)
+```
+
+# Introduction
+
+This lab document covers a series of 'additional' topics in machine learning, mainly focused on preprocessing techniques. Although we will spend most of this semester looking different algorithms, you will find that data manipulation makes up a significant part of any project, so some of these methods will likely be of use in your projects. 
+
+We'll cover the following subjects:
+
+- Feature transformation
+- Encoding categorical features
+- Missing data imputation
+- Feature selection
+- Working with imbalanced data
+- Pipelines
+
+There is no assignment for this lab - but I'd suggest at least looking over the approaches to get a sense of when these may be useful. Let's load some general libraries to get started.
+
+```{r}
+library(tidyverse)
+library(tidymodels)
+```
+
+## Feature transformation
+
+The goal of these methods is to transform individual features in some way, principally with the aim of reducing any bias in model training that results from data distributions or magnitudes.
+
+### Simple transformation
+
+For many methods, having continuous features that are approximately normally distributed can be important. Highly skewed data can present issues in estimating the extremes. The following are a set of simple transformation methods for both right- and left-skewed data
+
+#### Right-skewed data
+
+```{r message=FALSE, warning=FALSE}
+## Make some right skewed data
+right_skew = rnorm(1000, 0, 1)**2
+hist(right_skew, col = 'darkorange')
+```
+
+```{r}
+## Log transformation
+right_skew_log = log(right_skew)
+hist(right_skew_log)
+```
+
+```{r}
+## Square root transformation
+right_skew_sqrt = sqrt(right_skew)
+hist(right_skew_sqrt)
+```
+
+#### Left-skewed data
+
+```{r}
+# Reflect the data around a constant (e.g., the maximum value) to make it left-skewed
+left_skew = max(right_skew) - right_skew
+hist(right_skew, col = 'darkorange')
+```
+
+```{r}
+## Squared transformation
+left_skew_sq = left_skew**2
+```
+
+```{r}
+## Cube transformation
+left_skew_cube = left_skew**3
+```
+
+```{r}
+## Exponential transformation
+left_skew_exp = exp(left_skew)
+```
+
+### Standardization and normalization
+
+For some algorithms, having very different ranges for features (e.g. one feature in 0-1 and another in 0-1000000), can results in biases, where more attention is paid to the larger magnitude feature. These two approaches are ways to transform variables by rescaling them, with the goal of ensuring that all features have the same (or approximately) the same range. 
+
+We'll load some example data to demonstrate this (and other steps) with the tidymodels setup. We'll use the column called `Status` as the target, and all other columns as features. Load the data and create the basic recipe to set the relationship between variables:
+
+```{r}
+data("credit_data")
+```
+
+```{r}
+rec_obj <- recipe(Status ~ ., data = credit_data)
+rec_obj
+```
+
+#### Standardization
+
+Standardizing features converts them into $z$-scores by subtracting the mean and dividing by the standard deviation:
+$$
+z_i = (x_i - \bar{x}) / \sigma_x
+$$
+
+This has some attractive properties: it rescales all features to the same range; a value of 0 is equal to the mean; and values of -1 and 1 equal 1 s.d. below or above the mean, respectively, for all features. 
+
+We'll now add the steps to standardize to the original recipe
+
+```{r}
+standardize <- rec_obj |> 
+  step_center(all_numeric_predictors()) |> 
+  step_scale(all_numeric_predictors())
+```
+
+To demonstrate the effect, first get the summary statistics on the original data:
+
+```{r}
+summary(credit_data)
+```
+
+Now, we do two steps: `prep` which establishes the parameters for the standardization (i.e. it calculates the mean and sd for all columns), and then `bake` to transform a dataset:
+
+```{r}
+final_rec <- prep(standardize, credit_data)
+credit_data_std <- bake(final_rec, credit_data)
+summary(credit_data_std)
+```
+
+If you look at the numerical variables, you should see that they are transformed to have a mean of zero and standard deviation of 1. 
+
+#### Normalization
+
+Normalization rescales features to a fixed range, usually $[0-1]$ (also called a min-max transformation). This is frequently used with neural networks to help in training models. We'll do the same steps as before (but with less commentary)
+
+```{r}
+normalize <- rec_obj |> 
+  step_range(all_numeric_predictors()) 
+```
+
+```{r}
+final_rec <- prep(normalize, credit_data)
+credit_data_norm <- bake(final_rec, credit_data)
+summary(credit_data_norm)
+```
+
+## Imputation
+
+Many datasets contain missing values, usually defined by a computer as `NA` or `NaN` for 'not-a-number'. For many machine learning algorithm, these pose problems, and the functions will often fail. If your dataset contains missing values, you can either drop them (see **dplyr**s `drop_na` function, for example), or to *impute* them. This refers to replacing the missing values with a guess. We'll look at some different approaches to do that here. We'll demonstrate these here using the same dataset (you may have noticed in the `summary` output that a number of missing data are reported).
+
+To see what this looks like, we'll print a set of rows from the data (look in the `Income` column at the 4th and 9th values).
+
+```{r}
+credit_data[150:160,]
+```
+
+
+We'll now try to impute these (and other missing values). The **recipes** package has a number of function, so we'll just demonstrate a few. 
+
+### Simple imputation
+
+We'll start with simple imputation. This replaces the missing values with a constant value, usually the mean or median. For categorical variables, we can replace with the mode or most frequent category. We'll use mean imputation, so first let's see what the mean values is for income:
+
+```{r}
+mean(credit_data$Income, na.rm = TRUE)
+```
+
+Now we'll impute. As before, we'll work from the basic recipe (`rec_obj`) that defines relationships between the variables. 
+
+```{r}
+impute <- rec_obj |> 
+  step_impute_mean(all_numeric_predictors())
+```
+
+```{r}
+final_rec <- prep(impute, credit_data)
+credit_data_imp <- bake(final_rec, credit_data)
+credit_data_imp[150:160, "Income"]
+```
+
+You should see that the previous `NA`s have been replaced with the mean (`r round(mean(credit_data$Income, na.rm=TRUE),1)`)
+
+We can also impute categorical or nominal features using the mode. Line 30 of the data contains a missing value for `Home`:
+
+```{r}
+credit_data[30, ]
+```
+
+```{r}
+impute <- rec_obj |> 
+  step_impute_mode(all_nominal_predictors())
+final_rec <- prep(impute, credit_data)
+credit_data_imp <- bake(final_rec, credit_data)
+credit_data_imp[30, ]
+```
+
+### KNN imputer
+
+An alternative to try to make a more educated guess as to the imputed value. The KNN imputer uses a nearest neighbor approach. For a feature $x$ with a missing value for observation $i$, tt searches for the closet neighboring points using all the features that are non `NaN`s. It then imputes the missing value for $x$, usually as the mean of the set of neighbors. This can be distance weighted, so that closer neighboring point have a greater influence on the result. Note that you have to set the choice of $k$, the number of neighbors that are used.
