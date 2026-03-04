@@ -51,7 +51,7 @@ Spatial data science is a fast-growing discipline, with wide-ranging application
 - Preprocessing lab
     - [Lab notes (R)][labppr]
     - [Lab notes (Python notebook)][labppp]
-    - [Lab notes (Python colab)]
+    - [Lab notes (Python colab)][labppc]
 
     
 
@@ -77,6 +77,7 @@ Spatial data science is a fast-growing discipline, with wide-ranging application
 
 [labppr]: https://simonbrewer.github.io/geog5160/GEOG_5160_6160_Preprocessing_Examples.html
 [labppp]: https://github.com/simonbrewer/geog5160/blob/main/GEOG_5160_6160_Preprocessing_Examples.ipynb
+[labppc]: https://colab.research.google.com/drive/1UW5Hk2dyk_gMSTh5D7Q5_ttVHu2Kjort?usp=sharing
 
 [lab07r]: https://simonbrewer.github.io/geog5160/GEOG_5160_6160_lab07.html
 [lab07p]: https://github.com/simonbrewer/geog5160/blob/main/GEOG_5160_6160_lab07.ipynb
