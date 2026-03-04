@@ -43,11 +43,15 @@ Spatial data science is a fast-growing discipline, with wide-ranging application
 - Lab 5
     - [Lab notes (R)][lab05r]
     - [Lab notes (Python notebook)][lab05p]
-    - [Lab notes (Python colab)]
+    - [Lab notes (Python colab)][lab05c]
 - Lab 6
     - [Lab notes (R)][lab06r]
     - [Lab notes (Python notebook)][lab06p]
-    - [Lab notes (Python colab)][lab05c]
+    - [Lab notes (Python colab)][lab06c]
+- Preprocessing lab
+    - [Lab notes (R)][labppr]
+    - [Lab notes (Python notebook)][labppp]
+    - [Lab notes (Python colab)]
 
     
 
@@ -69,6 +73,11 @@ Spatial data science is a fast-growing discipline, with wide-ranging application
 [lab05c]: https://colab.research.google.com/drive/1aQa9VsSqM9xcl7VOvRkeTQ1kKKxrJuBk?usp=sharing
 [lab06r]: https://simonbrewer.github.io/geog5160/GEOG_5160_6160_lab06.html
 [lab06p]: https://github.com/simonbrewer/geog5160/blob/main/GEOG_5160_6160_lab06.ipynb
+[lab06c]: https://colab.research.google.com/drive/1gXjnjgRxD-4X-haoWLc9G-a5MP-P96xj?usp=sharing
+
+[labppr]: https://simonbrewer.github.io/geog5160/GEOG_5160_6160_Preprocessing_Examples.html
+[labppp]: https://github.com/simonbrewer/geog5160/blob/main/GEOG_5160_6160_Preprocessing_Examples.ipynb
+
 [lab07r]: https://simonbrewer.github.io/geog5160/GEOG_5160_6160_lab07.html
 [lab07p]: https://github.com/simonbrewer/geog5160/blob/main/GEOG_5160_6160_lab07.ipynb
 [lab07c]: https://colab.research.google.com/drive/1Pjedvyh7aGc1NL6b1aRkUTfYRgyA0NyV?usp=sharing

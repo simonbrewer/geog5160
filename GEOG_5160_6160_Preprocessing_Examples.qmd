@@ -126,7 +126,7 @@ standardize <- rec_obj |>
   step_scale(all_numeric_predictors())
 ```
 
-To demonstrate the effect, first get the summary statistics on the original data:
+(Note that you can combine these two steps with a function called, confusingly, `step_normalize`). To demonstrate the effect, first get the summary statistics on the original data:
 
 ```{r}
 summary(credit_data)
@@ -209,4 +209,496 @@ credit_data_imp[30, ]
 
 ### KNN imputer
 
-An alternative to try to make a more educated guess as to the imputed value. The KNN imputer uses a nearest neighbor approach. For a feature $x$ with a missing value for observation $i$, tt searches for the closet neighboring points using all the features that are non `NaN`s. It then imputes the missing value for $x$, usually as the mean of the set of neighbors. This can be distance weighted, so that closer neighboring point have a greater influence on the result. Note that you have to set the choice of $k$, the number of neighbors that are used.
+An alternative to try to make a more educated guess as to the imputed value. The KNN imputer uses a nearest neighbor approach. For a feature $x$ with a missing value for observation $i$, it searches for the closet neighboring points using all the features that are non `NaN`s. It then imputes the missing value for $x$, usually as the mean of the set of neighbors. Note that you have to set the choice of $k$, the number of neighbors that are used. This method has the advantage of working directly with both numerical and categorical data, so we can run this on all features as follows:
+
+```{r}
+impute <- rec_obj |> 
+  step_impute_knn(all_predictors(), neighbors = 2)
+final_rec <- prep(impute, credit_data)
+credit_data_imp <- bake(final_rec, credit_data)
+```
+
+```{r}
+## Numeric imputation example
+credit_data_imp[150:160, "Income"]
+```
+
+```{r}
+## Categorical imputation
+credit_data_imp[30, ]
+```
+
+### Iterative imputer
+
+The final method that we'll look at uses a sequence of models to impute missing data. It starts by using a simple imputation method to fill missing values (default = mean). It then iterates over each feature with missing values, creating a model of that feature as a function of all the remaining features. This is used to impute a value for each of the original missing values. It then moves on to the next feature and does the same. Once it has been through all the features, it repeats the entire process until there is only a marginal change in the imputed values, or a limit of iterations is reached. This has a large amount of flexibility: you can choose the model that is used for imputation (see the `method` argument), and it creates multiple imputation.
+
+As there is no function to do this in the **tidymodels** library, we need to use an additional library called **mice**, so go ahead and install this now. Now let's load this:
+
+```{r}
+library(mice)
+```
+
+This comes with a neat function to visualize the pattern of missing data:
+
+```{r}
+md.pattern(credit_data)
+```
+
+Now to run the imputation, we use the `mice` function:
+
+```{r results='hide', message=FALSE, eval=FALSE}
+credit_data_imp = mice(credit_data, method = "rf")
+```
+
+You'll see a series of iterations appear on the screen. By default, this will run 5 imputations (so 5 guesses for each missing value), and it runs 5 iterations for each one to stablize the estimates). You can see the range of imputed values for the missing observations as follows:
+
+```{r eval=FALSE}
+credit_data_imp$imp$Home
+```
+
+Use the `complete` function to get the full imputed data for further analysis. The `1` refers to the imputation you want to retrieve:
+
+```{r eval=FALSE}
+credit_data_1 <- complete(credit_data_imp, 1)
+credit_data_1[30, ]
+```
+
+## PCA transformation
+
+Another useful transformation of data is through a principal component transformation. This is a commonly used form of dimension reduction, that can often reduce datasets with large numbers of features down to a small number of principal components. In addition, as PCA is based on the co-variation between features, it can avoid issues of multicollinearity or redundancy with features that record similar real world factors. We'll look at this here with a breast cancer dataset, which has a relatively large number of features (30). 
+
+```{r}
+df <- read.csv("./datafiles/breast_cancer_data.csv")
+head(df)
+```
+
+Next, we'll remove some superflous columns and convert the outcome to a factor:
+
+```{r}
+df <- df |>
+  select(-id, -X) |>
+  mutate(diagnosis = as.factor(diagnosis))
+```
+
+We'll split into training and testing with a simple holdout
+
+```{r}
+train_test_split <- initial_split(df, prop = 0.8)
+
+df_train <- training(train_test_split)
+df_test <- testing(train_test_split)
+```
+
+Next, create a new recipe for these data:
+
+```{r}
+rec_obj <- recipe(diagnosis ~ ., data = df_train) |>
+  step_normalize(all_numeric_predictors())
+rec_obj
+```
+
+Now we'll build a simple initial model using logistic regression and all original, scaled features (30). We'll use the test set to evaluate and the `accuracy` function to see how well the model worked:
+
+```{r}
+## Set final recipe
+final_rec <- 
+  rec_obj 
+## Instantiate model
+log_mod <- logistic_reg()
+## Build workflow linking model and recipe
+log_mod_wflow <-
+  workflow() |>
+  add_model(log_mod) |>
+  add_recipe(final_rec)
+## And fit
+log_mod_fit <- fit(log_mod_wflow, data = df_train)
+```
+
+Now we'll evaluate on the test set and get the accuracy:
+
+```{r}
+pred_test <- predict(log_mod_fit, new_data = df_test) |>
+  bind_cols(df_test |> dplyr::select(diagnosis))
+
+pred_test |>
+  accuracy(diagnosis, .pred_class)
+pred_test |>
+  bal_accuracy(diagnosis, .pred_class)
+```
+
+To perform a PCA, we'll add a second stage to the recipe that includes the PCA transformation
+
+```{r}
+pca_trans <- rec_obj |> 
+  step_pca(all_numeric(), num_comp = 2)
+```
+
+Now we'll rerun all the same steps as before
+
+```{r}
+## Set final recipe
+final_rec <- 
+  pca_trans 
+## Instantiate model
+log_mod <- logistic_reg()
+## Build workflow linking model and recipe
+log_mod_wflow <-
+  workflow() |>
+  add_model(log_mod) |>
+  add_recipe(final_rec)
+## And fit
+log_mod_fit_pca <- fit(log_mod_wflow, data = df_train)
+```
+
+```{r}
+pred_test <- predict(log_mod_fit_pca, new_data = df_test) |>
+  bind_cols(df_test |> dplyr::select(diagnosis))
+
+pred_test |>
+  accuracy(diagnosis, .pred_class)
+pred_test |>
+  bal_accuracy(diagnosis, .pred_class)
+```
+
+And we see very little change in the accuracy. If you take a quick look at each fitted model (just type model name e.g. `log_mod_fit`), you will see a difference in the complexity. The first model as 30 coefficients for all the features, the second only has two, but with no loss in predictive skill. 
+
+How do you know how many components to use? PCA can return as many summary features as original features, but of rapidly diminishing utility. A simple way to check is to independently run a PCA using R's `prcomp` function:
+
+```{r}
+df_pca <- df_train |> 
+  select(-diagnosis) |> 
+  prcomp(scale=TRUE)
+
+summary(df_pca)
+```
+
+If you look at the bottom row if this output, it will show you the cumulative amount of variance as we increase the number of components. In this case, as we used the first two components, these account for about 63% of the original variance. 
+
+## Feature selection
+
+An alternative approach with a large number of features is to use a feature selection method. These range from simple statistical testss to more complex model-based methods. We'll look here at a couple of examples using the breast cancer data set loaded earlier. As a reminder, the original data has 30 features and 1 target:
+
+```{r}
+dim(df)
+```
+
+### Univariate feature selection
+
+This approach does pairwise comparisons of each feature with the target using an additional step in a recipe (`step_predictor_best`). This can take a variety of methods to *score* the variables, including simple Pearson correlation, ANOVA, mutual information or random forest importance. You will need the **important** package installed to run these examples.
+
+```{r}
+library(important)
+```
+
+We'll set this up first to use the $F$-statistic from an ANOVA performed between each feature and the target. Features with low values will be excluded, and we use `prop_terms` to define the proportion of features to remove. 
+
+```{r}
+rec_obj <- recipe(diagnosis ~ ., data = df_train) |>
+  step_normalize(all_numeric_predictors()) |>
+  step_predictor_best(
+    all_predictors(),
+    score = "aov_fstat",
+    prop_terms = 0.25
+  )
+rec_obj
+```
+
+```{r}
+df_sel <- rec_obj |>
+  prep()  |> 
+  bake(df) 
+
+dim(df)
+dim(df_sel)
+```
+
+We can also obtain the names of the selected/retained features:
+
+```{r}
+names(df_sel)
+```
+
+### Automated selected
+
+**tidymodels** does not currently have an integrated function for automated selection of variables, but a number of other add-on packages do. We look here quickly at the **boruta** package (you will need to install this). ThisIn a nutshell this works by creating 'shadow' versions of each feature, then comparing importance scores from a model that includes both the original and shadow features. If the importance of any original feature is not higher than the shadow version, it is removed. The process then repeats until no more removals occur. Note that this can take a long time for large datasets due to the number iterations required.
+
+```{r}
+library(Boruta)
+```
+
+We can just run this on the original data (`df`). 
+
+```{r}
+df_bor = Boruta(diagnosis ~ ., df)
+df_bor
+```
+For this dataset, no features were rejected, but two were deemed to be 'tentative' - running the method with more iterations may solve this. We can now get the selected features into a new set as follows (this is a bit tricky as we have keep the target column)
+
+```{r}
+new_names = names(df)[-1][df_bor$finalDecision == "Confirmed"]
+df_sel = df[, c("diagnosis", new_names)]
+dim(df_sel)
+```
+
+The output is a reduced data frame that can then be used in **tidymodels**.
+
+## Imbalanced data
+
+Next, we'll look at ways to work with imbalanced data. This generally refers to classification datasets, where the target variable has substantially more of one class than the other(s). This is very common in real world dataset, particularly anything dealing with a rare outcome. Imbalanced data can cause issues in:
+
+- Model training: loss function is dominated by majority class
+- Model evaluation: performance for minority class is under-represented
+
+There are a range of different approaches for dealing with this, but these largely can be split into weighting methods and sampling methods. 
+
+Next we'll load some imbalanced data (this is a data set of credit applications, with the final column indicating whether an application was rejected (`yes`) or not). We'll do some cleaning, then split into training and testing. We'll then set up an initial recipe with scaling and one-hot encoding.
+
+```{r}
+df = read.csv("./datafiles/bank-full.csv", sep=";")
+head(df)
+```
+
+```{r}
+df = df |>
+  select(-day, -month) |>
+  mutate(y = as.factor(y))
+
+train_test_split <- initial_split(df, prop = 0.8)
+
+df_train <- training(train_test_split)
+df_test <- testing(train_test_split)
+```
+
+```{r}
+rec_obj <- recipe(y ~ ., data = df_train) |>
+  step_normalize(all_numeric_predictors()) |>
+  step_dummy(all_nominal_predictors())
+```
+
+Having got here, we can check for imbalance in the training data by calculating the imbalance ratio (number in minority class / number in majority class):
+
+```{r}
+min(table(df$y)) / max(table(df$y))
+```
+
+The imbalance ratio is around 0.13, suggsting there are nearly 10x as many `no`s and `yes`s
+
+### Naive model
+
+For reference, we'll fit a simple random forest model and evaluate
+
+```{r}
+## Set final recipe
+final_rec <- 
+  rec_obj 
+## Instantiate model
+rf <- rand_forest(mode='classification')
+## Build workflow linking model and recipe
+rf_mod_wflow <-
+  workflow() |>
+  add_model(rf) |>
+  add_recipe(final_rec)
+## And fit
+rf_mod_fit <- fit(rf_mod_wflow, data = df_train)
+```
+
+```{r}
+pred_test <- predict(rf_mod_fit, new_data = df_test) |>
+  bind_cols(df_test |> dplyr::select(y))
+
+pred_test |>
+  accuracy(y, .pred_class)
+pred_test |>
+  bal_accuracy(y, .pred_class)
+```
+
+Note that although the accuracy looks great, the balanced accuracy of 0.65 reflects that one of the classes is poorly predicted.
+
+### Resampling
+
+In this approach, we resample the data in way that makes the number of the minority and majority class match. we need an additional library **themis** to run these functions. 
+
+```{r}
+library(themis)
+```
+
+#### Random oversampling
+
+Here, the minority dataset is sampled *with replacement* to create a datasubset that is the same size as the majority set. To demonstrate this, we'll simply add this as an extra step, prep and bake it and count the number of `no`s and `yes`s in the returned data:
+
+
+```{r}
+rec_obj |>
+  step_upsample(y, over_ratio = 1) |>
+  prep()  |> 
+  bake(new_data = NULL) |> 
+  count(y, name = "training")
+
+```
+
+This shows the clear increase in the number of `yes`s. We'll add this an additional step when creating the final recipe, the train and evaluate a model as before:
+
+```{r}
+## Set final recipe
+final_rec <- 
+  rec_obj |>
+  step_upsample(y, over_ratio = 1)
+
+## Instantiate model
+rf <- rand_forest(mode='classification')
+## Build workflow linking model and recipe
+rf_mod_wflow <-
+  workflow() |>
+  add_model(rf) |>
+  add_recipe(final_rec)
+## And fit
+rf_mod_fit <- fit(rf_mod_wflow, data = df_train)
+```
+
+```{r}
+pred_test <- predict(rf_mod_fit, new_data = df_test) |>
+  bind_cols(df_test |> dplyr::select(y))
+
+pred_test |>
+  accuracy(y, .pred_class)
+pred_test |>
+  bal_accuracy(y, .pred_class)
+```
+
+#### Random undersampling
+
+As the name implies, this downsamples the majority set to the same size as the minority.
+
+```{r}
+rec_obj |>
+  step_downsample(y, under_ratio = 1) |>
+  prep()  |> 
+  bake(new_data = NULL) |> 
+  count(y, name = "training")
+```
+
+This shows the clear decrease in the number of `no`s. We'll add this an additional step when creating the final recipe, the train and evaluate a model as before:
+
+```{r}
+## Set final recipe
+final_rec <- 
+  rec_obj |>
+  step_downsample(y, under_ratio = 1)
+
+## Instantiate model
+rf <- rand_forest(mode='classification')
+## Build workflow linking model and recipe
+rf_mod_wflow <-
+  workflow() |>
+  add_model(rf) |>
+  add_recipe(final_rec)
+## And fit
+rf_mod_fit <- fit(rf_mod_wflow, data = df_train)
+```
+
+```{r}
+pred_test <- predict(rf_mod_fit, new_data = df_test) |>
+  bind_cols(df_test |> dplyr::select(y))
+
+pred_test |>
+  accuracy(y, .pred_class)
+pred_test |>
+  bal_accuracy(y, .pred_class)
+```
+
+#### SMOTE
+
+Synthetic Minority Over-sampling Technique or SMOTE. This is a different approach that creates new samples by interpolating in feature space between existing samples of the minority class. This avoids the issue of repeating samples from oversampling, and can limit some issues of overfitting
+
+```{r}
+rec_obj |>
+  step_smote(y) |>
+  prep()  |> 
+  bake(new_data = NULL) |> 
+  count(y, name = "training")
+```
+
+And added to the modeling workflow:
+
+```{r}
+## Set final recipe
+final_rec <- 
+  rec_obj |>
+    step_smote(y)
+
+## Instantiate model
+rf <- rand_forest(mode='classification')
+## Build workflow linking model and recipe
+rf_mod_wflow <-
+  workflow() |>
+  add_model(rf) |>
+  add_recipe(final_rec)
+## And fit
+rf_mod_fit <- fit(rf_mod_wflow, data = df_train)
+```
+
+```{r}
+pred_test <- predict(rf_mod_fit, new_data = df_test) |>
+  bind_cols(df_test |> dplyr::select(y))
+
+pred_test |>
+  accuracy(y, .pred_class)
+pred_test |>
+  bal_accuracy(y, .pred_class)
+```
+
+### Weighting
+
+Next, we'll try to weight the dataset. One of the simplest approaches to this is to weight by the inverse of frequency (essentially $1/n_k$, where $n_k$ is the number for a given class). This is a little tricky in **tidymodels**. We need to create a new column in the data frame that contains the weight for each observation. I've set these simply here to 1 for the majority case, and 1/0.13 for the minority (to reflect the imbalance ratio. These are also set as `importance_weights` so that they are not used like other features. We'll reload and process the data to do this:
+
+```{r}
+df = read.csv("./datafiles/bank-full.csv", sep=";")
+
+df = df |>
+  select(-day, -month) |>
+  mutate(y = as.factor(y),
+         case_wts = ifelse(y == "no", 1, 1/0.13),
+         case_wts = importance_weights(case_wts)
+  )
+
+train_test_split <- initial_split(df, prop = 0.8)
+
+df_train <- training(train_test_split)
+df_test <- testing(train_test_split)
+
+rec_obj <- recipe(y ~ ., data = df_train) |>
+  step_normalize(all_numeric_predictors()) |>
+  step_dummy(all_nominal_predictors())
+
+```
+
+Now we'll set up everything for model training. There's one additional line here, where we specify which column contains the weights. Otherwise this is the same as before:
+
+```{r}
+## Set final recipe
+final_rec <- 
+  rec_obj 
+## Instantiate model
+rf <- rand_forest(mode = 'classification')
+## Build workflow linking model and recipe
+rf_mod_wflow <-
+  workflow() |>
+  add_model(rf) |>
+  add_recipe(final_rec) |>
+  add_case_weights(case_wts) ## WEIGHTS GO HERE
+## And fit
+rf_mod_fit <- fit(rf_mod_wflow, data = df_train)
+```
+
+And now evaluate:
+
+```{r}
+pred_test <- predict(rf_mod_fit, new_data = df_test) |>
+  bind_cols(df_test |> dplyr::select(y))
+
+pred_test |>
+  accuracy(y, .pred_class)
+pred_test |>
+  bal_accuracy(y, .pred_class)
+```
+
