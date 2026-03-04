@@ -25,7 +25,7 @@ set.seed(42)
 
 # Introduction
 
-This lab document covers a series of 'additional' topics in machine learning, mainly focused on preprocessing techniques. Although we will spend most of this semester looking different algorithms, you will find that data manipulation makes up a significant part of any project, so some of these methods will likely be of use in your projects. 
+This lab document covers a series of 'additional' topics in machine learning, mainly focused on preprocessing techniques. Although we will spend most of this semester looking at different algorithms, you will find that data manipulation makes up a significant part of any project, so some of these methods will likely be of use in your projects. 
 
 We'll cover the following subjects:
 
