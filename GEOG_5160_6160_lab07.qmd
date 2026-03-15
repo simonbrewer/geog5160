@@ -47,14 +47,14 @@ We'll mainly be using a combination of **keras3** and **tensorflow** in this cla
 Installing deep learning software can be quite complicated. The backend software is in continual and rapid development, so that the libraries change often. In addition, these often are set up to use any available GPU power rather than (or in addition to) CPU power, and this requires an extra step of installing drivers for this. Here, we'll try to use the simplest approach in R, which is to install the **keras3** package, and then let it take care of the backend. So start by installing this package:
 
 ```{r eval=FALSE}
-# install.packages("keras3")
+install.packages("keras3")
 ```
 
 If everything went ok, then load the library and run the following command to install the backend
 
 ```{r eval=FALSE}
-# library(keras3)
-# install_keras(backend = "tensorflow")
+library(keras3)
+install_keras(backend = "tensorflow")
 ```
 
 This should create a specific virtual environment called `r-keras`, and install some additional packages (this may take a few minutes). If you get any errors with this, please let me know.
@@ -63,7 +63,7 @@ This should create a specific virtual environment called `r-keras`, and install 
 
 You can also change the name of the virtual environment as follows (this allows you to install different backends or versions in different environments). Don't worry about this step if the first installation went well
 
-``` {eval="FALSE"}
+``` {r eval="FALSE"}
 # library(reticulate)
 # virtualenv_create("r-keras", python=install_python())
 # library(keras3)
@@ -196,7 +196,7 @@ The next step in the forward pass is to send the output of node (above) through 
 ```{r}
 x <- as_tensor(seq(-3, 3, length.out = 100))
 x_act <- activation_linear(x)
-plot(x, x_act)
+plot(x, x_act, type = 'l')
 ```
 
 -   Sigmoid activation. Note that this requires a second column of zeros added to it
@@ -211,8 +211,8 @@ plot(x, x_act[1:length(x)], type = 'l')
 -   ReLu activation. This is a widely used activation function in deep learning, which sets all output below zero to zero, and uses a linear transform for the values above 0
 
 ```{r}
-# x_act <- activation_relu(x)
-# plot(x, x_act, type = 'l')
+x_act <- activation_relu(x)
+plot(x, x_act, type = 'l')
 ```
 
 3.  Backpropagation
@@ -260,7 +260,7 @@ $$
 \mbox{prediction} = W \times input + b
 $$
 
-This is trained to minimize the square of the difference between predictions and the targets. As you’ll see, it’s actually a much simpler example than the end-to-end example of a toy two-layer neural network you saw at the end of chapter 2. However, this time you should be able to understand everything about the code, line by line.
+This is trained to minimize the square of the difference between predictions and the targets. 
 
 Next, we'll initialize values for `W` and `b`, using random values and with zeros, respectively.
 
@@ -574,9 +574,7 @@ For the exercise, you just need to make a new model for the credit score data. T
 -   Adding more nodes
 -   Changing the learning rate, batch size or number of training epochs
 
-Use a Quarto document to record the code describing the changes in your model setup. You should also re-train the model and make a new set of predictions for the test set, and report the accuracy. Assignments, to include both the Quarto document and (ideally) the compiled HTML file, should be submitted to Canvas by March 31st. Please use the following naming convention: Lab07_lastname.
-
-Please use the following naming convention: `Lab07_lastname.ipynb`.
+Use a Quarto document to record the code describing the changes in your model setup. You should also re-train the model and make a new set of predictions for the test set, and report the accuracy. Assignments, to include both the Quarto document and (ideally) the compiled HTML file, should be submitted to Canvas. Please use the following naming convention: Lab07_lastname.
 
 # Appendix
 
