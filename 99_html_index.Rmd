@@ -60,6 +60,10 @@ Spatial data science is a fast-growing discipline, with wide-ranging application
     - [Lab notes (R)][lab08r]
     - [Lab notes (Python notebook)][lab08p]
     - [Lab notes (Python colab)][lab08c]
+- Lab 9
+    - [Lab notes (R)][lab09r]
+    - [Lab notes (Python notebook)][lab09p]
+    - [Lab notes (Python colab)][lab09c]
 
     
 
