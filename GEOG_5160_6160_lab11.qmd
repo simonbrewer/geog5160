@@ -13,7 +13,8 @@ date: last-modified
 format:
   html:
     toc: true
-editor: visual
+    embed-resources: true
+editor: source
 ---
 
 ```{r echo=FALSE, warning=FALSE, message=FALSE}
@@ -44,7 +45,7 @@ The data we'll use is a time series of hourly air quality measurements from the 
 set.seed(42)
 library(reticulate)
 library(tidyverse)
-library(keras)
+library(keras3)
 ```
 
 Now load the data and take a look at the first few lines:
@@ -136,28 +137,28 @@ y_test <- y[n_obs:nrow(X)]
 
 # Model 1: Dense network
 
-To start with, we'll build a simple neural network with a single densely connected layer with 50 nodes between the input and output. We'll build a pretty simple model with
+To start with, we'll build a simple neural network with a single densely connected layer with 50 nodes between the input and output. We'll build a pretty simple model using the functional API with:
 
--   A input layer. Each observation going into the model is the set of 7 features (temperature, etc) from the previous time step and the pollution from the previous step, which gives a shape of (8,)
+-   A input layer. Each observation going into the model is the set of 7 features (temperature, etc) from the current time step and the pollution from the previous step, which gives a shape of (8,)
 -   A densely connected layer with 50 nodes
 -   An output layer. We're only predicting the pollution value, so there's only a single output. Note that as this is a continuous outcome, we don't specify an activation function (as this would constrain the output of the model).
 
 ```{r}
-## ------------------------------------------------------------------------- ##
-## Dense
-# initialize our model
-model <- keras_model_sequential()
+inputs <- keras_input(shape = c(8))
+outputs <- inputs |>
+  #layer_reshape(-1) |> 
+  layer_dense(50, activation="relu") |>
+  layer_dense(1)
 
-# our input layer
-model |>
-  layer_dense(input_shape = c(8), units = 50)
+model <- keras_model(inputs, outputs)
 
-model |>
-  layer_dense(units = 1) # output
-
-# look at our model architecture
+## look at our model architecture
 summary(model)
+```
 
+Now compile and train. We'll add a callback that will save the model state after epoch, but only if the newest iteration is an improvement on the previous
+
+```{r}
 ## Compile it
 model |> compile(
   optimizer = optimizer_adam(), 
@@ -165,19 +166,30 @@ model |> compile(
   metrics = c("mae")
 )
 
-# Actually train our model! This step will take a while
+## Define callback (save best iteration of model)
+callbacks = list(
+  callback_model_checkpoint("jena_dense.keras", 
+                            monitor = "val_loss",
+                            save_best_only = TRUE) 
+)
+
+## Actually train our model! This step will take a while
 history <- model |> fit(
   x = X_train, # sequence we're using for prediction 
   y = y_train, # sequence we're predicting
   batch_size = 64, # how many samples to pass to our model at a time
   epochs = 10, # how many times we'll look @ the whole dataset
   validation_data = list(X_test, y_test),
-  shuffle = FALSE) # 
+  callbacks = callbacks,
+  shuffle = FALSE) # Note shuffle equal false as this is sequence data
+```
 
-## -------------------------------------------------------------------------------------------
-# Evaluate the model on the validation data
+Finally, we'll evaluate by predicting for the test set:
+
+```{r}
+model <- load_model("jena_dense.keras")
 results <- model |> 
-  keras::evaluate(X_test, y_test, verbose = 0)
+  evaluate(X_test, y_test, verbose = 0)
 results
 ```
 
@@ -200,41 +212,48 @@ y_test <- y[n_obs:nrow(X)]
 ```
 
 ```{r}
-## ------------------------------------------------------------------------- ##
 ## LSTM
-# initialize our model
-model <- keras_model_sequential()
+## initialize our model
+inputs <- keras_input(shape = dim(X_train)[2:3])
+outputs <- inputs |>
+  #layer_reshape(-1) |> 
+  layer_lstm(units=50, activation="relu") |>
+  layer_dense(1)
 
-# our input layer
-model %>%
-  layer_lstm(input_shape = dim(X_train)[2:3], units = 50)
+model <- keras_model(inputs, outputs)
 
-model %>%
-  layer_dense(units = 1) # output
-
-# look at our model architecture
+## look at our model architecture
 summary(model)
 ```
 
 ```{r}
 ## Compile it
-model %>% compile(
+model |> compile(
   optimizer = optimizer_adam(learning_rate = 1e-3), 
   loss = "mse", 
   metrics = c("mae")
 )
 ```
 
-Now train:
+Now train. I've set this to run silently (so it doesn't print output). If you want to track the training progress, set this to `verbose=1`
 
 ```{r}
-history <- model %>% fit(
+## Define callback (save best iteration of model)
+callbacks = list(
+  callback_model_checkpoint("jena_lstm1.keras", 
+                            monitor = "val_loss",
+                            save_best_only = TRUE) 
+)
+
+history <- model |> fit(
   x = X_train, # sequence we're using for prediction 
   y = y_train, # sequence we're predicting
   batch_size = 64, # how many samples to pass to our model at a time
-  epochs = 50, # how many times we'll look @ the whole dataset
+  epochs = 30, # how many times we'll look at the whole dataset
   validation_data = list(X_test, y_test),
-  shuffle = FALSE) # 
+  callbacks = callbacks,
+  shuffle = FALSE,
+  verbose = 0) # 
 ```
 
 ```{r}
@@ -244,7 +263,9 @@ plot(history)
 Evaluate the model on the validation data
 
 ```{r}
-results <- model %>% keras::evaluate(X_test, y_test, verbose = 0)
+model <- load_model("jena_lstm1.keras")
+results <- model |> 
+  evaluate(X_test, y_test, verbose = 0)
 results
 ```
 
@@ -308,29 +329,27 @@ y_test <- y[n_obs:nrow(X)]
 dim(X_train)
 ```
 
-Check that the second dimension of the `X` data is equal to the number of steps in each sequence. 
+Check that the second dimension of the `X` data is equal to the number of steps in each sequence.
 
 Now let's go ahead and build and train our model. We'll use the same architecture as the previous model, but a higher number of epochs
 
 ```{r}
-## ------------------------------------------------------------------------- ##
 ## LSTM
 # initialize our model
-model <- keras_model_sequential()
+inputs <- keras_input(shape = dim(X_train)[2:3])
+outputs <- inputs |>
+  #layer_reshape(-1) |> 
+  layer_lstm(units=50, activation="relu") |>
+  layer_dense(1)
 
-# our input layer
-model %>%
-  layer_lstm(input_shape = dim(X_train)[2:3], units = 50)
-
-model %>%
-  layer_dense(units = 1) # output
+model <- keras_model(inputs, outputs)
 
 # look at our model architecture
 summary(model)
 
 ## Compile it
-model %>% compile(
-  optimizer = optimizer_adam(), 
+model |> compile(
+  optimizer = optimizer_adam(learning_rate = 1e-3), 
   loss = "mse", 
   metrics = c("mae")
 )
@@ -340,12 +359,20 @@ model %>% compile(
 Actually train our model! This step will take a while
 
 ```{r}
-history <- model %>% fit(
+## Define callback (save best iteration of model)
+callbacks = list(
+  callback_model_checkpoint("jena_lstm2.keras", 
+                            monitor = "val_loss",
+                            save_best_only = TRUE) 
+)
+
+history <- model |> fit(
   x = X_train, # sequence we're using for prediction 
   y = y_train, # sequence we're predicting
   batch_size = 64, # how many samples to pass to our model at a time
-  epochs = 50, # how many times we'll look @ the whole dataset
+  epochs = 50, # how many times we'll look at the whole dataset
   validation_data = list(X_test, y_test),
+  callbacks = callbacks,
   shuffle = FALSE,
   verbose = 0) # 
 
@@ -358,7 +385,9 @@ plot(history)
 Evaluate the model on the validation data
 
 ```{r}
-results <- model %>% keras::evaluate(X_test, y_test, verbose = 0)
+model <- load_model("jena_lstm2.keras")
+results <- model |> 
+  evaluate(X_test, y_test, verbose = 0)
 results
 ```
 
@@ -366,30 +395,27 @@ Evaluating on the test set shows a pretty decent drop from the previous model do
 
 # Model 4: Adding recurrent dropouts
 
-We've previously explored the use of dropout layers to slow training and create more general models. We'll now use this to see if we can further improve model performance. As a reminder, dropouts randomly set some weights to zero, effectively removing them from affecting model predictions (this is what slows the training). For recurrent models like LSTMs dropouts have to be applied in a temporally constant manner by dropping some of the connections between data from different time steps. We'll add this with the `recurrent_dropout` argument, but otherwise keep the model the same
+We've previously explored the use of dropout layers to slow training and create more general models. We'll now use this to see if we can further improve model performance. As a reminder, dropouts randomly set some weights to zero, effectively removing them from affecting model predictions (this is what slows the training). For recurrent models like LSTMs dropouts have to be applied in a temporally constant manner by dropping some of the connections between data from different time steps. We'll add this with the `recurrent_dropout` argument, and increase the number of LSTM nodes:
 
 ```{r}
-## ------------------------------------------------------------------------- ##
 ## LSTM
-# initialize our model
-model <- keras_model_sequential()
+## initialize our model
+inputs <- keras_input(shape = dim(X_train)[2:3])
+outputs <- inputs |>
+  #layer_reshape(-1) |> 
+  layer_lstm(100, activation="relu",
+             recurrent_dropout = 0.5) |>
+  layer_dense(1)
 
-# our input layer
-model %>%
-  layer_lstm(input_shape = dim(X_train)[2:3], 
-             units = 100,
-             recurrent_dropout = 0.5)
+model <- keras_model(inputs, outputs)
 
-model %>%
-  layer_dense(units = 1) # output
-
-# look at our model architecture
+## look at our model architecture
 summary(model)
 ```
 
 ```{r}
 ## Compile it
-model %>% compile(
+model |> compile(
   optimizer = optimizer_adam(learning_rate = 1e-3), 
   loss = "mse", 
   metrics = c("mae")
@@ -397,14 +423,23 @@ model %>% compile(
 ```
 
 ```{r}
+## Define callback (save best iteration of model)
+callbacks = list(
+  callback_model_checkpoint("jena_lstm3.keras", 
+                            monitor = "val_loss",
+                            save_best_only = TRUE) 
+)
+
 # Actually train our model! This step will take a while
-history <- model %>% fit(
+history <- model |> fit(
   x = X_train, # sequence we're using for prediction 
   y = y_train, # sequence we're predicting
   batch_size = 64, # how many samples to pass to our model at a time
   epochs = 100, # how many times we'll look @ the whole dataset
   validation_data = list(X_test, y_test),
-  shuffle = FALSE) # 
+  callbacks = callbacks,
+  shuffle = FALSE,
+  verbose=0) # 
 ```
 
 ```{r}
@@ -414,35 +449,32 @@ plot(history)
 Evaluate the model on the validation data
 
 ```{r}
-results <- model %>% keras::evaluate(X_test, y_test, verbose = 0)
+model <- load_model("jena_lstm3.keras")
+results <- model |> 
+  evaluate(X_test, y_test, verbose = 0)
 results
 ```
 
-In this case, adding the dropout makes the model worse. It's likely that we're getting close to the limit of what can be improved on with this model (and given that we took a realtively small amount of data for training). We could try to train this model for longer (or slower) to see if that improves things, but we'll instead try one final experiment in which we make the model more complex. 
+In this case, adding the dropout makes the model slightly better. Bit it's likely that we're getting close to the limit of what can be improved on with this model (and given that we took a relatively small amount of data for training). We could try to train this model for longer (or slower) to see if that improves things, but we'll instead try one final experiment in which we make the model more complex.
 
 # Model 5: Stacked LSTM
 
 Currently our model only has a single LSTM layer. But like CNNs, adding additional LSTM layers can improve model performance by identifying more complicated relationships between time steps. We'll add a second LSTM here with 50 nodes. Note that we also need to add an argument to the preceding LSTM layer `return_sequences=TRUE`. This ensures that the output of LSTM layer 1 is presented to LSTM layer 2 as a time sequence. Let's follow all the usual steps of building, compiling, training and evaluating:
 
 ```{r}
-## ------------------------------------------------------------------------- ##
 ## LSTM
-# initialize our model
-model <- keras_model_sequential()
-
-# our input layer
-model %>%
-  layer_lstm(input_shape = dim(X_train)[2:3], 
-             units = 100,
+## initialize our model
+inputs <- keras_input(shape = dim(X_train)[2:3])
+outputs <- inputs |>
+  #layer_reshape(-1) |> 
+  layer_lstm(100, activation="relu",
              recurrent_dropout = 0.5,
-             return_sequences = TRUE)
+             return_sequences = TRUE) |>
+  layer_lstm(50, activation="relu",
+             recurrent_dropout = 0.5) |>
+  layer_dense(1)
 
-model %>%
-  layer_lstm(units = 50,
-             recurrent_dropout = 0.5)
-
-model %>%
-  layer_dense(units = 1) # output
+model <- keras_model(inputs, outputs)
 
 # look at our model architecture
 summary(model)
@@ -451,7 +483,7 @@ summary(model)
 ```{r}
 
 ## Compile it
-model %>% compile(
+model |> compile(
   optimizer = optimizer_adam(learning_rate = 1e-3), 
   loss = "mse", 
   metrics = c("mae")
@@ -459,14 +491,22 @@ model %>% compile(
 ```
 
 ```{r}
-history <- model %>% fit(
+## Define callback (save best iteration of model)
+callbacks = list(
+  callback_model_checkpoint("jena_lstm4.keras", 
+                            monitor = "val_loss",
+                            save_best_only = TRUE) 
+)
+
+history <- model |> fit(
   x = X_train, # sequence we're using for prediction 
   y = y_train, # sequence we're predicting
   batch_size = 64, # how many samples to pass to our model at a time
   epochs = 100, # how many times we'll look @ the whole dataset
   validation_data = list(X_test, y_test),
+  callbacks = callbacks,
   shuffle = FALSE,
-  verbose = 0) # 
+  verbose=0) # 
 ```
 
 ```{r}
@@ -474,8 +514,10 @@ plot(history)
 ```
 
 ```{r}
-results <- model %>% keras::evaluate(X_test, y_test, verbose = 0)
+model <- load_model("jena_lstm4.keras")
+results <- model |> 
+  evaluate(X_test, y_test, verbose = 0)
 results
 ```
 
-Adding the additional layer improves the model again, giving us (at least in this run) the best overall model. We'll leave this here, but adding additional layers may be worth testing in this case. As an aside, I ran this over the weekend with 4 years of training data, and a 120 hour (5 day) window, and was able to get the error as low as 0.012 - albeit at a cost of 1 hour of computation time. 
+Adding the additional layer improves the model again, giving us (at least in this run) the best overall model. We'll leave this here, but adding additional layers may be worth testing in this case. As an aside, I ran this over the weekend with 4 years of training data, and a 120 hour (5 day) window, and was able to get the error as low as 0.012 - albeit at a cost of 1 hour of computation time.
