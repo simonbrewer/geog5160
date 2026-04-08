@@ -25,8 +25,6 @@ set.seed(42)
 
 # Introduction
 
-# Introduction
-
 In this lab, we'll look at working with time series data in deep learning models. The trick with all time series is to make predictions that consider not just the current time step, but also information from previous time steps. We'll do this in two ways here. First, we'll process the data for a 'predict-ahead' model. In this, the outcome or target at time $t$ will be modeled using the set of covariates at time $t-1$, plus the value of the outcome at $t-1$. This is a short-term predictive model in which we only use information from the previous time step to predict the target for the next time step. The second approach will be to use a recurrent neural network. These are models that are designed to incorporate a memory track, that retains some information about the relationship between variables from the previous time steps. We'll use the LSTM model (long/short-term memory), as this can include information over short and longer time steps. We'll build a series of models here of increasing complexity. As you go through this, pay attention to the relative gains (or losses) in predictive skill relative to the increases in model complexity.
 
 The models we'll build are modified from: https://machinelearningmastery.com/multivariate-time-series-forecasting-lstms-keras/, as well as the Deep Learning with Python book (Chollet 2024).
