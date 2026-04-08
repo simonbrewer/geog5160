@@ -521,3 +521,35 @@ results
 ```
 
 Adding the additional layer improves the model again, giving us (at least in this run) the best overall model. We'll leave this here, but adding additional layers may be worth testing in this case. As an aside, I ran this over the weekend with 4 years of training data, and a 120 hour (5 day) window, and was able to get the error as low as 0.012 - albeit at a cost of 1 hour of computation time.
+
+# Exercise
+
+The file *energydata_complete.csv* contains high-resolution temporal climate data (10 minute) from a station in Belgium, and has been used for energy forecasting. The file includes the following fields
+
+- `date`: timestamp
+- `Windspeed` wind speed (m/s)
+- `Press_mm_hg`: pressure
+- `RH_out`: relative humidity
+- `T_out`: temperature (Celsius)
+
+Your task for this exercise is to build an LSTM model to forecast the temperature variable one time step ahead. You can use the code below to convert the data into a format for recurrent models. Your answer should include:
+- A description of the model architecture you have chosen
+- Estimates of how well your model performs on the test set (e.g. RMSE, MAE)
+
+GEOG 6160 Students: you should make at least one modification to your original model (e.g. dropouts, additional layers, etc). Describe the changes that you have made and how these have affected the performance metrics.
+
+## Appendix
+
+### Beijing pollution dataset: *pollution.csv*
+
+| Column header | Variable |
+| --- | --- |
+| date | POSIX date (y-m-d h:m:s) |
+| pollution | PM2.5 concentration (ppb) |
+| dew | Dew point |
+| temp | Temperature (C) |
+| press | Air pressure (hPa) |
+| wnd_dir | Wind direction (categorical) |
+| wnd_spd | m s-1 |
+| rain | mm |
+
