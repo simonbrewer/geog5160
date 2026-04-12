@@ -1,0 +1,424 @@
+---
+title: "GEOG 5160 6160 Lab 12"
+author: 
+  - name: "Simon Brewer"
+    email: simon.brewer@ess.utah.edu
+    affiliations:
+      - name: University of Utah
+        address: 260 S Central Campus Drive
+        city: Salt Lake City
+        state: UT
+        postal-code: 84112
+date: last-modified
+format:
+  html:
+    toc: true
+    embed-resources: true
+editor: source
+---
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+library(png)
+library(grid)
+set.seed(42)
+```
+
+# Introduction
+
+In this lab, we will introduce tools for natural language processing (NLP), from basic data preparation through to some exploration and building a simple machine learning model. We are only scratching the surface of what is possible with NLP methods in this lab. See the tidytext website for further examples. 
+
+You'll need several packages for the lab including:
+
+- `tidytext`: a library for cleaning and processing text data
+- `SnowballC`
+- `spacyr`
+- `textstem`
+- `word2vec`
+- `uwot`
+- `textdata`
+
+```{r eval=FALSE}
+install.packages(c("tidytext"))
+```
+
+Now load the first few packages:
+
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)
+library(tidytext)
+library(textstem)
+```
+
+# Data
+
+We'll use a set of tweets related to climate change from 2015 to 2018, taken from:
+
+https://www.kaggle.com/datasets/edqian/twitter-climate-change-sentiment-dataset
+
+The data are held in the file *twitter_sentiment_data.csv*, which you can download from the github repository. Read these in and take a quick look. There are three columns: a sentiment estimate, the tweet (`message`) and a tweet id. The sentiment estimate was provided by a group of experts and are tagged as follows:
+
+- `2` (News): the tweet links to factual news about climate change
+- `1` (Pro): the tweet supports the belief of man-made climate change
+- `0` (Neutral): the tweet neither supports nor refutes the belief of man-made climate change
+- `-1`(Anti): the tweet does not believe in man-made climate change
+
+```{r}
+dat <- read.csv("./datafiles/twitter_sentiment_data.csv")
+head(dat)
+```
+
+Our basic plan here is:
+
+1. Prepare the data for analysis. 
+2. Visualize and explore the data
+3. Create an embedding for the tweets. This represents each tweet as a vector of numbers, and can be used for further analysis
+4. Create a simple machine learning model to predict the sentiment of a tweet
+
+# Text processing
+
+Processing text data into a usable form can be one of the most time consuming parts of the analysis. Basically, we want to remove any characters or words that are irrelevant to any analysis. In addition, we should try to simplify and standardize the language used. For example, a computer will not necessarily recognize that 'see' and 'seen' are related to each other. 
+
+
+## General cleaning
+
+First, we'll remove any retweets from the dataset (indicated by `RT` at the start of the message). While there are some applications where the number of retweets are of interest, we will consider them as duplicates for this exercise. 
+
+```{r}
+dat = dat %>%
+  filter(str_starts(message, "RT", negate = TRUE))
+```
+
+To illustrate the next steps, we'll extract the fourth tweet from the dataset:
+
+```{r}
+tweet = dat[4, ]
+print(tweet$message)
+```
+
+This is a typical tweet and has several issues for text processing:
+
+- There is a URL at the end of the tweet
+- There is at least one username (`@...`)
+- There are several hashtag (`#...`)
+
+We'll use several steps to clean this up. To illustrate these, we'll walk through the individual steps for the first 5 tweets.
+
+- First extract the first 5 tweets:
+
+```{r}
+tidy_dat <- dat %>%
+  slice_head(n = 5) 
+```
+
+- Remove various non-words (URLs, symbols, etc)
+
+```{r}
+tidy_dat <- tidy_dat %>%
+  mutate(message = str_replace_all(message, "https://t.co/[A-Za-z\\d]+|http://[A-Za-z\\d]+|&amp;|&lt;|&gt;|RT|https", "")) 
+head(tidy_dat)
+```
+
+- Remove usernames (starting with `@..`)
+
+```{r}
+tidy_dat <- tidy_dat %>% 
+  mutate(message = str_replace_all(message, "@\\w+", "")) 
+head(tidy_dat)
+```
+
+- Convert the tweets into individual words or tokens. Note that this converts the data from being one line per tweet to one line per work
+
+```{r}
+tidy_dat <- tidy_dat %>%
+  unnest_tokens(word, message)
+head(tidy_dat)
+```
+
+- Finally, remove stopwords. These are a predefined set of commonly occurring words that have little value in analysis (e.g. the, and, ...). 
+
+```{r}
+tidy_dat <- tidy_dat %>%
+  filter(!word %in% stop_words$word,
+         str_detect(word, "[a-z]"))
+head(tidy_dat)
+```
+
+## Word matching
+
+The last thing we'll need to do is match words with similar meanings. There's a couple of approaches to this: stemming and lemmatization. Stemming strips words back to the core stem using `stem_words()` from the **textstem** library. For example, here are 5 different words related to programming. The stemmer converts them all to `program`:
+
+```{r}
+words <- c("program","programming","programer","programs","programmed")
+stem_words(words)
+```
+
+One disadvantage to this is that the stems may no longer reflect actual words. For example, the stem to climate is `climat`:
+
+```{r}
+stem_words("climate")
+```
+
+The second issue is that stemming does not account for context - that words with different meanings may be spelled the same, and can only be distinguished in the context of the sentence. 
+
+Lemmatization attempts to avoid these issues by converting words to a standard form, and accounting for the meaning of the surrounding words. Here we'll use the **spacyr** package to perform lemmatization. Use this to compare the conversion of `saw` in these two phrases:
+
+```{r message=FALSE, warning=FALSE}
+library(spacyr)
+spacy_parse("Owen saw a rabbit")
+```
+
+```{r message=FALSE, warning=FALSE}
+spacy_parse("Owen cut a plank with a saw")
+```
+
+## Putting it all together
+
+Step 1: clean
+
+```{r}
+tidy_dat <- dat %>%
+  mutate(message = str_replace_all(message, "https://t.co/[A-Za-z\\d]+|http://[A-Za-z\\d]+|&amp;|&lt;|&gt;|RT|https", "")) %>% 
+  mutate(message = str_replace_all(message, "@\\w+", "")) %>%
+  unnest_tokens(word, message) %>%
+  filter(!word %in% stop_words$word,
+         str_detect(word, "[a-z]"))
+```
+
+Step 2: lemmatize
+
+Note to keep things running quickly in this lab, we'll use **textstem**'s function for lemmatization. This is not quite as robust as the **spacyr** library, but substantially faster. 
+
+```{r}
+tidy_dat$clean_word <- lemmatize_words(tidy_dat$word)
+```
+
+
+# Exploring the data
+
+We can now use the cleaned text data to do some exploration. We'll start by making some word clouds. These are a very common visualization of text data, where words are randomly placed on a figure and scaled according to their frequency. We'll use the `wordcloud` package to make plots, and create a data frame of the counts of individual words for use in the cloud.
+
+```{r}
+tidy_count <- tidy_dat %>%
+  count(clean_word) %>%
+  arrange(-n)
+head(tidy_count)
+```
+
+First, let's plot all the data. This is, not surprisingly, dominated by the words 'climate' and 'change'
+
+```{r message=FALSE, warning=FALSE}
+library(wordcloud)
+wordcloud(tidy_count$clean_word, tidy_count$n, max.words = 100)
+```
+
+For the next plot, we'll extract only the 'pro' tweets, and skip plotting climate and change by setting them as stopwords 
+
+```{r message=FALSE, warning=FALSE}
+tidy_count_pos <- tidy_dat %>%
+  filter(sentiment == 1,
+         !clean_word %in% c("climate", "change", "global", "warm")) %>%
+  count(clean_word) %>%
+  arrange(-n)
+wordcloud(tidy_count_pos$clean_word, tidy_count_pos$n, max.words = 100)
+```
+
+```{r message=FALSE, warning=FALSE}
+tidy_count_neg <- tidy_dat %>%
+  filter(sentiment == -1,
+         !clean_word %in% c("climate", "change", "global", "warm")) %>%
+  count(clean_word) %>%
+  arrange(-n)
+wordcloud(tidy_count_neg$clean_word, tidy_count_neg$n, max.words = 100)
+```
+
+## Sentiment analysis
+
+Next, we'll estimate the sentiment of the tweets. The data already has a column labeled `sentiment`, which is a category describing whether the tweet was for or against climate change (or neutral). Sentiment analysis is a little different from this, as it attempts to score some text based on whether the words are overall positive, neutral or negative, irrespective of the belief in or against climate change. There are several different lexicons for sentiment analysis, some of which provide more fine grained detail. We'll use here a function from the tidytext library (`get_sentiment`), which scores sentiment values between -5 (negative) and 5 (positive) for each word. You may be prompted to download the AFINN library when running this. 
+
+```{r}
+get_sentiments("afinn") %>%
+  head()
+```
+
+We merge this with the cleaned data by joining on the cleaned word:
+
+```{r}
+tidy_sentiment <- inner_join(tidy_dat, get_sentiments("afinn"), by = c("clean_word" = "word"))
+head(tidy_sentiment)
+```
+
+And we can make a word cloud of the positive terms used in conjunction with climate change (I am well aware of the irony of trump being considered positive here, so I'm going to remove it):
+
+```{r message=FALSE, warning=FALSE}
+tidy_count_pos <- tidy_sentiment %>%
+  filter(value > 1,
+         !clean_word %in% c("climate", "change", "global", "warm", "trump")) %>%
+  count(clean_word) %>%
+  arrange(-n)
+wordcloud(tidy_count_pos$clean_word, tidy_count_pos$n, max.words = 100)
+```
+
+# Embedding text data
+
+To go further in the analysis of text data, we need to use a text embedding. This converts the text to a numeric representation in a high dimensional space. The simplest form of this is one-hot encoding, which creates a binary matrix with one column per word, and one row per tweet. If the word occurs in that tweet, then it's labeled with a `1`, and a `0` if not. One hot encoding works well with a small number of words, but scales poorly with richer text. 
+
+Embeddings are more complex representations of text, usually created by analyzing which words are likely to occur in similar contexts. It has a lot of similarities to principal component analysis for numeric data, in which complex data can be represented by a small number of *components* that capture correlations between the variables. For text, these means that the embedding for 'dog' and 'cat' will be similar, but 'dog' and 'car' will be dissimilar. This can then be used to explore the similarity between pieces of text, or (as we'll see below) to use text in machine learning models. These embeddings are a key part of large language models (e.g. ChatGPT), where they are used to relate prompts or questions to the appropriate text that makes up a response. 
+
+While it's possible to create your own embedding (which is useful for specific projects), this can be quite time consuming, and can require a substantial amount of text. In the example we'll use below, we'll use an embedding that was created using a model called Word2Vec and trained using Google news articles. You can download the file that contains the embedding weights from the Google Drive folder:
+
+https://drive.google.com/drive/folders/1GMEY1fYEj1YMI__u3hU4y6agnrz3ekna?usp=drive_link
+
+A good selection of alternative, pre-trained embeddings can be found at Hugging Face:
+
+https://huggingface.co/models?other=text-embedding
+
+Load the `word2vec` package to find the embeddings for different pieces of text, and we'll need to load the embeddings file:
+
+```{r}
+library(word2vec)
+model <- read.word2vec(file = "./wgts/GoogleNews-vectors-negative300.bin", normalize = TRUE)
+```
+
+As an example, here is the embedding for the word 'cat' (I've just printed the first 50 values):
+
+```{r}
+predict(model, "cat", type = "embedding")[1, 1:50]
+```
+
+It's pretty meaningless to us mortals, but this is a representation of the word 'cat' that a computer can work with. To follow the example given above, we can extract these for 'cat', 'dog' and 'car', and explore the correlations with these
+
+```{r}
+cat_wv = predict(model, "cat", type = "embedding")[1, ]
+car_wv = predict(model, "car", type = "embedding")[1, ]
+dog_wv = predict(model, "dog", type = "embedding")[1, ]
+```
+
+```{r}
+cor(cat_wv, dog_wv)
+cor(car_wv, dog_wv)
+```
+
+```{r}
+plot(cat_wv, dog_wv, xlab = "cat", ylab = "dog")
+```
+
+```{r}
+plot(cat_wv, car_wv, xlab = "cat", ylab = "car")
+```
+
+
+```{r}
+vectorized_words = predict(model, tidy_dat$clean_word, 
+                           type = "embedding")
+```
+
+The result (`vectorized_docs`) is a numeric array with 300 columns and the same number of rows as the cleaned words. We'll now collapse the values into mean embeddings for each tweet. To do this we have to add (and subsequently remove) the tweet id from the cleaned data.
+
+```{r}
+vectorized_words = as.data.frame(vectorized_words)
+vectorized_words$id = tidy_dat$tweetid
+
+vectorized_docs <- vectorized_words %>% 
+  drop_na() %>%
+  group_by(id) %>% 
+  summarise_all(mean, na.rm = TRUE) %>% 
+  select(-id)
+```
+
+We can now use any of the usual tools for exploring and modeling numeric data,
+
+## Cluster analysis
+
+We'll first use a K-means cluster function to group the tweets into 4 sets.
+
+```{r}
+tweet_km <- kmeans(vectorized_docs, 4)
+```
+
+We can also visualize the embeddings using other dimension reduction techniques. Here we use UMAP, a non-linear, efficient way of collapsing high-dimensional data to low (usually 2) dimensions
+
+```{r}
+library(uwot)
+viz <- umap(vectorized_docs, n_neighbors = 15, 
+            min_dist = 0.001, spread = 4, n_threads = 2)
+```
+
+This can be plotted - each point here represents an individual tweet, and the colors are the clusters we created in the previous step. Note there are quite a lot of outliers that could be potentially removed, and that one cluster is very distinct from the others. This may suggest a group of tweets that deal with different aspect of climate change. (You could plot the word cloud for these tweets to see if that shows some differences).
+
+```{r}
+library(ggplot2)
+df <- data.frame(x = viz[, 1], y = viz[, 2],
+                 cluster = as.factor(tweet_km$cluster),
+                 stringsAsFactors = FALSE)
+ggplot(df, aes(x = x, y = y, col = cluster)) +
+  geom_point() + theme_void()
+```
+
+## Using embeddings in machine learning
+
+As a last step, we'll briefly look at using these embeddings in a machine learning model. We'll build a model to try and predict the sentiment of a tweet (positive or negative) from it's content. We'll use a random forest model with the embeddings as features, and the sentiment value as a label. 
+We'll first need to integrate our embedding data with the sentiment score we generated earlier. First, we'll remake the average embedding values per tweet, but this time we'll keep the tweet id. 
+
+```{r}
+vectorized_docs_ml <- vectorized_words %>% 
+  drop_na() %>%
+  group_by(id) %>% 
+  summarise_all(mean, na.rm = TRUE)
+```
+
+Next, we generate a mean sentiment score for each tweet, and convert it to a bianry (0 = negative, 1 = positive)
+
+```{r}
+tidy_sentiment <- tidy_sentiment %>%
+  group_by(tweetid) %>%
+  summarize(value = mean(value)) %>%
+  mutate(sentiment = ifelse(value > 0, 1, 0))
+```
+
+Then we merge these two datasets together using the tweet id, and remove any columns we do not want to use in the ML model
+
+```{r}
+vectorized_docs_ml = inner_join(vectorized_docs_ml, 
+                                tidy_sentiment, 
+                                by = c("id" = "tweetid"))
+
+vectorized_docs_ml = vectorized_docs_ml %>%
+  select(-id, -value) %>%
+  mutate(sentiment = as.factor(sentiment))
+```
+
+Now we'll load the **caret** package. As the dataset is realtively large, we'll use a different, more efficient, package (**ranger**) to build the random forest model
+
+```{r message=FALSE, warning=FALSE}
+library(caret)
+library(ranger)
+```
+
+Now form a training and test set (80/20 split):
+
+```{r}
+train_id = createDataPartition(vectorized_docs_ml$sentiment, p = 0.8)
+train = vectorized_docs_ml[train_id[[1]], ] 
+test = vectorized_docs_ml[-train_id[[1]], ] 
+```
+
+Train the model:
+
+```{r}
+fit_rf = ranger(sentiment ~ ., train)
+```
+
+Predict for the test dataset:
+
+```{r}
+y_pred = predict(fit_rf, test)$prediction
+```
+
+And get the performance metrics:
+
+```{r}
+confusionMatrix(test$sentiment, y_pred)
+```
+
+There's a lot of output here, but the key one we'll use is the accuracy, which is roughly 80%. This suggests that, given a tweet, we'd be able to predict it's sentiment fairly well. This could be improved by tuning the model, using the sentiment score rather than the 0/1 indicator and, of course, including more data.
+
