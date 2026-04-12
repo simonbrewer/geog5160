@@ -266,7 +266,7 @@ Embeddings are more complex representations of text, usually created by analyzin
 
 While it's possible to create your own embedding (which is useful for specific projects), this can be quite time consuming, and can require a substantial amount of text. In the example we'll use below, we'll use an embedding that was created using a model called Word2Vec and trained using Google news articles. You can download the file that contains the embedding weights from the Google Drive folder:
 
-https://drive.google.com/drive/folders/1GMEY1fYEj1YMI__u3hU4y6agnrz3ekna?usp=drive_link
+https://drive.google.com/file/d/1Kcv1LQRkDGIIXXOyPAQbLZonR2QA9Wd8/view?usp=drive_link
 
 A good selection of alternative, pre-trained embeddings can be found at Hugging Face:
 
